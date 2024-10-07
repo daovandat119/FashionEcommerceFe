@@ -8,6 +8,7 @@ import Context from './context/Context';
 // import "tippy.js/dist/tippy.css";
 import AboutPage from './pages/about';
 import ShopPages1 from './pages/shoplist/shoplist-1';
+import ShopPages2 from './pages/shoplist/shoplist-2';
 function App() {
 
   return (
@@ -16,6 +17,7 @@ function App() {
     <Routes>
       <Route  path="/" element={<HomePages/>}/>
       <Route path="shop-1" element={<ShopPages1 />} />
+      <Route path="shop-2" element={<ShopPages2 />} />
       <Route path="login_register" element={<LoginPage />} />
       <Route path="about" element={<AboutPage />} />
     </Routes>

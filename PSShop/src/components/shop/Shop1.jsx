@@ -1,130 +1,78 @@
 import React from 'react';
-
-const Shop = () => {
+import BreadCumb from './BreadCumb';
+import { sortingOptions } from '../../data/products/productCategories';
+import {  useState } from "react";
+import { openModalShopFilter } from '../../utlis/aside';
+import Pagination1 from '../common/Pagination1';
+const Shop1 = () => {
+  const [selectedColView, setSelectedColView] = useState(4);
+  const itemPerRow = [2, 3, 4];
   return (
-    <div>
-      <div>
-        <main className="container mx-auto px-4 py-16">
-          <div
-            className="d-flex justify-content-between mb-4 pb-md-2"
-            style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '8px' }}
-          >
-            <div
-              className="breadcrumb mb-0 d-none d-md-block flex-grow-1"
-              style={{ fontSize: '12px', fontWeight: '500', color: '#333' }}
-            >
-              <a
-                href="#"
-                className="menu-link menu-link_us-s text-uppercase fw-medium"
-                style={{ textTransform: 'uppercase', fontWeight: '500', color: '#333' }}
-              >
-                Home
-              </a>
-              <span
-                className="breadcrumb-separator menu-link fw-medium ps-1 pe-1"
-                style={{ marginLeft: '8px', marginRight: '8px', color: '#888' }}
-              >
-                /
-              </span>
-              <a
-                href="#"
-                className="menu-link menu-link_us-s text-uppercase fw-medium"
-                style={{ textTransform: 'uppercase', fontWeight: '500', color: '#333' }}
-              >
-                The Shop
-              </a>
-            </div>
-            <div
-              className="shop-acs d-flex align-items-center justify-content-between flex-grow-1"
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-            >
-              <select
-                className="shop-acs__select form-select w-auto border-0 py-0"
-                aria-label="Sort Items"
-                name="total-number"
-                style={{
-                  marginRight: '15px',
-                  backgroundColor: '#f8f8f8',
-                  border: '1px solid #e0e0e0',
-                  fontSize: '12px',
-                  color: '#333',
-                  padding: '5px 10px',
-                }}
-              >
-                <option value="">Default Sorting</option>
-                <option value="1">Featured</option>
-                <option value="2">Best selling</option>
-                <option value="3">Alphabetically, A-Z</option>
-                <option value="4">Alphabetically, Z-A</option>
-                <option value="5">Price, low to high</option>
-                <option value="6">Price, high to low</option>
-                <option value="7">Date, old to new</option>
-                <option value="8">Date, new to old</option>
-              </select>
-
-              <div className="col-size align-items-center d-flex" style={{ display: 'flex', alignItems: 'center' }}>
-                <span className="text-uppercase fw-medium me-2" style={{ fontSize: '12px', color: '#333' }}>
-                  View
-                </span>
-                <button
-                  className="btn-link fw-medium me-2 js-cols-size"
-                  style={{ background: 'none', border: 'none', fontSize: '12px', color: '#333', padding: '5px' }}
-                >
-                  2
-                </button>
-                <button
-                  className="btn-link fw-medium me-2 js-cols-size"
-                  style={{ background: 'none', border: 'none', fontSize: '12px', color: '#333', padding: '5px' }}
-                >
-                  3
-                </button>
-                <button
-                  className="btn-link fw-medium me-2 js-cols-size btn-link_active"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '12px',
-                    color: '#000',
-                    fontWeight: 'bold',
-                    padding: '5px',
-                  }}
-                >
-                  4
-                </button>
-              </div>
-
-              <div className="shop-filter d-flex align-items-center" style={{ display: 'flex', alignItems: 'center' }}>
-                <button
-                  className="btn-link btn-link_f d-flex align-items-center ps-0 js-open-aside"
-                  style={{
-                    fontSize: '12px',
-                    color: '#333',
-                    background: 'none',
-                    border: 'none',
-                    padding: '0',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  <svg
-                    className="d-inline-block align-middle me-2"
-                    width="14"
-                    height="10"
-                    viewBox="0 0 14 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ marginRight: '8px' }}
-                  >
-                    <use href="#icon_filter"></use>
-                  </svg>
-                  <span className="text-uppercase fw-medium d-inline-block align-middle">Filter</span>
-                </button>
-              </div>
-            </div>
+    <section className="shop-main container">
+     <div className="d-flex justify-content-between mb-4 pb-md-2">
+          <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
+            <BreadCumb />
           </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-4 gap-8" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          <div className="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
+            <select
+              className="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0"
+              aria-label="Sort Items"
+              name="total-number"
+            >
+              {sortingOptions.map((option, index) => (
+                <option key={index} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            <div className="shop-asc__seprator mx-3 bg-light d-none d-md-block order-md-0"></div>
+
+            <div className="col-size align-items-center order-1 d-none d-lg-flex">
+              <span className="text-uppercase fw-medium me-2">View</span>
+              {itemPerRow.map((elm, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedColView(elm)}
+                  className={`btn-link fw-medium me-2 js-cols-size ${
+                    selectedColView == elm ? "btn-link_active" : ""
+                  } `}
+                >
+                  {elm}
+                </button>
+              ))}
+            </div>
+            {}
+
+            <div className="shop-asc__seprator mx-3 bg-light d-none d-lg-block order-md-1"></div>
+
+            <div className="shop-filter d-flex align-items-center order-0 order-md-3">
+              <button
+                className="btn-link btn-link_f d-flex align-items-center ps-0 js-open-aside"
+                onClick={openModalShopFilter}
+              >
+                <svg
+                  className="d-inline-block align-middle me-2"
+                  width="14"
+                  height="10"
+                  viewBox="0 0 14 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <use href="#icon_filter" />
+                </svg>
+                <span className="text-uppercase fw-medium d-inline-block align-middle">
+                  Filter
+                </span>
+              </button>
+            </div>
+            {}
+          </div>
+          {}
+        </div>
+
+        <div className="grid grid-cols-4 gap-8" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
             <div className="text-center">
               <div className="relative">
                 <img
@@ -263,19 +211,21 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Pagination & Discover More */}
-          <p className="mb-5 text-center fw-medium" style={{ textAlign: 'center', fontWeight: '500', marginBottom: '16px' }}>
-            SHOWING 36 of 497 items
-          </p>
-          <div className="text-center mt-8" style={{ textAlign: 'center', marginTop: '32px' }}>
-            <a className="text-black font-semibold" href="#" style={{ color: '#000', fontWeight: '600' }}>
-              DISCOVER MORE
-            </a>
-          </div>
-        </main>
-      </div>
-    </div>
+
+
+          <p className="mb-5 text-center fw-medium">SHOWING 36 of 497 items</p>
+        <Pagination1 />
+
+        <div className="text-center">
+          <a className="btn-link btn-link_lg text-uppercase fw-medium" href="#">
+            Show More
+          </a>
+        </div>
+        </section>  
+
+
+
   );
 };
 
-export default Shop;
+export default Shop1;
