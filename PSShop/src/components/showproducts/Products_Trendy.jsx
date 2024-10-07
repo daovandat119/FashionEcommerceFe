@@ -26,102 +26,32 @@ const Products_Trendy = () => {
                         </a>
                     </div>
                     <div className="grid grid-cols-4 gap-8">
-                        <div className="">
-                            <div className="relative">
-                                <img alt="Woman wearing a cropped faux leather jacket" className="w-full" height="400" src="https://placehold.co/300x400" width="300" />
-                                <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2">
-                                    ADD TO CART
-                                </button>
-                            </div>
-                            <p className="text-gray-500 mt-4">
-                                Dresses
-                            </p>
-                            <p className="text-black font-bold">
-                                Cropped Faux Leather Jacket
-                            </p>
-                            <p className="text-black">
-                                $29
-                            </p>
-                            <div className="flex  mt-2">
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <p className="text-gray-500 ml-2">
-                                    8k+ reviews
-                                </p>
+                    <div className="relative group">
+                            <img
+                                alt="Woman wearing a cropped faux leather jacket"
+                                className="w-full"
+                                height="400"
+                                src="https://placehold.co/300x400"
+                                width="300"
+                            />
+                            <button
+                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
+                            >
+                                ADD TO CART
+                            </button>
+                            <p className="text-gray-500 mt-4">Dresses</p>
+                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
+                            <p className="text-black">$29</p>
+                            <div className="flex mt-2">
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <p className="text-gray-500 ml-2">8k+ reviews</p>
                             </div>
                         </div>
-                        <div className="">
-                            <div className="relative">
-                                <img alt="Woman wearing a cropped faux leather jacket" className="w-full" height="400" src="https://placehold.co/300x400" width="300" />
-                                <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2">
-                                    ADD TO CART
-                                </button>
-                            </div>
-                            <p className="text-gray-500 mt-4">
-                                Dresses
-                            </p>
-                            <p className="text-black font-bold">
-                                Cropped Faux Leather Jacket
-                            </p>
-                            <p className="text-black">
-                                $29
-                            </p>
-                            <div className="flex  mt-2">
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <p className="text-gray-500 ml-2">
-                                    8k+ reviews
-                                </p>
-                            </div>
-                        </div>
-                        <div className="">
-                            <div className="relative">
-                                <img alt="Woman wearing a cropped faux leather jacket" className="w-full" height="400" src="https://placehold.co/300x400" width="300" />
-                                <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2">
-                                    ADD TO CART
-                                </button>
-                            </div>
-                            <p className="text-gray-500 mt-4">
-                                Dresses
-                            </p>
-                            <p className="text-black font-bold">
-                                Cropped Faux Leather Jacket
-                            </p>
-                            <p className="text-black">
-                                $29
-                            </p>
-                            <div className="flex  mt-2">
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <p className="text-gray-500 ml-2">
-                                    8k+ reviews
-                                </p>
-                            </div>
-                        </div>
+
                         <div className="relative group">
                             <img
                                 alt="Woman wearing a cropped faux leather jacket"
@@ -148,6 +78,57 @@ const Products_Trendy = () => {
                             </div>
                         </div>
 
+                        <div className="relative group">
+                            <img
+                                alt="Woman wearing a cropped faux leather jacket"
+                                className="w-full"
+                                height="400"
+                                src="https://placehold.co/300x400"
+                                width="300"
+                            />
+                            <button
+                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
+                            >
+                                ADD TO CART
+                            </button>
+                            <p className="text-gray-500 mt-4">Dresses</p>
+                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
+                            <p className="text-black">$29</p>
+                            <div className="flex mt-2">
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <p className="text-gray-500 ml-2">8k+ reviews</p>
+                            </div>
+                        </div>
+
+                        <div className="relative group">
+                            <img
+                                alt="Woman wearing a cropped faux leather jacket"
+                                className="w-full"
+                                height="400"
+                                src="https://placehold.co/300x400"
+                                width="300"
+                            />
+                            <button
+                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
+                            >
+                                ADD TO CART
+                            </button>
+                            <p className="text-gray-500 mt-4">Dresses</p>
+                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
+                            <p className="text-black">$29</p>
+                            <div className="flex mt-2">
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <i className="fas fa-star text-yellow-500"></i>
+                                <p className="text-gray-500 ml-2">8k+ reviews</p>
+                            </div>
+                        </div>
 
 
                     </div>

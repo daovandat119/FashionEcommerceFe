@@ -3,90 +3,111 @@ import { Link } from "react-router-dom";
 import Nav from "./components/Nav";
 import User from "./components/User";
 import CartLength from "./components/CartLength";
+import CartPopup from "./components/CartPopup"; // Import CartPopup
+import AuthPopup from "./components/AuthPopup"; // Import AuthPopup
 
 export default function Headers() {
-    const [isSearchVisible, setSearchVisible] = useState(false);
+  const [isSearchVisible, setSearchVisible] = useState(false);
+  const [isCartOpen, setCartOpen] = useState(false); // Trạng thái popup giỏ hàng
+  const [isAuthOpen, setAuthOpen] = useState(false); // Trạng thái popup đăng nhập/đăng ký
 
-    const toggleSearch = () => {
-        setSearchVisible((prev) => !prev);
-    };
+  const toggleSearch = () => {
+    setSearchVisible((prev) => !prev);
+  };
 
-    return (
-        <header id="header" className="header header_sticky">
-            <div className="container">
-                <div className="header-desk header-desk_type_1 d-flex align-items-center">
-                    <div className="logo">
-                        <Link to="/">
-                            <img
-                                src="/assets/images/logo.png"
-                                width={112}
-                                height={28}
-                                alt="Uomo"
-                                className="logo__image d-block"
-                            />
-                        </Link>
-                    </div>
+  const toggleCart = () => {
+    setCartOpen((prev) => !prev); // Toggle trạng thái giỏ hàng
+  };
 
-                    <nav className="navigation">
-                        <ul className="navigation__list list-unstyled d-flex">
-                            <Nav />
-                        </ul>
-                    </nav>
+  const toggleAuth = () => {
+    setAuthOpen((prev) => !prev); // Toggle trạng thái đăng nhập/đăng ký
+  };
 
-                    <div className="header-tools d-flex align-items-center">
-                        {/* Ẩn biểu tượng tìm kiếm khi thanh tìm kiếm được hiển thị */}
-                        {!isSearchVisible && (
-                            <div className="header-tools__item hover-container">
-                                <a
-                                    className="header-tools__item js-open-aside"
-                                    onClick={toggleSearch}
-                                    href="#"
-                                >
-                                    <i className="fas fa-search"></i>
-                                </a>
-                            </div>
-                        )}
+  return (
+    <header id="header" className="header header_sticky">
+      <div className="container">
+        <div className="header-desk header-desk_type_1 d-flex align-items-center justify-content-between">
+          <div className="logo">
+            <Link to="/">
+              <img
+                src="/assets/images/logo.png"
+                width={112}
+                height={28}
+                alt="Uomo"
+                className="logo__image d-block"
+              />
+            </Link>
+          </div>
 
-                        {isSearchVisible && (
-                            <div className="search-bar d-flex align-items-center">
-                                <input type="text" placeholder="Tìm kiếm..." />
-                                <button onClick={toggleSearch} className="close-btn">
-                                    &times; {/* Dấu "X" để đóng */}
-                                </button>
-                            </div>
-                        )}
+          <nav className="
 
-                        <div className="header-tools__item hover-container">
-                            <a className="header-tools__item js-open-aside" href="#">
-                                <i className="fas fa-user"></i> {/* Biểu tượng người dùng */}
-                            </a>
-                        </div>
+navigation">
+            <ul className="navigation__list list-unstyled d-flex">
+              <Nav />
+            </ul>
+          </nav>
 
-                        <Link className="header-tools__item" to="/account_wishlist">
-                            <i className="fas fa-heart"></i> {/* Biểu tượng yêu thích */}
-                        </Link>
+          <div className="header-tools d-flex align-items-center">
+            {/* Thanh tìm kiếm */}
+            {isSearchVisible ? (
+              <div className="search-bar flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm..."
+                  className="search-input w-72 p-2 border border-gray-300 rounded"
+                />
+                <button
+                  onClick={toggleSearch}
+                  className="close-btn text-xl text-gray-500 hover:text-gray-700"
+                >
+                  &times; {/* Dấu "X" để đóng */}
+                </button>
+              </div>
+            ) : (
+              <div className="header-tools__item hover-container">
+                <button
+                  className="header-tools__item js-open-aside flex items-center justify-center p-2"
+                  onClick={toggleSearch}
+                >
+                  <i className="fas fa-search text-black text-lg"></i>
+                </button>
+              </div>
+            )}
 
-                        <a
-                            className="header-tools__item header-tools__cart js-open-aside"
-                            onClick={() => openCart()}
-                        >
-                            <i className="fas fa-shopping-cart"></i> {/* Biểu tượng giỏ hàng */}
-                            <span className="cart-amount d-block position-absolute js-cart-items-count">
-                                <CartLength />
-                            </span>
-                        </a>
-
-                        <a
-                            className="header-tools__item"
-                            href="#"
-                            data-bs-toggle="modal"
-                            data-bs-target="#siteMap"
-                        >
-                            <i className="fas fa-th-list"></i> {/* Biểu tượng danh sách */}
-                        </a>
-                    </div>
-                </div>
+            {/* Biểu tượng người dùng để mở AuthPopup */}
+            <div className="header-tools__item hover-container">
+              <button
+                className="header-tools__item js-open-aside flex items-center justify-center p-2"
+                onClick={toggleAuth}
+              >
+                <i className="fas fa-user text-black text-lg"></i> {/* Biểu tượng người dùng */}
+              </button>
             </div>
-        </header>
-    );
+
+            <Link className="header-tools__item flex items-center justify-center p-2" to="/account_wishlist">
+              <i className="fas fa-heart text-black text-lg"></i> {/* Biểu tượng yêu thích */}
+            </Link>
+
+            <a
+              className="header-tools__item header-tools__cart js-open-aside flex items-center justify-center p-2 relative"
+              onClick={toggleCart} // Gọi hàm toggleCart khi nhấn vào icon giỏ hàng
+            >
+              <i className="fas fa-shopping-cart text-black text-lg"></i> {/* Biểu tượng giỏ hàng */}
+              <span
+                className="cart-amount absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full"
+              >
+                <CartLength /> {/* Hiển thị số lượng sản phẩm trong giỏ */}
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Popup giỏ hàng */}
+      <CartPopup isOpen={isCartOpen} closePopup={toggleCart} />
+
+      {/* Popup đăng nhập/đăng ký */}
+      <AuthPopup isOpen={isAuthOpen} closePopup={toggleAuth} />
+    </header>
+  );
 }
