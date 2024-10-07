@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react'
 
 const Headers = () => {
@@ -20,7 +21,7 @@ const Headers = () => {
                         <a href="#" className='text-gray-700 text-xl'>
                             <i className='fas fa-search'></i>
                         </a>
-                        <a href="#" className='text-gray-700 text-xl'>
+                        <a href="login_register" className='text-gray-700 text-xl'>
                             <i className='fas fa-user'></i>
                         </a>
                         <a href="#" className='text-gray-700 text-xl'>
