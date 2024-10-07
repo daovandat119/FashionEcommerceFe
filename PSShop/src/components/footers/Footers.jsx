@@ -1,9 +1,9 @@
 import React from 'react'
 
 const Footers = () => {
-  return (
-    <div>
-       <footer className="bg-gray-200 py-10">
+    return (
+        <div>
+            <footer className="bg-gray-200 py-10">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-between">
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
@@ -161,11 +161,14 @@ const Footers = () => {
                                 Secure payments
                             </p>
                             <div className="flex space-x-2">
-                                {/* <img alt="Discover logo" height="20" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-a7MhXeGi8uAHm0g1bNeE95le.png?st=2024-10-01T13%3A37%3A26Z&amp;se=2024-10-01T15%3A37%3A26Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-10-01T02%3A02%3A08Z&amp;ske=2024-10-02T02%3A02%3A08Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=TV0KYZPHTSJ5yWgpZFXMg3kmLijrZSDgyyzaixdz33U%3D" width="50" />
-                                <img alt="MasterCard logo" height="20" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-ByRlJMRseXrJsPjSBIVC9n2j.png?st=2024-10-01T13%3A37%3A30Z&amp;se=2024-10-01T15%3A37%3A30Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-10-01T01%3A52%3A43Z&amp;ske=2024-10-02T01%3A52%3A43Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=lSzRGrE9QJpy0PkiHQ96XT55RnIES3nSDFjOusUHJi4%3D" width="50" />
-                                <img alt="PayPal logo" height="20" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-GURgsMN9PaoHkDt5n2NA5xBK.png?st=2024-10-01T13%3A37%3A27Z&amp;se=2024-10-01T15%3A37%3A27Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-10-01T11%3A37%3A55Z&amp;ske=2024-10-02T11%3A37%3A55Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=7ONmTiCg%2BJXzs5NR7Njht6FMolRfNvj9qmH9rW3J67k%3D" width="50" />
-                                <img alt="Skrill logo" height="20" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-sB5EAv08jlRcRdhuCl6ZqWWg.png?st=2024-10-01T13%3A42%3A01Z&amp;se=2024-10-01T15%3A42%3A01Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-10-01T11%3A41%3A17Z&amp;ske=2024-10-02T11%3A41%3A17Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=Cgs%2BD3QsB9HIuSxEzleMSjja0I/nZh07RC4%2BlUYz3S0%3D" width="50" />
-                                <img alt="Visa logo" height="20" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-HUTWkIG6EzUjj8BmR0aI6gHq.png?st=2024-10-01T13%3A42%3A11Z&amp;se=2024-10-01T15%3A42%3A11Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-09-30T15%3A07%3A51Z&amp;ske=2024-10-01T15%3A07%3A51Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=N3jVUudSreJIxEOzjjgussBp2Xu%2B92ueIGXkbtiQgoQ%3D" width="50" /> */}
+                                <img
+                                    loading="lazy"
+                                    width={324}
+                                    height={38}
+                                    src="/assets/images/payment-options.png"
+                                    alt="Acceptable payment gateways"
+                                    className="mw-100"
+                                />
                             </div>
                         </div>
                     </div>
@@ -190,8 +193,8 @@ const Footers = () => {
                     </div>
                 </div>
             </footer>
-    </div>
-  )
+        </div>
+    )
 }
 
 export default Footers

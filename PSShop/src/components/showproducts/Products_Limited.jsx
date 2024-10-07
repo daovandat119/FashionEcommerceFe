@@ -55,21 +55,7 @@ const Products_Limited = () => {
                             <p className="text-gray-700">
                                 $29
                             </p>
-                            <div className="flex items-center mt-2">
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <i className="fas fa-star text-yellow-500">
-                                </i>
-                                <span className="text-gray-500 ml-2">
-                                    8k+ reviews
-                                </span>
-                            </div>
+                        
                         </div>
                         <div className="text-left">
                             <img alt="Black duffle bag with blue and white stripes" className="mx-auto mb-4" height="300" src="https://storage.googleapis.com/a1aa/image/OXgADxRwHDKgJNKl89nvL51pXDN6esQrfcyaRQAu3n6hDfFnA.jpg" width="350" />

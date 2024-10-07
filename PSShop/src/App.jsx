@@ -2,12 +2,15 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePages from './pages/homepages/HomePages';
 import HomePages1 from './pages/homepages/HomePage1';
 import LoginPage from './pages/login/LoginPage';
-
-
+import "./styles/style.scss";
+import Context from './context/Context';
+// import "rc-slider/assets/index.css";
+// import "tippy.js/dist/tippy.css";
 
 function App() {
 
   return (
+    <Context>
     <Router>
     <Routes>
       <Route  path="/" element={<HomePages/>}/>
@@ -16,6 +19,7 @@ function App() {
     
     </Routes>
   </Router>
+  </Context>
   )
 }
 

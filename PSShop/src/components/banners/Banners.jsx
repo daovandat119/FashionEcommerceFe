@@ -1,51 +1,134 @@
-import React from 'react'
+import { Link } from "react-router-dom";
 
-const Banners = () => {
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectFade, Pagination } from "swiper/modules";
+import { slides1 } from "../../data/heroslides";
+
+import { socialLinks } from "../../data/socials";
+export default function Hero() {
+  const swiperOptions = {
+    autoplay: {
+      delay: 5000,
+    },
+    slidesPerView: 1,
+    modules: [Pagination, EffectFade],
+    effect: "fade",
+    loop: true,
+    pagination: {
+      el: ".slideshow-pagination",
+      type: "bullets",
+      clickable: true,
+    },
+  };
   return (
-    <div className="bg-pink-100">
-            <main className="relative">
-                <div className="container mx-auto flex items-center justify-between py-20">
-                    <div className="space-y-4">
-                        <div className="text-red-500 text-sm">
-                            NEW TREND
-                        </div>
-                        <h1 className="text-5xl font-bold">
-                            SUMMER SALE STYLISH
-                        </h1>
-                        <h2 className="text-6xl font-bold text-gray-900">
-                            WOMENS
-                        </h2>
-                        <a className="text-dark underline" href="#">
-                            DISCOVER MORE
-                        </a>
-                    </div>
-                    <div>
-                        <img alt="Woman in stylish brown sweater looking down" className="w-full h-auto" height="800" src="https://placehold.co/800x600" width="600" />
-                    </div>
-                </div>
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 space-y-4 text-gray-700">
-                    <a className="block" href="#">
-                        <i className="fab fa-facebook-f">
-                        </i>
-                    </a>
-                    <a className="block" href="#">
-                        <i className="fab fa-twitter">
-                        </i>
-                    </a>
-                    <a className="block" href="#">
-                        <i className="fab fa-instagram">
-                        </i>
-                    </a>
-                    <div className="text-xs rotate-90 transform origin-left">
-                        FOLLOW US
-                    </div>
-                </div>
-                <div className="absolute right-0 bottom-0 transform rotate-90 origin-bottom-right text-gray-700 text-xs">
-                    SCROLL
-                </div>
-            </main>
-        </div>
-  )
+    <Swiper
+      style={{ maxWidth: "100%", overflow: "hidden" }}
+      className="swiper-container js-swiper-slider slideshow full-width_padding swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events"
+      {...swiperOptions}
+    >
+      {" "}
+      {slides1.map((elm, i) => (
+        <SwiperSlide
+          key={i}
+          className="swiper-slide full-width_border border-1"
+          style={{ borderColor: "#f5e6e0" }}
+        >
+          <div className="overflow-hidden position-relative h-100">
+            <div
+              className="slideshow-bg"
+              style={{ backgroundColor: "#f5e6e0" }}
+            >
+              <img
+                loading="lazy"
+                src="/assets/images/slideshow-pattern.png"
+                width="1761"
+                height="778"
+                alt="Pattern"
+                className="slideshow-bg__img object-fit-cover"
+              />
+            </div>
+            {/* <!-- <p className="slideshow_markup font-special text-uppercase position-absolute end-0 bottom-0">Summer</p> --> */}
+            <div className="slideshow-character position-absolute bottom-0 pos_right-center">
+              <img
+                loading="lazy"
+                src={elm.characterImg}
+                width="400"
+                height="733"
+                alt="Woman Fashion 1"
+                className="slideshow-character__img animate animate_fade animate_btt animate_delay-9 h-auto w-auto"
+              />
+              <div className="character_markup">
+                <p className="text-uppercase font-sofia fw-bold animate animate_fade animate_rtl animate_delay-10">
+                  {elm.characterText}
+                </p>
+              </div>
+            </div>
+            <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
+              <h6 className="text_dash text-uppercase text-red fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
+                {elm.text1}
+              </h6>
+              <h2 className="text-uppercase h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">
+                {elm.text2}
+              </h2>
+              {elm.text3 ? (
+                <h2 className="text-uppercase h1 fw-bold animate animate_fade animate_btt animate_delay-5">
+                  {elm.text3}
+                </h2>
+              ) : (
+                ""
+              )}
+              {elm.text4 ? (
+                <h6 className="text-uppercase mb-5 animate animate_fade animate_btt animate_delay-3">
+                  {elm.text4}
+                </h6>
+              ) : (
+                ""
+              )}
+              <Link
+                to="/shop-1"
+                className="btn-link btn-link_lg default-underline text-uppercase fw-medium animate animate_fade animate_btt animate_delay-7"
+              >
+                Discover More
+              </Link>
+            </div>
+          </div>
+        </SwiperSlide>
+      ))}
+      <div className="container">
+        <div className="slideshow-pagination d-flex align-items-center position-absolute bottom-0 mb-6"></div>
+        {/* <!-- /.products-pagination --> */}
+      </div>
+      {/* <!-- /.container --> */}
+      <div className="slideshow-social-follow d-none d-xxl-block position-absolute top-50 start-0 translate-middle-y text-center">
+        <ul className="social-links list-unstyled mb-0 text-secondary">
+          {socialLinks.map((link, index) => (
+            <li key={index}>
+              <a href={link.href} className="footer__social-link d-block">
+                <svg
+                  className={link.className}
+                  width={link.width}
+                  height={link.height}
+                  viewBox={link.viewBox}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <use href={link.icon} />
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+        {/* <!-- /.social-links list-unstyled mb-0 text-secondary --> */}
+        <span className="slideshow-social-follow__title d-block mt-5 text-uppercase fw-medium text-secondary">
+          Follow Us
+        </span>
+      </div>
+      {/* <!-- /.slideshow-social-follow --> */}
+      <a
+        href="#section-collections-grid_masonry"
+        className="slideshow-scroll d-none d-xxl-block position-absolute end-0 bottom-0 text_dash text-uppercase fw-medium"
+      >
+        Scroll
+      </a>
+    </Swiper>
+  );
 }
-
-export default Banners

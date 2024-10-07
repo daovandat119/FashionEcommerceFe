@@ -1,3 +1,26 @@
+/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input {
+  width: 300px; /* Thay đổi giá trị này để làm dài thêm thanh tìm kiếm */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: width 0.3s ease; /* Thêm hiệu ứng chuyển tiếp nếu bạn muốn */
+}
+
+.search-bar .close-btn {
+  margin-left: 10px; /* Thêm khoảng cách giữa ô nhập và nút đóng */
+  background: transparent;
+  border: none;
+  font-size: 18px; /* Kích thước biểu tượng đóng */
+  cursor: pointer;
+}
