@@ -8,7 +8,6 @@ import Context from "./context/Context";
 // import "tippy.js/dist/tippy.css";
 import AboutPage from "./pages/about";
 import ShopPages1 from "./pages/shoplist/shoplist-1";
-import ShopPages2 from "./pages/shoplist/shoplist-2";
 import ShopCartPage from "./pages/shop-cart-checkout/shop_cart";
 import ShopCheckoutPage from "./pages/shop-cart-checkout/shop_checkout";
 import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
@@ -19,8 +18,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePages />} />
-          <Route path="shop-1" element={<ShopPages1 />} />
-          <Route path="shop-2" element={<ShopPages2 />} />
+          <Route path="shop" element={<ShopPages1 />} />
+         
           <Route path="login_register" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />
 
