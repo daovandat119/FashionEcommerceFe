@@ -1,5 +1,8 @@
+// src/components/Products_Detail.jsx
+
 import { useState } from "react";
-import ProductSlider1 from "./sliders/ProductSlider1";
+import { Tabs, Tab } from 'react-bootstrap'; // Import Tabs từ react-bootstrap
+import ProductSlider1 from "./ProductSlider1";
 import BreadCumb from "./BreadCumb";
 import Star from "../common/Star";
 import Colors from "./Colors";
@@ -7,38 +10,43 @@ import Size from "./Size";
 import Description from "./Description";
 import AdditionalInfo from "./AdditionalInfo";
 import Reviews from "./Reviews";
-import { Link } from "react-router-dom";
-import ShareComponent from "../common/ShareComponent";
-import { useContextElement } from "@/context/Context";
-export default function SingleProduct12({ product }) {
+// import { Link } from "react-router-dom";
+import ShareComponent from "./ShareComponent";
+import { useContextElement } from "../../context/Context";
+
+export default function Products_Detail({ product }) {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
 
   const isIncludeCard = () => {
-    const item = cartProducts.filter((elm) => elm.id == product.id)[0];
-    return item;
+    return cartProducts.find((elm) => elm.id === product.id);
   };
-  const setQuantityCartItem = (id, quantity) => {
-    if (isIncludeCard()) {
-      if (quantity >= 1) {
-        const item = cartProducts.filter((elm) => elm.id == id)[0];
-        const items = [...cartProducts];
-        const itemIndex = items.indexOf(item);
-        item.quantity = quantity;
-        items[itemIndex] = item;
-        setCartProducts(items);
-      }
+
+  const setQuantityCartItem = (id, newQuantity) => {
+    const parsedQuantity = parseInt(newQuantity, 10);
+    if (isNaN(parsedQuantity) || parsedQuantity < 1) return;
+
+    const currentItem = isIncludeCard();
+
+    if (currentItem) {
+      const updatedCart = cartProducts.map((item) =>
+        item.id === id ? { ...item, quantity: parsedQuantity } : item
+      );
+      setCartProducts(updatedCart);
     } else {
-      setQuantity(quantity - 1 ? quantity : 1);
+      setQuantity(parsedQuantity);
     }
   };
+
   const addToCart = () => {
     if (!isIncludeCard()) {
-      const item = product;
-      item.quantity = quantity;
+      const item = { ...product, quantity };
       setCartProducts((pre) => [...pre, item]);
     }
   };
+
+  const currentItem = isIncludeCard();
+
   return (
     <section className="product-single container">
       <div className="row">
@@ -53,7 +61,11 @@ export default function SingleProduct12({ product }) {
             {/* <!-- /.breadcrumb --> */}
 
             <div className="product-single__prev-next d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
-              <a className="text-uppercase fw-medium">
+              <a
+                href="#"
+                className="text-uppercase fw-medium"
+                onClick={(e) => e.preventDefault()}
+              >
                 <svg
                   className="mb-1px"
                   width="10"
@@ -65,7 +77,11 @@ export default function SingleProduct12({ product }) {
                 </svg>
                 <span className="menu-link menu-link_us-s">Prev</span>
               </a>
-              <a className="text-uppercase fw-medium">
+              <a
+                href="#"
+                className="text-uppercase fw-medium"
+                onClick={(e) => e.preventDefault()}
+              >
                 <span className="menu-link menu-link_us-s">Next</span>
                 <svg
                   className="mb-1px"
@@ -112,6 +128,7 @@ export default function SingleProduct12({ product }) {
                   className="sizeguide-link"
                   data-bs-toggle="modal"
                   data-bs-target="#sizeGuide"
+                  onClick={(e) => e.preventDefault()}
                 >
                   Size Guide
                 </a>
@@ -128,7 +145,7 @@ export default function SingleProduct12({ product }) {
                 <input
                   type="number"
                   name="quantity"
-                  value={isIncludeCard() ? isIncludeCard().quantity : quantity}
+                  value={currentItem ? currentItem.quantity : quantity}
                   min="1"
                   onChange={(e) =>
                     setQuantityCartItem(product.id, e.target.value)
@@ -139,7 +156,9 @@ export default function SingleProduct12({ product }) {
                   onClick={() =>
                     setQuantityCartItem(
                       product.id,
-                      isIncludeCard()?.quantity - 1 || quantity - 1
+                      currentItem
+                        ? currentItem.quantity - 1
+                        : quantity - 1
                     )
                   }
                   className="qty-control__reduce"
@@ -150,7 +169,9 @@ export default function SingleProduct12({ product }) {
                   onClick={() =>
                     setQuantityCartItem(
                       product.id,
-                      isIncludeCard()?.quantity + 1 || quantity + 1
+                      currentItem
+                        ? currentItem.quantity + 1
+                        : quantity + 1
                     )
                   }
                   className="qty-control__increase"
@@ -160,16 +181,24 @@ export default function SingleProduct12({ product }) {
               </div>
               {/* <!-- .qty-control --> */}
               <button
-                type="submit"
-                className="btn btn-primary btn-addtocart js-open-aside"
+                type="button"
+                className="btn btn-dark btn-addtocart js-open-aside"
                 onClick={() => addToCart()}
+                disabled={currentItem}
               >
-                {isIncludeCard() ? "Already Added" : "Add to Cart"}
+                {currentItem ? "Already Added" : "Add to Cart"}
               </button>
             </div>
           </form>
           <div className="product-single__addtolinks">
-            <a href="#" className="menu-link menu-link_us-s add-to-wishlist">
+            <a
+              href="#"
+              className="menu-link menu-link_us-s add-to-wishlist"
+              onClick={(e) => {
+                e.preventDefault();
+                // Thêm logic thêm vào wishlist ở đây
+              }}
+            >
               <svg
                 width="16"
                 height="16"
@@ -200,73 +229,18 @@ export default function SingleProduct12({ product }) {
         </div>
       </div>
       <div className="product-single__details-tab">
-        <ul className="nav nav-tabs" id="myTab1" role="tablist">
-          <li className="nav-item" role="presentation">
-            <a
-              className="nav-link nav-link_underscore active"
-              id="tab-description-tab"
-              data-bs-toggle="tab"
-              href="#tab-description"
-              role="tab"
-              aria-controls="tab-description"
-              aria-selected="true"
-            >
-              Description
-            </a>
-          </li>
-          <li className="nav-item" role="presentation">
-            <a
-              className="nav-link nav-link_underscore"
-              id="tab-additional-info-tab"
-              data-bs-toggle="tab"
-              href="#tab-additional-info"
-              role="tab"
-              aria-controls="tab-additional-info"
-              aria-selected="false"
-            >
-              Additional Information
-            </a>
-          </li>
-          <li className="nav-item" role="presentation">
-            <a
-              className="nav-link nav-link_underscore"
-              id="tab-reviews-tab"
-              data-bs-toggle="tab"
-              href="#tab-reviews"
-              role="tab"
-              aria-controls="tab-reviews"
-              aria-selected="false"
-            >
-              Reviews (2)
-            </a>
-          </li>
-        </ul>
-        <div className="tab-content">
-          <div
-            className="tab-pane fade show active"
-            id="tab-description"
-            role="tabpanel"
-            aria-labelledby="tab-description-tab"
-          >
+        {/* Sử dụng Tabs từ react-bootstrap */}
+        <Tabs defaultActiveKey="description" id="product-details-tabs" className="mb-3">
+          <Tab eventKey="description" title="Description">
             <Description />
-          </div>
-          <div
-            className="tab-pane fade"
-            id="tab-additional-info"
-            role="tabpanel"
-            aria-labelledby="tab-additional-info-tab"
-          >
+          </Tab>
+          <Tab eventKey="additional-info" title="Additional Information">
             <AdditionalInfo />
-          </div>
-          <div
-            className="tab-pane fade"
-            id="tab-reviews"
-            role="tabpanel"
-            aria-labelledby="tab-reviews-tab"
-          >
+          </Tab>
+          <Tab eventKey="reviews" title="Reviews (2)">
             <Reviews />
-          </div>
-        </div>
+          </Tab>
+        </Tabs>
       </div>
     </section>
   );

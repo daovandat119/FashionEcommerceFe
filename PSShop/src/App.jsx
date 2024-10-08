@@ -4,14 +4,17 @@ import HomePages from "./pages/homepages/HomePages";
 import LoginPage from "./pages/login/LoginPage";
 import "./styles/style.scss";
 import Context from "./context/Context";
-// import "rc-slider/assets/index.css";
-// import "tippy.js/dist/tippy.css";
+import "rc-slider/assets/index.css";
+import "tippy.js/dist/tippy.css";
+import './App.css'
 import AboutPage from "./pages/about";
 import ShopPages1 from "./pages/shoplist/shoplist-1";
 import ShopCartPage from "./pages/shop-cart-checkout/shop_cart";
 import ShopCheckoutPage from "./pages/shop-cart-checkout/shop_checkout";
 import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
 import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_tracking";
+
+import ProductDetailsPage2 from "./components/products-detail/detail";
 function App() {
   return (
     <Context>
@@ -19,7 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePages />} />
           <Route path="shop" element={<ShopPages1 />} />
-         
+          <Route path="shop-detail" element={<ProductDetailsPage2 />} />
           <Route path="login_register" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />
 

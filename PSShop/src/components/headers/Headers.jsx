@@ -1,26 +1,26 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Nav from "./components/Nav";
-import User from "./components/User";
+// import User from "./components/User";
 import CartLength from "./components/CartLength";
-import CartPopup from "./components/CartPopup"; // Import CartPopup
-import AuthPopup from "./components/AuthPopup"; // Import AuthPopup
+import CartPopup from "./components/CartPopup"; 
+import AuthPopup from "./components/AuthPopup";
 
 export default function Headers() {
   const [isSearchVisible, setSearchVisible] = useState(false);
-  const [isCartOpen, setCartOpen] = useState(false); // Trạng thái popup giỏ hàng
-  const [isAuthOpen, setAuthOpen] = useState(false); // Trạng thái popup đăng nhập/đăng ký
+  const [isCartOpen, setCartOpen] = useState(false); 
+  const [isAuthOpen, setAuthOpen] = useState(false); 
 
   const toggleSearch = () => {
     setSearchVisible((prev) => !prev);
   };
 
   const toggleCart = () => {
-    setCartOpen((prev) => !prev); // Toggle trạng thái giỏ hàng
+    setCartOpen((prev) => !prev); 
   };
 
   const toggleAuth = () => {
-    setAuthOpen((prev) => !prev); // Toggle trạng thái đăng nhập/đăng ký
+    setAuthOpen((prev) => !prev); 
   };
 
   return (
@@ -33,7 +33,7 @@ export default function Headers() {
                 src="/assets/images/logo.png"
                 width={112}
                 height={28}
-                alt="Uomo"
+                alt="PSSHOP"
                 className="logo__image d-block"
               />
             </Link>
