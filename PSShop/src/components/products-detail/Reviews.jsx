@@ -66,7 +66,7 @@ export default function Reviews() {
           </p>
           <div className="select-star-rating">
             <label>Your rating *</label>
-            <span className="star-rating">
+            <span className="star-rating ">
               {Array.from({ length: 5 }).map((_, index) => (
                 <React.Fragment key={index}>
                   {ratingLength >= index + 1 ? (
@@ -125,7 +125,7 @@ export default function Reviews() {
             </label>
           </div>
           <div className="form-action">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-dark">
               Submit
             </button>
           </div>
