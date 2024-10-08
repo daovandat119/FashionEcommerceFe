@@ -1,7 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { shopList } from "../../../data/menu";
-import { shopDetails } from "../../../data/menu";
-import { additionalShopPageitems } from "../../../data/menu";
 
 export default function Nav() {
   useLocation();
@@ -18,18 +15,18 @@ export default function Nav() {
   return (
     <>
       <li className="navigation__item">
-        <a href="#" className={`navigation__link`}>
+        <a href="/" className={`navigation__link`}>
           Home
         </a>
       </li>
       <li className="navigation__item">
-        <a href="/shop" className={`navigation__link`}>
+        <a href="/shop-detail" className={`navigation__link`}>
           Shop
         </a>
       </li>
 
       <li className="navigation__item">
-        <a href="/blog" className={`navigation__link`}>
+        <a href="blogs" className={`navigation__link`}>
           Blog
         </a>
       </li>

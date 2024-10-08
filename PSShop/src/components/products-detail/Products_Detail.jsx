@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ProductSlider1 from "./sliders/ProductSlider1";
+import ProductSlider1 from "./ProductSlider1";
 import BreadCumb from "./BreadCumb";
 import Star from "../common/Star";
 import Colors from "./Colors";
@@ -7,10 +7,10 @@ import Size from "./Size";
 import Description from "./Description";
 import AdditionalInfo from "./AdditionalInfo";
 import Reviews from "./Reviews";
-import { Link } from "react-router-dom";
-import ShareComponent from "../common/ShareComponent";
-import { useContextElement } from "@/context/Context";
-export default function SingleProduct12({ product }) {
+// import { Link } from "react-router-dom";
+import ShareComponent from "./ShareComponent";
+import { useContextElement } from "../../context/Context";
+export default function Products_Detail({ product }) {
   const { cartProducts, setCartProducts } = useContextElement();
   const [quantity, setQuantity] = useState(1);
 
