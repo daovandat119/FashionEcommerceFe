@@ -27,12 +27,12 @@ export default function About() {
             <p className="mb-4">
               Saw wherein fruitful good days image them, midst, waters upon, saw.
               Seas lights seasons. Fourth hath rule Evening Creepeth own lesser
-              years itself so seed fifth for grass evening fourth shall you're
+              years itself so seed fifth for grass evening fourth shall you are
               unto that. Had. Female replenish for yielding so saw all one to
-              yielding grass you'll air sea it, open waters subdue, hath. Brought
+              yielding grass you ll air sea it, open waters subdue, hath. Brought
               second Made. Be. Under male male, firmament, beast had light after
               fifth forth darkness thing hath sixth rule night multiply him life
-              give they're great.
+              give they are great.
             </p>
             <div className="row mb-3">
               <div className="col-md-6">
