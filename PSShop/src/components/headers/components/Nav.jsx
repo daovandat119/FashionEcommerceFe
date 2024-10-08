@@ -29,7 +29,7 @@ export default function Nav() {
       </li>
 
       <li className="navigation__item">
-        <a href="#" className={`navigation__link`}>
+        <a href="/blog" className={`navigation__link`}>
           Blog
         </a>
       </li>

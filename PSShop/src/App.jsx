@@ -12,6 +12,7 @@ import ShopCartPage from "./pages/shop-cart-checkout/shop_cart";
 import ShopCheckoutPage from "./pages/shop-cart-checkout/shop_checkout";
 import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
 import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_tracking";
+import BlogPage1 from "./pages/blogs";
 function App() {
   return (
     <Context>
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePages />} />
           <Route path="shop" element={<ShopPages1 />} />
+          <Route path="blog" element={<BlogPage1 />} />
          
           <Route path="login_register" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />
