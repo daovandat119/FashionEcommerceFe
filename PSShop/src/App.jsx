@@ -16,11 +16,10 @@ import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_trackin
 
 import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
-<<<<<<< HEAD
-import ProductsList from "./pages/admin/ProductsList";
-=======
 
->>>>>>> c7dabb2458b847d936d482cfed38f9eed087e108
+import ProductsList from "./pages/admin/ProductsList";
+
+
 function App() {
   return (
     <Context>
