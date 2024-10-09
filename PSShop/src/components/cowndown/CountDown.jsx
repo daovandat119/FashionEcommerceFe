@@ -33,11 +33,11 @@ const CountDown = () => {
     }, []);
 
     return (
-        <div className="bg-gray-300">
+        <div className="bg-lightGray">
             <div className="container mx-auto p-4">
                 <div className="flex items-center justify-between">
                     <div className="text-left">
-                        <p className="text-red-500 uppercase tracking-widest">
+                        <p className="text-red-500 uppercase tracking-widest text-bold">
                             Deal of the week
                         </p>
                         <h1 className="text-6xl font-bold mt-2">
@@ -91,7 +91,7 @@ const CountDown = () => {
                         </div>
                     </div>
                     <div>
-                        <img alt="Gray overcoat from the spring collection" className="w-96" src="https://placehold.co/400x600" />
+                        <img alt="Gray overcoat from the spring collection" className="w-96 " src="/assets/images/cd.png" />
                     </div>
                 </div>
             </div>

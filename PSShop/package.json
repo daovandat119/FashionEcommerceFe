@@ -16,7 +16,7 @@
     "rc-slider": "^10.6.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.5",
-    "react-countdown": "^2.3.5",
+    "react-countdown": "^2.3.6",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.5",
     "react-photoswipe-gallery": "^3.0.1",

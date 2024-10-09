@@ -67,7 +67,7 @@ export default function CartPopup({ isOpen, closePopup }) {
                               <p className="text-gray-500">Qty 1</p>
 
                               <div className="flex">
-                                <button type="button" className="font-medium text-red-600 hover:text-red-500">
+                                <button type="button" className="font-medium text-red-600">
                                   Remove
                                 </button>
                               </div>
@@ -91,22 +91,22 @@ export default function CartPopup({ isOpen, closePopup }) {
                   <div className="mt-6">
                     <a
                       href="shop_checkout"
-                      className="flex items-center justify-center rounded-md border border-transparent bg-red-500 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
+                      className="flex items-center justify-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-white shadow-sm bg-dark"
                     >
                       Checkout
                     </a>
                   </div>
                   <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                     <p>
-                      or
-                      <button
-                        type="button"
-                        className="font-medium text-red-300 hover:text-red-400 ml-1"
-                        onClick={closePopup} // Thêm hàm đóng khi nhấn "Continue Shopping"
+                     
+                      <a
+                        href="/shop_cart"
+                        className="font-bold text-dark ml-1"
+                         // Thêm hàm đóng khi nhấn "Continue Shopping"
                       >
-                        Continue Shopping
-                        <span aria-hidden="true"> &rarr;</span>
-                      </button>
+                        View Cart
+                        {/* <span aria-hidden="true"> &rarr;</span> */}
+                      </a>
                     </p>
                   </div>
                 </div>

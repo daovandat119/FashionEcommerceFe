@@ -2,7 +2,7 @@ export default function About() {
     return (
       <section className="about-us container">
         <div className="mw-930">
-          <h2 className="page-title">ABOUT UOMO</h2>
+          <h2 className="page-title">ABOUT SHOP</h2>
         </div>
         <div className="about-us__content pb-5 mb-5">
           <p className="mb-5">
@@ -10,7 +10,7 @@ export default function About() {
               style={{ height: "fit-content" }}
               loading="lazy"
               className="w-100 h-auto d-block"
-              src="/assets/images/about/about-1.jpg"
+              src="/assets/images/about/aboutbg.png"
               width="1410"
               height="550"
               alt="image"
@@ -57,7 +57,7 @@ export default function About() {
                 style={{ height: "fit-content" }}
                 className="h-auto"
                 loading="lazy"
-                src="/assets/images/about/about-2.jpg"
+                src="/assets/images/about/aboubg2.png"
                 width="450"
                 height="500"
                 alt="image"

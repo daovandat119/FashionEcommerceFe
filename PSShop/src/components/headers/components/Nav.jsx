@@ -23,7 +23,7 @@ export default function Nav() {
         </a>
       </li>
       <li className="navigation__item">
-        <a href="/shop-detail" className={`navigation__link`}>
+        <a href="/shop" className={`navigation__link`}>
           Shop
         </a>
       </li>

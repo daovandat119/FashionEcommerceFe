@@ -2,7 +2,7 @@ export const slides1 = [
     {
       id: 1,
   
-      characterImg: "/assets/images/slideshow-character1.png",
+      characterImg: "/assets/images/bn3.png",
       characterAlt: "Woman Fashion 1",
       characterText: "Summer",
       text1: "New Trend",
@@ -12,7 +12,7 @@ export const slides1 = [
     {
       id: 2,
   
-      characterImg: "/assets/images/slideshow-character2.png",
+      characterImg: "/assets/images/bn2.png",
       characterAlt: "Woman Fashion 2",
       characterText: "",
       text1: "Summer 2020",

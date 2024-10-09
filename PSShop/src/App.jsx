@@ -15,6 +15,7 @@ import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
 import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_tracking";
 
 import ProductDetailsPage2 from "./components/products-detail/detail";
+import ProductsList from "./pages/admin/ProductsList";
 function App() {
   return (
     <Context>
@@ -34,6 +35,10 @@ function App() {
             path="shop_order_tracking"
             element={<ShopOrderTrackingPage />}
           />
+        </Routes>
+
+        <Routes path="/admin" element={<ProductsList/>}>
+
         </Routes>
       </Router>
     </Context>

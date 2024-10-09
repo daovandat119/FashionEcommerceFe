@@ -95,7 +95,7 @@ export default function Hero() {
         </SwiperSlide>
       ))}
       <div className="container">
-        <div className="slideshow-pagination d-flex align-items-center position-absolute bottom-0 mb-8"></div>
+        <div className="slideshow-pagination d-flex align-items-center position-absolute bottom-0 mb-6"></div>
         {/* <!-- /.products-pagination --> */}
       </div>
       {/* <!-- /.container --> */}
