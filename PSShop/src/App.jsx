@@ -14,8 +14,13 @@ import ShopCheckoutPage from "./pages/shop-cart-checkout/shop_checkout";
 import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
 import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_tracking";
 
+import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
+<<<<<<< HEAD
 import ProductsList from "./pages/admin/ProductsList";
+=======
+
+>>>>>>> c7dabb2458b847d936d482cfed38f9eed087e108
 function App() {
   return (
     <Context>
@@ -23,6 +28,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePages />} />
           <Route path="shop" element={<ShopPages1 />} />
+          <Route path="blogs" element={<BlogPage1 />} />
           <Route path="shop-detail" element={<ProductDetailsPage2 />} />
           <Route path="login_register" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />

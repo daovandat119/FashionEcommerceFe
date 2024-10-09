@@ -1,7 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { shopList } from "../../../data/menu";
-import { shopDetails } from "../../../data/menu";
-import { additionalShopPageitems } from "../../../data/menu";
 
 export default function Nav() {
   useLocation();
