@@ -28,7 +28,7 @@ function App() {
           <Route path="/" element={<HomePages />} />
           <Route path="shop" element={<ShopPages1 />} />
           <Route path="blogs" element={<BlogPage1 />} />
-          <Route path="shop-detail" element={<ProductDetailsPage2 />} />
+          <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
           <Route path="login_register" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />
 
@@ -43,7 +43,7 @@ function App() {
         </Routes>
 
         <Routes path="/admin" element={<ProductsList/>}>
-
+        <Route path="products-list" element={<ShopCartPage />} />
         </Routes>
       </Router>
     </Context>

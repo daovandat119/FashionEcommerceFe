@@ -1,0 +1,186 @@
+{
+    "products": [
+      {
+        "id": 1,
+        "name": "Áo thun",
+        "price": 200000,
+        "description": "Áo thun cotton cao cấp",
+        "color": "Trắng",
+        "quantity": 50,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Do",
+        "reviews":"Ao Do Ao Xanh"
+
+      },
+      {
+        "id": 2,
+        "name": "Quần jean",
+        "price": 350000,
+        "description": "Quần jean phong cách",
+        "color": "Xanh",
+        "quantity": 30,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Xanh",
+          "reviews":"Ao Do Ao Xanh"
+      },
+      {
+        "id": 3,
+        "name": "Giày sneaker",
+        "price": 500000,
+        "description": "Giày sneaker thời trang",
+        "color": "Đen",
+        "quantity": 20,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Den",
+        "reviews":"Ao Do Ao Xanh"
+      },
+      {
+        "id": 4,
+        "name": "Giày sneaker",
+        "price": 500000,
+        "description": "Giày sneaker thời trang",
+        "color": "Đen",
+        "quantity": 20,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Den",
+        "reviews":"Ao Do Ao Xanh"
+      },
+      {
+        "id": 5,
+        "name": "Giày sneaker",
+        "price": 500000,
+        "description": "Giày sneaker thời trang",
+        "color": "Đen",
+        "quantity": 20,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Den",
+        "reviews":"Ao Do Ao Xanh"
+      },
+      {
+        "id": 6,
+        "name": "Giày sneaker",
+        "price": 500000,
+        "description": "Giày sneaker thời trang",
+        "color": "Đen",
+        "quantity": 20,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Den",
+        "reviews":"Ao Do Ao Xanh"
+      },
+      {
+        "id": 7,
+        "name": "Giày sneaker",
+        "price": 500000,
+        "description": "Giày sneaker thời trang",
+        "color": "Đen",
+        "quantity": 20,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Den",
+        "reviews":"Ao Do Ao Xanh"
+      },
+      {
+        "id": 8,
+        "name": "Giày sdasdas",
+        "price": 5004000,
+        "description": "Giày sneaker thời trang",
+        "color": "Đen",
+        "quantity": 20,
+        "image": "https://placehold.co/300x400",
+        "category":"Ao Den",
+        "reviews":"Ao Do Ao Xanh"
+      }
+    ],
+    "products_related" :[
+        {
+            "id": 1,
+            "name": "Áo thun",
+            "price": 200000,
+            "description": "Áo thun cotton cao cấp",
+            "color": "Trắng",
+            "quantity": 50,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Do",
+            "reviews":"Ao Do Ao Xanh"
+    
+          },
+          {
+            "id": 2,
+            "name": "Quần jean",
+            "price": 350000,
+            "description": "Quần jean phong cách",
+            "color": "Xanh",
+            "quantity": 30,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Xanh",
+              "reviews":"Ao Do Ao Xanh"
+          },
+          {
+            "id": 3,
+            "name": "Giày sneaker",
+            "price": 500000,
+            "description": "Giày sneaker thời trang",
+            "color": "Đen",
+            "quantity": 20,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Den",
+            "reviews":"Ao Do Ao Xanh"
+          },
+          {
+            "id": 4,
+            "name": "Giày sneaker",
+            "price": 500000,
+            "description": "Giày sneaker thời trang",
+            "color": "Đen",
+            "quantity": 20,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Den",
+            "reviews":"Ao Do Ao Xanh"
+          },
+          {
+            "id": 4,
+            "name": "Giày sneaker",
+            "price": 500000,
+            "description": "Giày sneaker thời trang",
+            "color": "Đen",
+            "quantity": 20,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Den",
+            "reviews":"Ao Do Ao Xanh"
+          },
+          {
+            "id": 4,
+            "name": "Giày sneaker",
+            "price": 500000,
+            "description": "Giày sneaker thời trang",
+            "color": "Đen",
+            "quantity": 20,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Den",
+            "reviews":"Ao Do Ao Xanh"
+          },
+          {
+            "id": 4,
+            "name": "Giày sneaker",
+            "price": 500000,
+            "description": "Giày sneaker thời trang",
+            "color": "Đen",
+            "quantity": 20,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Den",
+            "reviews":"Ao Do Ao Xanh"
+          },
+          {
+            "id": 4,
+            "name": "Giày sdasdas",
+            "price": 5004000,
+            "description": "Giày sneaker thời trang",
+            "color": "Đen",
+            "quantity": 20,
+            "image": "https://placehold.co/400x451",
+            "category":"Ao Den",
+            "reviews":"Ao Do Ao Xanh"
+          }
+    ],
+    "cart": []
+  }
+  

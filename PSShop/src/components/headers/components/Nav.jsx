@@ -26,7 +26,7 @@ export default function Nav() {
       </li>
 
       <li className="navigation__item">
-        <a href="blogs" className={`navigation__link`}>
+        <a href="/blogs" className={`navigation__link`}>
           Blog
         </a>
       </li>

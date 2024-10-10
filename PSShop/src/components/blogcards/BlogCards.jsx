@@ -1,76 +1,122 @@
-/* eslint-disable no-unused-vars */
-import React from 'react'
+import { Link } from "react-router-dom";
 
-const BlogCards = () => {
+export default function BlogCards() {
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* <!-- Women Collection --> */}
-        <div className="relative">
-          <img alt="Woman in stylish outfit" className="w-full h-full object-cover" height="400" src="https://placehold.co/600x400" width="600" />
-          <div className="absolute bottom-4 left-4 text-left">
-            <p className="text-sm text-gray-600">
-              HOT LIST
-            </p>
-            <h2 className="text-2xl font-bold">
-              WOMEN COLLECTION
-            </h2>
-            <a className="text-sm text-black underline" href="#">
-              SHOP NOW
-            </a>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-4">
-          {/* <!-- Men Collection --> */}
-          <div className="relative">
-            <img alt="Man with colorful hair" className="w-full h-full object-cover" height="200" src="https://placehold.co/600x200" width="600" />
-            <div className="absolute bottom-4 left-4 text-left">
-              <p className="text-sm text-gray-600">
-                HOT LIST
-              </p>
-              <h2 className="text-2xl font-bold">
-                MEN COLLECTION
-              </h2>
-              <a className="text-sm text-black underline" href="#">
-                SHOP NOW
-              </a>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {/* <!-- Kids Collection --> */}
-            <div className="relative">
-              <img alt="Kid in stylish outfit" className="w-full h-full object-cover" height="200" src="https://placehold.co/300x200" width="300" />
-              <div className="absolute bottom-4 left-4 text-left">
-                <p className="text-sm text-gray-600">
-                  HOT LIST
-                </p>
-                <h2 className="text-2xl font-bold">
-                  KIDS COLLECTION
-                </h2>
-                <a className="text-sm text-black underline" href="#">
-                  SHOP NOW
-                </a>
+    <section
+      className="collections-grid collections-grid_masonry"
+      id="section-collections-grid_masonry"
+    >
+      <div className="container h-md-100">
+        <div className="row h-md-100">
+          <div className="col-lg-6 h-md-100">
+            <div className="collection-grid__item position-relative h-md-100">
+              <div
+                className="background-img"
+                style={{
+                  backgroundImage: "url(/assets/images/collection_grid_1.jpg)",
+                }}
+              ></div>
+              <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
+                <p className="text-uppercase mb-1">Hot List</p>
+                <h3 className="text-uppercase">
+                  <strong>Women</strong> Collection
+                </h3>
+                <Link
+                  to="/shop-1"
+                  className="btn-link default-underline text-uppercase fw-medium"
+                >
+                  Shop Now
+                </Link>
               </div>
-            </div>
-            {/* <!-- E-Gift Cards --> */}
-            <div className="relative bg-pink-100 p-4 h-full flex items-end">
-              <div className="text-left">
-                <h2 className="text-2xl font-bold">
-                  E-GIFT CARDS
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Surprise someone with the gift they really want.
-                </p>
-                <a className="text-sm text-black underline" href="#">
-                  SHOP NOW
-                </a>
-              </div>
+              {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+          {/* <!-- /.col-md-6 --> */}
 
-export default BlogCards
+          <div className="col-lg-6 d-flex flex-column">
+            <div className="collection-grid__item position-relative flex-grow-1 mb-lg-4">
+              <div
+                className="background-img"
+                style={{
+                  backgroundImage: "url(/assets/images/collection_grid_2.jpg)",
+                }}
+              ></div>
+              <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
+                <p className="text-uppercase mb-1">Hot List</p>
+                <h3 className="text-uppercase">
+                  <strong>Men</strong> Collection
+                </h3>
+                <Link
+                  to="/shop-1"
+                  className="btn-link default-underline text-uppercase fw-medium"
+                >
+                  Shop Now
+                </Link>
+              </div>
+              {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
+            </div>
+            <div className="position-relative flex-grow-1 mt-lg-1">
+              <div className="row h-md-100">
+                <div className="col-md-6 h-md-100">
+                  <div className="collection-grid__item h-md-100 position-relative">
+                    <div
+                      className="background-img"
+                      style={{
+                        backgroundImage:
+                          "url(/assets/images/collection_grid_3.jpg)",
+                      }}
+                    ></div>
+                    <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
+                      <p className="text-uppercase mb-1">Hot List</p>
+                      <h3 className="text-uppercase">
+                        <strong>Kids</strong> Collection
+                      </h3>
+                      <Link
+                        to="/shop-1"
+                        className="btn-link default-underline text-uppercase fw-medium"
+                      >
+                        Shop Now
+                      </Link>
+                    </div>
+                    {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
+                  </div>
+                  {/* <!-- /.collection-grid__item --> */}
+                </div>
+
+                <div className="col-md-6 h-md-100">
+                  <div className="collection-grid__item h-md-100 position-relative">
+                    <div
+                      className="background-img"
+                      style={{ backgroundColor: "#f5e6e0" }}
+                    ></div>
+                    <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
+                      <h3 className="text-uppercase">
+                        <strong>E-Gift</strong> Cards
+                      </h3>
+                      <p className="mb-1">
+                        Surprise someone with the gift they
+                        <br />
+                        really want.
+                      </p>
+                      <Link
+                        to="/shop-1"
+                        className="btn-link default-underline text-uppercase fw-medium"
+                      >
+                        Shop Now
+                      </Link>
+                    </div>
+                    {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
+                  </div>
+                  {/* <!-- /.collection-grid__item --> */}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* <!-- /.col-md-6 --> */}
+        </div>
+        {/* <!-- /.row --> */}
+      </div>
+      {/* <!-- /.container --> */}
+    </section>
+  );
+}

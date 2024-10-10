@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 
-import { useContextElement } from "../../context/Context";
+import { useContextElement } from "../../../context/Context";
 import React, { useEffect } from "react";
 
 export default function CartDrawer() {

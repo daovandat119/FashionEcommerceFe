@@ -1,146 +1,150 @@
-import React from 'react'
+import Star from "../../components/common/Star";
+import { Link } from "react-router-dom";
+import { useContextElement } from "../../context/Context";
+const filterCategories = ["All", "New Arrivals", "Best Seller", "Top Rated"];
+import { products51 } from "../../data/products/fashion";
 
-const Products_Trendy = () => {
-    return (
-        <div>
-            <div>
-                <main className="container mx-auto px-4 py-16">
-                    <h2 className="text-3xl font-normal text-center mb-8 px-1">
-                        OUR TRENDY
-                        <span className="font-bold p-3">
-                            PRODUCTS
-                        </span>
-                    </h2>
-                    <div className="flex justify-center space-x-8 mb-8">
-                        <a className="text-black border-b-2 border-black" href="#">
-                            ALL
-                        </a>
-                        <a className="text-gray-500" href="#">
-                            NEW ARRIVALS
-                        </a>
-                        <a className="text-gray-500" href="#">
-                            BEST SELLER
-                        </a>
-                        <a className="text-gray-500" href="#">
-                            TOP RATED
-                        </a>
+import { useEffect, useState } from "react";
+
+export default function Products_Trendy() {
+  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
+  const { addProductToCart, isAddedToCartProducts } = useContextElement();
+  const [currentCategory, setCurrentCategory] = useState(filterCategories[0]);
+  // eslint-disable-next-line no-unused-vars
+  const [filtered, setFiltered] = useState(products51);
+  useEffect(() => {
+    if (currentCategory == "All") {
+      setFiltered(products51);
+    } else {
+      setFiltered([
+        ...products51.filter((elm) => elm.filterCategory == currentCategory),
+      ]);
+    }
+  }, [currentCategory]);
+
+  return (
+    <section className="products-grid container">
+      <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
+        Our Trendy <strong>Products</strong>
+      </h2>
+
+      <ul className="nav nav-tabs mb-3 text-uppercase justify-content-center">
+        {filterCategories.map((elm, i) => (
+          <li
+            onClick={() => setCurrentCategory(elm)}
+            key={i}
+            className="nav-item"
+            role="presentation"
+          >
+            <a
+              className={`nav-link nav-link_underscore ${
+                currentCategory == elm ? "active" : ""
+              }`}
+            >
+              {elm}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div className="tab-content pt-2" id="collections-tab-content">
+        <div
+          className="tab-pane fade show active"
+          id="collections-tab-1"
+          role="tabpanel"
+          aria-labelledby="collections-tab-1-trigger"
+        >
+          <div className="row">
+            {filtered.slice(0, 8).map((elm, i) => (
+              <div key={i} className="col-6 col-md-4 col-lg-3">
+                <div className="product-card mb-3 mb-md-4 mb-xxl-5">
+                  <div className="pc__img-wrapper">
+                    <Link to={`/product1_simple/${elm.id}`}>
+                      <img
+                        loading="lazy"
+                        src={elm.imgSrc}
+                        width="330"
+                        height="400"
+                        alt={elm.title}
+                        className="pc__img"
+                      />
+                      <img
+                        loading="lazy"
+                        src={elm.imgSrc2}
+                        width="330"
+                        height="400"
+                        className="pc__img pc__img-second"
+                        alt="image"
+                      />
+                    </Link>
+                    <button
+                      className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
+                      onClick={() => addProductToCart(elm.id)}
+                      title={
+                        isAddedToCartProducts(elm.id)
+                          ? "Already Added"
+                          : "Add to Cart"
+                      }
+                    >
+                      {isAddedToCartProducts(elm.id)
+                        ? "Already Added"
+                        : "Add To Cart"}
+                    </button>
+                  </div>
+
+                  <div className="pc__info position-relative">
+                    <p className="pc__category">{elm.category}</p>
+                    <h6 className="pc__title">
+                      <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
+                    </h6>
+                    <div className="product-card__price d-flex">
+                      <span className="money price">${elm.price}</span>
                     </div>
-                    <div className="grid grid-cols-4 gap-8">
-                    <div className="relative group">
-                            <img
-                                alt="Woman wearing a cropped faux leather jacket"
-                                className="w-full"
-                                height="400"
-                                src="https://placehold.co/300x400"
-                                width="300"
-                            />
-                            <button
-                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
-                            >
-                                ADD TO CART
-                            </button>
-                            <p className="text-gray-500 mt-4">Dresses</p>
-                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
-                            <p className="text-black">$29</p>
-                            <div className="flex mt-2">
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <p className="text-gray-500 ml-2">8k+ reviews</p>
-                            </div>
-                        </div>
-
-                        <div className="relative group">
-                            <img
-                                alt="Woman wearing a cropped faux leather jacket"
-                                className="w-full"
-                                height="400"
-                                src="https://placehold.co/300x400"
-                                width="300"
-                            />
-                            <button
-                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
-                            >
-                                ADD TO CART
-                            </button>
-                            <p className="text-gray-500 mt-4">Dresses</p>
-                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
-                            <p className="text-black">$29</p>
-                            <div className="flex mt-2">
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <p className="text-gray-500 ml-2">8k+ reviews</p>
-                            </div>
-                        </div>
-
-                        <div className="relative group">
-                            <img
-                                alt="Woman wearing a cropped faux leather jacket"
-                                className="w-full"
-                                height="400"
-                                src="https://placehold.co/300x400"
-                                width="300"
-                            />
-                            <button
-                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
-                            >
-                                ADD TO CART
-                            </button>
-                            <p className="text-gray-500 mt-4">Dresses</p>
-                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
-                            <p className="text-black">$29</p>
-                            <div className="flex mt-2">
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <p className="text-gray-500 ml-2">8k+ reviews</p>
-                            </div>
-                        </div>
-
-                        <div className="relative group">
-                            <img
-                                alt="Woman wearing a cropped faux leather jacket"
-                                className="w-full"
-                                height="400"
-                                src="https://placehold.co/300x400"
-                                width="300"
-                            />
-                            <button
-                                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 bg-white text-black px-4 py-2 transition-all duration-300 group-hover:translate-y-1/2 group-hover:opacity-100"
-                            >
-                                ADD TO CART
-                            </button>
-                            <p className="text-gray-500 mt-4">Dresses</p>
-                            <p className="text-black font-bold">Cropped Faux Leather Jacket</p>
-                            <p className="text-black">$29</p>
-                            <div className="flex mt-2">
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <i className="fas fa-star text-yellow-500"></i>
-                                <p className="text-gray-500 ml-2">8k+ reviews</p>
-                            </div>
-                        </div>
-
-
+                    <div className="product-card__review d-flex align-items-center">
+                      <div className="reviews-group d-flex">
+                        <Star stars={elm.rating} />
+                      </div>
+                      <span className="reviews-note text-lowercase text-secondary ms-1">
+                        {elm.reviews}
+                      </span>
                     </div>
-                    <div className="text-center mt-8">
-                        <a className="text-black font-semibold" href="#">
-                            DISCOVER MORE
-                        </a>
-                    </div>
-                </main>
-            </div>
+
+                    <button
+                      className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
+                        isAddedtoWishlist(elm.id) ? "active" : ""
+                      }`}
+                      title="Add To Wishlist"
+                      onClick={() => toggleWishlist(elm.id)}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <use href="#icon_heart" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* <!-- /.row --> */}
+          <div className="text-center mt-2">
+            <Link
+              className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
+              to="/shop-1"
+            >
+              Discover More
+            </Link>
+          </div>
         </div>
-    )
-}
 
-export default Products_Trendy
+        {/* <!-- /.tab-pane fade show--> */}
+      </div>
+      {/* <!-- /.tab-content pt-2 --> */}
+    </section>
+  );
+}

@@ -3,21 +3,19 @@ import { Link } from "react-router-dom";
 import Nav from "./components/Nav";
 // import User from "./components/User";
 import CartLength from "./components/CartLength";
-import CartPopup from "./components/CartPopup"; 
+import CartDrawer from "./components/CartDrawer"; // Nhập CartDrawer
 import AuthPopup from "./components/AuthPopup";
+import { openCart } from "../../utlis/openCart";
 
 export default function Headers() {
   const [isSearchVisible, setSearchVisible] = useState(false);
-  const [isCartOpen, setCartOpen] = useState(false); 
+  
   const [isAuthOpen, setAuthOpen] = useState(false); 
 
   const toggleSearch = () => {
     setSearchVisible((prev) => !prev);
   };
 
-  const toggleCart = () => {
-    setCartOpen((prev) => !prev); 
-  };
 
   const toggleAuth = () => {
     setAuthOpen((prev) => !prev); 
@@ -39,9 +37,7 @@ export default function Headers() {
             </Link>
           </div>
 
-          <nav className="
-
-navigation">
+          <nav className="navigation">
             <ul className="navigation__list list-unstyled d-flex">
               <Nav />
             </ul>
@@ -90,7 +86,7 @@ navigation">
 
             <a
               className="header-tools__item header-tools__cart js-open-aside flex items-center justify-center p-2 relative"
-              onClick={toggleCart} // Gọi hàm toggleCart khi nhấn vào icon giỏ hàng
+              onClick={() => openCart()} // Gọi hàm toggleCart khi nhấn vào icon giỏ hàng
             >
               <i className="fas fa-shopping-cart text-black text-lg"></i> {/* Biểu tượng giỏ hàng */}
               <span
@@ -103,8 +99,8 @@ navigation">
         </div>
       </div>
 
-      {/* Popup giỏ hàng */}
-      <CartPopup isOpen={isCartOpen} closePopup={toggleCart} />
+      {/* Drawer giỏ hàng */}
+      { <CartDrawer />} {/* Hiển thị CartDrawer nếu isCartOpen là true */}
 
       {/* Popup đăng nhập/đăng ký */}
       <AuthPopup isOpen={isAuthOpen} closePopup={toggleAuth} />
