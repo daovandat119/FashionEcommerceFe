@@ -18,6 +18,7 @@ import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
 
 import ProductsList from "./pages/admin/ProductsList";
+import ContactPage from "./pages/contact";
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
           <Route path="login_register" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactPage />} />
 
           <Route path="shop_cart" element={<ShopCartPage />} />
           <Route path="shop_checkout" element={<ShopCheckoutPage />} />
