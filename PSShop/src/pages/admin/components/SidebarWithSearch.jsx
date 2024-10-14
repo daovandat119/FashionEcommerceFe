@@ -90,15 +90,14 @@ export function SidebarWithSearch() {
           Settings
         </ListItem>
 
-        <ListItem>
-          <div className="flex mt-10">
-          <ListItemPrefix>
-          
-          <PowerIcon className="h-5 w-5 t-10 " />
-        </ListItemPrefix>
-        Sign Out
-          </div>
-        </ListItem>
+        <Link to="/admin/login">
+          <ListItem>
+            <ListItemPrefix>
+              <PowerIcon className="h-5 w-5 mt-3" />
+            </ListItemPrefix>
+           
+          </ListItem>
+        </Link>
       </List>
       
     </Card>

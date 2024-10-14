@@ -54,11 +54,11 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
-              <Route path="/admin/categories/add-categories" element={<AddCategories />}/>
+              <Route path="/admin/categories/add" element={<AddCategories />}/>
               <Route path="/admin/categories/edit/:id" element={<UpdateCategory />}/>
-              <Route path="/admin/products/add-product" element={<AddProducts />}/>
-              <Route path="/admin/products/edit-product/:id" element={<UpdateProducts />}/>
-              <Route path="/admin/products/delete-product/:id"/>
+              <Route path="/admin/products/add" element={<AddProducts />}/>
+              <Route path="/admin/products/edit/:id" element={<UpdateProducts />}/>
+              <Route path="/admin/products/delete/:id"/>
               <Route path="users" element={<UserList />} />
             </Route>
             

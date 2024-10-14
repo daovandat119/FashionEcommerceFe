@@ -1,25 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Checkbox } from "@material-tailwind/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
 import { Link } from "react-router-dom";
+import { ListCategories } from "../service/api_service";
+import axios from "axios";
 
 const CategoriesList = () => {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Category 1", active: true },
-    { id: 2, name: "Category 2", active: false },
-    // Add more categories as needed
-  ]);
+  const [ListCategorie, setListCategorie] = useState([]);
 
-  const handleToggleActive = (id) => {
-    setCategories(
-      categories.map((category) =>
-        category.id === id
-          ? { ...category, active: !category.active }
-          : category
-      )
-    );
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    let res = await ListCategories();
+    //Nếu có respone và respone có data
+    //res.data.data truy cập
+    if (res && res.data ) {
+      setListCategorie(res.data);
+    }
   };
 
   return (
@@ -34,7 +35,7 @@ const CategoriesList = () => {
           />
         </div>
         <Link
-          to="/admin/categories/add-categories"
+          to="/admin/categories/add"
           className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
         >
           <PlusIcon className="h-5 w-5" /> New Category
@@ -44,38 +45,39 @@ const CategoriesList = () => {
         <table className="w-full min-w-max border-collapse">
           <thead className="bg-white">
             <tr>
-              <th className="border-b p-4 text-left">ID</th>
+              <th className="border-b p-4 w-1/6 text-left">Select</th>
               <th className="border-b p-4 text-left">Name</th>
               <th className="border-b p-4 text-left">Active</th>
               <th className="border-b p-4 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {categories.map((category, index) => (
-              <tr key={category.id} className="hover:bg-gray-50">
-                <td className="border-b p-1">
-                  <Checkbox />
-                </td>
-                <td className="border-b p-4">{category.name}</td>
-                <td className="border-b p-4">
-                  <ToggleSwitch
-                    isOn={category.active}
-                    handleToggle={() => handleToggleActive(category.id)}
-                  />
-                </td>
-                <td className="border-b p-4">
-                  <Link
-                    to={`/admin/categories/edit/${category.id}`}
-                    className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </Link>
-                  <button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
-                    <TrashIcon className="h-4 w-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {ListCategorie &&
+              ListCategorie.length > 0 &&
+              ListCategorie.map((item, index) => {
+                return (
+                  <tr key={`categories-${index}`} className="hover:bg-gray-50">
+                    <td className="border-b p-1">
+                      <Checkbox className="border-2 border-gray-400" />
+                    </td>
+                    <td className="border-b p-4">{item.CategoryName}</td>
+                    <td className="border-b p-4">
+                      <ToggleSwitch />
+                    </td>
+                    <td className="border-b p-4">
+                      <Link
+                        to="/admin/categories/edit/1"
+                        className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </Link>
+                      <button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
