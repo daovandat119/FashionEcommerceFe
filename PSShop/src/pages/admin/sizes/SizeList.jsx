@@ -3,10 +3,10 @@ import React from 'react'
 
 
 
-const ColorList = () => {
+const SizeList = () => {
   return (
-    <div>ColorList</div>
+    <div>SizeList</div>
   )
 }
 
-export default ColorList
+export default SizeList

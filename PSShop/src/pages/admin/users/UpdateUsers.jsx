@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useRef, useEffect } from "react";
 import { Input, Button, Checkbox } from "@material-tailwind/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
