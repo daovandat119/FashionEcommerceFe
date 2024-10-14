@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
@@ -28,6 +29,10 @@ import UpdateCategory from "./pages/admin/categories/UpdateCategories";
 import AddProducts from "./pages/admin/products/AddProducts";
 import UpdateProducts from "./pages/admin/products/UpdateProducts";
 import LoginAdmin from "./pages/admin/login/LoginAdmin";
+import ColorList from "./pages/admin/color/ColorList";
+import SizeList from "./pages/admin/sizes/SizeList";
+import AddUsers from "./pages/admin/users/AddUsers";
+import UpdateUsers from "./pages/admin/users/UpdateUsers";
 function App() {
   return (
     <Context>
@@ -60,6 +65,11 @@ function App() {
               <Route path="/admin/products/edit/:id" element={<UpdateProducts />}/>
               <Route path="/admin/products/delete/:id"/>
               <Route path="users" element={<UserList />} />
+              <Route path="/admin/users/add-users" element={<AddUsers />}/>
+              <Route path="/admin/users/edit-users/:id" element={<UpdateUsers/>}/>
+              <Route path="/admin/users/delete-users/:id"/>
+              <Route path="colors" element={<ColorList />} />
+              <Route path="sizes" element={<SizeList />} />
             </Route>
             
           </Routes>
