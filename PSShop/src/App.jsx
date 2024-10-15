@@ -33,49 +33,58 @@ import ColorList from "./pages/admin/color/ColorList";
 import SizeList from "./pages/admin/sizes/SizeList";
 import AddUsers from "./pages/admin/users/AddUsers";
 import UpdateUsers from "./pages/admin/users/UpdateUsers";
+import { AuthProvider } from './context/AuthContext';
+import AuthGuard from './guards/AuthGuard';
+
 function App() {
   return (
-    <Context>
-      <ThemeProvider>
-        <Router>
-          <Routes>
-            {/* Client routes */}
-            <Route path="/" element={<HomePages />} />
-            <Route path="shop" element={<ShopPages1 />} />
-            <Route path="blogs" element={<BlogPage1 />} />
-            <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
-            <Route path="login_register" element={<LoginPage />} />
-            <Route path="about" element={<AboutPage />} />
-            <Route path="contact" element={<ContactPage />} />
-            <Route path="shop_cart" element={<ShopCartPage />} />
-            <Route path="shop_checkout" element={<ShopCheckoutPage />} />
-            <Route path="shop_order_complete" element={<ShopOrderConplate />} />
-            <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />}/>
+    <AuthProvider>
+      <Context>
+        <ThemeProvider>
+          <Router>
+            <Routes>
+              {/* Client routes */}
+              <Route path="/" element={<HomePages />} />
+              <Route path="shop" element={<ShopPages1 />} />
+              <Route path="blogs" element={<BlogPage1 />} />
+              <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
+              <Route path="login_register" element={<LoginPage />} />
+              <Route path="about" element={<AboutPage />} />
+              <Route path="contact" element={<ContactPage />} />
+              <Route path="shop_cart" element={<ShopCartPage />} />
+              <Route path="shop_checkout" element={<ShopCheckoutPage />} />
+              <Route path="shop_order_complete" element={<ShopOrderConplate />} />
+              <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />}/>
 
-            {/* Admin routes */}
-            <Route path="/admin/login" element={<LoginAdmin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="products" element={<ProductsList />} />
-              <Route path="categories" element={<CategoriesList />} />
-              <Route path="/admin/categories/add" element={<AddCategories />}/>
-              <Route path="/admin/categories/edit/:id" element={<UpdateCategory />}/>
-              <Route path="/admin/products/add" element={<AddProducts />}/>
-              <Route path="/admin/products/edit/:id" element={<UpdateProducts />}/>
-              <Route path="/admin/products/delete/:id"/>
-              <Route path="users" element={<UserList />} />
-              <Route path="/admin/users/add-users" element={<AddUsers />}/>
-              <Route path="/admin/users/edit-users/:id" element={<UpdateUsers/>}/>
-              <Route path="/admin/users/delete-users/:id"/>
-              <Route path="colors" element={<ColorList />} />
-              <Route path="sizes" element={<SizeList />} />
-            </Route>
-            
-          </Routes>
-        </Router>
-      </ThemeProvider>
-    </Context>
+              {/* Admin routes */}
+              <Route path="/admin/login" element={<LoginAdmin />} />
+              <Route path="/admin" element={
+                <AuthGuard>
+                  <AdminLayout />
+                </AuthGuard>
+              }>
+                <Route index element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="products" element={<ProductsList />} />
+                <Route path="categories" element={<CategoriesList />} />
+                <Route path="/admin/categories/add" element={<AddCategories />}/>
+                <Route path="/admin/categories/edit/:id" element={<UpdateCategory />}/>
+                <Route path="/admin/products/add" element={<AddProducts />}/>
+                <Route path="/admin/products/edit/:id" element={<UpdateProducts />}/>
+                <Route path="/admin/products/delete/:id"/>
+                <Route path="users" element={<UserList />} />
+                <Route path="/admin/users/add-users" element={<AddUsers />}/>
+                <Route path="/admin/users/edit-users/:id" element={<UpdateUsers/>}/>
+                <Route path="/admin/users/delete-users/:id"/>
+                <Route path="colors" element={<ColorList />} />
+                <Route path="sizes" element={<SizeList />} />
+              </Route>
+              
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </Context>
+    </AuthProvider>
   );
 }
 

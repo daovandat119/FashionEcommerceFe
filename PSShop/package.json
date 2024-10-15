@@ -20,6 +20,7 @@
     "react-countdown": "^2.3.6",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.5",
+    "react-paginate": "8.1.5",
     "react-photoswipe-gallery": "^3.0.1",
     "react-router-dom": "^6.23.1",
     "react-slick": "^0.30.2",

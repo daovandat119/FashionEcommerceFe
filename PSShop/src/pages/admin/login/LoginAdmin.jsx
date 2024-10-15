@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../../../public/assets/images/logo.png";
-import {LoginAdmin} from "../service/api_service";
-import { useNavigate } from "react-router-dom";
+import { LoginAdmin } from "../service/api_service";
+import { useAuth } from '../../../context/AuthContext'; // Đường dẫn này nên đúng bây giờ
 
 const Login = () => {
   const [Email, setEmail] = useState("");
@@ -12,6 +12,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loi, setLoi] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const validateForm = () => {
     let tempErrors = {};
@@ -35,14 +36,15 @@ const Login = () => {
     if (validateForm()) {
       try {
         const res = await LoginAdmin(Email, Password);
-        if (res.data && res.data.token) {
-          localStorage.setItem("token", res.data.token);
+        console.log(res);
+        if (res && res.token) {
+          login(res.token);
           navigate("/admin/dashboard");
         } else {
           setLoi("Tài khoản hoặc mật khẩu không chính xác");
         }
       } catch (err) {
-        setLoi("Tài khoản hoặc mật khẩu không chính xác");
+        setLoi("Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
         console.error("Lỗi đăng nhập:", err);
       }
     }
@@ -69,17 +71,18 @@ const Login = () => {
                 value={Email}
                 onChange={(event) => {
                   setEmail(event.target.value);
-                  if (errors.Email) setErrors({...errors, Email: ""});
+                  if (errors.Email) setErrors({ ...errors, Email: "" });
                 }}
                 className="outline-none w-full py-2 pl-10 text-lg"
                 placeholder="Email"
                 type="email"
                 id="email"
-                
                 autoComplete="username"
               />
             </div>
-            {errors.Email && <span className="text-red-500 text-sm mt-1">{errors.Email}</span>}
+            {errors.Email && (
+              <span className="text-red-500 text-sm mt-1">{errors.Email}</span>
+            )}
           </div>
           <div className="relative flex flex-col w-full">
             <div className="relative flex items-center w-full border-b-2">
@@ -91,17 +94,20 @@ const Login = () => {
                 value={Password}
                 onChange={(event) => {
                   setPassword(event.target.value);
-                  if (errors.Password) setErrors({...errors, Password: ""});
+                  if (errors.Password) setErrors({ ...errors, Password: "" });
                 }}
                 className="outline-none w-full py-2 pl-10 text-lg"
                 placeholder="Mật khẩu"
                 type="password"
                 id="password"
-                
                 autoComplete="current-password"
               />
             </div>
-            {errors.Password && <span className="text-red-500 text-sm mt-1">{errors.Password}</span>}
+            {errors.Password && (
+              <span className="text-red-500 text-sm mt-1">
+                {errors.Password}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 pl-3">
@@ -110,9 +116,7 @@ const Login = () => {
           </div>
 
           {loi && (
-            <div className="text-red-500 text-sm w-full text-center">
-              {loi}
-            </div>
+            <div className="text-red-500 text-sm w-full text-center">{loi}</div>
           )}
 
           <button

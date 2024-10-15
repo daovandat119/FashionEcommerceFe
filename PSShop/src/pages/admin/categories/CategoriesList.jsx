@@ -5,24 +5,32 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
 import { Link } from "react-router-dom";
 import { ListCategories } from "../service/api_service";
+import ReactPaginate from 'react-paginate';
 import axios from "axios";
 
 const CategoriesList = () => {
-  const [ListCategorie, setListCategorie] = useState([]);
-
+  const [ListCategory, setListCategory] = useState([]);
+  const [TotalCategory,setTotalCategory] = useState(0)
+  const [TotalPages, setTotalPages] = useState(0)
   useEffect(() => {
-    getCategories();
+    //Mặc định vào sẽ lấy số lượng phần tử trang đầu tiên
+    getCategories(1);
   }, []);
 
-  const getCategories = async () => {
-    let res = await ListCategories();
+  const getCategories = async (page) => {
+    let res = await ListCategories(page);
     //Nếu có respone và respone có data
     //res.data.data truy cập
     if (res && res.data ) {
-      setListCategorie(res.data);
+      console.log(res)
+      setTotalCategory(res.total)
+      setListCategory(res.data);
+      setTotalPages(res.totalPage)
     }
   };
-
+ const handlePageClick = (event) =>{
+  getCategories(+event.selected + 1);
+ }
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Categories Management</h1>
@@ -52,9 +60,9 @@ const CategoriesList = () => {
             </tr>
           </thead>
           <tbody>
-            {ListCategorie &&
-              ListCategorie.length > 0 &&
-              ListCategorie.map((item, index) => {
+            {ListCategory &&
+              ListCategory.length > 0 &&
+              ListCategory.map((item, index) => {
                 return (
                   <tr key={`categories-${index}`} className="hover:bg-gray-50">
                     <td className="border-b p-1">
@@ -80,7 +88,26 @@ const CategoriesList = () => {
               })}
           </tbody>
         </table>
+        <ReactPaginate
+        breakLabel="..."
+        nextLabel=" >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={5}
+        pageCount={TotalPages}
+        previousLabel="<"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
+      />
       </div>
+     
     </div>
   );
 };

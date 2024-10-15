@@ -10,8 +10,8 @@ const LoginAdmin = (Email, Password) => {
   return axios.post(URL_BACKEND, data);
 };
 
-const ListCategories = () => {
-  const URL_BACKEND = "/api/categories";
+const ListCategories = (page) => {
+  const URL_BACKEND = `/api/categories?Page=${page}`;
  return axios.get(URL_BACKEND)
 };
 

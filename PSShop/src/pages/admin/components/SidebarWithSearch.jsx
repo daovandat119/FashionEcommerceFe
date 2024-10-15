@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Card,
   Typography,
@@ -9,7 +9,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import {
-    ChartBarIcon,
+  ChartBarIcon,
   ShoppingBagIcon,
   UserCircleIcon,
   Cog6ToothIcon,
@@ -18,24 +18,35 @@ import {
   SwatchIcon,
   ArrowsPointingOutIcon,
 } from "@heroicons/react/24/solid";
-import {
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export function SidebarWithSearch() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/admin/login");
+  };
   return (
     <Card className="h-[100vh] w-full max-w-[20rem] p-4  ">
       <div className="mb-2 flex items-center gap-4 p-4">
-        <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
+        <img
+          src="https://docs.material-tailwind.com/img/logo-ct-dark.png"
+          alt="brand"
+          className="h-8 w-8"
+        />
         <Typography variant="h5" color="blue-gray">
           Admin Panel
         </Typography>
       </div>
       <div className="p-2">
-        <Input icon={<MagnifyingGlassIcon className="h-5 w-5" />} label="Search" />
+        <Input
+          icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+          label="Search"
+        />
       </div>
       <List>
-      <Link to="/admin/dashboard">
+        <Link to="/admin/dashboard">
           <ListItem>
             <ListItemPrefix>
               <ChartBarIcon className="h-5 w-5" />
@@ -90,16 +101,13 @@ export function SidebarWithSearch() {
           Settings
         </ListItem>
 
-        <Link to="/admin/login">
-          <ListItem>
-            <ListItemPrefix>
-              <PowerIcon className="h-5 w-5 mt-3" />
-            </ListItemPrefix>
-           
-          </ListItem>
-        </Link>
+        <ListItem onClick={handleLogout}>
+          <ListItemPrefix>
+            <PowerIcon className="h-5 w-5" />
+          </ListItemPrefix>
+          Logout
+        </ListItem>
       </List>
-      
     </Card>
   );
 }
