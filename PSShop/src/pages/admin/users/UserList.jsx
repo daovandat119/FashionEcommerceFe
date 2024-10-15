@@ -43,7 +43,7 @@ const UserList = () => {
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
-        <Link to="/admin/users/add-users" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
+        <Link to="/admin/users/add" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
           <PlusIcon className="h-5 w-5" /> New Product
         </Link>
       </div>
@@ -75,13 +75,13 @@ const UserList = () => {
                 </td>
                 <td className="border-b p-4">
                 <Link
-                    to={`/admin/users/edit-users/${user.id}`}
+                    to={`/admin/users/edit/${user.id}`}
                     className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </Link>
                   <Link
-                    to={`/admin/users/delete-users/${user.id}`}
+                    to={`/admin/users/delete/${user.id}`}
                     className="bg-red-600 text-white p-2 rounded-full mr-2 hover:bg-red-500 transition-colors inline-flex items-center justify-center"
                   >
                     <PencilIcon className="h-4 w-4" />
