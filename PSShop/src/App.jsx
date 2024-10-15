@@ -33,6 +33,10 @@ import ColorList from "./pages/admin/color/ColorList";
 import SizeList from "./pages/admin/sizes/SizeList";
 import AddUsers from "./pages/admin/users/AddUsers";
 import UpdateUsers from "./pages/admin/users/UpdateUsers";
+import AddColor from "./pages/admin/color/AddColor";
+import UpdateColor from "./pages/admin/color/UpdateColor";
+import AddSize from "./pages/admin/sizes/AddSize";
+import UpdateSize from "./pages/admin/sizes/UpdateSize";
 function App() {
   return (
     <Context>
@@ -64,12 +68,21 @@ function App() {
               <Route path="/admin/products/add" element={<AddProducts />}/>
               <Route path="/admin/products/edit/:id" element={<UpdateProducts />}/>
               <Route path="/admin/products/delete/:id"/>
+
               <Route path="users" element={<UserList />} />
-              <Route path="/admin/users/add-users" element={<AddUsers />}/>
-              <Route path="/admin/users/edit-users/:id" element={<UpdateUsers/>}/>
-              <Route path="/admin/users/delete-users/:id"/>
+              <Route path="/admin/users/add" element={<AddUsers />}/>
+              <Route path="/admin/users/edit/:id" element={<UpdateUsers/>}/>
+              <Route path="/admin/users/delete/:id"/>
+
               <Route path="colors" element={<ColorList />} />
+              <Route path="/admin/colors/add" element={<AddColor />}/>
+              <Route path="/admin/colors/edit/:id" element={<UpdateColor/>}/>
+              <Route path="/admin/colors/delete/:id"/>
+
               <Route path="sizes" element={<SizeList />} />
+              <Route path="/admin/sizes/add" element={<AddSize />}/>
+              <Route path="/admin/sizes/edit/:id" element={<UpdateSize/>}/>
+              <Route path="/admin/sizes/delete/:id"/>
             </Route>
             
           </Routes>
