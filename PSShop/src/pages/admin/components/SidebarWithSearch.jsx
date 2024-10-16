@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from '../../../context/AuthContext';
 import {
   Card,
   Typography,
@@ -22,9 +23,10 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export function SidebarWithSearch() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     navigate("/admin/login");
   };
   return (

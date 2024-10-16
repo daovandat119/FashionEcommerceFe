@@ -1,18 +1,15 @@
-
 import axios from "./axios_customize";
 
 const LoginAdmin = (Email, Password) => {
-  const URL_BACKEND = "/api/login";
-  const data = {
-    Email: Email,
-    Password: Password,
-  };
-  return axios.post(URL_BACKEND, data);
+  return axios.post("/api/login", { Email, Password });
 };
 
 const ListCategories = (page) => {
-  const URL_BACKEND = `/api/categories?Page=${page}`;
- return axios.get(URL_BACKEND)
+  return axios.get(`/api/categories?Page=${page}`);
 };
 
-export {LoginAdmin ,ListCategories};
+const AddCategory = (CategoryName) => {
+  return axios.post("/api/categories", { CategoryName });
+};
+
+export { LoginAdmin, ListCategories, AddCategory };

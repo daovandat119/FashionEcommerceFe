@@ -2,6 +2,8 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import HomePages from "./pages/homepages/HomePages";
 import LoginPage from "./pages/login/LoginPage";
 import "./styles/style.scss";
@@ -42,6 +44,7 @@ function App() {
       <Context>
         <ThemeProvider>
           <Router>
+            <ToastContainer />
             <Routes>
               {/* Client routes */}
               <Route path="/" element={<HomePages />} />

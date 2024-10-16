@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../../../public/assets/images/logo.png";
 import { LoginAdmin } from "../service/api_service";
-import { useAuth } from '../../../context/AuthContext'; // Đường dẫn này nên đúng bây giờ
+import { useAuth } from '../../../context/AuthContext';
 
 const Login = () => {
   const [Email, setEmail] = useState("");
@@ -12,7 +12,14 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loi, setLoi] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, cleanupStorage } = useAuth();
+
+  useEffect(() => {
+    cleanupStorage(); // Cleanup storage when component mounts
+    if (isAuthenticated) {
+      navigate("/admin/dashboard");
+    }
+  }, [isAuthenticated, navigate, cleanupStorage]);
 
   const validateForm = () => {
     let tempErrors = {};
@@ -38,7 +45,7 @@ const Login = () => {
         const res = await LoginAdmin(Email, Password);
         console.log(res);
         if (res && res.token) {
-          login(res.token);
+          login(res.token, res.user);
           navigate("/admin/dashboard");
         } else {
           setLoi("Tài khoản hoặc mật khẩu không chính xác");

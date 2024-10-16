@@ -1,30 +1,73 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { AddCategory } from "../service/api_service";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const AddCategory = () => {
-  const [categoryName, setCategoryName] = useState("");
-  const handleSaveCategory = () => {
-    console.log("đât",categoryName)
+const AddCategoryComponent = () => {
+  const [CategoryName, setCategoryName] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSaveCategory = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!CategoryName.trim()) {
+      setError("Tên danh mục không được để trống");
+      return;
+    }
+
+    try {
+      const response = await AddCategory(CategoryName);
+      console.log("Danh mục đã được thêm:", response);
+      if (response.data && response.data.Status === "ACTIVE") {
+        // Chuyển hướng về trang danh sách danh mục với thông báo thành công và danh mục mới
+        navigate("/admin/categories", { 
+          state: { 
+            success: true,
+            newCategory: response.data // Thêm thông tin danh mục mới vào state
+          }
+        });
+      } else {
+        setError("Không thể kích hoạt danh mục. Vui lòng thử lại.");
+      }
+    } catch (err) {
+      console.error("Lỗi khi thêm danh mục:", err);
+      setError(err.response?.data?.message || "Đã xảy ra lỗi khi thêm danh mục");
+    }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Add New Category</h1>
+      <ToastContainer />
+      <h1 className="text-2xl font-bold mb-6">ADD NEW CATEGORY</h1>
       <div className="bg-white rounded-lg shadow p-6">
-        <form className="space-y-6">
-          <div className="">
-            <input className="border-2 p-2 w-full rounded-xl"
+        <form onSubmit={handleSaveCategory} className="space-y-6">
+          <div>
+            <label htmlFor="CategoryName" className="block mb-2 text-sm font-medium text-gray-700">
+              Category Name
+            </label>
+            <input
+            placeholder="New Category"
+              id="CategoryName"
+              className="border-2 p-2 w-full rounded-xl"
               type="text"
-              label="Category Name"
-              value={categoryName}
-              onChange={(event)=> setCategoryName(event.target.value)}
+              value={CategoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
               required
             />
           </div>
-          <div className="flex justify-end">
-            <button onClick={()=> handleSaveCategory()} type="submit" className="bg-green-600 text-white px-4 py-2 rounded-md">
-              Add Category
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="flex justify-between items-center">
+              <Link className="bg-blue-400 text-white px-4 py-2  rounded-md" to="/admin/categories">List Category</Link>
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              NEW CATEGORY
             </button>
-            
           </div>
         </form>
       </div>
@@ -32,4 +75,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default AddCategoryComponent;

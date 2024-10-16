@@ -3,36 +3,61 @@ import { Input, Checkbox } from "@material-tailwind/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ListCategories } from "../service/api_service";
 import ReactPaginate from 'react-paginate';
 import axios from "axios";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CategoriesList = () => {
   const [ListCategory, setListCategory] = useState([]);
-  const [TotalCategory,setTotalCategory] = useState(0)
-  const [TotalPages, setTotalPages] = useState(0)
+  const [TotalCategory, setTotalCategory] = useState(0);
+  const [TotalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const location = useLocation();
+
   useEffect(() => {
-    //Mặc định vào sẽ lấy số lượng phần tử trang đầu tiên
     getCategories(1);
-  }, []);
+
+    if (location.state?.success && location.state?.newCategory) {
+      // Thêm danh mục mới vào đầu danh sách
+      setListCategory(prevList => [location.state.newCategory, ...prevList]);
+      setTotalCategory(prevTotal => prevTotal + 1);
+      
+      toast.success("Thêm danh mục thành công!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      
+      // Xóa state để tránh hiển thị lại khi refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const getCategories = async (page) => {
     let res = await ListCategories(page);
-    //Nếu có respone và respone có data
-    //res.data.data truy cập
-    if (res && res.data ) {
-      console.log(res)
-      setTotalCategory(res.total)
+    if (res && res.data) {
+      console.log(res);
+      setTotalCategory(res.total);
       setListCategory(res.data);
-      setTotalPages(res.totalPage)
+      setTotalPages(res.totalPage);
+      setCurrentPage(page);
     }
   };
- const handlePageClick = (event) =>{
-  getCategories(+event.selected + 1);
- }
+
+  const handlePageClick = (event) => {
+    const newPage = event.selected + 1;
+    getCategories(newPage);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
+      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Categories Management</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
@@ -60,54 +85,52 @@ const CategoriesList = () => {
             </tr>
           </thead>
           <tbody>
-            {ListCategory &&
-              ListCategory.length > 0 &&
-              ListCategory.map((item, index) => {
-                return (
-                  <tr key={`categories-${index}`} className="hover:bg-gray-50">
-                    <td className="border-b p-1">
-                      <Checkbox className="border-2 border-gray-400" />
-                    </td>
-                    <td className="border-b p-4">{item.CategoryName}</td>
-                    <td className="border-b p-4">
-                      <ToggleSwitch />
-                    </td>
-                    <td className="border-b p-4">
-                      <Link
-                        to="/admin/categories/edit/1"
-                        className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Link>
-                      <button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+            {ListCategory.map((item, index) => (
+              <tr key={`categories-${index}`} className="hover:bg-gray-50">
+                <td className="border-b p-1">
+                  <Checkbox className="border-2 border-gray-400" />
+                </td>
+                <td className="border-b p-4">{item.CategoryName}</td>
+                <td className="border-b p-4">
+                  <ToggleSwitch />
+                </td>
+                <td className="border-b p-4">
+                  <Link
+                    to="/admin/categories/edit/1"
+                    className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
+                  >
+                    <PencilIcon className="h-4 w-4" />
+                  </Link>
+                  <button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
-        <ReactPaginate
-        breakLabel="..."
-        nextLabel=" >"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={TotalPages}
-        previousLabel="<"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        previousClassName="page-item"
-        previousLinkClassName="page-link"
-        nextClassName="page-item"
-        nextLinkClassName="page-link"
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        containerClassName="pagination"
-        activeClassName="active"
-      />
+        {TotalPages > 1 && (
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={TotalPages}
+            previousLabel="<"
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination flex justify-center space-x-2 mt-4"
+            activeClassName="active bg-blue-500 text-white"
+            forcePage={currentPage - 1}
+          />
+        )}
       </div>
-     
     </div>
   );
 };
