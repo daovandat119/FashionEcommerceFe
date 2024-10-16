@@ -1,246 +1,370 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Input, Button, Textarea, Checkbox } from "@material-tailwind/react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AddProduct, ListCategories } from "../service/api_service";
+import { Input, Button, Textarea } from "@material-tailwind/react";
 import { ChevronDownIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
-import { Image, Table } from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddProducts = () => {
   const [productData, setProductData] = useState({
-    name: "",
-    category: "",
-    price: "",
-    salePrice: "",
-    description: "",
-    shortDescription: "",
-    mainImage: null,
-    pathImage: null,
-    size: "",
-    color: "",
-    quantity: "",
-    variantPrice: "",
+    ProductName: "",
+    CategoryID: "",
+    Price: "",
+    SalePrice: "",
+    ShortDescription: "",
+    Description: "",
+    Status: "active",
+    MainImageURL: null,
+    MainImagePreview: null,
+    ImagePath: [],
+    ImagePathPreviews: [],
   });
-
+  const [categories, setCategories] = useState([]);
+  const [errors, setErrors] = useState({});
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
-  const categories = [
-    { id: 1, name: "Electronics" },
-    { id: 2, name: "Clothing" },
-    { id: 3, name: "Books" },
-    { id: 4, name: "Home & Garden" },
-    { id: 5, name: "Toys & Games" },
-  ];
+  useEffect(() => {
+    fetchCategories();
 
-  const [previews, setPreviews] = useState({
-    mainImage: null,
-    pathImage: null,
-  });
+    return () => {
+      // Cleanup function
+      if (productData.MainImagePreview) {
+        URL.revokeObjectURL(productData.MainImagePreview);
+      }
+      productData.ImagePathPreviews.forEach((preview) => {
+        if (preview.startsWith("blob:")) {
+          URL.revokeObjectURL(preview);
+        }
+      });
+    };
+  }, []);
 
-  const [variantData, setVariantData] = useState({
-    sizes: [],
-    colors: [],
-    quantity: "",
-    price: "",
-  });
-
-  const sizes = ["S", "M", "L", "XL", "XXL"];
-  const colors = ["Red", "Blue", "Green", "Yellow", "Black", "White"];
+  const fetchCategories = async () => {
+    try {
+      const response = await ListCategories(1, 1000);
+      setCategories(response.data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      toast.error("Failed to load categories");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file") {
-      setProductData((prev) => ({ ...prev, [name]: files[0] }));
-      if (files[0]) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviews((prev) => ({ ...prev, [name]: reader.result }));
-        };
-        reader.readAsDataURL(files[0]);
+      if (name === "MainImageURL") {
+        const file = files[0];
+        if (file) {
+          const error = validateImage(file);
+          if (error) {
+            setErrors(prev => ({ ...prev, [name]: [error] }));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setProductData((prevData) => ({
+              ...prevData,
+              [name]: file,
+              MainImagePreview: e.target.result,
+            }));
+          };
+          reader.readAsDataURL(file);
+        }
+      } else if (name === "ImagePath") {
+        const fileArray = Array.from(files);
+        const errors = fileArray.map(validateImage).filter(Boolean);
+        if (errors.length) {
+          setErrors(prev => ({ ...prev, [name]: errors }));
+          return;
+        }
+        const readerPromises = fileArray.map((file) => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+          });
+        });
+
+        Promise.all(readerPromises).then((results) => {
+          setProductData((prevData) => ({
+            ...prevData,
+            [name]: fileArray,
+            ImagePathPreviews: results,
+          }));
+        });
       }
     } else {
-      setProductData((prev) => ({ ...prev, [name]: value }));
+      setProductData((prevData) => ({ ...prevData, [name]: value }));
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: null }));
+  };
+
+  const handleCategorySelect = (categoryId) => {
+    setProductData({ ...productData, CategoryID: categoryId });
+    setIsOpen(false);
+    setErrors({ ...errors, CategoryID: null });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrors({});
+
+    const formData = new FormData();
+    for (const key in productData) {
+      if (key === "ImagePath") {
+        productData[key].forEach((file, index) => {
+          formData.append(`ImagePath[${index}]`, file);
+        });
+      } else if (key === "MainImageURL") {
+        formData.append(key, productData[key]);
+      } else {
+        formData.append(key, productData[key]);
+      }
+    }
+
+    try {
+      const response = await AddProduct(formData);
+      console.log("API Response:", response);
+
+      if (response && response.data) {
+        navigate("/admin/products", {
+          state: {
+            success: true,
+            message: "Sản phẩm đã được thêm thành công!",
+            newProduct: response.data,
+          },
+        });
+        toast.success("Sản phẩm đã được thêm thành công!");
+      } else {
+        throw new Error("Không nhận được phản hồi từ server");
+      }
+    } catch (err) {
+      console.error("Error adding product:", err);
+      console.log("Error response:", err.response);
+
+      if (err.response && err.response.data) {
+        console.log("Validation errors:", err.response.data);
+        setErrors(err.response.data);
+        
+        // Hiển thị tất cả các lỗi validation
+        Object.values(err.response.data).forEach((errorMessages) => {
+          errorMessages.forEach((message) => {
+            toast.error(message);
+          });
+        });
+      } else {
+        toast.error(err.message || "Đã xảy ra lỗi khi thêm sản phẩm");
+      }
     }
   };
 
-  const handleCategorySelect = (categoryName) => {
-    setProductData((prevData) => ({
-      ...prevData,
-      category: categoryName,
-    }));
-    setIsOpen(false);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("New product:", productData);
-  };
-
-  const renderImageUpload = (label, name) => (
-    <div className="mt-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
-      </label>
+  const renderImageUpload = (label, name, multiple = false) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
       <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
         <div className="space-y-1 text-center">
-          {previews[name] ? (
+          {name === "MainImageURL" && productData.MainImagePreview ? (
             <img
-              src={previews[name]}
+              src={productData.MainImagePreview}
               alt="Preview"
-              className="mx-auto h-32 w-32 object-cover rounded-md"
+              className="mx-auto h-32 w-32 object-cover"
             />
+          ) : name === "ImagePath" &&
+            productData.ImagePathPreviews.length > 0 ? (
+            <div className="flex flex-wrap justify-center">
+              {productData.ImagePathPreviews.map((preview, index) => (
+                <img
+                  key={index}
+                  src={preview}
+                  alt={`Preview ${index + 1}`}
+                  className="h-32 w-32 object-cover m-1"
+                />
+              ))}
+            </div>
           ) : (
             <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
           )}
           <div className="flex text-sm text-gray-600">
             <label
-              htmlFor={`file-upload-${name}`}
+              htmlFor={name}
               className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
             >
               <span>Upload a file</span>
               <input
-                id={`file-upload-${name}`}
+                id={name}
                 name={name}
                 type="file"
                 className="sr-only"
                 onChange={handleChange}
+                multiple={multiple}
                 accept="image/*"
               />
             </label>
             <p className="pl-1">or drag and drop</p>
           </div>
-          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
         </div>
       </div>
+      {errors[name] && (
+        <p className="text-red-500 text-xs mt-1">{errors[name][0]}</p>
+      )}
     </div>
   );
 
-  const handleSizeChange = (size) => {
-    setVariantData((prev) => ({
-      ...prev,
-      sizes: prev.sizes.includes(size)
-        ? prev.sizes.filter((s) => s !== size)
-        : [...prev.sizes, size],
-    }));
+  const validateForm = () => {
+    const newErrors = {};
+    if (!productData.ProductName) newErrors.ProductName = ["Tên sản phẩm là bắt buộc"];
+    if (!productData.CategoryID) newErrors.CategoryID = ["Danh mục là bắt buộc"];
+    if (!productData.Price) newErrors.Price = ["Giá là bắt buộc"];
+    if (!productData.MainImageURL) newErrors.MainImageURL = ["Ảnh chính là bắt buộc"];
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleColorChange = (color) => {
-    setVariantData((prev) => ({
-      ...prev,
-      colors: prev.colors.includes(color)
-        ? prev.colors.filter((c) => c !== color)
-        : [...prev.colors, color],
-    }));
-  };
+  const validateImage = (file) => {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
 
-  const handleChangeVariant = (e) => {
-    const { name, value } = e.target;
-    setVariantData((prev) => ({ ...prev, [name]: value }));
-  };
+    if (!validTypes.includes(file.type)) {
+      return "Chỉ chấp nhận file ảnh định dạng JPEG, PNG hoặc GIF";
+    }
 
-  const handleAddVariants = () => {
-    const variants = [];
-    variantData.sizes.forEach((size) => {
-      variantData.colors.forEach((color) => {
-        variants.push({
-          size,
-          color,
-          quantity: variantData.quantity,
-          price: variantData.price,
-        });
-      });
-    });
-    console.log(variants); // Here you would typically send this data to your backend
-    setVariantData({ sizes: [], colors: [], quantity: "", price: "" });
+    if (file.size > maxSize) {
+      return "Kích thước file không được vượt quá 2MB";
+    }
+
+    return null;
   };
 
   return (
-    <div className="flex ">
-      <div className="w-3/4 px-4  mx-auto ">
-        <h1 className="text-2xl font-bold mb-6">Add Product </h1>
-        <div className="bg-white rounded-lg shadow p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="container mx-auto px-4 py-8">
+      <ToastContainer />
+      <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
+      <div className="bg-white rounded-lg shadow p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="mb-4">
             <Input
               label="Product Name"
-              name="name"
-              value={productData.name}
+              name="ProductName"
+              value={productData.ProductName}
               onChange={handleChange}
               required
             />
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                {productData.category || "Select Category"}
-                <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
-              </button>
-              {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
-                  <ul className="py-1 overflow-auto text-base max-h-60">
-                    {categories.map((category) => (
-                      <li
-                        key={category.id}
-                        className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleCategorySelect(category.name)}
-                      >
-                        {category.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            {errors.ProductName && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.ProductName[0]}
+              </p>
+            )}
+          </div>
+          <div className="mb-4 relative">
+            <button
+              type="button"
+              className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {productData.CategoryID
+                ? categories.find(
+                    (cat) => cat.CategoryID === productData.CategoryID
+                  )?.CategoryName
+                : "Select Category"}
+              <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
+            </button>
+            {isOpen && (
+              <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+                <ul className="py-1 overflow-auto text-base max-h-60">
+                  {categories.map((category) => (
+                    <li
+                      key={category.CategoryID}
+                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleCategorySelect(category.CategoryID)}
+                    >
+                      {category.CategoryName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {errors.CategoryID && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.CategoryID[0]}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
             <Input
               label="Price"
-              name="price"
+              name="Price"
               type="number"
-              value={productData.price}
+              value={productData.Price}
               onChange={handleChange}
               required
             />
+            {errors.Price && (
+              <p className="text-red-500 text-xs mt-1">{errors.Price[0]}</p>
+            )}
+          </div>
+          <div className="mb-4">
             <Input
               label="Sale Price"
-              name="salePrice"
+              name="SalePrice"
               type="number"
-              value={productData.salePrice}
+              value={productData.SalePrice}
               onChange={handleChange}
             />
-            {renderImageUpload("Main Image", "mainImage")}
-            {renderImageUpload("Path Image", "pathImage")}
-            <Textarea
-              label="Description"
-              name="description"
-              value={productData.description}
-              onChange={handleChange}
-              rows={4}
-            />
+            {errors.SalePrice && (
+              <p className="text-red-500 text-xs mt-1">{errors.SalePrice[0]}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            {renderImageUpload("Main Image", "MainImageURL")}
+          </div>
+          <div className="mb-4">
+            {renderImageUpload("Additional Images", "ImagePath", true)}
+          </div>
+          <div className="mb-4">
             <Textarea
               label="Short Description"
-              name="shortDescription"
-              value={productData.shortDescription}
+              name="ShortDescription"
+              value={productData.ShortDescription}
               onChange={handleChange}
               rows={2}
             />
+            {errors.ShortDescription && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.ShortDescription[0]}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
+            <Textarea
+              label="Description"
+              name="Description"
+              value={productData.Description}
+              onChange={handleChange}
+              rows={4}
+            />
+            {errors.Description && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.Description[0]}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-between items-center">
+            <Link
+              className="bg-blue-400 text-white px-4 py-2 rounded-md"
+              to="/admin/products"
+            >
+              List Products
+            </Link>
             <Button type="submit" color="green">
               Add Product
             </Button>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
-      
     </div>
   );
 };

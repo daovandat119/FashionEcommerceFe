@@ -1,51 +1,94 @@
 import React, { useState } from "react";
-import { Input, Button } from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
+import { AddColor } from "../service/api_service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const AddColor = () => {
-  const [colorData, setColorData] = useState({
-    id: "",
-    color: "",
-  });
+const AddColorComponent = () => {
+  const [ColorName, setColorName] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setColorData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSaveColor = async (e) => {
     e.preventDefault();
-    console.log("New color:", colorData); // Thay thế với hàm gửi dữ liệu đến backend
-    setColorData({ id: "", color: "" }); // Reset form
+    setError("");
+
+    if (!ColorName.trim()) {
+      setError("Tên màu không được để trống");
+      return;
+    }
+
+    try {
+      const response = await AddColor(ColorName);
+      console.log("Màu đã được thêm:", response);
+      if (response && response.data) {
+        toast.success("Thêm màu mới thành công!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        navigate("/admin/colors", {
+          state: {
+            success: true,
+            newColor: response.data,
+          },
+        });
+      } else {
+        setError("Không thể thêm màu. Vui lòng thử lại.");
+      }
+    } catch (err) {
+      console.error("Lỗi khi thêm màu:", err);
+      setError(
+        err.response?.data?.message || "Đã xảy ra lỗi khi thêm màu"
+      );
+    }
   };
 
   return (
-    <div className="flex ">
-      <div className="w-3/4 px-4 mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Add New Color</h1>
-        <div className="bg-white rounded-lg shadow p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* <Input
-              label="Color ID"
-              name="id"
-              value={colorData.id}
-              onChange={handleChange}
-              required
-            /> */}
-            <Input
-              label="Color Name"
-              name="color"
-              value={colorData.color}
-              onChange={handleChange}
+    <div className="container mx-auto px-4 py-8">
+      <ToastContainer />
+      <h1 className="text-2xl font-bold mb-6">ADD NEW COLOR</h1>
+      <div className="bg-white rounded-lg shadow p-6">
+        <form onSubmit={handleSaveColor} className="space-y-6">
+          <div>
+            <label
+              htmlFor="ColorName"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
+              Color Name
+            </label>
+            <input
+              placeholder="New Color"
+              id="ColorName"
+              className="border-2 p-2 w-full rounded-xl"
+              type="text"
+              value={ColorName}
+              onChange={(e) => setColorName(e.target.value)}
               required
             />
-            <Button type="submit" color="green">
-              Add Color
-            </Button>
-          </form>
-        </div>
+          </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="flex justify-between items-center">
+            <Link
+              className="bg-blue-400 text-white px-4 py-2 rounded-md"
+              to="/admin/colors"
+            >
+              List Colors
+            </Link>
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              NEW COLOR
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default AddColor;
+export default AddColorComponent;
