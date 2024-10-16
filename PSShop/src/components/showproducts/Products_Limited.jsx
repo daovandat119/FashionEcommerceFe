@@ -1,5 +1,5 @@
-import { useContextElement } from "../../context/Context";
-import { products1 } from "../../data/products/fashion";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -42,8 +42,24 @@ const swiperOptions = {
 };
 
 export default function Products_Limited() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
-  const { addProductToCart, isAddedToCartProducts } = useContextElement();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Gọi API PHP từ React
+    axios.get('http://127.0.0.1:8000/api/products')
+      .then(response => {
+        setProducts(response.data.data || response.data); // Điều chỉnh nếu cần
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Có lỗi xảy ra khi gọi API", error);
+        setError("Không thể tải sản phẩm.");
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <section className="products-carousel container">
       <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">
@@ -51,117 +67,77 @@ export default function Products_Limited() {
       </h2>
 
       <div id="product_carousel" className="position-relative">
-        <Swiper
-          style={{ maxWidth: "100vw", overflow: "hidden" }}
-          {...swiperOptions}
-          className="swiper-container js-swiper-slider"
-        >
-          {products1.map((elm, i) => (
-            <SwiperSlide key={i} className="swiper-slide product-card">
-              <div className="pc__img-wrapper">
-                <Link to={`/product1_simple/${elm.id}`}>
-                  <img
-                    loading="lazy"
-                    src={elm.imgSrc}
-                    width="330"
-                    height="400"
-                    alt="Cropped Faux leather Jacket"
-                    className="pc__img"
-                  />
-                </Link>
-                <button
-                  className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                  onClick={() => addProductToCart(elm.id)}
-                  title={
-                    isAddedToCartProducts(elm.id)
-                      ? "Already Added"
-                      : "Add to Cart"
-                  }
-                >
-                  {isAddedToCartProducts(elm.id)
-                    ? "Already Added"
-                    : "Add To Cart"}
-                </button>
-              </div>
-
-              <div className="pc__info position-relative">
-                <p className="pc__category">{elm.category}</p>
-                <h6 className="pc__title">
-                  <Link to={`/product1_simple/${elm.id}`}>{elm.title}</Link>
-                </h6>
-                <div className="product-card__price d-flex">
-                  <span className="money price">${elm.price}</span>
-                </div>
-                {elm.reviews && (
-                  <div className="product-card__review d-flex align-items-center">
-                    <div className="reviews-group d-flex">
-                      <svg
-                        className="review-star"
-                        viewBox="0 0 9 9"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg
-                        className="review-star"
-                        viewBox="0 0 9 9"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg
-                        className="review-star"
-                        viewBox="0 0 9 9"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg
-                        className="review-star"
-                        viewBox="0 0 9 9"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg
-                        className="review-star"
-                        viewBox="0 0 9 9"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_star" />
-                      </svg>
-                    </div>
-                    <span className="reviews-note text-lowercase text-secondary ms-1">
-                      {elm.reviews}
-                    </span>
-                  </div>
-                )}
-
-                <button
-                  className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
-                    isAddedtoWishlist(elm.id) ? "active" : ""
-                  }`}
-                  title="Add To Wishlist"
-                  onClick={() => toggleWishlist(elm.id)}
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : (
+          <Swiper
+            style={{ maxWidth: "100vw", overflow: "hidden" }}
+            {...swiperOptions}
+            className="swiper-container js-swiper-slider"
+          >
+            {products.map((product, i) => (
+              <SwiperSlide key={i} className="swiper-slide product-card">
+                <div className="pc__img-wrapper">
+                  <Link to={`/shop-detail/${product.ProductID}`}>
+                    <img
+                      loading="lazy"
+                      src={product.MainImageURL}
+                      width="330"
+                      height="400"
+                      alt={product.ProductName}
+                      className="pc__img"
+                    />
+                  </Link>
+                  <button
+                    className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
+                    title="Add to Cart"
+                    // Thêm logic thêm vào giỏ hàng nếu cần
                   >
-                    <use href="#icon_heart" />
-                  </svg>
-                </button>
-              </div>
-            </SwiperSlide>
-          ))}
+                    Add To Cart
+                  </button>
+                </div>
 
-          {/* <!-- /.swiper-wrapper --> */}
-        </Swiper>
-        {/* <!-- /.swiper-container js-swiper-slider --> */}
+                <div className="pc__info position-relative">
+                  <p className="pc__category">{product.category_name}</p>
+                  <h6 className="pc__title">
+                    <Link to={`/product1_simple/${product.id}`}>{product.ProductName}</Link>
+                  </h6>
+                  <div className="product-card__price d-flex">
+                    <span className="money price">{product.Price}$</span>
+                  </div>
+                  {product.reviews && (
+                    <div className="product-card__review d-flex align-items-center">
+                      <div className="reviews-group d-flex">
+                        {/* Hiển thị đánh giá ở đây */}
+                      </div>
+                      <span className="reviews-note text-lowercase text-secondary ms-1">
+                        {product.reviews}
+                      </span>
+                    </div>
+                  )}
 
+                  <button
+                    className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist"
+                    title="Add To Wishlist"
+                    // Thêm logic thêm vào danh sách yêu thích nếu cần
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
         <div className="cursor-pointer products-carousel__prev position-absolute top-50 d-flex align-items-center justify-content-center">
           <svg
             width="25"
@@ -172,7 +148,6 @@ export default function Products_Limited() {
             <use href="#icon_prev_md" />
           </svg>
         </div>
-        {/* <!-- /.products-carousel__prev --> */}
         <div className="cursor-pointer products-carousel__next position-absolute top-50 d-flex align-items-center justify-content-center">
           <svg
             width="25"
@@ -183,12 +158,8 @@ export default function Products_Limited() {
             <use href="#icon_next_md" />
           </svg>
         </div>
-        {/* <!-- /.products-carousel__next --> */}
-
         <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center"></div>
-        {/* <!-- /.products-pagination --> */}
       </div>
-      {/* <!-- /.position-relative --> */}
     </section>
   );
 }
