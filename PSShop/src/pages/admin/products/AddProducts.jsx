@@ -226,7 +226,7 @@ const AddProducts = () => {
 
   const validateImage = (file) => {
     const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 10 * 1024 * 1024; // 2MB
 
     if (!validTypes.includes(file.type)) {
       return "Chỉ chấp nhận file ảnh định dạng JPEG, PNG hoặc GIF";

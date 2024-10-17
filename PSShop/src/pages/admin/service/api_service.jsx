@@ -49,7 +49,7 @@ const GetProductById = (ProductID) => {
 };
 
 const UpdateProduct = (ProductID, productData) => {
-  return axios.put(`/api/products/${ProductID}`, productData, {
+  return axios.post(`/api/products/${ProductID}`, productData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -97,6 +97,13 @@ const DeleteSizes = (SizeID) => {
   return axios.delete(`/api/sizes/${SizeID}`);
 };
 
+const AddProductVariant = (variantData) => {
+  return axios.post("/api/product-variants", variantData);
+};
+
+const GetProductVariants = (ProductID) => {
+  return axios.post(`/api/product-variants/productID`, { ProductID });
+};
 
 export { 
   LoginAdmin, 
@@ -119,5 +126,7 @@ export {
   AddSize,
   GetSizeById,
   UpdateSize,
-  DeleteSizes
+  DeleteSizes,
+  AddProductVariant,
+  GetProductVariants
 };

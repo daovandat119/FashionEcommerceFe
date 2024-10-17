@@ -5,10 +5,10 @@ import { SidebarWithSearch } from './components/SidebarWithSearch';
 const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100">
-      <div className="w-[30%] max-w-[300px]">
+      <div className="w-[20%] max-w-[300px]">
         <SidebarWithSearch />
       </div>
-      <div className="w-[80%] mx-auto p-8 overflow-auto">
+      <div className="w-[90%] mx-auto  overflow-auto">
         <Outlet />
       </div>
     </div>
