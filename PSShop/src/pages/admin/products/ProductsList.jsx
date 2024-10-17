@@ -8,6 +8,7 @@ import {
   ListProducts,
   DeleteProducts,
   ListCategories,
+  GetProductById, // Thêm dòng này
 } from "../service/api_service";
 import ReactPaginate from "react-paginate";
 import { toast, ToastContainer } from "react-toastify";
@@ -26,7 +27,7 @@ const ProductsList = () => {
     getProducts(1);
     getCategories();
 
-    // Kiểm tra và hiển thị thông báo thành công nếu c
+    // Kiểm tra và hiển thị thông báo thành công nếu có
     if (location.state?.success) {
       toast.success(location.state.message);
       // Xóa state để tránh hiển thị lại khi refresh
@@ -95,7 +96,7 @@ const ProductsList = () => {
           getProducts(currentPage); // Tải lại danh sách
           setSelectedProducts([]); // Reset danh sách đã chọn
         } else if (response.status === 200) {
-          // Trường hợp status là 200 nhưng không có success: true
+          // Trờng hợp status là 200 nhưng không có success: true
           toast.success("Xóa sản phẩm thành công");
           getProducts(currentPage);
           setSelectedProducts([]);
@@ -121,6 +122,21 @@ const ProductsList = () => {
         // Luôn tải lại danh sách sản phẩm, bất kể thành công hay thất bại
         getProducts(currentPage);
       }
+    }
+  };
+
+  const handleViewProductDetails = async (ProductID) => {
+    try {
+      const response = await GetProductById(ProductID);
+      if (response && response.data) {
+        console.log("Product details:", response.data);
+        // Ở đây bạn có thể xử lý dữ liệu chi tiết sản phẩm
+        // Ví dụ: hiển thị trong một modal hoặc chuyển hướng đến trang chi tiết
+        toast.success("Đã lấy chi tiết sản phẩm thành công");
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+      toast.error("Không thể lấy chi tiết sản phẩm");
     }
   };
 
@@ -214,6 +230,7 @@ const ProductsList = () => {
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
+                
                 </td>
               </tr>
             ))}
