@@ -43,11 +43,13 @@ import { UpdateColor } from "./pages/admin/service/api_service";
 import UpdateColorComponent from "./pages/admin/color/UpdateColor";
 import AddSizeComponent from "./pages/admin/sizes/AddSize";
 import UpdateSize from "./pages/admin/sizes/UpdateSize";
+import { LoginProvider } from "./components/login/LoginContext";
 
 function App() {
   return (
     <AuthProvider>
       <Context>
+      <LoginProvider>
         <ThemeProvider>
           <Router>
             <ToastContainer />
@@ -98,6 +100,7 @@ function App() {
             </Routes>
           </Router>
         </ThemeProvider>
+        </LoginProvider>
       </Context>
     </AuthProvider>
   );

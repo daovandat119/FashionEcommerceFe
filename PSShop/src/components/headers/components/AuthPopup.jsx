@@ -1,8 +1,30 @@
-// AuthPopup.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { LoginContext } from "../../login/LoginContext"; // Đảm bảo bạn đã import context
 
 export default function AuthPopup({ isOpen, closePopup }) {
+  const { login, register, error } = useContext(LoginContext); // Lấy hàm và trạng thái từ context
   const [isLogin, setIsLogin] = useState(true); // Trạng thái để chuyển đổi giữa đăng nhập và đăng ký
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const success = await login(email, password); // Gọi hàm login
+    if (success) {
+      closePopup(); // Đóng popup nếu đăng nhập thành công
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const username = e.target.name.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const success = await register(username, email, password); // Gọi hàm register
+    if (success) {
+      closePopup(); // Đóng popup nếu đăng ký thành công
+    }
+  };
 
   if (!isOpen) return null; // Ẩn popup nếu `isOpen` là false
 
@@ -51,7 +73,7 @@ export default function AuthPopup({ isOpen, closePopup }) {
                   <div className="mt-8">
                     <div className="flow-root">
                       {isLogin ? (
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleLogin}>
                           <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                               Email
@@ -82,17 +104,19 @@ export default function AuthPopup({ isOpen, closePopup }) {
                             />
                           </div>
 
+                          {error && <p className="text-red-500 text-sm">{error}</p>} {/* Hiển thị thông báo lỗi */}
+
                           <div>
                             <button
                               type="submit"
-                              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-dark  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               Login
                             </button>
                           </div>
                         </form>
                       ) : (
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleRegister}>
                           <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                              Username
@@ -125,7 +149,8 @@ export default function AuthPopup({ isOpen, closePopup }) {
 
                           <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                              Password                            </label>
+                              Password
+                            </label>
                             <input
                               type="password"
                               name="password"
@@ -136,6 +161,8 @@ export default function AuthPopup({ isOpen, closePopup }) {
                               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
                             />
                           </div>
+
+                          {error && <p className="text-red-500 text-sm">{error}</p>} {/* Hiển thị thông báo lỗi */}
 
                           <div>
                             <button
