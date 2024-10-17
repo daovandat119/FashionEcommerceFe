@@ -123,7 +123,7 @@ export default function Products_Trendy() {
                 <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
                   <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                     <div className="pc__img-wrapper">
-                      <Link to={`/product1_simple/${product.ProductID}`}>
+                      <Link to={`/shop-detail/${product.ProductID}`}>
                         <img
                           loading="lazy"
                           src={product.MainImageURL}
@@ -159,7 +159,7 @@ export default function Products_Trendy() {
                     <div className="pc__info position-relative">
                       <p className="pc__category">{product.category_name}</p>
                       <h6 className="pc__title">
-                        <Link to={`/product1_simple/${product.ProductID}`}>
+                        <Link to={`/shop-detail/${product.ProductID}`}>
                           {product.ProductName}
                         </Link>
                       </h6>
@@ -201,7 +201,7 @@ export default function Products_Trendy() {
             <div className="text-center mt-2">
               <Link
                 className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
-                to="/shop-1"
+                to="/shop"
               >
                 Discover More
               </Link>

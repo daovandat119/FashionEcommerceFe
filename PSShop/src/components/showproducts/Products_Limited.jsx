@@ -102,7 +102,7 @@ export default function Products_Limited() {
                 <div className="pc__info position-relative">
                   <p className="pc__category">{product.category_name}</p>
                   <h6 className="pc__title">
-                    <Link to={`/product1_simple/${product.id}`}>{product.ProductName}</Link>
+                    <Link to={`/shop-detail/${product.ProductName}`}>{product.ProductName}</Link>
                   </h6>
                   <div className="product-card__price d-flex">
                     <span className="money price">{product.Price}$</span>

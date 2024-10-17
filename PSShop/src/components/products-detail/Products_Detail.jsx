@@ -177,14 +177,6 @@ export default function Products_Detail() {
                     <p>No sizes available.</p>
                   )}
                 </div>
-                <a
-                  href="#"
-                  className="sizeguide-link"
-                  data-bs-toggle="modal"
-                  data-bs-target="#sizeGuide"
-                >
-                  Size Guide
-                </a>
               </div>
               <div className="product-swatch color-swatches">
                 <label>Color</label>
