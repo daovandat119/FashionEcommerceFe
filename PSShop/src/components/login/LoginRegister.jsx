@@ -1,165 +1,176 @@
-import { useState, useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { LoginContext } from "./LoginContext"; // Import context
+import { Link } from "react-router-dom";
 
 export default function LoginRegister() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    Username: "",
-    Email: "",
-    Password: "",
-  });
-
-  const { login, register, error, success } = useContext(LoginContext); // Sử dụng context
-  const navigate = useNavigate();
-
-  // Khi đăng nhập thành công hoặc đăng ký thành công, điều hướng đến trang tương ứng
-  useEffect(() => {
-    if (success) {
-      if (!isLogin) {
-        // Chuyển về trang login sau khi đăng ký thành công
-        setTimeout(() => {
-          setIsLogin(true);
-        }, 2000);
-      } else {
-        // Chuyển về trang chủ sau khi đăng nhập thành công
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
-      }
-    }
-  }, [success, isLogin, navigate]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    await login(formData.Email, formData.Password);
-  };
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    await register(formData.Username, formData.Email, formData.Password);
-  };
-
   return (
-    <section className="container mx-auto p-4 w-full md:w-2/3 lg:w-1/2">
-      <h2 className="sr-only">Login & Register</h2>
-
-      {/* Tab Navigation */}
-      <ul className="flex justify-center space-x-6 mb-5" role="tablist">
-        <li className="cursor-pointer" role="presentation">
-          <button
-            className={`py-2 px-4 ${isLogin ? "text-black border-b-2 border-black" : "text-gray-500"}`}
-            onClick={() => setIsLogin(true)}
+    <section className="login-register container">
+      <h2 className="d-none">Login & Register</h2>
+      <ul className="nav nav-tabs mb-5" id="login_register" role="tablist">
+        <li className="nav-item" role="presentation">
+          <a
+            className="nav-link nav-link_underscore active"
+            id="login-tab"
+            data-bs-toggle="tab"
+            href="#tab-item-login"
+            role="tab"
+            aria-controls="tab-item-login"
+            aria-selected="true"
           >
             Login
-          </button>
+          </a>
         </li>
-        <li className="cursor-pointer" role="presentation">
-          <button
-            className={`py-2 px-4 ${!isLogin ? "text-black border-b-2 border-black" : "text-gray-500"}`}
-            onClick={() => setIsLogin(false)}
+        <li className="nav-item" role="presentation">
+          <a
+            className="nav-link nav-link_underscore"
+            id="register-tab"
+            data-bs-toggle="tab"
+            href="#tab-item-register"
+            role="tab"
+            aria-controls="tab-item-register"
+            aria-selected="false"
           >
             Register
-          </button>
+          </a>
         </li>
       </ul>
+      <div className="tab-content pt-2" id="login_register_tab_content">
+        <div
+          className="tab-pane fade show active"
+          id="tab-item-login"
+          role="tabpanel"
+          aria-labelledby="login-tab"
+        >
+          <div className="login-form">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="needs-validation"
+            >
+              <div className="form-floating mb-3">
+                <input
+                  name="login_email"
+                  type="email"
+                  className="form-control form-control_gray"
+                  placeholder="Email address *"
+                  required
+                />
+                <label>Email address *</label>
+              </div>
 
-      {/* Thông báo lỗi hoặc thành công */}
-      <div className="pt-2">
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {success && <p className="text-green-500 text-center mb-4">{success}</p>}
+              <div className="pb-3"></div>
 
-        {isLogin ? (
-          <form onSubmit={handleLoginSubmit} className="space-y-4">
-            <div className="relative">
-              <input
-                name="Email"
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Email address *"
-                value={formData.Email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="relative">
-              <input
-                name="Password"
-                type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Password *"
-                value={formData.Password}
-                onChange={handleChange}
-                required
-              />
-            </div>
+              <div className="form-floating mb-3">
+                <input
+                  name="login_password"
+                  type="password"
+                  className="form-control form-control_gray"
+                  id="customerPasswodInput"
+                  placeholder="Password *"
+                  required
+                />
+                <label htmlFor="customerPasswodInput">Password *</label>
+              </div>
 
-            <div className="w-full flex align-center justify-center">
-              <button className="btn w-[250px] bg-black text-white py-2 rounded" type="submit">
+              <div className="d-flex align-items-center mb-3 pb-2">
+                <div className="form-check mb-0">
+                  <input
+                    name="remember"
+                    className="form-check-input form-check-input_fill"
+                    type="checkbox"
+                    defaultValue=""
+                  />
+                  <label className="form-check-label text-secondary">
+                    Remember me
+                  </label>
+                </div>
+                <Link to="/reset_password" className="btn-text ms-auto">
+                  Lost password?
+                </Link>
+              </div>
+
+              <button className="btn btn-primary w-100 text-uppercase"
+                type="submit"
+              >
                 Log In
               </button>
-            </div>
-            <div className="text-center mt-4">
-              <span className="text-gray-600">No account yet?</span>{" "}
-              <button className="text-blue-500 hover:underline" onClick={() => setIsLogin(false)}>
-                Create Account
-              </button>
-            </div>
-          </form>
-        ) : (
-          <form onSubmit={handleRegisterSubmit} className="space-y-4">
-            <div className="relative">
-              <input
-                name="Username"
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Username"
-                value={formData.Username}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="relative">
-              <input
-                name="Email"
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Email address *"
-                value={formData.Email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="relative">
-              <input
-                name="Password"
-                type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Password *"
-                value={formData.Password}
-                onChange={handleChange}
-                required
-              />
-            </div>
 
-            <div className="w-full flex align-center justify-center">
-              <button className="w-[250px] bg-black text-white py-2 rounded" type="submit">
+              <div className="customer-option mt-4 text-center">
+                <span className="text-secondary">No account yet?</span>{" "}
+                <a href="#register-tab" className="btn-text js-show-register">
+                  Create Account
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div
+          className="tab-pane fade"
+          id="tab-item-register"
+          role="tabpanel"
+          aria-labelledby="register-tab"
+        >
+          <div className="register-form">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="needs-validation"
+            >
+              <div className="form-floating mb-3">
+                <input
+                  name="register_username"
+                  type="text"
+                  className="form-control form-control_gray"
+                  id="customerNameRegisterInput"
+                  placeholder="Username"
+                  required
+                />
+                <label htmlFor="customerNameRegisterInput">Username</label>
+              </div>
+
+              <div className="pb-3"></div>
+
+              <div className="form-floating mb-3">
+                <input
+                  name="register_email"
+                  type="email"
+                  className="form-control form-control_gray"
+                  id="customerEmailRegisterInput"
+                  placeholder="Email address *"
+                  required
+                />
+                <label htmlFor="customerEmailRegisterInput">
+                  Email address *
+                </label>
+              </div>
+
+              <div className="pb-3"></div>
+
+              <div className="form-floating mb-3">
+                <input
+                  name="register_password"
+                  type="password"
+                  className="form-control form-control_gray"
+                  id="customerPasswodRegisterInput"
+                  placeholder="Password *"
+                  required
+                />
+                <label htmlFor="customerPasswodRegisterInput">Password *</label>
+              </div>
+
+              <div className="d-flex align-items-center mb-3 pb-2">
+                <p className="m-0">
+                  Your personal data will be used to support your experience
+                  throughout this website, to manage access to your account, and
+                  for other purposes described in our privacy policy.
+                </p>
+              </div>
+
+              <button
+                className="btn btn-primary w-100 text-uppercase"
+                type="submit"
+              >
                 Register
               </button>
-            </div>
-            <div className="text-center mt-4">
-              <span className="text-gray-600">Already have an account?</span>{" "}
-              <button className="text-blue-500 hover:underline" onClick={() => setIsLogin(true)}>
-                Login here
-              </button>
-            </div>
-          </form>
-        )}
+            </form>
+          </div>
+        </div>
       </div>
     </section>
   );

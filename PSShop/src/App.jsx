@@ -19,7 +19,7 @@ import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_trackin
 import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
-import * as MTR from "@material-tailwind/react";
+// import * as MTR from "@material-tailwind/react";
 
 // Admin imports
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -36,20 +36,20 @@ import ColorList from "./pages/admin/color/ColorList";
 import SizeList from "./pages/admin/sizes/SizeList";
 import AddUsers from "./pages/admin/users/AddUsers";
 import UpdateUsers from "./pages/admin/users/UpdateUsers";
-import { AuthProvider } from './context/AuthContext';
+// import { AuthProvider } from './context/AuthContext';
 import AuthGuard from './guards/AuthGuard';
 import AddColor from "./pages/admin/color/AddColor";
-import { UpdateColor } from "./pages/admin/service/api_service";
+// import { UpdateColor } from "./pages/admin/service/api_service";
 import UpdateColorComponent from "./pages/admin/color/UpdateColor";
 import AddSizeComponent from "./pages/admin/sizes/AddSize";
 import UpdateSize from "./pages/admin/sizes/UpdateSize";
-import { LoginProvider } from "./components/login/LoginContext";
+// import { LoginProvider } from "./components/login/LoginContext";
 
 function App() {
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <Context>
-      <LoginProvider>
+      {/* <LoginProvider> */}
         <ThemeProvider>
           <Router>
             <ToastContainer />
@@ -100,9 +100,9 @@ function App() {
             </Routes>
           </Router>
         </ThemeProvider>
-        </LoginProvider>
+        {/* </LoginProvider> */}
       </Context>
-    </AuthProvider>
+  // </AuthProvider> //
   );
 }
 
