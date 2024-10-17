@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { ThemeProvider } from "@material-tailwind/react";
+import { ThemeProvider,Button, Card, Input } from "@material-tailwind/react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import HomePages from "./pages/homepages/HomePages";
@@ -19,6 +19,7 @@ import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_trackin
 import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
+import * as MTR from "@material-tailwind/react";
 
 // Admin imports
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -37,6 +38,11 @@ import AddUsers from "./pages/admin/users/AddUsers";
 import UpdateUsers from "./pages/admin/users/UpdateUsers";
 import { AuthProvider } from './context/AuthContext';
 import AuthGuard from './guards/AuthGuard';
+import AddColor from "./pages/admin/color/AddColor";
+import { UpdateColor } from "./pages/admin/service/api_service";
+import UpdateColorComponent from "./pages/admin/color/UpdateColor";
+import AddSizeComponent from "./pages/admin/sizes/AddSize";
+import UpdateSize from "./pages/admin/sizes/UpdateSize";
 
 function App() {
   return (
@@ -71,16 +77,22 @@ function App() {
                 <Route path="products" element={<ProductsList />} />
                 <Route path="categories" element={<CategoriesList />} />
                 <Route path="/admin/categories/add" element={<AddCategories />}/>
-                <Route path="/admin/categories/edit/:id" element={<UpdateCategory />}/>
+                <Route path="/admin/categories/edit/:CategoryID" element={<UpdateCategory />}/>
                 <Route path="/admin/products/add" element={<AddProducts />}/>
-                <Route path="/admin/products/edit/:id" element={<UpdateProducts />}/>
-                <Route path="/admin/products/delete/:id"/>
+                <Route path="/admin/products/edit/:ProductID" element={<UpdateProducts />} />
+                <Route path="/admin/products/delete/:ProductID"/>
                 <Route path="users" element={<UserList />} />
                 <Route path="/admin/users/add-users" element={<AddUsers />}/>
                 <Route path="/admin/users/edit-users/:id" element={<UpdateUsers/>}/>
                 <Route path="/admin/users/delete-users/:id"/>
-                <Route path="colors" element={<ColorList />} />
-                <Route path="sizes" element={<SizeList />} />
+                <Route path="/admin/colors/" element={<ColorList />} />
+                <Route path="/admin/colors/add" element={<AddColor />} />
+                <Route path="/admin/colors/delete/:ColorID" />
+                <Route path="/admin/colors/edit/:ColorID" element={<UpdateColorComponent />} />
+                <Route path="/admin/sizes" element={<SizeList />} />
+                <Route path="/admin/sizes/add" element={<AddSizeComponent />} />
+                <Route path="/admin/sizes/edit/:SizeID" element={<UpdateSize />} />
+                <Route path="/admin/sizes/delete/:SizeID" />
               </Route>
               
             </Routes>

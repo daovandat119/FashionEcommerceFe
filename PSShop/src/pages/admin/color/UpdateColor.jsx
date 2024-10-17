@@ -1,45 +1,107 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState, useRef, useEffect } from "react";
-import { Input, Button } from "@material-tailwind/react";
-// import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { GetColorById, UpdateColor } from "../service/api_service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const UpdateColor = () => {
-  const [colorData, setColorData] = useState({
-    colorName: "",
-    colorCode: "",
-  });
+const UpdateColorComponent = () => {
+  const [ColorName, setColorName] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { ColorID } = useParams();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setColorData((prev) => ({ ...prev, [name]: value }));
-  };
+  useEffect(() => {
+    const fetchColor = async () => {
+      try {
+        const response = await GetColorById(ColorID);
+        console.log(response);
+        if (response.data.ColorName) {
+          setColorName(response.data.ColorName);
+        } else {
+          throw new Error("Dữ liệu màu sắc không hợp lệ");
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải màu sắc:", err);
+        setError("Không thể tải dữ liệu màu sắc. Vui lòng thử lại sau.");
+        toast.error("Không thể tải dữ liệu màu sắc");
+      }
+    };
 
-  const handleSubmit = (e) => {
+    if (ColorID) {
+      fetchColor();
+    } else {
+      setError("ID màu sắc không hợp lệ");
+    }
+  }, [ColorID]);
+
+  const handleUpdateColor = async (e) => {
     e.preventDefault();
-    console.log("Updated color:", colorData);
+    setError("");
+
+    if (!ColorName.trim()) {
+      setError("Tên màu sắc không được để trống");
+      return;
+    }
+
+    try {
+      const response = await UpdateColor(ColorID, ColorName);
+      if (response.data) {
+        console.log("Cập nhật thành công");
+        toast.success("Cập nhật màu sắc thành công", {
+          onClose: () => navigate("/admin/colors")
+        });
+      } else {
+        throw new Error(response.data.message || "Không thể cập nhật màu sắc");
+      }
+    } catch (err) {
+      console.error("Lỗi khi cập nhật màu sắc:", err);
+      setError(err.message || "Đã xảy ra lỗi khi cập nhật màu sắc");
+      toast.error("Lỗi cập nhật: " + (err.message || "Đã xảy ra lỗi"));
+    }
   };
 
   return (
-    <div className="flex">
-      <div className="w-full px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Update Color</h1>
-        <div className="bg-white rounded-lg shadow p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              label="Color Code"
-              name="colorCode"
-              value={colorData.colorCode}
-              onChange={handleChange}
+    <div className="container mx-auto px-4 py-8">
+      <ToastContainer />
+      <h1 className="text-2xl font-bold mb-6">CẬP NHẬT MÀU SẮC</h1>
+      <div className="bg-white rounded-lg shadow p-6">
+        <form onSubmit={handleUpdateColor} className="space-y-6">
+          <div>
+            <label
+              htmlFor="ColorName"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
+              UPDATE COLOR
+            </label>
+            <input
+              placeholder="edit color"
+              id="ColorName"
+              className="border-2 p-2 w-full rounded-xl"
+              type="text"
+              value={ColorName}
+              onChange={(e) => setColorName(e.target.value)}
               required
             />
-            <Button type="submit" color="green">
-              Update Color
-            </Button>
-          </form>
-        </div>
+          </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="flex justify-between items-center">
+            <Link
+              className="bg-blue-400 text-white px-4 py-2 rounded-md"
+              to="/admin/colors"
+            >
+              LIST COLOR
+            </Link>
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              UPDATE COLOR
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default UpdateColor;
+export default UpdateColorComponent;

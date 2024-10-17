@@ -1,13 +1,14 @@
-import AddCategories from "./AddCategories";
-import UpdateCategory from "./UpdateCategory";
+
 import CategoriesList from "./CategoriesList";
+import AddCategoryComponent from "./AddCategories";
+import UpdateCategoryComponent from "./UpdateCategories";
 
 const CategoryManager = () => {
   return (
     <>
       <CategoriesList />
-      <AddCategories />
-      <UpdateCategory />
+      <AddCategoryComponent />
+      <UpdateCategoryComponent />
     </>
   );
 };
