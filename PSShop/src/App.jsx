@@ -45,12 +45,12 @@ import AddSizeComponent from "./pages/admin/sizes/AddSize";
 import UpdateSize from "./pages/admin/sizes/UpdateSize";
 import { LoginProvider } from "./components/login/LoginContext";
 // import { LoginProvider } from "./components/login/LoginContext";
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    // <AuthProvider>
+    <AuthProvider>
       <Context>
-      {/* <LoginProvider> */}
         <ThemeProvider>
           <Router>
             <ToastContainer />
@@ -101,9 +101,8 @@ function App() {
             </Routes>
           </Router>
         </ThemeProvider>
-        {/* </LoginProvider> */}
       </Context>
-  // </AuthProvider> //
+    </AuthProvider>
   );
 }
 
