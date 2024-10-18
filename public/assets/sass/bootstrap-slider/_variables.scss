@@ -1,7 +1,0 @@
-@use "sass:color";
-
-// Thay thế
-$slider-primary-bottom: darken($slider-primary, 5%) !default;
-
-// Bằng
-$slider-primary-bottom: color.scale($slider-primary, $lightness: -5%) !default;

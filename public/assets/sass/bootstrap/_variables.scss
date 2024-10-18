@@ -1,7 +1,0 @@
-@use "sass:color";
-
-// Thay thế
-$popover-arrow-outer-color: fade-in($popover-border-color, 0.05) !default;
-
-// Bằng
-$popover-arrow-outer-color: color.scale($popover-border-color, $alpha: 5%) !default;
