@@ -6,7 +6,7 @@ import CartLength from "./components/CartLength";
 import CartDrawer from "./components/CartDrawer"; // Nhập CartDrawer
 import AuthPopup from "./components/AuthPopup";
 import { openCart } from "../../utlis/openCart";
-
+import { LoginProvider } from "../login/LoginContext";
 export default function Headers() {
   const [isSearchVisible, setSearchVisible] = useState(false);
   
@@ -103,7 +103,9 @@ export default function Headers() {
       { <CartDrawer />} {/* Hiển thị CartDrawer nếu isCartOpen là true */}
 
       {/* Popup đăng nhập/đăng ký */}
+      <LoginProvider>
       <AuthPopup isOpen={isAuthOpen} closePopup={toggleAuth} />
+      </LoginProvider>
     </header>
   );
 }

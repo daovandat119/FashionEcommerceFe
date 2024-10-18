@@ -43,13 +43,14 @@ import AddColor from "./pages/admin/color/AddColor";
 import UpdateColorComponent from "./pages/admin/color/UpdateColor";
 import AddSizeComponent from "./pages/admin/sizes/AddSize";
 import UpdateSize from "./pages/admin/sizes/UpdateSize";
+import { LoginProvider } from "./components/login/LoginContext";
 // import { LoginProvider } from "./components/login/LoginContext";
-import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <Context>
+      {/* <LoginProvider> */}
         <ThemeProvider>
           <Router>
             <ToastContainer />
@@ -59,7 +60,7 @@ function App() {
               <Route path="shop" element={<ShopPages1 />} />
               <Route path="blogs" element={<BlogPage1 />} />
               <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
-              <Route path="login_register" element={<LoginPage />} />
+              <Route path="login_register" element={<LoginProvider><LoginPage /></LoginProvider>} />
               <Route path="about" element={<AboutPage />} />
               <Route path="contact" element={<ContactPage />} />
               <Route path="shop_cart" element={<ShopCartPage />} />
@@ -100,8 +101,9 @@ function App() {
             </Routes>
           </Router>
         </ThemeProvider>
+        {/* </LoginProvider> */}
       </Context>
-    </AuthProvider>
+  // </AuthProvider> //
   );
 }
 
