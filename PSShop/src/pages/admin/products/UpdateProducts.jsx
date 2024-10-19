@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Input, Button, Textarea, Checkbox } from "@material-tailwind/react";
-import { ChevronDownIcon, CloudArrowUpIcon, PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { GetProductById, UpdateProduct, ListCategories, ListColors, ListSizes, AddProductVariant, GetProductVariants } from "../service/api_service";
+import {
+  ChevronDownIcon,
+  CloudArrowUpIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
+import {
+  GetProductById,
+  UpdateProduct,
+  ListCategories,
+  ListColors,
+  ListSizes,
+  AddProductVariant,
+  GetProductVariants,
+} from "../service/api_service";
 import { toast, ToastContainer } from "react-toastify";
 
 const UpdateProducts = () => {
@@ -49,7 +63,7 @@ const UpdateProducts = () => {
         fetchCategories(),
         fetchColors(),
         fetchSizes(),
-        fetchProductVariants()
+        fetchProductVariants(),
       ]);
     } catch (error) {
       console.error("Error fetching product data:", error);
@@ -60,22 +74,19 @@ const UpdateProducts = () => {
   const fetchProduct = async () => {
     try {
       const response = await GetProductById(ProductID);
-      console.log("API Response:", response);
       if (response && response.data) {
         const product = response.data.product;
-        console.log("Product data:", product);
-        
-        // Xử lý image_path
-        const imagePaths = product.image_path ? product.image_path.split(',') : [];
-        console.log("Processed ImagePath:", imagePaths);
 
+        // Xử lý image_path
+        const imagePaths = product.image_path
+          ? product.image_path.split(",")
+          : [];
         setProductData({
           ...product,
-          MainImagePreview: product.MainImageURL ? `${import.meta.env.VITE_API_URL}/${product.MainImageURL}` : null,
+          MainImagePreview: product.MainImageURL || null,
           ImagePath: imagePaths,
-          ImagePathPreviews: imagePaths.map(path => `${import.meta.env.VITE_API_URL}/${path.trim()}`),
+          ImagePathPreviews: imagePaths.map((path) => path.trim()), // Không thêm bất kỳ phần nào khác
         });
-        console.log("Updated productData:", productData);
       }
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -177,8 +188,11 @@ const UpdateProducts = () => {
     setErrors({});
 
     const formData = new FormData();
+
+    // Chỉ gửi các trường cần thiết
     for (const key in productData) {
       if (key === "ImagePath") {
+        // Xử lý các ảnh khác
         if (Array.isArray(productData[key])) {
           productData[key].forEach((file, index) => {
             if (file instanceof File) {
@@ -186,17 +200,34 @@ const UpdateProducts = () => {
             }
           });
         }
-      } else if (key === "MainImageURL" && productData[key] instanceof File) {
-        formData.append(key, productData[key]);
+      } else if (key === "MainImageURL") {
+        // Nếu có ảnh mới, gửi ảnh mới
+        if (productData[key] instanceof File) {
+          formData.append(key, productData[key]);
+        } else {
+          // Nếu không có ảnh mới, gửi URL cũ
+          if (productData.MainImagePreview) {
+            formData.append(key, productData.MainImagePreview);
+          } else {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              MainImageURL: ["URL hình ảnh chính không được bỏ trống"],
+            }));
+            return; // Dừng lại nếu không có ảnh
+          }
+        }
       } else if (key !== "MainImagePreview" && key !== "ImagePathPreviews") {
+        // Gửi các trường khác (name, price, ...)
         formData.append(key, productData[key]);
       }
     }
 
+    // Ghi log dữ liệu gửi lên
+    console.log("Dữ liệu gửi lên:", Array.from(formData.entries()));
+
+    // Gửi formData
     try {
       const response = await UpdateProduct(ProductID, formData);
-      console.log("API Response:", response);
-
       if (response && response.data) {
         navigate("/admin/products", {
           state: {
@@ -207,7 +238,7 @@ const UpdateProducts = () => {
         });
         toast.success("Sản phẩm đã được cập nhật thành công!");
       } else {
-        throw new Error("Không nhận được phản hồi từ server");
+        throw new Error("Unexpected response structure");
       }
     } catch (err) {
       console.error("Error updating product:", err);
@@ -223,17 +254,17 @@ const UpdateProducts = () => {
           }
         });
       } else {
-        toast.error(err.message || "Đã xảy ra lỗi khi cập nhật sn phẩm");
+        toast.error(err.message || "Đã xảy ra lỗi khi cập nhật sản phẩm");
       }
     }
   };
 
   const renderImageUpload = (label, name, multiple = false) => {
-    console.log(`Rendering ${name}:`, productData[name]);
-    console.log(`${name} Previews:`, productData[`${name}Previews`]);
     return (
       <div>
-        <label className="block text-sm font-medium text-gray-700">{label}</label>
+        <label className="block text-sm font-medium text-gray-700">
+          {label}
+        </label>
         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
           <div className="space-y-1 text-center">
             {name === "MainImageURL" && productData.MainImagePreview ? (
@@ -242,7 +273,8 @@ const UpdateProducts = () => {
                 alt="Preview"
                 className="mx-auto h-32 w-32 object-cover"
               />
-            ) : name === "ImagePath" && productData.ImagePathPreviews.length > 0 ? (
+            ) : name === "ImagePath" &&
+              productData.ImagePathPreviews.length > 0 ? (
               <div className="flex flex-wrap justify-center">
                 {productData.ImagePathPreviews.map((preview, index) => (
                   <img
@@ -285,14 +317,18 @@ const UpdateProducts = () => {
   };
 
   const handleColorChange = (colorId) => {
-    setSelectedColors(prev => 
-      prev.includes(colorId) ? prev.filter(id => id !== colorId) : [...prev, colorId]
+    setSelectedColors((prev) =>
+      prev.includes(colorId)
+        ? prev.filter((id) => id !== colorId)
+        : [...prev, colorId]
     );
   };
 
   const handleSizeChange = (sizeId) => {
-    setSelectedSizes(prev => 
-      prev.includes(sizeId) ? prev.filter(id => id !== sizeId) : [...prev, sizeId]
+    setSelectedSizes((prev) =>
+      prev.includes(sizeId)
+        ? prev.filter((id) => id !== sizeId)
+        : [...prev, sizeId]
     );
   };
 
@@ -309,21 +345,25 @@ const UpdateProducts = () => {
 
     const variantData = {
       ProductID: ProductID,
-      ColorID: selectedColors,
-      SizeID: selectedSizes,
+      ColorID: selectedColors.join(","), // Chuyển mảng thành chuỗi
+      SizeID: selectedSizes.join(","), // Chuyển mảng thành chuỗi
       Price: parseFloat(variantPrice),
-      Quantity: parseInt(variantQuantity)
+      Quantity: parseInt(variantQuantity),
     };
 
     try {
+      console.log(variantData);
       const response = await AddProductVariant(variantData);
-      if (response && response.data) {
-        toast.success("Biến thể đã được thêm thành công");
-        await fetchProductVariants(); // Tải lại danh sách biến thể
-      }
+
+      toast.success("Biến thể đã được thêm thành công");
+
+      await fetchProductVariants(); 
     } catch (error) {
-      console.error("Lỗi khi thêm biến thể:", error);
-      toast.error("Không thể thêm biến thể: " + (error.response?.data?.message || error.message));
+      console.error("Lỗi khi thêm biến th:", error);
+      toast.error(
+        "Không thể thêm biến thể: " +
+          (error.response?.data?.message || error.message)
+      );
     }
 
     // Reset form fields
@@ -336,10 +376,6 @@ const UpdateProducts = () => {
   const handleBackToList = () => {
     navigate("/admin/products"); // Điều hướng về trang danh sách sản phẩm
   };
-
- 
-
-
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -384,7 +420,9 @@ const UpdateProducts = () => {
                         <li
                           key={category.CategoryID}
                           className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                          onClick={() => handleCategorySelect(category.CategoryID)}
+                          onClick={() =>
+                            handleCategorySelect(category.CategoryID)
+                          }
                         >
                           {category.CategoryName}
                         </li>
@@ -420,7 +458,9 @@ const UpdateProducts = () => {
                   onChange={handleChange}
                 />
                 {errors.SalePrice && (
-                  <p className="text-red-500 text-xs mt-1">{errors.SalePrice[0]}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.SalePrice[0]}
+                  </p>
                 )}
               </div>
               {renderImageUpload("Main Image", "MainImageURL")}
@@ -434,7 +474,9 @@ const UpdateProducts = () => {
                   rows={2}
                 />
                 {errors.ShortDescription && (
-                  <p className="text-red-500 text-xs mt-1">{errors.ShortDescription[0]}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.ShortDescription[0]}
+                  </p>
                 )}
               </div>
               <div className="mb-4">
@@ -446,7 +488,9 @@ const UpdateProducts = () => {
                   rows={4}
                 />
                 {errors.Description && (
-                  <p className="text-red-500 text-xs mt-1">{errors.Description[0]}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Description[0]}
+                  </p>
                 )}
               </div>
               <div className="flex justify-between items-center">
@@ -456,7 +500,7 @@ const UpdateProducts = () => {
                   onClick={handleBackToList}
                   className="mr-2"
                 >
-                   List Products
+                  List Products
                 </Button>
                 <Button type="submit" color="green">
                   Update Product
@@ -465,7 +509,7 @@ const UpdateProducts = () => {
             </form>
           </div>
         </div>
-        
+
         {/* Right side - Colors, Sizes, and Product Variants */}
         <div className="w-[60%] ">
           {/* Colors */}
@@ -479,14 +523,17 @@ const UpdateProducts = () => {
                     checked={selectedColors.includes(color.ColorID)}
                     onChange={() => handleColorChange(color.ColorID)}
                   />
-                  <label htmlFor={`color-${color.ColorID}`} className="ml-2 text-sm">
+                  <label
+                    htmlFor={`color-${color.ColorID}`}
+                    className="ml-2 text-sm"
+                  >
                     {color.ColorName}
                   </label>
                 </div>
               ))}
             </div>
           </div>
-          
+
           {/* Sizes */}
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <h2 className="text-xl font-bold mb-4">Sizes</h2>
@@ -498,7 +545,10 @@ const UpdateProducts = () => {
                     checked={selectedSizes.includes(size.SizeID)}
                     onChange={() => handleSizeChange(size.SizeID)}
                   />
-                  <label htmlFor={`size-${size.SizeID}`} className="ml-2 text-sm">
+                  <label
+                    htmlFor={`size-${size.SizeID}`}
+                    className="ml-2 text-sm"
+                  >
                     {size.SizeName}
                   </label>
                 </div>
@@ -523,19 +573,17 @@ const UpdateProducts = () => {
                 onChange={(e) => setVariantQuantity(e.target.value)}
               />
             </div>
-            
-              <Button
-                color="blue"
-                className="flex items-center justify-center w-[100%]"
-                onClick={handleAddVariant}
-              >
-                <PlusIcon className="h-5" />
-                Add Product Variant
-              </Button>
-             
-           
+
+            <Button
+              color="blue"
+              className="flex items-center justify-center w-[100%]"
+              onClick={handleAddVariant}
+            >
+              <PlusIcon className="h-5" />
+              Add Product Variant
+            </Button>
           </div>
-          
+
           {/* Product Variants */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Product Variants</h2>
@@ -554,25 +602,26 @@ const UpdateProducts = () => {
                   </thead>
                   <tbody>
                     {productVariants.map((variant, index) => (
-                      <tr key={variant.VariantID || index} className="text-center">
+                      <tr
+                        key={variant.VariantID || index}
+                        className="text-center"
+                      >
                         <td className="border px-4 py-2 ">
-                          <Checkbox
-                            className="border-2 border-gray-400"
-                          />
-                        </td >
-                        <td className="border px-4 py-2">{variant.ColorName || 'N/A'}</td>
-                        <td className="border px-4 py-2">{variant.SizeName || 'N/A'}</td>
+                          <Checkbox className="border-2 border-gray-400" />
+                        </td>
+                        <td className="border px-4 py-2">
+                          {variant.ColorName || "N/A"}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {variant.SizeName || "N/A"}
+                        </td>
                         <td className="border px-4 py-2">{variant.Price}</td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
                         <td className="border px-4 py-2">
-                          <button
-                            className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
-                          >
+                          <button className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center">
                             <PencilIcon className="h-4 w-4" />
                           </button>
-                          <button
-                            className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
-                          >
+                          <button className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center">
                             <TrashIcon className="h-4 w-4" />
                           </button>
                         </td>

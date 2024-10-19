@@ -6,8 +6,6 @@ import ToggleSwitch from "../components/ToggleSwitch";
 import { Link, useLocation } from "react-router-dom";
 import { ListCategories, DeleteCategories } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import axios from "axios";
-import UpdateCategoryComponent from "./UpdateCategories"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -23,7 +21,6 @@ const CategoriesList = () => {
     getCategories(1);
 
     if (location.state?.success && location.state?.newCategory) {
-      // Thêm danh mục mới vào đầu danh sách
       setListCategory((prevList) => [location.state.newCategory, ...prevList]);
       setTotalCategory((prevTotal) => prevTotal + 1);
 
@@ -36,7 +33,6 @@ const CategoriesList = () => {
         draggable: true,
       });
 
-      // Xóa state để tránh hiển thị lại khi refresh
       window.history.replaceState({}, document.title);
     }
   }, [location]);
@@ -44,7 +40,6 @@ const CategoriesList = () => {
   const getCategories = async (page) => {
     let res = await ListCategories(page);
     if (res && res.data) {
-      console.log(res);
       setTotalCategory(res.total);
       setListCategory(res.data);
       setTotalPages(res.totalPage);
@@ -58,26 +53,26 @@ const CategoriesList = () => {
   };
 
   const handleSelectCategory = (CategoryID) => {
-    setSelectedCategories(prev => 
-      prev.includes(CategoryID) 
-        ? prev.filter(id => id !== CategoryID)
+    setSelectedCategories((prev) =>
+      prev.includes(CategoryID)
+        ? prev.filter((id) => id !== CategoryID)
         : [...prev, CategoryID]
     );
   };
 
-  const handleDeleteCategories = async () => {
-    if (selectedCategories.length === 0) {
+  const handleDeleteCategories = async (CategoryIDs) => {
+    if (CategoryIDs.length === 0) {
       toast.warn("Vui lòng chọn ít nhất một danh mục để xóa");
       return;
     }
 
     if (window.confirm("Bạn có chắc chắn muốn xóa các danh mục đã chọn?")) {
       try {
-        const response = await DeleteCategories(selectedCategories);
+        const response = await DeleteCategories(CategoryIDs);
         if (response && response.message === "Operation completed") {
           const results = response.results || [];
-          const deletedCount = results.filter(r => r.message === "Deleted successfully").length;
-          
+          const deletedCount = results.filter((r) => r.message === "Deleted successfully").length;
+
           if (deletedCount > 0) {
             toast.success(`Đã xóa ${deletedCount} danh mục thành công`);
             getCategories(currentPage); // Tải lại danh sách
@@ -85,11 +80,10 @@ const CategoriesList = () => {
           } else {
             toast.warn("Không có danh mục nào được xóa");
           }
-          
-          // Hiển thị thông báo cho các danh mục không tìm thấy
-          const notFoundIds = results.filter(r => r.message === "Category not found").map(r => r.id);
+
+          const notFoundIds = results.filter((r) => r.message === "Category not found").map((r) => r.id);
           if (notFoundIds.length > 0) {
-            toast.info(`Không tìm thấy danh mục với ID: ${notFoundIds.join(', ')}`);
+            toast.info(`Không tìm thấy danh mục với ID: ${notFoundIds.join(", ")}`);
           }
         } else {
           throw new Error("Không thể xóa danh mục");
@@ -120,7 +114,7 @@ const CategoriesList = () => {
           <PlusIcon className="h-5 w-5" /> New Category
         </Link>
         <button
-          onClick={handleDeleteCategories}
+          onClick={() => handleDeleteCategories(selectedCategories)}
           className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
         >
           <TrashIcon className="h-5 w-5" /> Xóa đã chọn
@@ -137,8 +131,8 @@ const CategoriesList = () => {
             </tr>
           </thead>
           <tbody>
-            {ListCategory.map((item, index) => (
-              <tr key={`categories-${index}`} className="hover:bg-gray-50">
+            {ListCategory.map((item) => (
+              <tr key={item.CategoryID} className="hover:bg-gray-50">
                 <td className="border-b p-1">
                   <Checkbox
                     checked={selectedCategories.includes(item.CategoryID)}
@@ -158,7 +152,7 @@ const CategoriesList = () => {
                     <PencilIcon className="h-4 w-4" />
                   </Link>
                   <button
-                    onClick={() => handleDeleteCategories([item.CategoryID])}
+                    onClick={() => handleDeleteCategories([item.CategoryID])} // Gọi hàm xóa với ID của danh mục
                     className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
                   >
                     <TrashIcon className="h-4 w-4" />

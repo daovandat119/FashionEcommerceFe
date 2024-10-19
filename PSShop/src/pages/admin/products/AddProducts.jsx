@@ -59,7 +59,7 @@ const AddProducts = () => {
         if (file) {
           const error = validateImage(file);
           if (error) {
-            setErrors(prev => ({ ...prev, [name]: [error] }));
+            setErrors((prev) => ({ ...prev, [name]: [error] }));
             return;
           }
           const reader = new FileReader();
@@ -76,7 +76,7 @@ const AddProducts = () => {
         const fileArray = Array.from(files);
         const errors = fileArray.map(validateImage).filter(Boolean);
         if (errors.length) {
-          setErrors(prev => ({ ...prev, [name]: errors }));
+          setErrors((prev) => ({ ...prev, [name]: errors }));
           return;
         }
         const readerPromises = fileArray.map((file) => {
@@ -126,20 +126,14 @@ const AddProducts = () => {
 
     try {
       const response = await AddProduct(formData);
-      console.log("API Response:", response);
-
-      if (response && response.data) {
-        navigate("/admin/products", {
-          state: {
-            success: true,
-            message: "Sản phẩm đã được thêm thành công!",
-            newProduct: response.data,
-          },
-        });
-        toast.success("Sản phẩm đã được thêm thành công!");
-      } else {
-        throw new Error("Không nhận được phản hồi từ server");
-      }
+      navigate("/admin/products", {
+        state: {
+          success: true,
+          message: "Sản phẩm đã được thêm thành công!",
+          newProduct: response.data,
+        },
+      });
+      toast.success("Sản phẩm đã được thêm thành công!");
     } catch (err) {
       console.error("Error adding product:", err);
       console.log("Error response:", err.response);
@@ -147,7 +141,7 @@ const AddProducts = () => {
       if (err.response && err.response.data) {
         console.log("Validation errors:", err.response.data);
         setErrors(err.response.data);
-        
+
         // Hiển thị tất cả các lỗi validation
         Object.values(err.response.data).forEach((errorMessages) => {
           errorMessages.forEach((message) => {
@@ -215,17 +209,20 @@ const AddProducts = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!productData.ProductName) newErrors.ProductName = ["Tên sản phẩm là bắt buộc"];
-    if (!productData.CategoryID) newErrors.CategoryID = ["Danh mục là bắt buộc"];
+    if (!productData.ProductName)
+      newErrors.ProductName = ["Tên sản phẩm là bắt buộc"];
+    if (!productData.CategoryID)
+      newErrors.CategoryID = ["Danh mục là bắt buộc"];
     if (!productData.Price) newErrors.Price = ["Giá là bắt buộc"];
-    if (!productData.MainImageURL) newErrors.MainImageURL = ["Ảnh chính là bắt buộc"];
-    
+    if (!productData.MainImageURL)
+      newErrors.MainImageURL = ["Ảnh chính là bắt buộc"];
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateImage = (file) => {
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const validTypes = ["image/jpeg", "image/png", "image/gif"];
     const maxSize = 10 * 1024 * 1024; // 2MB
 
     if (!validTypes.includes(file.type)) {
@@ -251,7 +248,6 @@ const AddProducts = () => {
               name="ProductName"
               value={productData.ProductName}
               onChange={handleChange}
-              required
             />
             {errors.ProductName && (
               <p className="text-red-500 text-xs mt-1">
@@ -300,7 +296,6 @@ const AddProducts = () => {
               type="number"
               value={productData.Price}
               onChange={handleChange}
-              required
             />
             {errors.Price && (
               <p className="text-red-500 text-xs mt-1">{errors.Price[0]}</p>

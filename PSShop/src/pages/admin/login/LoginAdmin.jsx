@@ -12,14 +12,14 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loi, setLoi] = useState("");
   const navigate = useNavigate();
-  const { login, isAuthenticated, cleanupStorage } = useAuth();
+  const { login, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    cleanupStorage(); // Cleanup storage when component mounts
+    // Nếu đã đăng nhập, điều hướng đến trang dashboard
     if (isAuthenticated) {
       navigate("/admin/dashboard");
     }
-  }, [isAuthenticated, navigate, cleanupStorage]);
+  }, [isAuthenticated, navigate]);
 
   const validateForm = () => {
     let tempErrors = {};
@@ -43,9 +43,9 @@ const Login = () => {
     if (validateForm()) {
       try {
         const res = await LoginAdmin(Email, Password);
-        console.log(res);
         if (res && res.token) {
-          login(res.token, res.user);
+          // Lưu token khi đăng nhập thành công
+          login(res.token); // Gọi hàm login với token
           navigate("/admin/dashboard");
         } else {
           setLoi("Tài khoản hoặc mật khẩu không chính xác");

@@ -1,5 +1,5 @@
-import  { useEffect, useState } from "react";
-import { Input, Checkbox } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
+import { Input, Checkbox, Avatar } from "@material-tailwind/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
@@ -102,7 +102,9 @@ const ProductsList = () => {
           setSelectedProducts([]);
         } else {
           // Trường hợp khác
-          throw new Error(response.data?.message || "Có lỗi xảy ra khi xóa sản phẩm");
+          throw new Error(
+            response.data?.message || "Có lỗi xảy ra khi xóa sản phẩm"
+          );
         }
       } catch (error) {
         console.error("Lỗi khi xóa sản phẩm:", error);
@@ -111,7 +113,10 @@ const ProductsList = () => {
           if (error.response.status === 404) {
             toast.error("Sản phẩm không tồn tại hoặc đã bị xóa");
           } else {
-            toast.error("Xóa sản phẩm thất bại: " + (error.response.data?.message || "Có lỗi xảy ra"));
+            toast.error(
+              "Xóa sản phẩm thất bại: " +
+                (error.response.data?.message || "Có lỗi xảy ra")
+            );
           }
         } else if (error.request) {
           toast.error("Không nhận được phản hồi từ server");
@@ -191,9 +196,7 @@ const ProductsList = () => {
                 <td className="border-b p-4 flex items-center">
                   {item.MainImageURL ? (
                     <img
-                      src={`${import.meta.env.VITE_API_URL}/${
-                        item.MainImageURL
-                      }`}
+                      src={item.MainImageURL}
                       alt={item.ProductName}
                       className="w-14 h-14 object-cover mr-3"
                       onError={(e) => {
@@ -230,7 +233,6 @@ const ProductsList = () => {
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
-                
                 </td>
               </tr>
             ))}

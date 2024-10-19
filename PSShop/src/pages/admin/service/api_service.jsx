@@ -21,7 +21,7 @@ const UpdateCategory = (CategoryID, CategoryName) => {
 };
 
 const DeleteCategories = (ids) => {
-  const idsString = Array.isArray(ids) ? ids.join(',') : ids;
+  const idsString = Array.isArray(ids) ? ids.join(",") : ids;
   return axios.delete(`/api/categories`, { data: { ids: idsString } });
 };
 
@@ -31,15 +31,16 @@ const ListProducts = (page) => {
 
 // Thêm hàm DeleteProducts
 const DeleteProducts = (ids) => {
-  const idsString = Array.isArray(ids) ? ids.join(',') : ids;
+  const idsString = Array.isArray(ids) ? ids.join(",") : ids;
   return axios.delete(`/api/products`, { data: { ids: idsString } });
 };
 
 const AddProduct = (productData) => {
+  console.log(productData);
   return axios.post("/api/products", productData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      "Content-Type": "multipart/form-data",
+    },
   });
 };
 
@@ -48,11 +49,11 @@ const GetProductById = (ProductID) => {
   return axios.get(`/api/products/${ProductID}`);
 };
 
-const UpdateProduct = (ProductID, productData) => {
+const UpdateProduct = async (ProductID, productData) => {
   return axios.post(`/api/products/${ProductID}`, productData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      "Content-Type": "multipart/form-data",
+    },
   });
 };
 
@@ -98,6 +99,7 @@ const DeleteSizes = (SizeID) => {
 };
 
 const AddProductVariant = (variantData) => {
+  console.log(variantData);
   return axios.post("/api/product-variants", variantData);
 };
 
@@ -105,13 +107,17 @@ const GetProductVariants = (ProductID) => {
   return axios.post(`/api/product-variants/productID`, { ProductID });
 };
 
-export { 
-  LoginAdmin, 
-  ListCategories, 
-  AddCategory, 
-  GetCategoryById, 
-  UpdateCategory, 
-  DeleteCategories, 
+const ListUsers = (page) => {
+  return axios.get(`/api/users?page=${page}`);
+};
+
+export {
+  LoginAdmin,
+  ListCategories,
+  AddCategory,
+  GetCategoryById,
+  UpdateCategory,
+  DeleteCategories,
   ListProducts,
   DeleteProducts,
   AddProduct,
@@ -128,5 +134,6 @@ export {
   UpdateSize,
   DeleteSizes,
   AddProductVariant,
-  GetProductVariants
+  GetProductVariants,
+  ListUsers,
 };

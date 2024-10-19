@@ -29,8 +29,9 @@ export function SidebarWithSearch() {
     logout();
     navigate("/admin/login");
   };
+
   return (
-    <Card className="h-[100vh] w-full max-w-[20rem] p-4  ">
+    <Card className="h-[100vh] w-full max-w-[20rem] p-4">
       <div className="mb-2 flex items-center gap-4 p-4">
         <img
           src="https://docs.material-tailwind.com/img/logo-ct-dark.png"
