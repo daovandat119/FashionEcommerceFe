@@ -1,30 +1,87 @@
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Cart() {
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
-  const setQuantity = (id, quantity) => {
-    if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.id == id)[0];
-      const items = [...cartProducts];
-      const itemIndex = items.indexOf(item);
-      item.quantity = quantity;
-      items[itemIndex] = item;
-      setCartProducts(items);
-    }
-  };
-  const removeItem = (id) => {
-    setCartProducts((pre) => [...pre.filter((elm) => elm.id != id)]);
-  };
-
+  const { cartProducts, setCartProducts, totalPrice, setTotalPrice } = useContextElement();
+  
   const [checkboxes, setCheckboxes] = useState({
     free_shipping: false,
     flat_rate: false,
     local_pickup: false,
   });
 
-  // Step 2: Create a handler function
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      axios.get("http://127.0.0.1:8000/api/cart-items/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+      .then(response => {
+        const cartData = response.data.data;
+
+        if (Array.isArray(cartData)) {
+          setCartProducts(cartData);
+          setTotalPrice(calculateTotalPrice(cartData)); // Calculate the total price on load
+        } else {
+          console.error("Invalid cart data:", cartData);
+        }
+      })
+      .catch(error => {
+        console.error("API error:", error);
+      });
+    } else {
+      console.log("User not logged in");
+    }
+  }, []);
+  
+  // Calculate total price
+  const calculateTotalPrice = (products) => {
+    return products.reduce((total, product) => {
+      const productPrice = product.Price || 0;
+      const productQuantity = product.Quantity || 0;
+      return total + productPrice * productQuantity;
+    }, 0);
+  };
+
+  // Update quantity
+  const setQuantity = (id, quantity) => {
+    if (quantity >= 1) {
+      const updatedItems = cartProducts.map((item) =>
+        item.id === id ? { ...item, Quantity: quantity } : item
+      );
+      setCartProducts(updatedItems);
+      setTotalPrice(calculateTotalPrice(updatedItems)); // Update total price
+    }
+  };
+
+  // Remove item
+  const removeItem = (id) => {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      axios.delete(`http://127.0.0.1:8000/api/cart-items/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(response => {
+        // Update local state after successful deletion from backend
+        const updatedCart = cartProducts.filter((item) => item.id !== id);
+        setCartProducts(updatedCart);
+        setTotalPrice(calculateTotalPrice(updatedCart)); // Update total price after removal
+      })
+      .catch(error => {
+        console.error("Error removing item:", error);
+      });
+    }
+  };
+
+  // Handle checkbox change
   const handleCheckboxChange = (event) => {
     const { id, checked } = event.target;
     setCheckboxes((prevCheckboxes) => ({
@@ -32,6 +89,7 @@ export default function Cart() {
       [id]: checked,
     }));
   };
+
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
       <div className="cart-table__wrapper">
@@ -49,13 +107,13 @@ export default function Cart() {
                 </tr>
               </thead>
               <tbody>
-                {cartProducts.map((elm, i) => (
+                {cartProducts.map((item, i) => (
                   <tr key={i}>
                     <td>
                       <div className="shopping-cart__product-item">
                         <img
                           loading="lazy"
-                          src={elm.imgSrc}
+                          src={item.MainImageURL}
                           width="120"
                           height="120"
                           alt="image"
@@ -64,16 +122,16 @@ export default function Cart() {
                     </td>
                     <td>
                       <div className="shopping-cart__product-item__detail">
-                        <h4>{elm.title}</h4>
+                        <h4>{item.title}</h4>
                         <ul className="shopping-cart__product-item__options">
-                          <li>Color: Yellow</li>
-                          <li>Size: L</li>
+                          <li>Color: {item.color}</li>
+                          <li>Size: {item.size}</li>
                         </ul>
                       </div>
                     </td>
                     <td>
                       <span className="shopping-cart__product-price">
-                        ${elm.price}
+                        ${item.Price}
                       </span>
                     </td>
                     <td>
@@ -81,21 +139,21 @@ export default function Cart() {
                         <input
                           type="number"
                           name="quantity"
-                          value={elm.quantity}
+                          value={item.Quantity}
                           min={1}
                           onChange={(e) =>
-                            setQuantity(elm.id, e.target.value / 1)
+                            setQuantity(item.id, e.target.value / 1)
                           }
                           className="qty-control__number text-center"
                         />
                         <div
-                          onClick={() => setQuantity(elm.id, elm.quantity - 1)}
+                          onClick={() => setQuantity(item.id, item.Quantity - 1)}
                           className="qty-control__reduce"
                         >
                           -
                         </div>
                         <div
-                          onClick={() => setQuantity(elm.id, elm.quantity + 1)}
+                          onClick={() => setQuantity(item.id, item.Quantity + 1)}
                           className="qty-control__increase"
                         >
                           +
@@ -104,12 +162,12 @@ export default function Cart() {
                     </td>
                     <td>
                       <span className="shopping-cart__subtotal">
-                        ${elm.price * elm.quantity}
+                        ${item.Price * item.Quantity}
                       </span>
                     </td>
                     <td>
                       <a
-                        onClick={() => removeItem(elm.id)}
+                        onClick={() => removeItem(item.id)}
                         className="remove-cart"
                       >
                         <svg
@@ -125,7 +183,7 @@ export default function Cart() {
                       </a>
                     </td>
                   </tr>
-                ))}
+                ))}  
               </tbody>
             </table>
             <div className="cart-table-footer">
@@ -151,7 +209,6 @@ export default function Cart() {
         ) : (
           <>
             <div className="fs-20">Shop cart is empty</div>
-
             <button className="btn mt-3 btn-light">
               <Link to={"/shop-1"}>Explore Products</Link>
             </button>
@@ -229,28 +286,17 @@ export default function Cart() {
                   <tr>
                     <th>Total</th>
                     <td>
-                      $
-                      {49 * checkboxes.flat_rate +
-                        8 * checkboxes.local_pickup +
-                        totalPrice +
-                        19}
+                      $$
+                      {totalPrice + (checkboxes.flat_rate ? 49 : 0) + (checkboxes.local_pickup ? 8 : 0)}
                     </td>
                   </tr>
                 </tbody>
               </table>
-            </div>
-            <div className="mobile_fixed-btn_wrapper">
-              <div className="button-wrapper container">
-                <button className="btn btn-primary btn-checkout">
-                  PROCEED TO CHECKOUT
-                </button>
-              </div>
+              <button className="btn btn-primary">PROCEED TO CHECKOUT</button>
             </div>
           </div>
         </div>
-      ) : (
-        ""
-      )}
+      ) : null}
     </div>
   );
 }

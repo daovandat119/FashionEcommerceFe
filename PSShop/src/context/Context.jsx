@@ -1,80 +1,121 @@
 /* eslint-disable react/prop-types */
-import { allProducts } from "../data/products";
-import React, { useEffect } from "react";
-import { useContext, useState } from "react";
-const dataContext = React.createContext();
-// eslint-disable-next-line react-refresh/only-export-components
+import axios from "axios";
+import React, { useEffect, useContext, useState } from "react";
+
+// Tạo DataContext
+const DataContext = React.createContext();
+
+// Tạo hook để sử dụng context
 export const useContextElement = () => {
-  return useContext(dataContext);
+  return useContext(DataContext);
 };
 
-export default function Context({ children }) {
+export default function ContextProvider({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [wishList, setWishList] = useState([]);
-  const [quickViewItem, setQuickViewItem] = useState(allProducts[0]);
+  const [quickViewItem, setQuickViewItem] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
+
+  // Tính tổng giá khi giỏ hàng thay đổi
   useEffect(() => {
-    const subtotal = cartProducts.reduce((accumulator, product) => {
-      return accumulator + product.quantity * product.price;
+    const total = cartProducts.reduce((acc, product) => {
+      return acc + product.price * product.quantity;
     }, 0);
-    setTotalPrice(subtotal);
+    setTotalPrice(total);
   }, [cartProducts]);
 
-  const addProductToCart = (id) => {
-    if (!cartProducts.filter((elm) => elm.id == id)[0]) {
-      const item = {
-        ...allProducts.filter((elm) => elm.id == id)[0],
-        quantity: 1,
-      };
-      setCartProducts((pre) => [...pre, item]);
+  // Thêm sản phẩm vào giỏ hàng
+  const addProductToCart = async (productId, colorId, sizeId, quantity) => {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
 
-      document
-        .getElementById("cartDrawerOverlay")
-        .classList.add("page-overlay_visible");
-      document.getElementById("cartDrawer").classList.add("aside_visible");
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/cart-items`,
+        {
+          productID: productId,
+          colorID: colorId,
+          sizeID: sizeId,
+          quantity: quantity,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // Đảm bảo dữ liệu trả về từ backend là một mảng
+      const updatedCart = Array.isArray(response.data) ? response.data : [];
+      setCartProducts(updatedCart);
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Error setting up request:", error.message);
+      }
     }
   };
+
+  // Kiểm tra sản phẩm đã được thêm vào giỏ hàng
   const isAddedToCartProducts = (id) => {
-    if (cartProducts.filter((elm) => elm.id == id)[0]) {
-      return true;
-    }
-    return false;
+    return cartProducts.some((product) => product.id === id);
   };
 
+  // Thêm hoặc xóa sản phẩm khỏi wishlist
   const toggleWishlist = (id) => {
-    if (wishList.includes(id)) {
-      setWishList((pre) => [...pre.filter((elm) => elm != id)]);
-    } else {
-      setWishList((pre) => [...pre, id]);
-    }
+    setWishList((prevWishList) =>
+      prevWishList.includes(id)
+        ? prevWishList.filter((productId) => productId !== id)
+        : [...prevWishList, id]
+    );
   };
+
+  // Kiểm tra sản phẩm trong wishlist
   const isAddedtoWishlist = (id) => {
-    if (wishList.includes(id)) {
-      return true;
-    }
-    return false;
+    return wishList.includes(id);
   };
+
+  // Lấy dữ liệu giỏ hàng từ localStorage khi component mount
   useEffect(() => {
-    const items = JSON.parse(localStorage.getItem("cartList"));
-    if (items?.length) {
-      setCartProducts(items);
+    const storedCart = localStorage.getItem("cartProducts");
+    if (storedCart) {
+      const parsedCart = JSON.parse(storedCart);
+      // Kiểm tra xem parsedCart có phải là mảng không
+      if (Array.isArray(parsedCart)) {
+        setCartProducts(parsedCart);
+      } else {
+        setCartProducts([]); // Nếu không phải là mảng, khởi tạo thành mảng rỗng
+      }
     }
   }, []);
 
+  // Lưu dữ liệu giỏ hàng vào localStorage khi giỏ hàng thay đổi
   useEffect(() => {
-    localStorage.setItem("cartList", JSON.stringify(cartProducts));
+    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
   }, [cartProducts]);
+
+  // Lấy dữ liệu wishlist từ localStorage khi component mount
   useEffect(() => {
-    const items = JSON.parse(localStorage.getItem("wishlist"));
-    if (items?.length) {
-      setWishList(items);
+    const storedWishlist = localStorage.getItem("wishList");
+    if (storedWishlist) {
+      setWishList(JSON.parse(storedWishlist));
     }
   }, []);
 
+  // Lưu dữ liệu wishlist vào localStorage khi wishlist thay đổi
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishList));
+    localStorage.setItem("wishList", JSON.stringify(wishList));
   }, [wishList]);
 
+  // Tạo đối tượng context để truyền cho Provider
   const contextElement = {
     cartProducts,
     setCartProducts,
@@ -87,9 +128,10 @@ export default function Context({ children }) {
     wishList,
     setQuickViewItem,
   };
+
   return (
-    <dataContext.Provider value={contextElement}>
+    <DataContext.Provider value={contextElement}>
       {children}
-    </dataContext.Provider>
+    </DataContext.Provider>
   );
 }
