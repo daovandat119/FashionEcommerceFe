@@ -1,50 +1,41 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Input, Button, Checkbox } from "@material-tailwind/react";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { Table } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Button } from "@material-tailwind/react";
+import { Link, useParams } from 'react-router-dom'; // Import Link và useParams từ react-router-dom
+import { GetUserById } from '../service/api_service'; // Import hàm GetUserById
 
 const UpdateUser = () => {
+  const { id } = useParams(); // Lấy UserID từ URL
   const [userData, setUserData] = useState({
     username: "",
     email: "",
-    password: "",
+    image: "",
+    isActive: false,
     role: "",
   });
 
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  const roles = [
-    { id: 1, name: "Admin" },
-    { id: 2, name: "User" },
-    { id: 3, name: "Moderator" },
-  ];
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleRoleSelect = (roleName) => {
-    setUserData((prevData) => ({
-      ...prevData,
-      role: roleName,
-    }));
-    setIsOpen(false);
-  };
-
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+    const fetchUserDetail = async () => {
+      try {
+        const response = await GetUserById(id); 
+        const user = response; 
+        if (user) {
+          setUserData({
+            username: user.Username || "",
+            email: user.Email || "",
+            image: user.Image || "",
+            isActive: user.IsActive === 1, // Chuyển đổi từ số sang boolean
+            role: user.RoleID === 1 ? "Admin" : user.RoleID === 2 ? "User" : "Moderator",
+          });
+        } else {
+          console.error("User not found");
+        }
+      } catch (err) {
+        console.error("Error fetching user details:", err);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    fetchUserDetail();
+  }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,61 +44,54 @@ const UpdateUser = () => {
 
   return (
     <div className="flex">
-      <div className="w-full px-4 py-8">
+      <div className="w-[50%] mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Update User</h1>
         <div className="bg-white rounded-lg shadow p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              label="Username"
-              name="username"
-              value={userData.username}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              value={userData.email}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Password"
-              name="password"
-              type="password"
-              value={userData.password}
-              onChange={handleChange}
-              required
-            />
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                {userData.role || "Select Role"}
-                <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
-              </button>
-              {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
-                  <ul className="py-1 overflow-auto text-base max-h-60">
-                    {roles.map((role) => (
-                      <li
-                        key={role.id}
-                        className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleRoleSelect(role.name)}
-                      >
-                        {role.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            <div>
+              <label className="block mb-1">Username:</label>
+              <span className="border border-gray-300 rounded-md p-2 bg-slate-200 w-full block">
+                {userData.username || "N/A"}
+              </span>
             </div>
-            <Button type="submit" color="green">
-              Update User
-            </Button>
+            <div>
+              <label className="block mb-1">Email:</label>
+              <span className="border border-gray-300 bg-slate-200 rounded-md p-2 w-full block">
+                {userData.email || "N/A"}
+              </span>
+            </div>
+            <div>
+              <label className="block mb-1">Image:</label>
+              <span className="border border-gray-300 bg-slate-200 rounded-md p-2 w-full block">
+                {userData.image || "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center">
+              <label className="mr-2">Is Active:</label>
+              <select
+                name="isActive"
+                value={userData.isActive ? "ACTIVE" : "BLOCKED"}
+                onChange={(e) => setUserData((prev) => ({ ...prev, isActive: e.target.value === "ACTIVE" }))}
+                className="border border-gray-300 rounded-md p-2"
+              >
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="BLOCKED">BLOCKED</option>
+              </select>
+            </div>
+            <div className="flex gap-2 items-center">
+              <label className="block ">ROLE:</label>
+              <span className=" border-gray-300 rounded-md  text-xl font-medium block">
+                {userData.role || "N/A"}
+              </span>
+            </div>
+            <div className="flex justify-between mt-4">
+              <Link to="/admin/users" className="flex items-center font-medium bg-blue-500 px-4 py-2 rounded-lg text-white hover:bg-blue-600">
+                Back to User List
+              </Link>
+              <Button type="submit" color="green">
+                Update User
+              </Button>
+            </div>
           </form>
         </div>
       </div>

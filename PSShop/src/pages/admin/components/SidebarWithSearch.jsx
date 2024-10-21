@@ -20,6 +20,8 @@ import {
   ArrowsPointingOutIcon,
 } from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import logo from "../../../../public/assets/images/logo.png";
+
 
 export function SidebarWithSearch() {
   const navigate = useNavigate();
@@ -32,17 +34,11 @@ export function SidebarWithSearch() {
 
   return (
     <Card className="h-[100vh] w-full max-w-[20rem] p-4">
-      <div className="mb-2 flex items-center gap-4 p-4">
-        <img
-          src="https://docs.material-tailwind.com/img/logo-ct-dark.png"
-          alt="brand"
-          className="h-8 w-8"
-        />
-        <Typography variant="h5" color="blue-gray">
-          Admin Panel
-        </Typography>
+      <div className=" flex items-center justify-center ">
+      <img className="w-20  " src={logo} alt="Logo" />
+        <p className="text-2xl font-bold ">ADMIN</p>
       </div>
-      <div className="p-2">
+      <div className="p-2 mt-10">
         <Input
           icon={<MagnifyingGlassIcon className="h-5 w-5" />}
           label="Search"
@@ -104,9 +100,9 @@ export function SidebarWithSearch() {
           Settings
         </ListItem>
 
-        <ListItem onClick={handleLogout}>
+        <ListItem className="mt-20" onClick={handleLogout}>
           <ListItemPrefix>
-            <PowerIcon className="h-5 w-5" />
+            <PowerIcon className="h-5 w-5 " />
           </ListItemPrefix>
           Logout
         </ListItem>

@@ -25,7 +25,6 @@ const SizeList = () => {
           size.SizeID === location.state.updatedSize.SizeID ? location.state.updatedSize : size
         ));
       }
-      // Xóa state để tránh hiển thị lại thông báo khi reload
       window.history.replaceState({}, document.title);
     }
   }, [location]);
@@ -34,7 +33,7 @@ const SizeList = () => {
     try {
       const res = await ListSizes(page);
       if (res && res.data) {
-        setSizes(res.data);
+        setSizes(res.data.map(size => ({ ...size, isActive: true }))); // Mặc định là bật
         setTotalPages(res.totalPage);
         setCurrentPage(page);
       }
@@ -64,28 +63,22 @@ const SizeList = () => {
         for (const SizeID of SizeIDs) {
           await DeleteSizes(SizeID);
         }
-        toast.success("Xóa thành công", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.success("Xóa thành công");
         getSizes(currentPage); // Tải lại danh sách
         setSelectedSizes([]); // Reset danh sách đã chọn
       } catch (error) {
         console.error("Lỗi khi xóa kích thước:", error);
-        toast.error("Xóa không thành công: " + error.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error("Xóa không thành công: " + error.message);
       }
     }
+  };
+
+  const handleToggle = (SizeID) => {
+    setSizes(prevSizes =>
+      prevSizes.map(size =>
+        size.SizeID === SizeID ? { ...size, isActive: !size.isActive } : size
+      )
+    );
   };
 
   return (
@@ -93,8 +86,8 @@ const SizeList = () => {
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Sizes Management</h1>
       <div className="flex justify-between items-center mb-6">
-        <div className="w-1/2">
-          <Input
+        <div className="w-1/2 bg-white rounded-lg shadow">
+          <Input 
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search sizes"
           />
@@ -131,7 +124,10 @@ const SizeList = () => {
                 </td>
                 <td className="border-b p-4">{size.SizeName}</td>
                 <td className="border-b p-4">
-                  <ToggleSwitch />
+                  <ToggleSwitch
+                    isOn={size.isActive} // Truyền trạng thái isActive vào ToggleSwitch
+                    handleToggle={() => handleToggle(size.SizeID)} // Gọi hàm toggle
+                  />
                 </td>
                 <td className="border-b p-4">
                   <Link

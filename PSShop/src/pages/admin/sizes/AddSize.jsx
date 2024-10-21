@@ -22,17 +22,28 @@ const AddSizeComponent = () => {
       const response = await AddSize(SizeName);
       console.log("Kích thước đã được thêm:", response);
       if (response && response.data) {
+        toast.success("Thêm kích thước mới thành công!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         navigate("/admin/sizes", {
-          state: { success: true, message: "Thêm kích thước mới thành công!" }
+          state: { success: true, newSize: response.data },
         });
       } else {
         setError("Không thể thêm kích thước. Vui lòng thử lại.");
       }
     } catch (err) {
       console.error("Lỗi khi thêm kích thước:", err);
-      setError(
-        err.response?.data?.message || "Đã xảy ra lỗi khi thêm kích thước"
-      );
+      // Hiển thị thông báo lỗi từ API
+      if (err.response && err.response.data) {
+        toast.error(err.response.data.SizeName[0] || "Đã xảy ra lỗi khi thêm kích thước");
+      } else {
+        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+      }
     }
   };
 
@@ -56,7 +67,7 @@ const AddSizeComponent = () => {
               type="text"
               value={SizeName}
               onChange={(e) => setSizeName(e.target.value)}
-              required
+              
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

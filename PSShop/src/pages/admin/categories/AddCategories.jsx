@@ -33,11 +33,13 @@ const AddCategoryComponent = () => {
       } else {
         setError("Không thể kích hoạt danh mục. Vui lòng thử lại.");
       }
-    } catch (err) {
-      console.error("Lỗi khi thêm danh mục:", err);
-      setError(
-        err.response?.data?.message || "Đã xảy ra lỗi khi thêm danh mục"
-      );
+    }  catch (err) {
+      // Hiển thị thông báo lỗi từ API
+      if (err.response && err.response.data) {
+        toast.error(err.response.data.CategoryName[0] || "Đã xảy ra lỗi khi thêm danh mục");
+      } else {
+        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+      }
     }
   };
 

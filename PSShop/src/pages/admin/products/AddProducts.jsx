@@ -5,6 +5,7 @@ import { Input, Button, Textarea } from "@material-tailwind/react";
 import { ChevronDownIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa"; // Import icon spinner
 
 const AddProducts = () => {
   const [productData, setProductData] = useState({
@@ -24,6 +25,7 @@ const AddProducts = () => {
   const [errors, setErrors] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // Add loading state
 
   useEffect(() => {
     fetchCategories();
@@ -43,8 +45,8 @@ const AddProducts = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await ListCategories(1, 1000);
-      setCategories(response.data);
+      const response = await ListCategories(1, ""); // Lấy tất cả danh mục
+      setCategories(response.data); // Đảm bảo rằng response.data chứa danh sách danh mục
     } catch (err) {
       console.error("Error fetching categories:", err);
       toast.error("Failed to load categories");
@@ -110,6 +112,7 @@ const AddProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    setLoading(true); // Set loading to true when starting the submit
 
     const formData = new FormData();
     for (const key in productData) {
@@ -151,6 +154,8 @@ const AddProducts = () => {
       } else {
         toast.error(err.message || "Đã xảy ra lỗi khi thêm sản phẩm");
       }
+    } finally {
+      setLoading(false); // Set loading to false after the operation
     }
   };
 
@@ -198,7 +203,7 @@ const AddProducts = () => {
             </label>
             <p className="pl-1">or drag and drop</p>
           </div>
-          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
         </div>
       </div>
       {errors[name] && (
@@ -236,6 +241,38 @@ const AddProducts = () => {
     return null;
   };
 
+  const renderCategorySelect = () => (
+    <div className="mb-4 relative">
+      <button
+        type="button"
+        className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {productData.CategoryID
+          ? categories.find((cat) => cat.CategoryID === productData.CategoryID)?.CategoryName
+          : "Select Category"}
+      </button>
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+          <ul className="py-1 overflow-auto text-base max-h-60">
+            {categories.map((category) => (
+              <li
+                key={category.CategoryID}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                onClick={() => handleCategorySelect(category.CategoryID)}
+              >
+                {category.CategoryName}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {errors.CategoryID && (
+        <p className="text-red-500 text-xs mt-1">{errors.CategoryID[0]}</p>
+      )}
+    </div>
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
@@ -255,40 +292,7 @@ const AddProducts = () => {
               </p>
             )}
           </div>
-          <div className="mb-4 relative">
-            <button
-              type="button"
-              className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {productData.CategoryID
-                ? categories.find(
-                    (cat) => cat.CategoryID === productData.CategoryID
-                  )?.CategoryName
-                : "Select Category"}
-              <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
-            </button>
-            {isOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
-                <ul className="py-1 overflow-auto text-base max-h-60">
-                  {categories.map((category) => (
-                    <li
-                      key={category.CategoryID}
-                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleCategorySelect(category.CategoryID)}
-                    >
-                      {category.CategoryName}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {errors.CategoryID && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.CategoryID[0]}
-              </p>
-            )}
-          </div>
+          {renderCategorySelect()}
           <div className="mb-4">
             <Input
               label="Price"
@@ -354,12 +358,24 @@ const AddProducts = () => {
             >
               List Products
             </Link>
-            <Button type="submit" color="green">
-              Add Product
+            <Button type="submit" color="green" disabled={loading}>
+              {loading ? "Loading..." : "Add Product"}
             </Button>
           </div>
         </form>
       </div>
+
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 z-50 backdrop-blur-sm">
+          <div className="bg-gray-900 p-6 rounded-lg shadow-lg flex items-center">
+            <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            <span className="ml-4 text-white text-lg font-semibold">
+              Đang cập nhật sản phẩm, vui lòng chờ...
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

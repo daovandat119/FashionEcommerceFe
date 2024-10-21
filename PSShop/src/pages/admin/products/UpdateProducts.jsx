@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+
 import { Input, Button, Textarea, Checkbox } from "@material-tailwind/react";
 import {
   ChevronDownIcon,
@@ -16,8 +17,11 @@ import {
   ListSizes,
   AddProductVariant,
   GetProductVariants,
+  DeleteProductVariant,
 } from "../service/api_service";
 import { toast, ToastContainer } from "react-toastify";
+import { TailSpin } from "react-loader-spinner"; // Import the spinner
+import { FaSpinner } from "react-icons/fa"; // Import icon spinner từ react-icons
 
 const UpdateProducts = () => {
   const { ProductID } = useParams();
@@ -46,6 +50,7 @@ const UpdateProducts = () => {
   const [variantPrice, setVariantPrice] = useState("");
   const [variantQuantity, setVariantQuantity] = useState("");
   const [selectedVariants, setSelectedVariants] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (ProductID) {
@@ -54,74 +59,38 @@ const UpdateProducts = () => {
       toast.error("Không tìm thấy ID sản phẩm");
       navigate("/admin/products");
     }
-  }, []); // Chỉ chạy một lần khi component mount
+  }, [ProductID]);
 
   const fetchProductData = async () => {
     try {
-      await Promise.all([
-        fetchProduct(),
-        fetchCategories(),
-        fetchColors(),
-        fetchSizes(),
-        fetchProductVariants(),
+      const [productResponse, categoriesResponse, colorsResponse, sizesResponse] = await Promise.all([
+        GetProductById(ProductID),
+        ListCategories(1, ""), // Lấy danh mục
+        ListColors(1, ""), // Lấy màu sắc
+        ListSizes(1, ""), // Lấy kích thước
       ]);
-    } catch (error) {
-      console.error("Error fetching product data:", error);
-      toast.error("Không thể tải thông tin sản phẩm");
-    }
-  };
 
-  const fetchProduct = async () => {
-    try {
-      const response = await GetProductById(ProductID);
-      if (response && response.data) {
-        const product = response.data.product;
-
-        // Xử lý image_path
-        const imagePaths = product.image_path
-          ? product.image_path.split(",")
-          : [];
+      if (productResponse && productResponse.data) {
+        const product = productResponse.data.product;
+        const imagePaths = product.image_path ? product.image_path.split(",") : [];
         setProductData({
           ...product,
           MainImagePreview: product.MainImageURL || null,
           ImagePath: imagePaths,
-          ImagePathPreviews: imagePaths.map((path) => path.trim()), // Không thêm bất kỳ phần nào khác
+          ImagePathPreviews: imagePaths.map((path) => path.trim()),
         });
       }
+
+      setCategories(categoriesResponse.data); // Lưu danh mục vào state
+      setColors(colorsResponse.data); // Lưu màu sắc vào state
+      setSizes(sizesResponse.data); // Lưu kích thước vào state
+
+      // Gọi hàm để lấy danh sách biến thể sản phẩm
+      await fetchProductVariants();
     } catch (error) {
-      console.error("Error fetching product:", error);
+      console.error("Error fetching product data:", error);
       toast.error("Không thể tải thông tin sản phẩm");
       navigate("/admin/products");
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const response = await ListCategories(1, 1000);
-      setCategories(response.data);
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-      toast.error("Failed to load categories");
-    }
-  };
-
-  const fetchColors = async () => {
-    try {
-      const response = await ListColors(1, 1000);
-      setColors(response.data);
-    } catch (err) {
-      console.error("Error fetching colors:", err);
-      toast.error("Failed to load colors");
-    }
-  };
-
-  const fetchSizes = async () => {
-    try {
-      const response = await ListSizes(1, 1000);
-      setSizes(response.data);
-    } catch (err) {
-      console.error("Error fetching sizes:", err);
-      toast.error("Failed to load sizes");
     }
   };
 
@@ -129,7 +98,7 @@ const UpdateProducts = () => {
     try {
       const response = await GetProductVariants(ProductID);
       if (response && response.data) {
-        setProductVariants(response.data);
+        setProductVariants(response.data); // Lưu danh sách biến thể vào state
       }
     } catch (error) {
       console.error("Error fetching product variants:", error);
@@ -186,76 +155,28 @@ const UpdateProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    setLoading(true);
 
     const formData = new FormData();
-
-    // Chỉ gửi các trường cần thiết
     for (const key in productData) {
-      if (key === "ImagePath") {
-        // Xử lý các ảnh khác
-        if (Array.isArray(productData[key])) {
-          productData[key].forEach((file, index) => {
-            if (file instanceof File) {
-              formData.append(`ImagePath[${index}]`, file);
-            }
-          });
-        }
-      } else if (key === "MainImageURL") {
-        // Nếu có ảnh mới, gửi ảnh mới
-        if (productData[key] instanceof File) {
-          formData.append(key, productData[key]);
-        } else {
-          // Nếu không có ảnh mới, gửi URL cũ
-          if (productData.MainImagePreview) {
-            formData.append(key, productData.MainImagePreview);
-          } else {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              MainImageURL: ["URL hình ảnh chính không được bỏ trống"],
-            }));
-            return; // Dừng lại nếu không có ảnh
-          }
-        }
-      } else if (key !== "MainImagePreview" && key !== "ImagePathPreviews") {
-        // Gửi các trường khác (name, price, ...)
-        formData.append(key, productData[key]);
-      }
+      formData.append(key, productData[key]);
     }
 
-    // Ghi log dữ liệu gửi lên
-    console.log("Dữ liệu gửi lên:", Array.from(formData.entries()));
-
-    // Gửi formData
     try {
       const response = await UpdateProduct(ProductID, formData);
-      if (response && response.data) {
-        navigate("/admin/products", {
-          state: {
-            success: true,
-            message: "Sản phẩm đã được cập nhật thành công!",
-            updatedProduct: response.data,
-          },
-        });
-        toast.success("Sản phẩm đã được cập nhật thành công!");
-      } else {
-        throw new Error("Unexpected response structure");
-      }
-    } catch (err) {
-      console.error("Error updating product:", err);
-      if (err.response && err.response.data) {
-        setErrors(err.response.data);
-        Object.values(err.response.data).forEach((errorMessages) => {
-          if (Array.isArray(errorMessages)) {
-            errorMessages.forEach((message) => {
-              toast.error(message);
-            });
-          } else {
-            toast.error(errorMessages);
-          }
-        });
-      } else {
-        toast.error(err.message || "Đã xảy ra lỗi khi cập nhật sản phẩm");
-      }
+      navigate("/admin/products", {
+        state: {
+          success: true,
+          message: "Sản phẩm đã được cập nhật thành công!",
+          updatedProduct: response.data, // Đảm bảo bạn truyền sản phẩm đã cập nhật
+        },
+      });
+      toast.success("Sản phẩm đã được cập nhật thành công!");
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error("Đã xảy ra lỗi khi cập nhật sản phẩm");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -345,8 +266,8 @@ const UpdateProducts = () => {
 
     const variantData = {
       ProductID: ProductID,
-      ColorID: selectedColors.join(","), // Chuyển mảng thành chuỗi
-      SizeID: selectedSizes.join(","), // Chuyển mảng thành chuỗi
+      ColorID: selectedColors.join(","),
+      SizeID: selectedSizes.join(","),
       Price: parseFloat(variantPrice),
       Quantity: parseInt(variantQuantity),
     };
@@ -357,7 +278,7 @@ const UpdateProducts = () => {
 
       toast.success("Biến thể đã được thêm thành công");
 
-      await fetchProductVariants(); 
+      await fetchProductVariants();
     } catch (error) {
       console.error("Lỗi khi thêm biến th:", error);
       toast.error(
@@ -377,251 +298,255 @@ const UpdateProducts = () => {
     navigate("/admin/products"); // Điều hướng về trang danh sách sản phẩm
   };
 
+  const handleDeleteVariant = async (VariantID) => {
+    try {
+      await DeleteProductVariant(VariantID);
+      toast.success("Biến thể đã được xóa thành công!");
+      // Cập nhật lại danh sách biến thể sau khi xóa
+      await fetchProductVariants();
+      
+    } catch (error) {
+      console.error("Lỗi khi xóa biến thể:", error);
+      toast.error("Không thể xóa biến thể: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleEditVariant = (variantID) => {
+    navigate(`/admin/products/edit-variant/${variantID}`); // Điều hướng tới UpdateVariant
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Update Product</h1>
-      <div className="flex flex-wrap -mx-4">
-        {/* Left side - Update Product Form */}
-        <div className="w-[40%] px-4">
-          <div className="bg-white rounded-lg shadow p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="mb-4">
-                <Input
-                  label="Product Name"
-                  name="ProductName"
-                  value={productData.ProductName}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.ProductName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.ProductName[0]}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4 relative">
-                <button
-                  type="button"
-                  className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  onClick={() => setIsOpen(!isOpen)}
-                >
-                  {productData.CategoryID
-                    ? categories.find(
-                        (cat) => cat.CategoryID === productData.CategoryID
-                      )?.CategoryName
-                    : "Select Category"}
-                  <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
-                </button>
-                {isOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
-                    <ul className="py-1 overflow-auto text-base max-h-60">
-                      {categories.map((category) => (
-                        <li
-                          key={category.CategoryID}
-                          className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                          onClick={() =>
-                            handleCategorySelect(category.CategoryID)
-                          }
-                        >
-                          {category.CategoryName}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {errors.CategoryID && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.CategoryID[0]}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <Input
-                  label="Price"
-                  name="Price"
-                  type="number"
-                  value={productData.Price}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.Price && (
-                  <p className="text-red-500 text-xs mt-1">{errors.Price[0]}</p>
-                )}
-              </div>
-              <div className="mb-4">
-                <Input
-                  label="Sale Price"
-                  name="SalePrice"
-                  type="number"
-                  value={productData.SalePrice}
-                  onChange={handleChange}
-                />
-                {errors.SalePrice && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.SalePrice[0]}
-                  </p>
-                )}
-              </div>
-              {renderImageUpload("Main Image", "MainImageURL")}
-              {renderImageUpload("Other Images", "ImagePath", true)}
-              <div className="mb-4">
-                <Textarea
-                  label="Short Description"
-                  name="ShortDescription"
-                  value={productData.ShortDescription}
-                  onChange={handleChange}
-                  rows={2}
-                />
-                {errors.ShortDescription && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.ShortDescription[0]}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <Textarea
-                  label="Description"
-                  name="Description"
-                  value={productData.Description}
-                  onChange={handleChange}
-                  rows={4}
-                />
-                {errors.Description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.Description[0]}
-                  </p>
-                )}
-              </div>
-              <div className="flex justify-between items-center">
-                <Button
-                  type="button"
-                  color="blue"
-                  onClick={handleBackToList}
-                  className="mr-2"
-                >
-                  List Products
-                </Button>
-                <Button type="submit" color="green">
-                  Update Product
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* Right side - Colors, Sizes, and Product Variants */}
-        <div className="w-[60%] ">
-          {/* Colors */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Colors</h2>
-            <div className="grid grid-cols-5 gap-4">
-              {colors.map((color) => (
-                <div key={color.ColorID} className="flex items-center">
-                  <Checkbox
-                    id={`color-${color.ColorID}`}
-                    checked={selectedColors.includes(color.ColorID)}
-                    onChange={() => handleColorChange(color.ColorID)}
-                  />
-                  <label
-                    htmlFor={`color-${color.ColorID}`}
-                    className="ml-2 text-sm"
-                  >
-                    {color.ColorName}
-                  </label>
-                </div>
-              ))}
+      <div className="flex flex-wrap gap-1">
+        {/* Phần bên trái - Thông tin sản phẩm */}
+        <div className="w-[39.6%] px-4 bg-white">
+          <form onSubmit={handleSubmit}>
+            {/* Các trường thông tin sản phẩm */}
+            <div className="mb-4">
+              <Input
+                label="Product Name"
+                name="ProductName"
+                value={productData.ProductName}
+                onChange={handleChange}
+                required
+              />
+              {errors.ProductName && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.ProductName[0]}
+                </p>
+              )}
             </div>
-          </div>
-
-          {/* Sizes */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Sizes</h2>
-            <div className="grid grid-cols-5 gap-4">
-              {sizes.map((size) => (
-                <div key={size.SizeID} className="flex items-center">
-                  <Checkbox
-                    id={`size-${size.SizeID}`}
-                    checked={selectedSizes.includes(size.SizeID)}
-                    onChange={() => handleSizeChange(size.SizeID)}
-                  />
-                  <label
-                    htmlFor={`size-${size.SizeID}`}
-                    className="ml-2 text-sm"
-                  >
-                    {size.SizeName}
-                  </label>
+            <div className="mb-4 relative">
+              <button
+                type="button"
+                className="w-full px-2.5 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                {productData.CategoryID
+                  ? categories.find(
+                      (cat) => cat.CategoryID === productData.CategoryID
+                    )?.CategoryName
+                  : "Select Category"}
+                <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
+              </button>
+              {isOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+                  <ul className="py-1 overflow-auto text-base max-h-60">
+                    {categories.map((category) => (
+                      <li
+                        key={category.CategoryID}
+                        className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                        onClick={() =>
+                          handleCategorySelect(category.CategoryID)
+                        }
+                      >
+                        {category.CategoryName}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ))}
+              )}
+              {errors.CategoryID && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.CategoryID[0]}
+                </p>
+              )}
             </div>
-          </div>
-
-          {/* Add Product Variant section */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="mb-4">
               <Input
                 label="Price"
+                name="Price"
                 type="number"
+                value={productData.Price}
+                onChange={handleChange}
+                required
+              />
+              {errors.Price && (
+                <p className="text-red-500 text-xs mt-1">{errors.Price[0]}</p>
+              )}
+            </div>
+            <div className="mb-4">
+              <Input
+                label="Sale Price"
+                name="SalePrice"
+                type="number"
+                value={productData.SalePrice}
+                onChange={handleChange}
+              />
+              {errors.SalePrice && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.SalePrice[0]}
+                </p>
+              )}
+            </div>
+            {renderImageUpload("Main Image", "MainImageURL")}
+            {renderImageUpload("Other Images", "ImagePath", true)}
+            <div className="mb-4">
+              <Textarea
+                label="Short Description"
+                name="ShortDescription"
+                value={productData.ShortDescription}
+                onChange={handleChange}
+                rows={2}
+              />
+              {errors.ShortDescription && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.ShortDescription[0]}
+                </p>
+              )}
+            </div>
+            <div className="mb-4">
+              <Textarea
+                label="Description"
+                name="Description"
+                value={productData.Description}
+                onChange={handleChange}
+                rows={4}
+              />
+              {errors.Description && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.Description[0]}
+                </p>
+              )}
+            </div>
+            <div className="flex justify-between items-center">
+              <Button type="button" color="blue" onClick={handleBackToList} className="mr-2">
+                List Products
+              </Button>
+              <Button type="submit" color="green" disabled={loading}>
+                Update Product
+              </Button>
+            </div>
+          </form>
+        </div>
+
+        {/* Phần bên phải - Colors, Sizes, và Add Product Variant */}
+        <div className="w-[60%]">
+          {/* Gộp Colors, Sizes và Add Product Variant thành một khối */}
+          <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
+
+            {/* Di chuyển Price và Quantity lên trên Colors */}
+            <div className="flex space-x-4 mb-4">
+              <input
+                type="number"
+                placeholder="Price"
                 value={variantPrice}
                 onChange={(e) => setVariantPrice(e.target.value)}
+                className="border-2 p-2 w-full rounded-xl"
               />
-              <Input
-                label="Quantity"
+              <input
                 type="number"
+                placeholder="Quantity"
                 value={variantQuantity}
                 onChange={(e) => setVariantQuantity(e.target.value)}
+                className="border-2 p-2 w-full rounded-xl"
               />
             </div>
 
-            <Button
-              color="blue"
-              className="flex items-center justify-center w-[100%]"
-              onClick={handleAddVariant}
-            >
-              <PlusIcon className="h-5" />
-              Add Product Variant
+            {/* Colors */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Colors</h3>
+              <div className="grid grid-cols-5 gap-4">
+                {colors.map((color) => (
+                  <div key={color.ColorID} className="flex items-center">
+                    <Checkbox
+                      id={`color-${color.ColorID}`}
+                      checked={selectedColors.includes(color.ColorID)}
+                      onChange={() => handleColorChange(color.ColorID)}
+                    />
+                    <label htmlFor={`color-${color.ColorID}`} className="ml-2 text-sm">
+                      {color.ColorName}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Sizes */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Sizes</h3>
+              <div className="grid grid-cols-5 gap-4">
+                {sizes.map((size) => (
+                  <div key={size.SizeID} className="flex items-center">
+                    <Checkbox
+                      id={`size-${size.SizeID}`}
+                      checked={selectedSizes.includes(size.SizeID)}
+                      onChange={() => handleSizeChange(size.SizeID)}
+                    />
+                    <label htmlFor={`size-${size.SizeID}`} className="ml-2 text-sm">
+                      {size.SizeName}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Nút Add Product Variant */}
+            <Button color="blue" onClick={handleAddVariant} className="w-full">
+              + ADD PRODUCT VARIANT
             </Button>
           </div>
 
-          {/* Product Variants */}
-          <div className="bg-white rounded-lg shadow p-6">
+          {/* Product Variants Table */}
+          <div className="bg-white rounded-lg shadow p-6 mb-6">
             <h2 className="text-xl font-bold mb-4">Product Variants</h2>
-            <div className="max-h-[300px] overflow-y-auto">
-              {productVariants.length > 0 ? (
-                <table className="min-w-full">
-                  <thead className="sticky top-0 bg-white">
-                    <tr className="text-center">
-                      <th className="px-4 py-2 w-1">Select</th>
-                      <th className="px-4 py-2">Color</th>
-                      <th className="px-4 py-2">Size</th>
-                      <th className="px-4 py-2">Price</th>
-                      <th className="px-4 py-2">Quantity</th>
-                      <th className="px-4 py-2">Actions</th>
+            {productVariants.length > 0 ? (
+              <div className="overflow-y-auto" style={{ maxHeight: '730px' }}>
+                <table className="min-w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-100 text-center">
+                      <th className="border border-gray-300 px-4 py-2">Select</th>
+                      <th className="border border-gray-300 px-4 py-2">Color</th>
+                      <th className="border border-gray-300 px-4 py-2">Size</th>
+                      <th className="border border-gray-300 px-4 py-2">Price</th>
+                      <th className="border border-gray-300 px-4 py-2">Quantity</th>
+                      <th className="border border-gray-300 px-4 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {productVariants.map((variant, index) => (
-                      <tr
-                        key={variant.VariantID || index}
-                        className="text-center"
-                      >
-                        <td className="border px-4 py-2 ">
+                      <tr key={variant.VariantID || index} className="text-center">
+                        <td className="border px-4 py-2">
                           <Checkbox className="border-2 border-gray-400" />
                         </td>
-                        <td className="border px-4 py-2">
-                          {variant.ColorName || "N/A"}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {variant.SizeName || "N/A"}
-                        </td>
+                        <td className="border px-4 py-2">{variant.ColorName || "N/A"}</td>
+                        <td className="border px-4 py-2">{variant.SizeName || "N/A"}</td>
                         <td className="border px-4 py-2">{variant.Price}</td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
                         <td className="border px-4 py-2">
-                          <button className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center">
+                          <button
+                            className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
+                            onClick={() => handleEditVariant(variant.VariantID)}
+                          >
                             <PencilIcon className="h-4 w-4" />
                           </button>
-                          <button className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center">
+                          <button
+                            className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
+                            onClick={() => handleDeleteVariant(variant.VariantID)}
+                          >
                             <TrashIcon className="h-4 w-4" />
                           </button>
                         </td>
@@ -629,13 +554,23 @@ const UpdateProducts = () => {
                     ))}
                   </tbody>
                 </table>
-              ) : (
-                <p>Chưa có biến thể sản phẩm nào được thêm.</p>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p>Chưa có biến thể sản phẩm nào được thêm.</p>
+            )}
           </div>
         </div>
       </div>
+      {loading && (
+        <div className="fixed inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 z-50 backdrop-blur-sm">
+          <div className="bg-gray-900 p-6 rounded-lg shadow-lg flex items-center">
+            <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            <span className="ml-4 text-white text-lg font-semibold">
+              Đang cập nhật sản phẩm, vui lòng chờ...
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

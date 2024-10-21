@@ -10,6 +10,20 @@ export const AuthProvider = ({ children }) => {
     if (storedToken) {
       setIsAuthenticated(true);
     }
+
+    const handleBeforeUnload = (event) => {
+      // Chỉ xóa token khi tab bị đóng
+      const isTabClosing = event.clientY < 0; // Kiểm tra nếu chuột ra khỏi cửa sổ
+      if (isTabClosing) {
+        localStorage.removeItem('token'); // Xóa token khi đóng tab
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   const login = (token) => {

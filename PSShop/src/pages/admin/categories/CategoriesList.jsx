@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
 import { Link, useLocation } from "react-router-dom";
-import { ListCategories, DeleteCategories } from "../service/api_service";
+import { ListCategories, DeleteCategories, UpdateCategoryStatus } from "../service/api_service"; // Import hàm mới
 import ReactPaginate from "react-paginate";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,11 +14,16 @@ const CategoriesList = () => {
   const [TotalCategory, setTotalCategory] = useState(0);
   const [TotalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(""); // Thêm state cho từ khóa tìm kiếm
   const location = useLocation();
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [updating, setUpdating] = useState(false); // Thêm biến cờ
+  const [notificationShown, setNotificationShown] = useState(false); // Thêm biến cờ
+  const [statusUpdate, setStatusUpdate] = useState(null); // Thêm state để lưu thông tin cập nhật trạng thái
 
   useEffect(() => {
-    getCategories(1);
+    getCategories(1, searchTerm); // Gọi hàm với từ khóa tìm kiếm
+    setNotificationShown(false); // Đặt lại cờ khi tải lại danh sách
 
     if (location.state?.success && location.state?.newCategory) {
       setListCategory((prevList) => [location.state.newCategory, ...prevList]);
@@ -35,21 +40,48 @@ const CategoriesList = () => {
 
       window.history.replaceState({}, document.title);
     }
-  }, [location]);
+  }, [location, searchTerm]); // Thêm searchTerm vào dependency
 
-  const getCategories = async (page) => {
-    let res = await ListCategories(page);
+  useEffect(() => {
+    if (statusUpdate) {
+      const { CategoryID, status } = statusUpdate;
+      UpdateCategoryStatus(CategoryID, { Status: status })
+        .then(response => {
+          console.log("Response from API:", response);
+          if (response.success) {
+            toast.success(response.message);
+          } else {
+            toast.error("Cập nhật trạng thái không thành công");
+          }
+        })
+        .catch(error => {
+          console.error("Lỗi khi cập nhật trạng thái danh mục:", error);
+          toast.error("Đã xảy ra lỗi khi cập nhật trạng thái danh mục");
+        })
+        .finally(() => {
+          setStatusUpdate(null); // Đặt lại state sau khi hoàn thành
+        });
+    }
+  }, [statusUpdate]); // Chạy effect khi statusUpdate thay đổi
+
+  const getCategories = async (page, search = "") => {
+    let res = await ListCategories(page, search); // Gọi API với từ khóa tìm kiếm
     if (res && res.data) {
       setTotalCategory(res.total);
-      setListCategory(res.data);
+      setListCategory(res.data.map(item => ({ ...item, isActive: item.Status === "ACTIVE" }))); // Thiết lập trạng thái
       setTotalPages(res.totalPage);
       setCurrentPage(page);
     }
   };
 
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value); // Cập nhật từ khóa tìm kiếm
+    getCategories(1, event.target.value); // Gọi hàm tìm kiếm
+  };
+
   const handlePageClick = (event) => {
     const newPage = event.selected + 1;
-    getCategories(newPage);
+    getCategories(newPage, searchTerm); // Gọi hàm với từ khóa tìm kiếm
   };
 
   const handleSelectCategory = (CategoryID) => {
@@ -95,6 +127,27 @@ const CategoriesList = () => {
     }
   };
 
+  const handleToggle = (CategoryID) => {
+    if (updating) return; // Ngăn chặn nếu đang cập nhật
+
+    setUpdating(true); // Đặt cờ đang cập nhật
+    console.log("Toggling status for CategoryID:", CategoryID); // Kiểm tra số lần gọi
+
+    // Cập nhật trạng thái
+    setListCategory((prevList) =>
+      prevList.map((item) => {
+        if (item.CategoryID === CategoryID) {
+          const newStatus = !item.isActive; // Đảo ngược trạng thái
+          setStatusUpdate({ CategoryID, status: newStatus ? "ACTIVE" : "INACTIVE" }); // Lưu thông tin vào state
+          return { ...item, isActive: newStatus }; // Cập nhật trạng thái trong danh sách
+        }
+        return item;
+      })
+    );
+
+    setUpdating(false); // Đặt lại cờ sau khi cập nhật
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
@@ -104,6 +157,8 @@ const CategoriesList = () => {
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search categories"
+            value={searchTerm} // Gán giá trị từ state
+            onChange={handleSearch} // Gọi hàm tìm kiếm khi thay đổi
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
@@ -142,7 +197,10 @@ const CategoriesList = () => {
                 </td>
                 <td className="border-b p-4">{item.CategoryName}</td>
                 <td className="border-b p-4">
-                  <ToggleSwitch />
+                  <ToggleSwitch
+                    isOn={item.isActive} // Truyền trạng thái isActive vào ToggleSwitch
+                    handleToggle={() => handleToggle(item.CategoryID)} // Gọi hàm toggle
+                  />
                 </td>
                 <td className="border-b p-4">
                   <Link

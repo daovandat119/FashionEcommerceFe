@@ -4,8 +4,8 @@ const LoginAdmin = (Email, Password) => {
   return axios.post("/api/login", { Email, Password });
 };
 
-const ListCategories = (page) => {
-  return axios.get(`/api/categories?Page=${page}`);
+const ListCategories = (page, search = "") => {
+  return axios.get(`/api/categories?Page=${page}&Search=${encodeURIComponent(search)}`); // Thêm tham số tìm kiếm
 };
 
 const AddCategory = (CategoryName) => {
@@ -25,11 +25,10 @@ const DeleteCategories = (ids) => {
   return axios.delete(`/api/categories`, { data: { ids: idsString } });
 };
 
-const ListProducts = (page) => {
-  return axios.get(`/api/products?Page=${page}`);
+const ListProducts = (page, search = "") => {
+  return axios.get(`/api/products?Page=${page}&Search=${encodeURIComponent(search)}`); // Thêm tham số tìm kiếm
 };
 
-// Thêm hàm DeleteProducts
 const DeleteProducts = (ids) => {
   const idsString = Array.isArray(ids) ? ids.join(",") : ids;
   return axios.delete(`/api/products`, { data: { ids: idsString } });
@@ -44,7 +43,6 @@ const AddProduct = (productData) => {
   });
 };
 
-// Thêm các hàm mới này nếu chưa có
 const GetProductById = (ProductID) => {
   return axios.get(`/api/products/${ProductID}`);
 };
@@ -85,7 +83,7 @@ const GetSizeById = async (SizeID) => {
   return axios.get(`/api/sizes/${SizeID}`);
 };
 
-// Cập nhật kích thước
+// Cập nhật kích thưc
 const UpdateSize = (SizeID, SizeName) => {
   return axios.put(`/api/sizes/${SizeID}`, { SizeName });
 };
@@ -109,6 +107,30 @@ const GetProductVariants = (ProductID) => {
 
 const ListUsers = (page) => {
   return axios.get(`/api/users?page=${page}`);
+};
+
+const DeleteProductVariant = (VariantID) => {
+  return axios.delete(`/api/product-variants/${VariantID}`);
+};
+
+const GetProductVariantById = (VariantID) => {
+  return axios.get(`/api/product-variants/${VariantID}`);
+};
+
+const UpdateProductVariant = (variantData) => {
+  return axios.put(`/api/product-variants`, variantData); // Gửi đến api/product-variants
+};
+
+const UpdateProductStatus = (ProductID, data) => {
+  return axios.post(`/api/products/status/${ProductID}`, data); // Gửi yêu cầu POST
+};
+
+const UpdateCategoryStatus = (CategoryID, data) => {
+  return axios.post(`/api/categories/status/${CategoryID}`, data); // Gửi yêu cầu POST
+};
+
+const GetUserById = (UserID) => {
+  return axios.get(`/api/users/${UserID}`); // Gọi API để lấy chi tiết người dùng
 };
 
 export {
@@ -136,4 +158,10 @@ export {
   AddProductVariant,
   GetProductVariants,
   ListUsers,
+  DeleteProductVariant,
+  GetProductVariantById,
+  UpdateProductVariant,
+  UpdateProductStatus,
+  UpdateCategoryStatus,
+  GetUserById,
 };

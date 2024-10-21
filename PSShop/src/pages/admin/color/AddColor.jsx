@@ -41,9 +41,12 @@ const AddColorComponent = () => {
       }
     } catch (err) {
       console.error("Lỗi khi thêm màu:", err);
-      setError(
-        err.response?.data?.message || "Đã xảy ra lỗi khi thêm màu"
-      );
+      // Hiển thị thông báo lỗi từ API
+      if (err.response && err.response.data) {
+        toast.error(err.response.data.ColorName[0] || "Đã xảy ra lỗi khi thêm màu");
+      } else {
+        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+      }
     }
   };
 
@@ -67,7 +70,7 @@ const AddColorComponent = () => {
               type="text"
               value={ColorName}
               onChange={(e) => setColorName(e.target.value)}
-              required
+              
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

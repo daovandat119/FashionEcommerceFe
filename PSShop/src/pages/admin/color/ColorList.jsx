@@ -34,7 +34,11 @@ const ColorList = () => {
     try {
       const res = await ListColors(page);
       if (res && res.data) {
-        setColors(res.data);
+        const updatedColors = res.data.map(color => ({
+          ...color,
+          isActive: localStorage.getItem(`color-${color.ColorID}`) === 'true' || true // Mặc định là true nếu không có trong localStorage
+        }));
+        setColors(updatedColors);
         setTotalPages(res.totalPage);
         setCurrentPage(page);
       }
@@ -64,28 +68,29 @@ const ColorList = () => {
         for (const ColorID of ColorIDs) {
           await DeleteColors(ColorID);
         }
-        toast.success("Xóa thành công", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.success("Xóa thành công");
         getColors(currentPage); // Tải lại danh sách
         setSelectedColors([]); // Reset danh sách đã chọn
       } catch (error) {
         console.error("Lỗi khi xóa màu sắc:", error);
-        toast.error("Xóa không thành công: " + error.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error("Xóa không thành công: " + error.message);
       }
     }
+  };
+
+  const handleToggle = (ColorID) => {
+    setColors(prevColors => {
+      const updatedColors = prevColors.map(color =>
+        color.ColorID === ColorID ? { ...color, isActive: !color.isActive } : color
+      );
+
+      // Lưu trạng thái mới vào localStorage
+      updatedColors.forEach(color => {
+        localStorage.setItem(`color-${color.ColorID}`, color.isActive);
+      });
+
+      return updatedColors;
+    });
   };
 
   return (
@@ -93,7 +98,7 @@ const ColorList = () => {
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Colors Management</h1>
       <div className="flex justify-between items-center mb-6">
-        <div className="w-1/2">
+        <div className="w-1/2 bg-white rounded-lg shadow">
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search colors"
@@ -131,7 +136,10 @@ const ColorList = () => {
                 </td>
                 <td className="border-b p-4">{color.ColorName}</td>
                 <td className="border-b p-4">
-                  <ToggleSwitch />
+                  <ToggleSwitch
+                    isOn={color.isActive} // Truyền trạng thái isActive vào ToggleSwitch
+                    handleToggle={() => handleToggle(color.ColorID)} // Gọi hàm toggle
+                  />
                 </td>
                 <td className="border-b p-4">
                   <Link

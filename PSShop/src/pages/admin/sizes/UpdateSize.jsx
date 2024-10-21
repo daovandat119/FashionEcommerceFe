@@ -47,20 +47,26 @@ const UpdateSizeComponent = () => {
       const response = await UpdateSize(SizeID, SizeName);
       if (response.data) {
         console.log("Cập nhật thành công:", response.data);
-        navigate("/admin/sizes", { 
-          state: { 
-            success: true, 
+        navigate("/admin/sizes", {
+          state: {
+            success: true,
             message: "Cập nhật kích thước thành công",
-            updatedSize: { SizeID, SizeName }
-          }
+            updatedSize: { SizeID, SizeName },
+          },
         });
       } else {
         throw new Error("Không thể cập nhật kích thước");
       }
     } catch (err) {
-      console.error("Lỗi khi cập nhật kích thước:", err);
-      setError(err.message || "Đã xảy ra lỗi khi cập nhật kích thước");
-      toast.error("Lỗi cập nhật: " + (err.message || "Đã xảy ra lỗi"));
+      console.error("Lỗi khi cập nhật Size:", err);
+      // Hiển thị thông báo lỗi từ API
+      if (err.response && err.response.data) {
+        toast.error(
+          err.response.data.SizeName[0] || "Đã xảy ra lỗi khi cập nhật màu sắc"
+        );
+      } else {
+        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+      }
     }
   };
 
