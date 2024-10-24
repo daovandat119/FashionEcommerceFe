@@ -190,10 +190,78 @@ const ProductDetail = () => {
           </form>
         </div>
       </div>
-
+      <div className="product-single__details-tab">
+        <ul className="nav nav-tabs" id="myTab1" role="tablist">
+          <li className="nav-item" role="presentation">
+            <a
+              className="nav-link nav-link_underscore active"
+              id="tab-description-tab"
+              data-bs-toggle="tab"
+              href="#tab-description"
+              role="tab"
+              aria-controls="tab-description"
+              aria-selected="true"
+            >
+              Description
+            </a>
+          </li>
+          <li className="nav-item" role="presentation">
+            <a
+              className="nav-link nav-link_underscore"
+              id="tab-additional-info-tab"
+              data-bs-toggle="tab"
+              href="#tab-additional-info"
+              role="tab"
+              aria-controls="tab-additional-info"
+              aria-selected="false"
+            >
+              Additional Information
+            </a>
+          </li>
+          <li className="nav-item" role="presentation">
+            <a
+              className="nav-link nav-link_underscore"
+              id="tab-reviews-tab"
+              data-bs-toggle="tab"
+              href="#tab-reviews"
+              role="tab"
+              aria-controls="tab-reviews"
+              aria-selected="false"
+            >
+              Reviews (2)
+            </a>
+          </li>
+        </ul>
+        <div className="tab-content">
+          <div
+            className="tab-pane fade show active"
+            id="tab-description"
+            role="tabpanel"
+            aria-labelledby="tab-description-tab"
+          >
+            {/* <Description /> */}
+          </div>
+          <div
+            className="tab-pane fade"
+            id="tab-additional-info"
+            role="tabpanel"
+            aria-labelledby="tab-additional-info-tab"
+          >
+          <AdditionalInfo product={product} />
+          </div>
+          <div
+            className="tab-pane fade"
+            id="tab-reviews"
+            role="tabpanel"
+            aria-labelledby="tab-reviews-tab"
+          >
+             <Reviews productId={product.ProductID} />
+          </div>
+        </div>
+      </div>
       {/* Thông tin bổ sung và đánh giá */}
-      <AdditionalInfo product={product} />
-      <Reviews productId={product.ProductID} />
+      
+     
     </section>
   );
 };
