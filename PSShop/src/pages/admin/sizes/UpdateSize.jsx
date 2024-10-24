@@ -11,20 +11,21 @@ const UpdateSizeComponent = () => {
   const { SizeID } = useParams();
 
   useEffect(() => {
-    const fetchSize = async () => {
-      try {
-        const response = await GetSizeById(SizeID);
-        console.log("Received data:", response);
-        if (response) {
-          setSizeName(response.SizeName);
-        } else {
-          throw new Error("Dữ liệu kích thước không hợp lệ");
-        }
-      } catch (err) {
-        console.error("Lỗi khi tải kích thước:", err);
-        setError("Không thể tải dữ liệu kích thước. Vui lòng thử lại sau.");
-        toast.error("Không thể tải dữ liệu kích thước");
-      }
+    const fetchSize = () => {
+      GetSizeById(SizeID)
+        .then(response => {
+          console.log("Received data:", response);
+          if (response) {
+            setSizeName(response.SizeName);
+          } else {
+            throw new Error("Dữ liệu kích thước không hợp lệ");
+          }
+        })
+        .catch(err => {
+          console.error("Lỗi khi tải kích thước:", err);
+          setError("Không thể tải dữ liệu kích thước. Vui lòng thử lại sau.");
+          toast.error("Không thể tải dữ liệu kích thước");
+        });
     };
 
     if (SizeID) {
@@ -34,7 +35,7 @@ const UpdateSizeComponent = () => {
     }
   }, [SizeID]);
 
-  const handleUpdateSize = async (e) => {
+  const handleUpdateSize = (e) => {
     e.preventDefault();
     setError("");
 
@@ -43,37 +44,38 @@ const UpdateSizeComponent = () => {
       return;
     }
 
-    try {
-      const response = await UpdateSize(SizeID, SizeName);
-      if (response.data) {
-        console.log("Cập nhật thành công:", response.data);
-        navigate("/admin/sizes", {
-          state: {
-            success: true,
-            message: "Cập nhật kích thước thành công",
-            updatedSize: { SizeID, SizeName },
-          },
-        });
-      } else {
-        throw new Error("Không thể cập nhật kích thước");
-      }
-    } catch (err) {
-      console.error("Lỗi khi cập nhật Size:", err);
-      // Hiển thị thông báo lỗi từ API
-      if (err.response && err.response.data) {
-        toast.error(
-          err.response.data.SizeName[0] || "Đã xảy ra lỗi khi cập nhật màu sắc"
-        );
-      } else {
-        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
-      }
-    }
+    UpdateSize(SizeID, SizeName)
+      .then(response => {
+        if (response.data) {
+          console.log("Cập nhật thành công:", response.data);
+          navigate("/admin/sizes", {
+            state: {
+              success: true,
+              message: "Cập nhật kích thước thành công",
+              updatedSize: { SizeID, SizeName },
+            },
+          });
+        } else {
+          throw new Error("Không thể cập nhật kích thước");
+        }
+      })
+      .catch(err => {
+        console.error("Lỗi khi cập nhật Size:", err);
+        // Hiển thị thông báo lỗi từ API
+        if (err.response && err.response.data) {
+          toast.error(
+            err.response.data.SizeName[0] || "Đã xảy ra lỗi khi cập nhật kích thước"
+          );
+        } else {
+          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+        }
+      });
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">CẬP NHẬT KÍCH THƯỚC</h1>
+      <h1 className="text-2xl font-bold mb-6">UPDATE SIZE</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleUpdateSize} className="space-y-6">
           <div>
@@ -90,7 +92,7 @@ const UpdateSizeComponent = () => {
               type="text"
               value={SizeName}
               onChange={(e) => setSizeName(e.target.value)}
-              required
+              
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

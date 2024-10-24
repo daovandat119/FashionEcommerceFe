@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { UpdateCategory, GetCategoryById } from "../service/api_service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,25 +7,25 @@ import "react-toastify/dist/ReactToastify.css";
 const UpdateCategoryComponent = () => {
   const [CategoryName, setCategoryName] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   const { CategoryID } = useParams();
 
   useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const response = await GetCategoryById(CategoryID);
-        console.log(response)
-        if (response.data.CategoryName) {
-          
-          setCategoryName(response.data.CategoryName);
-        } else {
-          throw new Error("Dữ liệu danh mục không hợp lệ");
-        }
-      } catch (err) {
-        console.error("Lỗi khi tải danh mục:", err);
-        setError("Không thể tải dữ liệu danh mục. Vui lòng thử lại sau.");
-        toast.error("Không thể tải dữ liệu danh mục");
-      }
+    const fetchCategory = () => {
+      GetCategoryById(CategoryID)
+        .then(response => {
+        
+          if (response.data && response.data.CategoryName) {
+            setCategoryName(response.data.CategoryName);
+          } else {
+            throw new Error("Dữ liệu danh mục không hợp lệ");
+          }
+        })
+        .catch(err => {
+          console.error("Lỗi khi tải danh mục:", err);
+          const errorMessage = err.response?.data?.CategoryName?.[0] || "Không thể tải dữ liệu danh mục. Vui lòng thử lại sau.";
+          setError(errorMessage);
+          toast.error(errorMessage);
+        });
     };
 
     if (CategoryID) {
@@ -35,7 +35,7 @@ const UpdateCategoryComponent = () => {
     }
   }, [CategoryID]);
 
-  const handleUpdateCategory = async (e) => {
+  const handleUpdateCategory = (e) => {
     e.preventDefault();
     setError("");
 
@@ -44,20 +44,22 @@ const UpdateCategoryComponent = () => {
       return;
     }
 
-    try {
-      const response = await UpdateCategory(CategoryID, CategoryName);
-      if (response.data) {
-        console.log("Cập nhật thành công");
-         
-        toast.success("Cập nhật danh mục thành công");
-      } else {
-        throw new Error(response.data.message || "Không thể cập nhật danh mục");
-      }
-    } catch (err) {
-      console.error("Lỗi khi cập nhật danh mục:", err);
-      setError(err.message || "Đã xảy ra lỗi khi cập nhật danh mục");
-      toast.error("Lỗi cập nhật: " + (err.message || "Đã xảy ra lỗi"));
-    }
+    UpdateCategory(CategoryID, CategoryName)
+      .then(response => {
+        if (response) {
+          console.log("Cập nhật thành công");
+          toast.success("Cập nhật danh mục thành công");
+          // Điều hướng về danh sách danh mục sau khi cập nhật thành công
+        } else {
+          throw new Error(response.message || "Không thể cập nhật danh mục");
+        }
+      })
+      .catch(err => {
+        console.error("Lỗi khi cập nhật danh mục:", err);
+        const errorMessage = err.response?.data?.CategoryName?.[0] || "Đã xảy ra lỗi khi cập nhật danh mục";
+        setError(errorMessage);
+        toast.error("Lỗi cập nhật: " + errorMessage);
+      });
   };
 
   return (
