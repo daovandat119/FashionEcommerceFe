@@ -16,7 +16,7 @@ export default function Cart() {
     const token = localStorage.getItem('token');
     
     if (token) {
-      axios.get("http://127.0.0.1:8000/api/cart-items/", {
+      axios.get(`http://127.0.0.1:8000/api/cart-items`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -69,7 +69,7 @@ export default function Cart() {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(response => {
+      .then(() => {
         // Update local state after successful deletion from backend
         const updatedCart = cartProducts.filter((item) => item.id !== id);
         setCartProducts(updatedCart);

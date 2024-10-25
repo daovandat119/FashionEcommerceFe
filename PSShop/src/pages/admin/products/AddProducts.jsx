@@ -43,14 +43,15 @@ const AddProducts = () => {
     };
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await ListCategories(1, ""); // Lấy tất cả danh mục
-      setCategories(response.data); // Đảm bảo rằng response.data chứa danh sách danh mục
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-      toast.error("Failed to load categories");
-    }
+  const fetchCategories = () => {
+    ListCategories(1, "")
+      .then((response) => {
+        setCategories(response.data); // Đảm bảo rằng response.data chứa danh sách danh mục
+      })
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+        toast.error("Failed to load categories");
+      });
   };
 
   const handleChange = (e) => {
@@ -109,7 +110,7 @@ const AddProducts = () => {
     setErrors({ ...errors, CategoryID: null });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setErrors({});
     setLoading(true); // Set loading to true when starting the submit
@@ -127,36 +128,23 @@ const AddProducts = () => {
       }
     }
 
-    try {
-      const response = await AddProduct(formData);
-      navigate("/admin/products", {
-        state: {
-          success: true,
-          message: "Sản phẩm đã được thêm thành công!",
-          newProduct: response.data,
-        },
-      });
-      toast.success("Sản phẩm đã được thêm thành công!");
-    } catch (err) {
-      console.error("Error adding product:", err);
-      console.log("Error response:", err.response);
-
-      if (err.response && err.response.data) {
-        console.log("Validation errors:", err.response.data);
-        setErrors(err.response.data);
-
-        // Hiển thị tất cả các lỗi validation
-        Object.values(err.response.data).forEach((errorMessages) => {
-          errorMessages.forEach((message) => {
-            toast.error(message);
-          });
+    AddProduct(formData)
+      .then((response) => {
+        navigate("/admin/products", {
+          state: {
+            success: true,
+            message: "Sản phẩm đã được thêm thành công!",
+            newProduct: response.data,
+          },
         });
-      } else {
-        toast.error(err.message || "Đã xảy ra lỗi khi thêm sản phẩm");
-      }
-    } finally {
-      setLoading(false); // Set loading to false after the operation
-    }
+      })
+      .catch((err) => {
+        console.error("Error adding product:", err);
+        toast.error("Đã xảy ra lỗi khi thêm sản phẩm");
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false after the operation
+      });
   };
 
   const renderImageUpload = (label, name, multiple = false) => (
@@ -228,14 +216,14 @@ const AddProducts = () => {
 
   const validateImage = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/gif"];
-    const maxSize = 10 * 1024 * 1024; // 2MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (!validTypes.includes(file.type)) {
       return "Chỉ chấp nhận file ảnh định dạng JPEG, PNG hoặc GIF";
     }
 
     if (file.size > maxSize) {
-      return "Kích thước file không được vượt quá 2MB";
+      return "Kích thước file không được vượt quá 10MB";
     }
 
     return null;

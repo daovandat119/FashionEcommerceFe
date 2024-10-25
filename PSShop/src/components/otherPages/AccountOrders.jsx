@@ -1,6 +1,5 @@
-
 import React, { useContext } from 'react';
-import { OrderContext } from './OderContext';
+import { OrderContext } from './OrderContext';
 
 export default function AccountOrders() {
   const { orders, loading, error } = useContext(OrderContext);
@@ -44,7 +43,6 @@ export default function AccountOrders() {
         ) : (
           <p>No orders found.</p>
         )}
-      </div>
-    </div>
-  );
-}
+</div>
+</div>
+  )}

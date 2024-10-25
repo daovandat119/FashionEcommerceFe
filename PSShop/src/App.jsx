@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { ThemeProvider,Button, Card, Input } from "@material-tailwind/react";
+import { ThemeProvider } from "@material-tailwind/react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import HomePages from "./pages/homepages/HomePages";
@@ -19,12 +19,6 @@ import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_trackin
 import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
-import AccountPage from "./pages/dashboards/account_dashboard";
-import AccountOrderPage from "./pages/dashboards/account_orders";
-import AccountEditPage from "./pages/dashboards/account_edit";
-import AccountWishlistPage from "./pages/dashboards/account_wishlist";
-import AccountEditAddressPage from "./pages/dashboards/account_edit_address";
-// import * as MTR from "@material-tailwind/react";
 
 // Admin imports
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -41,23 +35,26 @@ import ColorList from "./pages/admin/color/ColorList";
 import SizeList from "./pages/admin/sizes/SizeList";
 import AddUsers from "./pages/admin/users/AddUsers";
 import UpdateUsers from "./pages/admin/users/UpdateUsers";
-// import { AuthProvider } from './context/AuthContext';
 import AuthGuard from './guards/AuthGuard';
 import AddColor from "./pages/admin/color/AddColor";
-// import { UpdateColor } from "./pages/admin/service/api_service";
 import UpdateColorComponent from "./pages/admin/color/UpdateColor";
 import AddSizeComponent from "./pages/admin/sizes/AddSize";
 import UpdateSize from "./pages/admin/sizes/UpdateSize";
 import { LoginProvider } from "./components/login/LoginContext";
-// import { LoginProvider } from "./components/login/LoginContext";
 import { AuthProvider } from './context/AuthContext';
-import UpdateVariant from "./pages/admin/products/UpdateVariant"; // Import component UpdateVariant
-import ShopFilter from "./components/shop/filter/ShopFilter";
+import UpdateVariant from "./pages/admin/products/UpdateVariant";
+
+// Account pages imports
+import AccountPage from './pages/dashboard/account_dashboard';
+import AccountOrderPage from "./pages/dashboard/account_orders";
+import AccountEditAddressPage from './pages/dashboard/account_edit_address/index';
+import AccountEditPage from "./pages/dashboard/account_edit";
+
 
 function App() {
   return (
     <Router>
-      <ToastContainer /> {/* Đảm bảo ToastContainer được đặt ở đây */}
+      <ToastContainer /> {/* Ensure ToastContainer is placed here */}
       <AppRoutes />
     </Router>
   );
@@ -68,12 +65,12 @@ const AppRoutes = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Lưu đường dẫn hiện tại vào localStorage
+    // Save the current path to localStorage
     localStorage.setItem("currentPath", location.pathname);
   }, [location]);
 
   useEffect(() => {
-    // Khôi phục đường dẫn từ localStorage khi ứng dụng khởi động
+    // Restore the path from localStorage on app start
     const savedPath = localStorage.getItem("currentPath");
     if (savedPath) {
       navigate(savedPath);
@@ -96,16 +93,13 @@ const AppRoutes = () => {
             <Route path="shop_cart" element={<ShopCartPage />} />
             <Route path="shop_checkout" element={<ShopCheckoutPage />} />
             <Route path="shop_order_complete" element={<ShopOrderConplate />} />
-            <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />}/>
+            <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />} />
 
+            {/* Account routes */}
             <Route path="account_dashboard" element={<AccountPage />} />
             <Route path="account_orders" element={<AccountOrderPage />} />
+            <Route path="account_edit_address" element={<AccountEditAddressPage />} />
             <Route path="account_edit" element={<AccountEditPage />} />
-            <Route path="account_wishlist" element={<AccountWishlistPage />} />
-            <Route
-              path="account_edit_address"
-              element={<AccountEditAddressPage />}
-            />
 
             {/* Admin routes */}
             <Route path="/admin/login" element={<LoginAdmin />} />
@@ -118,29 +112,22 @@ const AppRoutes = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
-              <Route path="/admin/categories/add" element={<AddCategories />}/>
-              <Route path="/admin/categories/edit/:CategoryID" element={<UpdateCategory />}/>
-              <Route path="/admin/products/add" element={<AddProducts />}/>
-              <Route path="/admin/products/edit/:ProductID" element={<UpdateProducts />} />
-              <Route path="/admin/products/delete/:ProductID"/>
+              <Route path="categories/add" element={<AddCategories />} />
+              <Route path="categories/edit/:CategoryID" element={<UpdateCategory />} />
+              <Route path="products/add" element={<AddProducts />} />
+              <Route path="products/edit/:ProductID" element={<UpdateProducts />} />
               <Route path="users" element={<UserList />} />
-              <Route path="/admin/users/add-users" element={<AddUsers />}/>
-              <Route path="/admin/users/edit-users/:id" element={<UpdateUsers />} />
-              <Route path="/admin/users/delete-users/:id"/>
-              <Route path="/admin/users/update" element={<UpdateUsers />} />
-              <Route path="/admin/colors/" element={<ColorList />} />
-              <Route path="/admin/colors/add" element={<AddColor />} />
-              <Route path="/admin/colors/delete/:ColorID" />
-              <Route path="/admin/colors/edit/:ColorID" element={<UpdateColorComponent />} />
-              <Route path="/admin/sizes" element={<SizeList />} />
-              <Route path="/admin/sizes/add" element={<AddSizeComponent />} />
-              <Route path="/admin/sizes/edit/:SizeID" element={<UpdateSize />} />
-              <Route path="/admin/sizes/delete/:SizeID" />
-              <Route path="/admin/products/edit-variant/:VariantID" element={<UpdateVariant />} />
+              <Route path="users/add-users" element={<AddUsers />} />
+              <Route path="users/edit-users/:id" element={<UpdateUsers />} />
+              <Route path="colors" element={<ColorList />} />
+              <Route path="colors/add" element={<AddColor />} />
+              <Route path="colors/edit/:ColorID" element={<UpdateColorComponent />} />
+              <Route path="sizes" element={<SizeList />} />
+              <Route path="sizes/add" element={<AddSizeComponent />} />
+              <Route path="sizes/edit/:SizeID" element={<UpdateSize />} />
+              <Route path="products/edit-variant/:VariantID" element={<UpdateVariant />} />
             </Route>
-            
           </Routes>
-          <ShopFilter/>
         </ThemeProvider>
       </Context>
     </AuthProvider>

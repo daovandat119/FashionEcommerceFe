@@ -21,24 +21,26 @@ const ProductsList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Thêm state cho từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState("");
   const location = useLocation();
+
+  useEffect(() => {
+    getProducts(currentPage);
+    getCategories();
+
+    // Kiểm tra thông tin trạng thái từ location
+    const { state } = location;
+    if (state && state.success) {
+      toast.success(state.message); // Hiển thị thông báo thành công
+    }
+  }, [currentPage, location]); // Thêm location vào dependency array
 
   useEffect(() => {
     const storedProducts = localStorage.getItem('products');
     if (storedProducts) {
       setListProducts(JSON.parse(storedProducts));
-    } else {
-      getProducts(1);
     }
-    getCategories();
-
-    // Kiểm tra và hiển thị thông báo thành công nếu có
-    if (location.state?.success) {
-      toast.success(location.state.message);
-      getProducts(currentPage); // Gọi lại API để lấy danh sách sản phẩm mới
-    }
-  }, [location]);
+  }, []); // Chỉ chạy một lần khi component mount
 
   const getProducts = (page, search = "") => {
     ListProducts(page, search)
@@ -58,25 +60,26 @@ const ProductsList = () => {
       });
   };
 
-  const getCategories = async () => {
-    try {
-      let res = await ListCategories(1, "");
-      if (res && res.data) {
-        const categoryMap = {};
-        res.data.forEach((category) => {
-          categoryMap[category.CategoryID] = category.CategoryName;
-        });
-        setCategories(categoryMap);
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách danh mục:", error);
-      toast.error("Không thể tải danh sách danh mục");
-    }
+  const getCategories = () => {
+    ListCategories(1, "")
+      .then(res => {
+        if (res && res.data) {
+          const categoryMap = {};
+          res.data.forEach((category) => {
+            categoryMap[category.CategoryID] = category.CategoryName;
+          });
+          setCategories(categoryMap);
+        }
+      })
+      .catch(error => {
+        console.error("Lỗi khi lấy danh sách danh mục:", error);
+        toast.error("Không thể tải danh sách danh mục");
+      });
   };
 
   const handlePageClick = (event) => {
     const newPage = event.selected + 1;
-    getProducts(newPage);
+    setCurrentPage(newPage); // Cập nhật currentPage
   };
 
   const handleSelectProduct = (ProductID) => {
@@ -87,45 +90,47 @@ const ProductsList = () => {
     );
   };
 
-  const handleDeleteProduct = async (ProductID) => {
+  const handleDeleteProduct = (ProductID) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-      try {
-        const response = await DeleteProducts(ProductID);
-        if (response.success) {
-          const updatedProducts = listProducts.filter(product => product.ProductID !== ProductID);
-          setListProducts(updatedProducts);
-          toast.success("Sản phẩm đã được xóa thành công");
-          localStorage.setItem('products', JSON.stringify(updatedProducts));
-        } else {
-          toast.error("Xóa sản phẩm thất bại");
-        }
-      } catch (error) {
-        console.error("Lỗi khi xóa sản phẩm:", error);
-        toast.error("Đã xảy ra lỗi khi xóa sản phẩm");
-      }
+      DeleteProducts(ProductID)
+        .then(response => {
+          if (response.success) {
+            const updatedProducts = listProducts.filter(product => product.ProductID !== ProductID);
+            setListProducts(updatedProducts);
+            toast.success("Sản phẩm đã được xóa thành công");
+            localStorage.setItem('products', JSON.stringify(updatedProducts));
+          } else {
+            toast.error("Xóa sản phẩm thất bại");
+          }
+        })
+        .catch(error => {
+          console.error("Lỗi khi xóa sản phẩm:", error);
+          toast.error("Đã xảy ra lỗi khi xóa sản phẩm");
+        });
     }
   };
 
-  const handleToggleActive = async (item) => {
+  const handleToggleActive = (item) => {
     const newStatus = item.isActive ? "INACTIVE" : "ACTIVE";
-    try {
-      const response = await UpdateProductStatus(item.ProductID, { Status: newStatus });
-      if (response.success) {
-        const updatedProducts = listProducts.map(product =>
-          product.ProductID === item.ProductID
-            ? { ...product, isActive: !product.isActive }
-            : product
-        );
-        setListProducts(updatedProducts);
-        toast.success("Cập nhật trạng thái sản phẩm thành công");
-        localStorage.setItem('products', JSON.stringify(updatedProducts));
-      } else {
-        toast.error("Cập nhật trạng thái sản phẩm thất bại");
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
-      toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
-    }
+    UpdateProductStatus(item.ProductID, { Status: newStatus })
+      .then(response => {
+        if (response.success) {
+          const updatedProducts = listProducts.map(product =>
+            product.ProductID === item.ProductID
+              ? { ...product, isActive: !product.isActive }
+              : product
+          );
+          setListProducts(updatedProducts);
+          toast.success("Cập nhật trạng thái sản phẩm thành công");
+          localStorage.setItem('products', JSON.stringify(updatedProducts));
+        } else {
+          toast.error("Cập nhật trạng thái sản phẩm thất bại");
+        }
+      })
+      .catch(error => {
+        console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
+        toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
+      });
   };
 
   return (

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-
 import { Input, Button, Textarea, Checkbox } from "@material-tailwind/react";
 import {
   ChevronDownIcon,
@@ -20,7 +19,6 @@ import {
   DeleteProductVariant,
 } from "../service/api_service";
 import { toast, ToastContainer } from "react-toastify";
-import { TailSpin } from "react-loader-spinner"; // Import the spinner
 import { FaSpinner } from "react-icons/fa"; // Import icon spinner từ react-icons
 
 const UpdateProducts = () => {
@@ -49,7 +47,6 @@ const UpdateProducts = () => {
   const [productVariants, setProductVariants] = useState([]);
   const [variantPrice, setVariantPrice] = useState("");
   const [variantQuantity, setVariantQuantity] = useState("");
-  const [selectedVariants, setSelectedVariants] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -61,49 +58,50 @@ const UpdateProducts = () => {
     }
   }, [ProductID]);
 
-  const fetchProductData = async () => {
-    try {
-      const [productResponse, categoriesResponse, colorsResponse, sizesResponse] = await Promise.all([
-        GetProductById(ProductID),
-        ListCategories(1, ""), // Lấy danh mục
-        ListColors(1, ""), // Lấy màu sắc
-        ListSizes(1, ""), // Lấy kích thước
-      ]);
+  const fetchProductData = () => {
+    Promise.all([
+      GetProductById(ProductID),
+      ListCategories(1, ""),
+      ListColors(1, ""),
+      ListSizes(1, ""),
+    ])
+      .then(([productResponse, categoriesResponse, colorsResponse, sizesResponse]) => {
+        if (productResponse && productResponse.data) {
+          const product = productResponse.data.product;
+          const imagePaths = product.image_path ? product.image_path.split(",") : [];
+          setProductData({
+            ...product,
+            MainImagePreview: product.MainImageURL || null,
+            ImagePath: imagePaths,
+            ImagePathPreviews: imagePaths.map((path) => path.trim()),
+          });
+        }
 
-      if (productResponse && productResponse.data) {
-        const product = productResponse.data.product;
-        const imagePaths = product.image_path ? product.image_path.split(",") : [];
-        setProductData({
-          ...product,
-          MainImagePreview: product.MainImageURL || null,
-          ImagePath: imagePaths,
-          ImagePathPreviews: imagePaths.map((path) => path.trim()),
-        });
-      }
+        setCategories(categoriesResponse.data);
+        setColors(colorsResponse.data);
+        setSizes(sizesResponse.data);
 
-      setCategories(categoriesResponse.data); // Lưu danh mục vào state
-      setColors(colorsResponse.data); // Lưu màu sắc vào state
-      setSizes(sizesResponse.data); // Lưu kích thước vào state
-
-      // Gọi hàm để lấy danh sách biến thể sản phẩm
-      await fetchProductVariants();
-    } catch (error) {
-      console.error("Error fetching product data:", error);
-      toast.error("Không thể tải thông tin sản phẩm");
-      navigate("/admin/products");
-    }
+        // Gọi hàm để lấy danh sách biến thể sản phẩm
+        fetchProductVariants();
+      })
+      .catch((error) => {
+        console.error("Error fetching product data:", error);
+        toast.error("Không thể tải thông tin sản phẩm");
+        navigate("/admin/products");
+      });
   };
 
-  const fetchProductVariants = async () => {
-    try {
-      const response = await GetProductVariants(ProductID);
-      if (response && response.data) {
-        setProductVariants(response.data); // Lưu danh sách biến thể vào state
-      }
-    } catch (error) {
-      console.error("Error fetching product variants:", error);
-      toast.error("Không thể tải danh sách biến thể sản phẩm");
-    }
+  const fetchProductVariants = () => {
+    GetProductVariants(ProductID)
+      .then((response) => {
+        if (response && response.data) {
+          setProductVariants(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching product variants:", error);
+        toast.error("Không thể tải danh sách biến thể sản phẩm");
+      });
   };
 
   const handleChange = (e) => {
@@ -135,8 +133,8 @@ const UpdateProducts = () => {
         Promise.all(readerPromises).then((results) => {
           setProductData((prevData) => ({
             ...prevData,
-            ImagePath: fileArray, // Chỉ lưu các file mới
-            ImagePathPreviews: results, // Chỉ lưu preview của các file mới
+            ImagePath: fileArray,
+            ImagePathPreviews: results,
           }));
         });
       }
@@ -152,7 +150,7 @@ const UpdateProducts = () => {
     setErrors({ ...errors, CategoryID: null });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
@@ -162,22 +160,24 @@ const UpdateProducts = () => {
       formData.append(key, productData[key]);
     }
 
-    try {
-      const response = await UpdateProduct(ProductID, formData);
-      navigate("/admin/products", {
-        state: {
-          success: true,
-          message: "Sản phẩm đã được cập nhật thành công!",
-          updatedProduct: response.data, // Đảm bảo bạn truyền sản phẩm đã cập nhật
-        },
+    UpdateProduct(ProductID, formData)
+      .then((response) => {
+        navigate("/admin/products", {
+          state: {
+            success: true,
+            message: "Sản phẩm đã được cập nhật thành công!",
+            updatedProduct: response.data,
+          },
+        });
+        toast.success("Sản phẩm đã được cập nhật thành công!");
+      })
+      .catch((error) => {
+        console.error("Error updating product:", error);
+        toast.error("Đã xảy ra lỗi khi cập nhật sản phẩm");
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      toast.success("Sản phẩm đã được cập nhật thành công!");
-    } catch (error) {
-      console.error("Error updating product:", error);
-      toast.error("Đã xảy ra lỗi khi cập nhật sản phẩm");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const renderImageUpload = (label, name, multiple = false) => {
@@ -253,7 +253,7 @@ const UpdateProducts = () => {
     );
   };
 
-  const handleAddVariant = async () => {
+  const handleAddVariant = () => {
     if (selectedColors.length === 0 || selectedSizes.length === 0) {
       toast.error("Vui lòng chọn ít nhất một màu và một kích thước");
       return;
@@ -272,20 +272,18 @@ const UpdateProducts = () => {
       Quantity: parseInt(variantQuantity),
     };
 
-    try {
-      console.log(variantData);
-      const response = await AddProductVariant(variantData);
-
-      toast.success("Biến thể đã được thêm thành công");
-
-      await fetchProductVariants();
-    } catch (error) {
-      console.error("Lỗi khi thêm biến th:", error);
-      toast.error(
-        "Không thể thêm biến thể: " +
-          (error.response?.data?.message || error.message)
-      );
-    }
+    AddProductVariant(variantData)
+      .then((response) => {
+        toast.success("Biến thể đã được thêm thành công");
+        fetchProductVariants();
+      })
+      .catch((error) => {
+        console.error("Lỗi khi thêm biến thể:", error);
+        toast.error(
+          "Không thể thêm biến thể: " +
+            (error.response?.data?.message || error.message)
+        );
+      });
 
     // Reset form fields
     setSelectedColors([]);
@@ -298,17 +296,16 @@ const UpdateProducts = () => {
     navigate("/admin/products"); // Điều hướng về trang danh sách sản phẩm
   };
 
-  const handleDeleteVariant = async (VariantID) => {
-    try {
-      await DeleteProductVariant(VariantID);
-      toast.success("Biến thể đã được xóa thành công!");
-      // Cập nhật lại danh sách biến thể sau khi xóa
-      await fetchProductVariants();
-      
-    } catch (error) {
-      console.error("Lỗi khi xóa biến thể:", error);
-      toast.error("Không thể xóa biến thể: " + (error.response?.data?.message || error.message));
-    }
+  const handleDeleteVariant = (VariantID) => {
+    DeleteProductVariant(VariantID)
+      .then(() => {
+        toast.success("Biến thể đã được xóa thành công!");
+        fetchProductVariants();
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa biến thể:", error);
+        toast.error("Không thể xóa biến thể: " + (error.response?.data?.message || error.message));
+      });
   };
 
   const handleEditVariant = (variantID) => {

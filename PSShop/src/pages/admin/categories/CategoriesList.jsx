@@ -64,14 +64,20 @@ const CategoriesList = () => {
     }
   }, [statusUpdate]); // Chạy effect khi statusUpdate thay đổi
 
-  const getCategories = async (page, search = "") => {
-    let res = await ListCategories(page, search); // Gọi API với từ khóa tìm kiếm
-    if (res && res.data) {
-      setTotalCategory(res.total);
-      setListCategory(res.data.map(item => ({ ...item, isActive: item.Status === "ACTIVE" }))); // Thiết lập trạng thái
-      setTotalPages(res.totalPage);
-      setCurrentPage(page);
-    }
+  const getCategories = (page, search = "") => {
+    ListCategories(page, search) // Gọi API với từ khóa tìm kiếm
+      .then(res => {
+        if (res && res.data) {
+          setTotalCategory(res.total);
+          setListCategory(res.data.map(item => ({ ...item, isActive: item.Status === "ACTIVE" }))); // Thiết lập trạng thái
+          setTotalPages(res.totalPage);
+          setCurrentPage(page);
+        }
+      })
+      .catch(error => {
+        console.error("Lỗi khi lấy danh mục:", error);
+        toast.error("Không thể tải danh mục");
+      });
   };
 
   const handleSearch = (event) => {
@@ -92,38 +98,39 @@ const CategoriesList = () => {
     );
   };
 
-  const handleDeleteCategories = async (CategoryIDs) => {
+  const handleDeleteCategories = (CategoryIDs) => {
     if (CategoryIDs.length === 0) {
       toast.warn("Vui lòng chọn ít nhất một danh mục để xóa");
       return;
     }
 
     if (window.confirm("Bạn có chắc chắn muốn xóa các danh mục đã chọn?")) {
-      try {
-        const response = await DeleteCategories(CategoryIDs);
-        if (response && response.message === "Operation completed") {
-          const results = response.results || [];
-          const deletedCount = results.filter((r) => r.message === "Deleted successfully").length;
+      DeleteCategories(CategoryIDs)
+        .then(response => {
+          if (response && response.message === "Operation completed") {
+            const results = response.results || [];
+            const deletedCount = results.filter((r) => r.message === "Deleted successfully").length;
 
-          if (deletedCount > 0) {
-            toast.success(`Đã xóa ${deletedCount} danh mục thành công`);
-            getCategories(currentPage); // Tải lại danh sách
-            setSelectedCategories([]); // Reset danh sách đã chọn
+            if (deletedCount > 0) {
+              toast.success(`Đã xóa ${deletedCount} danh mục thành công`);
+              getCategories(currentPage); // Tải lại danh sách
+              setSelectedCategories([]); // Reset danh sách đã chọn
+            } else {
+              toast.warn("Không có danh mục nào được xóa");
+            }
+
+            const notFoundIds = results.filter((r) => r.message === "Category not found").map((r) => r.id);
+            if (notFoundIds.length > 0) {
+              toast.info(`Không tìm thấy danh mục với ID: ${notFoundIds.join(", ")}`);
+            }
           } else {
-            toast.warn("Không có danh mục nào được xóa");
+            throw new Error("Không thể xóa danh mục");
           }
-
-          const notFoundIds = results.filter((r) => r.message === "Category not found").map((r) => r.id);
-          if (notFoundIds.length > 0) {
-            toast.info(`Không tìm thấy danh mục với ID: ${notFoundIds.join(", ")}`);
-          }
-        } else {
-          throw new Error("Không thể xóa danh mục");
-        }
-      } catch (error) {
-        console.error("Lỗi khi xóa danh mục:", error);
-        toast.error("Xóa danh mục thất bại: " + (error.response?.data?.message || error.message));
-      }
+        })
+        .catch(error => {
+          console.error("Lỗi khi xóa danh mục:", error);
+          toast.error("Xóa danh mục thất bại: " + (error.response?.data?.message || error.message));
+        });
     }
   };
 
