@@ -19,7 +19,9 @@ const ColorList = () => {
     getColors(1);
     
     if (location.state?.success) {
-      toast.success(location.state.message || "Thao tác thành công!");
+      toast.success(location.state.message || "Thao tác thành công!", {
+        autoClose: 3000, // Thời gian tự động đóng (3 giây)
+      });
       if (location.state.updatedColor) {
         setColors(prevColors => prevColors.map(color => 
           color.ColorID === location.state.updatedColor.ColorID ? location.state.updatedColor : color
@@ -30,21 +32,23 @@ const ColorList = () => {
     }
   }, [location]);
 
-  const getColors = async (page) => {
-    try {
-      const res = await ListColors(page);
-      if (res && res.data) {
-        const updatedColors = res.data.map(color => ({
-          ...color,
-          isActive: localStorage.getItem(`color-${color.ColorID}`) === 'true' || true // Mặc định là true nếu không có trong localStorage
-        }));
-        setColors(updatedColors);
-        setTotalPages(res.totalPage);
-        setCurrentPage(page);
-      }
-    } catch (error) {
-      console.error("Error fetching colors:", error);
-    }
+  const getColors = (page) => {
+    ListColors(page)
+      .then(res => {
+        if (res && res.data) {
+          const updatedColors = res.data.map(color => ({
+            ...color,
+            isActive: localStorage.getItem(`color-${color.ColorID}`) === 'true' || true // Mặc định là true nếu không có trong localStorage
+          }));
+          setColors(updatedColors);
+          setTotalPages(res.totalPage);
+          setCurrentPage(page);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching colors:", error);
+        toast.error("Không thể tải danh sách màu sắc");
+      });
   };
 
   const handlePageClick = (event) => {
@@ -60,21 +64,21 @@ const ColorList = () => {
     );
   };
 
-  const handleDeleteColors = async (ColorIDs = selectedColors) => {
+  const handleDeleteColors = (ColorIDs = selectedColors) => {
     if (ColorIDs.length === 0) return;
 
     if (window.confirm("Bạn có chắc chắn muốn xóa các màu đã chọn?")) {
-      try {
-        for (const ColorID of ColorIDs) {
-          await DeleteColors(ColorID);
-        }
-        toast.success("Xóa thành công");
-        getColors(currentPage); // Tải lại danh sách
-        setSelectedColors([]); // Reset danh sách đã chọn
-      } catch (error) {
-        console.error("Lỗi khi xóa màu sắc:", error);
-        toast.error("Xóa không thành công: " + error.message);
-      }
+      const deletePromises = ColorIDs.map(ColorID => DeleteColors(ColorID));
+      Promise.all(deletePromises)
+        .then(() => {
+          toast.success("Xóa thành công");
+          getColors(currentPage); // Tải lại danh sách
+          setSelectedColors([]); // Reset danh sách đã chọn
+        })
+        .catch(error => {
+          console.error("Lỗi khi xóa màu sắc:", error);
+          toast.error("Xóa không thành công: " + error.message);
+        });
     }
   };
 

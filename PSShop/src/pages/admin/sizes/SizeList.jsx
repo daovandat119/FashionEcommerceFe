@@ -29,17 +29,19 @@ const SizeList = () => {
     }
   }, [location]);
 
-  const getSizes = async (page) => {
-    try {
-      const res = await ListSizes(page);
-      if (res && res.data) {
-        setSizes(res.data.map(size => ({ ...size, isActive: true }))); // Mặc định là bật
-        setTotalPages(res.totalPage);
-        setCurrentPage(page);
-      }
-    } catch (error) {
-      console.error("Error fetching sizes:", error);
-    }
+  const getSizes = (page) => {
+    ListSizes(page)
+      .then(res => {
+        if (res && res.data) {
+          setSizes(res.data.map(size => ({ ...size, isActive: true }))); // Mặc định là bật
+          setTotalPages(res.totalPage);
+          setCurrentPage(page);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching sizes:", error);
+        toast.error("Không thể tải danh sách kích thước");
+      });
   };
 
   const handlePageClick = (event) => {
@@ -55,21 +57,21 @@ const SizeList = () => {
     );
   };
 
-  const handleDeleteSizes = async (SizeIDs = selectedSizes) => {
+  const handleDeleteSizes = (SizeIDs = selectedSizes) => {
     if (SizeIDs.length === 0) return;
 
     if (window.confirm("Bạn có chắc chắn muốn xóa các kích thước đã chọn?")) {
-      try {
-        for (const SizeID of SizeIDs) {
-          await DeleteSizes(SizeID);
-        }
-        toast.success("Xóa thành công");
-        getSizes(currentPage); // Tải lại danh sách
-        setSelectedSizes([]); // Reset danh sách đã chọn
-      } catch (error) {
-        console.error("Lỗi khi xóa kích thước:", error);
-        toast.error("Xóa không thành công: " + error.message);
-      }
+      const deletePromises = SizeIDs.map(SizeID => DeleteSizes(SizeID));
+      Promise.all(deletePromises)
+        .then(() => {
+          toast.success("Xóa thành công");
+          getSizes(currentPage); // Tải lại danh sách
+          setSelectedSizes([]); // Reset danh sách đã chọn
+        })
+        .catch(error => {
+          console.error("Lỗi khi xóa kích thước:", error);
+          toast.error("Xóa không thành công: " + error.message);
+        });
     }
   };
 

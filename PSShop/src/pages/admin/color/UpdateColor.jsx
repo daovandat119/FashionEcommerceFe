@@ -11,19 +11,20 @@ const UpdateColorComponent = () => {
   const { ColorID } = useParams();
 
   useEffect(() => {
-    const fetchColor = async () => {
-      try {
-        const response = await GetColorById(ColorID);
-        if (response.data.ColorName) {
-          setColorName(response.data.ColorName);
-        } else {
-          throw new Error("Dữ liệu màu sắc không hợp lệ");
-        }
-      } catch (err) {
-        console.error("Lỗi khi tải màu sắc:", err);
-        setError("Không thể tải dữ liệu màu sắc. Vui lòng thử lại sau.");
-        toast.error("Không thể tải dữ liệu màu sắc");
-      }
+    const fetchColor = () => {
+      GetColorById(ColorID)
+        .then(response => {
+          if (response.data.ColorName) {
+            setColorName(response.data.ColorName);
+          } else {
+            throw new Error("Dữ liệu màu sắc không hợp lệ");
+          }
+        })
+        .catch(err => {
+          console.error("Lỗi khi tải màu sắc:", err);
+          setError("Không thể tải dữ liệu màu sắc. Vui lòng thử lại sau.");
+          toast.error("Không thể tải dữ liệu màu sắc");
+        });
     };
 
     if (ColorID) {
@@ -33,7 +34,7 @@ const UpdateColorComponent = () => {
     }
   }, [ColorID]);
 
-  const handleUpdateColor = async (e) => {
+  const handleUpdateColor = (e) => {
     e.preventDefault();
     setError("");
 
@@ -42,24 +43,25 @@ const UpdateColorComponent = () => {
       return;
     }
 
-    try {
-      const response = await UpdateColor(ColorID, ColorName);
-      if (response && response.data) {
-        toast.success("Cập nhật màu sắc thành công", {
-          onClose: () => navigate("/admin/colors"),
-        });
-      } else {
-        throw new Error(response.data.message || "Không thể cập nhật màu sắc");
-      }
-    } catch (err) {
-      console.error("Lỗi khi cập nhật màu sắc:", err);
-      // Hiển thị thông báo lỗi từ API
-      if (err.response && err.response.data) {
-        toast.error(err.response.data.ColorName[0] || "Đã xảy ra lỗi khi cập nhật màu sắc");
-      } else {
-        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
-      }
-    }
+    UpdateColor(ColorID, ColorName)
+      .then(response => {
+        if (response && response.data) {
+          toast.success("Cập nhật màu sắc thành công", {
+            onClose: () => navigate("/admin/colors"),
+          });
+        } else {
+          throw new Error(response.data.message || "Không thể cập nhật màu sắc");
+        }
+      })
+      .catch(err => {
+        console.error("Lỗi khi cập nhật màu sắc:", err);
+        // Hiển thị thông báo lỗi từ API
+        if (err.response && err.response.data) {
+          toast.error(err.response.data.ColorName[0] || "Đã xảy ra lỗi khi cập nhật màu sắc");
+        } else {
+          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+        }
+      });
   };
 
   return (
@@ -82,7 +84,7 @@ const UpdateColorComponent = () => {
               type="text"
               value={ColorName}
               onChange={(e) => setColorName(e.target.value)}
-              required
+              
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
