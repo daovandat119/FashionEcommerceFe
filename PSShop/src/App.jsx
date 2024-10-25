@@ -97,7 +97,8 @@ const AppRoutes = () => {
 
             {/* Account routes */}
             <Route path="account_dashboard" element={<AccountPage />} />
-            <Route path="account_orders" element={<AccountOrderPage />} />
+
+            <Route path="account_orders" element={<AccountOrderPage />} />         
             <Route path="account_edit_address" element={<AccountEditAddressPage />} />
             <Route path="account_edit" element={<AccountEditPage />} />
 

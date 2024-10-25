@@ -1,15 +1,9 @@
 export const openModalShopFilter = () => {
-  const pageOverlay = document.getElementById("pageOverlay");
-  const shopFilter = document.getElementById("shopFilterAside");
-
-  if (pageOverlay && shopFilter) {
+    const pageOverlay = document.getElementById("pageOverlay");
+    const shopFilter = document.getElementById("shopFilterAside");
     pageOverlay.classList.add("page-overlay_visible");
     shopFilter.classList.add("aside_visible");
-  } else {
-    console.error("Elements not found: #pageOverlay or #shopFilterAside");
-  }
-};
-
+  };
   export const closeModalShopFilter = () => {
     const pageOverlay = document.getElementById("pageOverlay");
     const shopFilter = document.getElementById("shopFilterAside");
