@@ -1,11 +1,3 @@
-// import {
-//   brands,
-//   categories,
-//   colors,
-//   filters,
-//   sizes,
-// } from "@/data/products/productFilterOptions";
-
 import { brands , categories,colors,filters, sizes,} from "../../../data/products/productFilterOptions";
 import { useEffect, useState } from "react";
 import Slider from "rc-slider";
@@ -39,9 +31,6 @@ export default function FilterAll() {
   }, [searchQuery]);
   const [price, setPrice] = useState([20, 70987]);
 
-  // price range handler
-
-  // price range handler
   const handleOnChange = (value) => {
     setPrice(value);
   };

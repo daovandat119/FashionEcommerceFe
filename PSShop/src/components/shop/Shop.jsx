@@ -10,7 +10,7 @@ import { useContextElement } from "../../context/Context";
 import axios from 'axios'; // Import Axios
 import { openModalShopFilter } from "../../utlis/aside";
 import { menuCategories, sortingOptions } from "../../data/products/productCategories";
-
+//import { products51 } from "../../data/products/fashion";
 const itemPerRow = [2, 3, 4];
 
 export default function Shop1() {
@@ -36,6 +36,18 @@ export default function Shop1() {
       });
   }, []);
 
+
+  //  // eslint-disable-next-line no-unused-vars
+  //  const [filtered, setFiltered] = useState(products51);
+  //  useEffect(() => {
+  //    if (currentCategory == "All") {
+  //      setFiltered(products51);
+  //    } else {
+  //      setFiltered(
+  //        products51.filter((elm) => elm.filterCategory2 == currentCategory)
+  //      );
+  //    }
+  //  }, [currentCategory]);
 
   return (
     <>

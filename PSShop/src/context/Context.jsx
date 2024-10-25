@@ -19,50 +19,55 @@ export default function ContextProvider({ children }) {
   // Tính tổng giá khi giỏ hàng thay đổi
   useEffect(() => {
     const total = cartProducts.reduce((acc, product) => {
-      return acc + product.price * product.quantity;
+      return acc + product.Price * product.quantity;
     }, 0);
     setTotalPrice(total);
   }, [cartProducts]);
 
   // Thêm sản phẩm vào giỏ hàng
-  const addProductToCart = async (productId, colorId, sizeId, quantity) => {
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
-      return;
-    }
+  // Thêm sản phẩm vào giỏ hàng
+const addProductToCart = async (productId, colorId, sizeId, quantity) => {
+  const token = localStorage.getItem('token');
 
-    try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/cart-items`,
-        {
-          productID: productId,
-          colorID: colorId,
-          sizeID: sizeId,
-          quantity: quantity,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+  if (!token) {
+    alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      `http://127.0.0.1:8000/api/cart-items`,
+      {
+        productID: productId,
+        colorID: colorId,
+        sizeID: sizeId,
+        quantity: quantity,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      );
-
-      // Đảm bảo dữ liệu trả về từ backend là một mảng
-      const updatedCart = Array.isArray(response.data) ? response.data : [];
-      setCartProducts(updatedCart);
-    } catch (error) {
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-      } else {
-        console.error("Error setting up request:", error.message);
       }
+    );
+
+    // Đảm bảo dữ liệu trả về từ backend là một mảng
+    const updatedCart = Array.isArray(response.data) ? response.data : [];
+    setCartProducts(updatedCart);
+
+    // Thông báo thành công
+    alert("Sản phẩm đã được thêm vào giỏ hàng thành công!");
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response data:", error.response.data);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
     }
-  };
+  }
+};
+
 
   // Kiểm tra sản phẩm đã được thêm vào giỏ hàng
   const isAddedToCartProducts = (id) => {

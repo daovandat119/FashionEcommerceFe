@@ -19,6 +19,11 @@ import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_trackin
 import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
+import AccountPage from "./pages/dashboards/account_dashboard";
+import AccountOrderPage from "./pages/dashboards/account_orders";
+import AccountEditPage from "./pages/dashboards/account_edit";
+import AccountWishlistPage from "./pages/dashboards/account_wishlist";
+import AccountEditAddressPage from "./pages/dashboards/account_edit_address";
 // import * as MTR from "@material-tailwind/react";
 
 // Admin imports
@@ -47,6 +52,7 @@ import { LoginProvider } from "./components/login/LoginContext";
 // import { LoginProvider } from "./components/login/LoginContext";
 import { AuthProvider } from './context/AuthContext';
 import UpdateVariant from "./pages/admin/products/UpdateVariant"; // Import component UpdateVariant
+import ShopFilter from "./components/shop/filter/ShopFilter";
 
 function App() {
   return (
@@ -92,6 +98,15 @@ const AppRoutes = () => {
             <Route path="shop_order_complete" element={<ShopOrderConplate />} />
             <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />}/>
 
+            <Route path="account_dashboard" element={<AccountPage />} />
+            <Route path="account_orders" element={<AccountOrderPage />} />
+            <Route path="account_edit" element={<AccountEditPage />} />
+            <Route path="account_wishlist" element={<AccountWishlistPage />} />
+            <Route
+              path="account_edit_address"
+              element={<AccountEditAddressPage />}
+            />
+
             {/* Admin routes */}
             <Route path="/admin/login" element={<LoginAdmin />} />
             <Route path="/admin" element={
@@ -125,6 +140,7 @@ const AppRoutes = () => {
             </Route>
             
           </Routes>
+          <ShopFilter/>
         </ThemeProvider>
       </Context>
     </AuthProvider>
