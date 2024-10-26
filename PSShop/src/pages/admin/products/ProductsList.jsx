@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Input, Checkbox } from "@material-tailwind/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   ListProducts,
   DeleteProducts,
-  ListCategories,
   UpdateProductStatus,
 } from "../service/api_service";
 import ReactPaginate from "react-paginate";
@@ -16,122 +15,95 @@ import "react-toastify/dist/ReactToastify.css";
 
 const ProductsList = () => {
   const [listProducts, setListProducts] = useState([]);
-  const [categories, setCategories] = useState({});
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    getProducts(currentPage);
-    getCategories();
+  const getProducts = useCallback((page, search = "") => {
+    if (isLoading) return; // Ngăn chặn nếu đang tải
+    setIsLoading(true); // Đặt cờ đang tải
 
-    // Kiểm tra thông tin trạng thái từ location
-    const { state } = location;
-    if (state && state.success) {
-      toast.success(state.message); // Hiển thị thông báo thành công
-    }
-  }, [currentPage, location]); // Thêm location vào dependency array
-
-  useEffect(() => {
-    const storedProducts = localStorage.getItem('products');
-    if (storedProducts) {
-      setListProducts(JSON.parse(storedProducts));
-    }
-  }, []); // Chỉ chạy một lần khi component mount
-
-  const getProducts = (page, search = "") => {
     ListProducts(page, search)
-      .then(res => {
+      .then((res) => {
         if (res) {
           setTotalProducts(res.total);
-          const updatedProducts = res.data.map(item => ({ ...item, isActive: item.Status === "ACTIVE" }));
+          const updatedProducts = res.data.map((item) => ({
+            ...item,
+            isActive: item.Status === "ACTIVE",
+          }));
           setListProducts(updatedProducts);
           setTotalPages(res.totalPage);
           setCurrentPage(page);
-          localStorage.setItem('products', JSON.stringify(updatedProducts));
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Lỗi khi lấy danh sách sản phẩm:", error);
         toast.error("Không thể tải danh sách sản phẩm");
-      });
-  };
-
-  const getCategories = () => {
-    ListCategories(1, "")
-      .then(res => {
-        if (res && res.data) {
-          const categoryMap = {};
-          res.data.forEach((category) => {
-            categoryMap[category.CategoryID] = category.CategoryName;
-          });
-          setCategories(categoryMap);
-        }
       })
-      .catch(error => {
-        console.error("Lỗi khi lấy danh sách danh mục:", error);
-        toast.error("Không thể tải danh sách danh mục");
+      .finally(() => {
+        setIsLoading(false); // Đặt lại cờ sau khi hoàn thành
       });
-  };
+  }, [isLoading]);
 
-  const handlePageClick = (event) => {
+  useEffect(() => {
+    getProducts(currentPage); // Gọi getProducts sau khi currentPage thay đổi
+  }, [currentPage, getProducts]); // Thêm getProducts vào dependency array
+
+  const handlePageClick = useCallback((event) => {
     const newPage = event.selected + 1;
     setCurrentPage(newPage); // Cập nhật currentPage
-  };
+  }, []);
 
-  const handleSelectProduct = (ProductID) => {
+  const handleSelectProduct = useCallback((ProductID) => {
     setSelectedProducts((prev) =>
       prev.includes(ProductID)
         ? prev.filter((id) => id !== ProductID)
         : [...prev, ProductID]
     );
-  };
+  }, []);
 
-  const handleDeleteProduct = (ProductID) => {
+  const handleDeleteProduct = useCallback((ProductID) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-      DeleteProducts(ProductID)
-        .then(response => {
+      DeleteProducts(ProductID) // Gọi API để xóa sản phẩm
+        .then((response) => {
           if (response.success) {
-            const updatedProducts = listProducts.filter(product => product.ProductID !== ProductID);
-            setListProducts(updatedProducts);
+            setListProducts((prevList) => prevList.filter(product => product.ProductID !== ProductID));
             toast.success("Sản phẩm đã được xóa thành công");
-            localStorage.setItem('products', JSON.stringify(updatedProducts));
           } else {
             toast.error("Xóa sản phẩm thất bại");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Lỗi khi xóa sản phẩm:", error);
           toast.error("Đã xảy ra lỗi khi xóa sản phẩm");
         });
     }
-  };
+  }, []);
 
-  const handleToggleActive = (item) => {
+  const handleToggleActive = useCallback((item) => {
     const newStatus = item.isActive ? "INACTIVE" : "ACTIVE";
-    UpdateProductStatus(item.ProductID, { Status: newStatus })
-      .then(response => {
+    UpdateProductStatus(item.ProductID, { Status: newStatus }) // Gọi API để cập nhật trạng thái
+      .then((response) => {
         if (response.success) {
-          const updatedProducts = listProducts.map(product =>
+          const updatedProducts = listProducts.map((product) =>
             product.ProductID === item.ProductID
               ? { ...product, isActive: !product.isActive }
               : product
           );
           setListProducts(updatedProducts);
           toast.success("Cập nhật trạng thái sản phẩm thành công");
-          localStorage.setItem('products', JSON.stringify(updatedProducts));
         } else {
           toast.error("Cập nhật trạng thái sản phẩm thất bại");
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
         toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
       });
-  };
+  }, [listProducts]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -144,7 +116,6 @@ const ProductsList = () => {
             label="Search Product"
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
               getProducts(1, e.target.value); // Gọi hàm với từ khóa tìm kiếm
             }}
           />
@@ -197,9 +168,7 @@ const ProductsList = () => {
                   )}
                   <span>{item.ProductName}</span>
                 </td>
-                <td className="border-b p-4">
-                  {categories[item.CategoryID] || "N/A"}
-                </td>
+                <td className="border-b p-4">{item.category_name}</td>
                 <td className="border-b p-4">{item.Price}</td>
                 <td className="border-b p-4">{item.SalePrice}</td>
                 <td className="border-b p-4">

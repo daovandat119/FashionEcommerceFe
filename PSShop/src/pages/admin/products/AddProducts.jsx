@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AddProduct, ListCategories } from "../service/api_service";
 import { Input, Button, Textarea } from "@material-tailwind/react";
-import { ChevronDownIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSpinner } from "react-icons/fa"; // Import icon spinner
@@ -112,8 +112,14 @@ const AddProducts = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setErrors({});
+    setErrors({}); // Reset errors trước khi kiểm tra
     setLoading(true); // Set loading to true when starting the submit
+
+    // Gọi validateForm để kiểm tra tính hợp lệ
+    if (!validateForm()) {
+      setLoading(false); // Nếu không hợp lệ, dừng loading
+      return; // Dừng lại nếu có lỗi
+    }
 
     const formData = new FormData();
     for (const key in productData) {
@@ -139,12 +145,24 @@ const AddProducts = () => {
         });
       })
       .catch((err) => {
-        console.error("Error adding product:", err);
-        toast.error("Đã xảy ra lỗi khi thêm sản phẩm");
+        handleError(err); // Gọi hàm xử lý lỗi
       })
       .finally(() => {
         setLoading(false); // Set loading to false after the operation
       });
+  };
+
+  // Hàm xử lý lỗi
+  const handleError = (err) => {
+    console.error("Error adding product:", err);
+    if (err.response && err.response.data) {
+      const errorMessages = Object.keys(err.response.data).flatMap((key) => {
+        return err.response.data[key];
+      });
+      toast.error(errorMessages.join(", ") || "Đã xảy ra lỗi khi thêm sản phẩm");
+    } else {
+      toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+    }
   };
 
   const renderImageUpload = (label, name, multiple = false) => (
@@ -237,7 +255,8 @@ const AddProducts = () => {
         onClick={() => setIsOpen(!isOpen)}
       >
         {productData.CategoryID
-          ? categories.find((cat) => cat.CategoryID === productData.CategoryID)?.CategoryName
+          ? categories.find((cat) => cat.CategoryID === productData.CategoryID)
+              ?.CategoryName
           : "Select Category"}
       </button>
       {isOpen && (

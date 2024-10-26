@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { MagnifyingGlassIcon, PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Checkbox, Input } from '@material-tailwind/react';
 import { Link, useLocation } from 'react-router-dom';
-import ToggleSwitch from '../components/ToggleSwitch';
 import { ListSizes, DeleteSizes } from '../service/api_service';
 import ReactPaginate from "react-paginate";
 import { toast, ToastContainer } from "react-toastify";
@@ -88,13 +87,15 @@ const SizeList = () => {
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Sizes Management</h1>
       <div className="flex justify-between items-center mb-6">
-        <div className="w-1/2 bg-white rounded-lg shadow">
+        <div className="w-1/2">
           <Input 
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search sizes"
+            className="!border !border-gray-300 bg-white text-gray-900 shadow-lg"
           />
         </div>
-        <Link to="/admin/sizes/add" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
+       <div className='flex gap-2'>
+       <Link to="/admin/sizes/add" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
           <PlusIcon className="h-5 w-5" /> New Size
         </Link>
         <button
@@ -103,18 +104,19 @@ const SizeList = () => {
         >
           <TrashIcon className="h-5 w-5" /> Delete Selected
         </button>
+       </div>
       </div>
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto bg-white rounded-lg shadow border-2">
         <table className="w-full min-w-max border-collapse">
-          <thead className="bg-white">
-            <tr>
-              <th className="border-b p-4 w-1/6 text-left">Select</th>
-              <th className="border-b p-4 text-left">Size</th>
-              <th className="border-b p-4 text-left">Active</th>
-              <th className="border-b p-4 text-left">Actions</th>
+          <thead className="bg-gray-100">
+            <tr className='text-center'>
+              <th className="border-b p-4 ">Select</th>
+              <th className="border-b p-4 ">Size</th>
+              <th className="border-b p-4 ">Active</th>
+              <th className="border-b p-4 ">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className='text-center'>
             {sizes.map((size) => (
               <tr key={size.SizeID} className="hover:bg-gray-50">
                 <td className="border-b p-1">
@@ -125,22 +127,22 @@ const SizeList = () => {
                   />
                 </td>
                 <td className="border-b p-4">{size.SizeName}</td>
-                <td className="border-b p-4">
-                  <ToggleSwitch
-                    isOn={size.isActive} // Truyền trạng thái isActive vào ToggleSwitch
-                    handleToggle={() => handleToggle(size.SizeID)} // Gọi hàm toggle
-                  />
+                <td className="border-b p-8 flex items-center justify-center">
+                  <span className={`h-2 w-2 rounded-full ${size.isActive ? 'bg-green-500' : 'bg-red-500'} mr-2`} />
+                  <span className={`${size.isActive ? 'text-green-500' : 'text-red-500'} font-bold`}>
+                    {size.isActive ? 'Active' : 'Inactive'}
+                  </span>
                 </td>
-                <td className="border-b p-4">
+                <td className="border-b p-4 ">
                   <Link
                     to={`/admin/sizes/edit/${size.SizeID}`}
-                    className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
+                    className="bg-blue-500 text-white p-2 mx-2 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </Link>
                   <button
                     onClick={() => handleDeleteSizes([size.SizeID])}
-                    className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
+                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors inline-flex items-center justify-center"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>

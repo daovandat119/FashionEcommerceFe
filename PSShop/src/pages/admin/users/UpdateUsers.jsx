@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
 import { Link, useParams } from 'react-router-dom'; // Import Link và useParams từ react-router-dom
-import { GetUserById } from '../service/api_service'; // Import hàm GetUserById
+import { GetUserById, UpdateUserStatus, RestoreUser } from '../service/api_service'; // Import hàm RestoreUser
 
 const UpdateUser = () => {
   const { id } = useParams(); // Lấy UserID từ URL
@@ -37,9 +37,21 @@ const UpdateUser = () => {
     fetchUserDetail();
   }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated user:", userData);
+    try {
+      if (userData.isActive) {
+        // Gọi API RestoreUser nếu trạng thái là Active
+        await RestoreUser(id);
+        console.log("User restored successfully");
+      } else {
+        // Gọi API BlockedUser nếu trạng thái là Blocked
+        await UpdateUserStatus(id, { isActive: 0 }); // Giả sử 0 là trạng thái Blocked
+        console.log("User blocked successfully");
+      }
+    } catch (err) {
+      console.error("Error updating user:", err);
+    }
   };
 
   return (
@@ -80,7 +92,7 @@ const UpdateUser = () => {
             </div>
             <div className="flex gap-2 items-center">
               <label className="block ">ROLE:</label>
-              <span className=" border-gray-300 rounded-md  text-xl font-medium block">
+              <span className="border-gray-300 rounded-md text-xl font-medium block">
                 {userData.role || "N/A"}
               </span>
             </div>

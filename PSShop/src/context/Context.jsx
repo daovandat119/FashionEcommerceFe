@@ -102,11 +102,6 @@ const addProductToCart = async (productId, colorId, sizeId, quantity) => {
     }
   }, []);
 
-  // Lưu dữ liệu giỏ hàng vào localStorage khi giỏ hàng thay đổi
-  useEffect(() => {
-    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
-  }, [cartProducts]);
-
   // Lấy dữ liệu wishlist từ localStorage khi component mount
   useEffect(() => {
     const storedWishlist = localStorage.getItem("wishList");
@@ -115,10 +110,6 @@ const addProductToCart = async (productId, colorId, sizeId, quantity) => {
     }
   }, []);
 
-  // Lưu dữ liệu wishlist vào localStorage khi wishlist thay đổi
-  useEffect(() => {
-    localStorage.setItem("wishList", JSON.stringify(wishList));
-  }, [wishList]);
 
   // Tạo đối tượng context để truyền cho Provider
   const contextElement = {

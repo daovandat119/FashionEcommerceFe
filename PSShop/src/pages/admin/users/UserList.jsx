@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Input } from "@material-tailwind/react";
-import { MagnifyingGlassIcon, PencilIcon, PlusIcon, XMarkIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import { ListUsers } from '../service/api_service'; // Import hàm ListUsers
+import {
+  MagnifyingGlassIcon,
+  PencilIcon,
+  PlusIcon,
+  XMarkIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+import { ListUsers, BlockedUser } from "../service/api_service"; // Import hàm ListUsers, DeleteUser
 
 const UserList = () => {
   const [Users, setUsers] = useState([]);
@@ -25,7 +31,9 @@ const UserList = () => {
   }, []);
 
   const getStatusLabel = (user) => {
-    return user.IsActive ? { label: "Active", color: "bg-green-500" } : { label: "Blocked", color: "bg-red-500" };
+    return user.IsActive
+      ? { label: "Active", color: "bg-green-500" }
+      : { label: "Blocked", color: "bg-red-500" };
   };
 
   const getRoleName = (roleID) => {
@@ -36,6 +44,32 @@ const UserList = () => {
         return "User";
       default:
         return "Unknown";
+    }
+  };
+
+  const handleBlockUser = async (userID) => {
+    if (window.confirm("Bạn có chắc chắn muốn chặn người dùng này không?")) {
+      try {
+        await BlockedUser(userID); // Gọi API để chặn người dùng
+        setUsers(
+          Users.map((user) =>
+            user.UserID === userID ? { ...user, IsActive: false } : user
+          )
+        ); // Cập nhật trạng thái người dùng trong state
+      } catch (err) {
+        setError(err.message); // Xử lý lỗi
+      }
+    }
+  };
+
+  const handleBlockedUser = async (userID) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
+      try {
+        await BlockedUser(userID); // Gọi API để xóa người dùng
+        setUsers(Users.filter((user) => user.UserID !== userID)); // Cập nhật danh sách người dùng trong state
+      } catch (err) {
+        setError(err.message); // Xử lý lỗi
+      }
     }
   };
 
@@ -53,7 +87,10 @@ const UserList = () => {
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
-        <Link to="/admin/users/add" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
+        <Link
+          to="/admin/users/add"
+          className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
+        >
           <PlusIcon className="h-5 w-5" /> New User
         </Link>
       </div>
@@ -89,12 +126,12 @@ const UserList = () => {
                     >
                       <PencilIcon className="h-4 w-4" />
                     </Link>
-                    <Link
-                      to={`/admin/users/delete/${user.UserID}`}
+                    <button
+                      onClick={() => handleBlockUser(user.UserID)} // Gọi hàm chặn người dùng
                       className="bg-red-600 text-white p-2 rounded-full mr-2 hover:bg-red-500 transition-colors inline-flex items-center justify-center"
                     >
                       <LockClosedIcon className="h-4 w-4" />
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               );
