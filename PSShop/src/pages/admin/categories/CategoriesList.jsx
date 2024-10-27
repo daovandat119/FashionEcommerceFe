@@ -200,7 +200,7 @@ const CategoriesList = () => {
             onClick={() => handleDeleteCategories(selectedCategories)}
             className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
           >
-            <TrashIcon className="h-5 w-5" /> Xóa đã chọn
+            <TrashIcon className="h-5 w-5" /> Delete Selected
           </button>
         </div>
       </div>
