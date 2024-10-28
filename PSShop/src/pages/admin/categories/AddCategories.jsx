@@ -21,7 +21,7 @@ const AddCategoryComponent = () => {
 
     try {
       const response = await AddCategory(CategoryName);
-      console.log("Danh mục đã được thêm:", response);
+ 
       if (response) {
         // Chuyển hướng về trang danh sách danh mục với thông báo thành công và danh mục mới
         navigate("/admin/categories", {

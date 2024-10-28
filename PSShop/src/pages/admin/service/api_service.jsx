@@ -5,7 +5,9 @@ const LoginAdmin = (Email, Password) => {
 };
 
 const ListCategories = (page, search = "") => {
-  return axios.get(`/api/categories?Page=${page}&Search=${encodeURIComponent(search)}`); // Thêm tham số tìm kiếm
+  return axios.get(
+    `/api/categories?Page=${page}&Search=${encodeURIComponent(search)}`
+  ); // Thêm tham số tìm kiếm
 };
 
 const AddCategory = (CategoryName) => {
@@ -26,7 +28,9 @@ const DeleteCategories = (ids) => {
 };
 
 const ListProducts = (page, search = "") => {
-  return axios.get(`/api/products?Page=${page}&Search=${encodeURIComponent(search)}`); // Thêm tham số tìm kiếm
+  return axios.get(
+    `/api/products?Page=${page}&Search=${encodeURIComponent(search)}`
+  ); // Thêm tham số tìm kiếm
 };
 
 const DeleteProducts = (ids) => {
@@ -133,6 +137,20 @@ const GetUserById = (UserID) => {
   return axios.get(`/api/users/${UserID}`); // Gọi API để lấy chi tiết người dùng
 };
 
+const BlockedUser = (UserID) => {
+  return axios.delete(`/api/users/${UserID}`); // Sử dụng DELETE để chặn người dùng
+};
+
+const UpdateUserStatus = (UserID, data) => {
+  return axios.post(`/api/users/restore/${UserID}`, data); // Gọi API để cập nhật trạng thái người dùng
+};
+
+const RestoreUser = (UserID) => {
+  return axios.post(`/api/users/restore/${UserID}`); // Gửi yêu cầu POST để khôi phục người dùng
+};
+
+
+
 export {
   LoginAdmin,
   ListCategories,
@@ -164,4 +182,7 @@ export {
   UpdateProductStatus,
   UpdateCategoryStatus,
   GetUserById,
+  BlockedUser,
+  UpdateUserStatus,
+  RestoreUser
 };

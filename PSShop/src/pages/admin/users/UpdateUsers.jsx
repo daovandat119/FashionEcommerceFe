@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
-import { Link, useParams } from 'react-router-dom'; // Import Link và useParams từ react-router-dom
-import { GetUserById } from '../service/api_service'; // Import hàm GetUserById
+import { Link, useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { GetUserById, UpdateUserStatus, RestoreUser } from '../service/api_service'; // Import hàm RestoreUser
+import { toast } from 'react-toastify'; // Import toast
 
 const UpdateUser = () => {
   const { id } = useParams(); // Lấy UserID từ URL
+  const navigate = useNavigate(); // Khởi tạo useNavigate
   const [userData, setUserData] = useState({
     username: "",
     email: "",
@@ -37,9 +39,24 @@ const UpdateUser = () => {
     fetchUserDetail();
   }, [id]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Updated user:", userData);
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    try {
+      let response;
+      if (userData.isActive) {
+        // Gọi API RestoreUser nếu trạng thái là Active
+        response = await RestoreUser(id);
+      } else {
+        // Gọi API BlockedUser nếu trạng thái là Blocked
+        response = await UpdateUserStatus(id, { isActive: 0 }); // Giả sử 0 là trạng thái Blocked
+      }
+      // Hiển thị thông báo từ API
+     
+      navigate("/admin/users", { state: { success: true, message: response.message || "Cập nhật trạng thái người dùng thành công!" } }); // Điều hướng về danh sách người dùng
+    } catch (err) {
+      console.error("Error updating user:", err);
+      toast.error(err.message || "Error updating user"); // Hiển thị thông báo lỗi
+    }
   };
 
   return (
@@ -80,7 +97,7 @@ const UpdateUser = () => {
             </div>
             <div className="flex gap-2 items-center">
               <label className="block ">ROLE:</label>
-              <span className=" border-gray-300 rounded-md  text-xl font-medium block">
+              <span className="border-gray-300 rounded-md text-xl font-medium block">
                 {userData.role || "N/A"}
               </span>
             </div>
