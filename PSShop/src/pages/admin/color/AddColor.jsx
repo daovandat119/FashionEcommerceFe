@@ -22,15 +22,14 @@ const AddColorComponent = () => {
       .then(response => {
         console.log("Màu đã được thêm:", response);
         if (response && response.data) {
-          toast.success("Thêm màu mới thành công!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+          // Điều hướng về trang danh sách với thông báo thành công
+          navigate("/admin/colors", { 
+            state: { 
+              success: true, 
+              message: "Thêm màu mới thành công!", 
+              newColor: response.data // Thêm thông tin màu mới vào state
+            } 
           });
-          navigate("/admin/colors", { state: { success: true, message: "Thêm màu mới thành công!" } });
         } else {
           setError("Không thể thêm màu. Vui lòng thử lại.");
         }

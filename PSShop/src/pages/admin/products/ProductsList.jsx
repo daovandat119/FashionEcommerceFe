@@ -3,7 +3,7 @@ import { Input, Checkbox } from "@material-tailwind/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   ListProducts,
   DeleteProducts,
@@ -21,6 +21,7 @@ const ProductsList = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation(); // Khai báo useLocation
 
   const getProducts = useCallback(async (page, search = "") => {
     setIsLoading(true); // Đặt cờ đang tải
@@ -114,6 +115,12 @@ const ProductsList = () => {
         toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
       });
   }, [listProducts]);
+
+  useEffect(() => {
+    if (location.state && location.state.success) {
+      toast.success(location.state.message); // Hiển thị thông báo thành công
+    }
+  }, [location.state]); // Chạy khi location.state thay đổi
 
   return (
     <div className="container mx-auto px-4 py-8">

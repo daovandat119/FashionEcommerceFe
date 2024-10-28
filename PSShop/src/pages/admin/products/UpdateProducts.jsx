@@ -169,7 +169,7 @@ const UpdateProducts = () => {
             updatedProduct: response.data,
           },
         });
-        toast.success("Sản phẩm đã được cập nhật thành công!");
+        toast.success("Sản phẩm đã được cập nhật thành công!"); // Hiển thị thông báo thành công
       })
       .catch((error) => {
         console.error("Error updating product:", error);
@@ -316,9 +316,9 @@ const UpdateProducts = () => {
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Update Product</h1>
-      <div className="flex flex-wrap gap-1">
+      <div className="flex gap-2">
         {/* Phần bên trái - Thông tin sản phẩm */}
-        <div className="w-[39.6%] px-4 bg-white">
+        <div className="w-[40%] bg-white rounded-lg shadow p-6">
           <form onSubmit={handleSubmit}>
             {/* Các trường thông tin sản phẩm */}
             <div className="mb-4">
@@ -330,9 +330,7 @@ const UpdateProducts = () => {
                 required
               />
               {errors.ProductName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.ProductName[0]}
-                </p>
+                <p className="text-red-500 text-xs mt-1">{errors.ProductName[0]}</p>
               )}
             </div>
             <div className="mb-4 relative">
@@ -342,22 +340,18 @@ const UpdateProducts = () => {
                 onClick={() => setIsOpen(!isOpen)}
               >
                 {productData.CategoryID
-                  ? categories.find(
-                      (cat) => cat.CategoryID === productData.CategoryID
-                    )?.CategoryName
-                  : "Select Category"}
+                  ? categories.find(cat => cat.CategoryID === productData.CategoryID)?.CategoryName
+                  : "Chọn Category"}
                 <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
               </button>
               {isOpen && (
                 <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
                   <ul className="py-1 overflow-auto text-base max-h-60">
-                    {categories.map((category) => (
+                    {categories.map(category => (
                       <li
                         key={category.CategoryID}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                        onClick={() =>
-                          handleCategorySelect(category.CategoryID)
-                        }
+                        onClick={() => handleCategorySelect(category.CategoryID)}
                       >
                         {category.CategoryName}
                       </li>
@@ -366,9 +360,7 @@ const UpdateProducts = () => {
                 </div>
               )}
               {errors.CategoryID && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.CategoryID[0]}
-                </p>
+                <p className="text-red-500 text-xs mt-1">{errors.CategoryID[0]}</p>
               )}
             </div>
             <div className="mb-4">
@@ -393,9 +385,7 @@ const UpdateProducts = () => {
                 onChange={handleChange}
               />
               {errors.SalePrice && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.SalePrice[0]}
-                </p>
+                <p className="text-red-500 text-xs mt-1">{errors.SalePrice[0]}</p>
               )}
             </div>
             {renderImageUpload("Main Image", "MainImageURL")}
@@ -409,9 +399,7 @@ const UpdateProducts = () => {
                 rows={2}
               />
               {errors.ShortDescription && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.ShortDescription[0]}
-                </p>
+                <p className="text-red-500 text-xs mt-1">{errors.ShortDescription[0]}</p>
               )}
             </div>
             <div className="mb-4">
@@ -423,14 +411,12 @@ const UpdateProducts = () => {
                 rows={4}
               />
               {errors.Description && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.Description[0]}
-                </p>
+                <p className="text-red-500 text-xs mt-1">{errors.Description[0]}</p>
               )}
             </div>
             <div className="flex justify-between items-center">
               <Button type="button" color="blue" onClick={handleBackToList} className="mr-2">
-                List Products
+                Product List
               </Button>
               <Button type="submit" color="green" disabled={loading}>
                 Update Product
@@ -440,72 +426,67 @@ const UpdateProducts = () => {
         </div>
 
         {/* Phần bên phải - Colors, Sizes, và Add Product Variant */}
-        <div className="w-[60%]">
-          {/* Gộp Colors, Sizes và Add Product Variant thành một khối */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
-
-            {/* Di chuyển Price và Quantity lên trên Colors */}
-            <div className="flex space-x-4 mb-4">
-              <input
-                type="number"
-                placeholder="Price"
-                value={variantPrice}
-                onChange={(e) => setVariantPrice(e.target.value)}
-                className="border-2 p-2 w-full rounded-xl"
-              />
-              <input
-                type="number"
-                placeholder="Quantity"
-                value={variantQuantity}
-                onChange={(e) => setVariantQuantity(e.target.value)}
-                className="border-2 p-2 w-full rounded-xl"
-              />
-            </div>
-
-            {/* Colors */}
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">Colors</h3>
-              <div className="grid grid-cols-5 gap-4">
-                {colors.map((color) => (
-                  <div key={color.ColorID} className="flex items-center">
-                    <Checkbox
-                      id={`color-${color.ColorID}`}
-                      checked={selectedColors.includes(color.ColorID)}
-                      onChange={() => handleColorChange(color.ColorID)}
-                    />
-                    <label htmlFor={`color-${color.ColorID}`} className="ml-2 text-sm">
-                      {color.ColorName}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Sizes */}
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">Sizes</h3>
-              <div className="grid grid-cols-5 gap-4">
-                {sizes.map((size) => (
-                  <div key={size.SizeID} className="flex items-center">
-                    <Checkbox
-                      id={`size-${size.SizeID}`}
-                      checked={selectedSizes.includes(size.SizeID)}
-                      onChange={() => handleSizeChange(size.SizeID)}
-                    />
-                    <label htmlFor={`size-${size.SizeID}`} className="ml-2 text-sm">
-                      {size.SizeName}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Nút Add Product Variant */}
-            <Button color="blue" onClick={handleAddVariant} className="w-full">
-              + ADD PRODUCT VARIANT
-            </Button>
+        <div className="w-[60%] bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
+          <div className="flex space-x-4 mb-4">
+            <input
+              type="number"
+              placeholder="Price"
+              value={variantPrice}
+              onChange={(e) => setVariantPrice(e.target.value)}
+              className="border-2 p-2 w-full rounded-xl"
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              value={variantQuantity}
+              onChange={(e) => setVariantQuantity(e.target.value)}
+              className="border-2 p-2 w-full rounded-xl"
+            />
           </div>
+
+          {/* Colors */}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Colors</h3>
+            <div className="grid grid-cols-5 gap-4">
+              {colors.map((color) => (
+                <div key={color.ColorID} className="flex items-center">
+                  <Checkbox
+                    id={`color-${color.ColorID}`}
+                    checked={selectedColors.includes(color.ColorID)}
+                    onChange={() => handleColorChange(color.ColorID)}
+                  />
+                  <label htmlFor={`color-${color.ColorID}`} className="ml-2 text-sm">
+                    {color.ColorName}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sizes */}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Sizes</h3>
+            <div className="grid grid-cols-5 gap-4">
+              {sizes.map((size) => (
+                <div key={size.SizeID} className="flex items-center">
+                  <Checkbox
+                    id={`size-${size.SizeID}`}
+                    checked={selectedSizes.includes(size.SizeID)}
+                    onChange={() => handleSizeChange(size.SizeID)}
+                  />
+                  <label htmlFor={`size-${size.SizeID}`} className="ml-2 text-sm">
+                    {size.SizeName}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Nút Thêm Biến Thể */}
+          <Button color="blue" onClick={handleAddVariant} className="w-full">
+            + ADD PRODUCT VARIANT
+          </Button>
 
           {/* Product Variants Table */}
           <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -515,7 +496,7 @@ const UpdateProducts = () => {
                 <table className="min-w-full border-collapse border border-gray-300">
                   <thead>
                     <tr className="bg-gray-100 text-center">
-                      <th className="border border-gray-300 px-4 py-2">Select</th>
+                      <th className="border border-gray-300  py-2">Select</th>
                       <th className="border border-gray-300 px-4 py-2">Color</th>
                       <th className="border border-gray-300 px-4 py-2">Size</th>
                       <th className="border border-gray-300 px-4 py-2">Price</th>
@@ -524,16 +505,16 @@ const UpdateProducts = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {productVariants.map((variant, index) => (
-                      <tr key={variant.VariantID || index} className="text-center">
-                        <td className="border px-4 py-2">
+                    {productVariants.map((variant) => (
+                      <tr key={variant.VariantID} className="text-center">
+                        <td className="border py-2">
                           <Checkbox className="border-2 border-gray-400" />
                         </td>
                         <td className="border px-4 py-2">{variant.ColorName || "N/A"}</td>
                         <td className="border px-4 py-2">{variant.SizeName || "N/A"}</td>
                         <td className="border px-4 py-2">{variant.Price}</td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
-                        <td className="border px-4 py-2">
+                        <td className="border-b px-4 py-4 flex">
                           <button
                             className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
                             onClick={() => handleEditVariant(variant.VariantID)}
@@ -553,7 +534,7 @@ const UpdateProducts = () => {
                 </table>
               </div>
             ) : (
-              <p>Chưa có biến thể sản phẩm nào được thêm.</p>
+              <p>No product variants added yet.</p>
             )}
           </div>
         </div>
@@ -563,7 +544,7 @@ const UpdateProducts = () => {
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg flex items-center">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
             <span className="ml-4 text-white text-lg font-semibold">
-              Đang cập nhật sản phẩm, vui lòng chờ...
+              Updating product, please wait...
             </span>
           </div>
         </div>

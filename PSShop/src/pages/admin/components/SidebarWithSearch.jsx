@@ -34,16 +34,11 @@ export function SidebarWithSearch() {
 
   return (
     <Card className="h-[100vh] w-full max-w-[20rem] p-4">
-      <div className=" flex items-center justify-center ">
+      <div className=" flex items-center justify-center py-12 mr-5">
       <img className="w-20  " src={logo} alt="Logo" />
         <p className="text-2xl font-bold ">ADMIN</p>
       </div>
-      <div className="p-2 mt-10">
-        <Input
-          icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-          label="Search"
-        />
-      </div>
+     
       <List>
         <Link to="/admin/dashboard">
           <ListItem>

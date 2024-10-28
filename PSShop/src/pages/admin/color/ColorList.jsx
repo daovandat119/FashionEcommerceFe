@@ -50,18 +50,17 @@ const ColorList = () => {
     }
 
     if (location.state?.success) {
+      toast.dismiss(); // Đóng tất cả các thông báo hiện tại
       toast.success(location.state.message || "Thao tác thành công!", {
         autoClose: 3000,
       });
-      if (location.state.updatedColor) {
-        setColors((prevColors) =>
-          prevColors.map((color) =>
-            color.ColorID === location.state.updatedColor.ColorID
-              ? location.state.updatedColor
-              : color
-          )
-        );
+
+      // Logic mới cho việc thêm màu mới
+      if (location.state?.newColor) {
+        setColors((prevColors) => [location.state.newColor, ...prevColors]);
+        setTotalPages((prevTotal) => prevTotal + 1);
       }
+
       window.history.replaceState({}, document.title);
     }
   }, [location, hasFetched]);
