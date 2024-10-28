@@ -41,6 +41,7 @@
     "recharts": "^2.13.0",
     "sass": "^1.79.4",
     "slick-carousel": "^1.8.1",
+    "sweetalert2": "^11.14.4",
     "swiper": "^11.1.14",
     "tippy": "^0.0.0",
     "tippy.js": "^6.3.7"

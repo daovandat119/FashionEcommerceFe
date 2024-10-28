@@ -4,17 +4,19 @@ import axios from "axios";
 import { useContextElement } from "../../context/Context";
 import AdditionalInfo from "./AdditionalInfo";
 import Reviews from "./Reviews";
+import Swal from 'sweetalert2'
 
 const ProductDetail = () => {
-  const { id } = useParams(); // Lấy product ID từ URL
-  const [product, setProduct] = useState(null); // Lưu thông tin sản phẩm
-  const [sizes, setSizes] = useState([]); // Lưu thông tin kích thước
-  const [colors, setColors] = useState([]); // Lưu thông tin màu sắc
-  const [quantity, setQuantity] = useState(1); // Lưu số lượng sản phẩm
-  const [selectedSize, setSelectedSize] = useState(null); // Kích thước đã chọn
-  const [selectedColor, setSelectedColor] = useState(null); // Màu sắc đã chọn
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [sizes, setSizes] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [variantInfo, setVariantInfo] = useState(null);
 
-  // Lấy các hàm từ context
   const { addProductToCart, isAddedToCartProducts } = useContextElement();
 
   useEffect(() => {
@@ -58,24 +60,103 @@ const ProductDetail = () => {
       });
   }, [id]);
 
-  const increaseQuantity = () => {
-    setQuantity((prevQty) => prevQty + 1);
-  };
+  const checkProductVariant = async () => {
+    if (!selectedSize || !selectedColor) return null;
 
-  const decreaseQuantity = () => {
-    setQuantity((prevQty) => (prevQty > 1 ? prevQty - 1 : 1));
-  };
-
-  const handleAddToCart = () => {
-    if (selectedSize && selectedColor) {
-      addProductToCart(product.ProductID, selectedColor.ColorID, selectedSize.SizeID, quantity);
-      console.log('====================================');
-      console.log(product.ProductID, selectedColor.ColorID, selectedSize.SizeID, quantity);
-      console.log('====================================');
-    } else {
-      alert("Please select size and color before adding to cart.");
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/getVariantByID',
+        {
+          ProductID: product.ProductID,
+          SizeID: selectedSize.SizeID,
+          ColorID: selectedColor.ColorID
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra biến thể:", error);
+      return null;
     }
   };
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault(); // Thêm dòng này
+    
+    if (!selectedSize || !selectedColor) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng chọn kích thước và màu sắc",
+        icon: "warning"
+      });
+      return;
+    }
+
+    setIsChecking(true);
+    try {
+      const variant = await checkProductVariant();
+      
+      if (!variant) {
+        Swal.fire({
+          title: "Hết hàng",
+          text: "Rất tiếc, sản phẩm này tạm hết hàng với màu sắc và kích thước đã chọn",
+          icon: "warning"
+        });
+        return;
+      }
+
+      if (variant.Quantity < quantity) {
+        Swal.fire({
+          title: "Số lượng không đủ",
+          text: `Chỉ còn ${variant.Quantity} sản phẩm trong kho`,
+          icon: "warning"
+        });
+        return;
+      }
+
+      await addProductToCart(
+        product.ProductID,
+        selectedColor.ColorID,
+        selectedSize.SizeID,
+        quantity
+      );
+
+      await Swal.fire({
+        title: "Thành công",
+        text: "Đã thêm sản phẩm vào giỏ hàng",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      Swal.fire({
+        title: "Lỗi",
+        text: "Đã có lỗi xảy ra, vui lòng thử lại sau",
+        icon: "error"
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  // Thêm useEffect để kiểm tra biến thể khi chọn size và color
+  useEffect(() => {
+    const checkVariant = async () => {
+      if (selectedSize && selectedColor && product) {
+        const variant = await checkProductVariant();
+        setVariantInfo(variant);
+      }
+    };
+    checkVariant();
+  }, [selectedSize, selectedColor]);
 
   if (!product) {
     return <div>Loading...</div>;
@@ -111,7 +192,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Chọn kích thước và màu sắc */}
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleAddToCart}>
             <div className="product-single__swatches">
               {/* Hiển thị kích thước */}
               <div className="product-swatch text-swatches">
@@ -126,7 +207,7 @@ const ProductDetail = () => {
                         onChange={() => setSelectedSize(size)}
                       />
                       <label
-                        className="swatch js-swatch"
+                        className={`swatch js-swatch ${selectedSize?.SizeID === size.SizeID ? 'active' : ''}`}
                         htmlFor={`size-${size.SizeID}`}
                         aria-label={size.SizeName}
                       >
@@ -150,7 +231,7 @@ const ProductDetail = () => {
                         onChange={() => setSelectedColor(color)}
                       />
                       <label
-                        className="swatch swatch-color js-swatch"
+                        className={`swatch swatch-color js-swatch ${selectedColor?.ColorID === color.ColorID ? 'active' : ''}`}
                         htmlFor={`color-${color.ColorID}`}
                         style={{ backgroundColor: color.ColorName }}
                       ></label>
@@ -171,20 +252,48 @@ const ProductDetail = () => {
                   className="qty-control__number text-center"
                   onChange={(e) => setQuantity(Number(e.target.value))}
                 />
-                <div className="qty-control__reduce" onClick={decreaseQuantity}>
+                <div 
+                  className="qty-control__reduce" 
+                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                >
                   -
                 </div>
-                <div className="qty-control__increase" onClick={increaseQuantity}>
+                <div 
+                  className="qty-control__increase" 
+                  onClick={() => setQuantity(quantity + 1)}
+                >
                   +
                 </div>
               </div>
 
+              {/* Hiển thị thông tin tồn kho */}
+              {variantInfo && (
+                <div className="stock-info mt-2 mb-2">
+                  <span className={`stock-status ${variantInfo.Quantity > 0 ? 'text-success' : 'text-danger'}`}>
+                    {variantInfo.Quantity > 0 
+                      ? `Còn ${variantInfo.Quantity} sản phẩm trong kho` 
+                      : 'Hết hàng'}
+                  </span>
+                </div>
+              )}
+
               <button
-                type="button"
+                type="submit"
                 className="btn btn-primary btn-addtocart"
-                onClick={handleAddToCart}
+                disabled={isChecking || (variantInfo && variantInfo.Quantity === 0)}
               >
-                {isAddedToCartProducts(product.ProductID) ? "Đã thêm vào giỏ" : "Thêm vào giỏ"}
+                {isChecking ? (
+                  "Đang kiểm tra..."
+                ) : variantInfo && variantInfo.Quantity === 0 ? (
+                  "Hết hàng"
+                ) : (
+                  // Thêm kiểm tra isAddedToCartProducts
+                  typeof isAddedToCartProducts === 'function' && isAddedToCartProducts(product.ProductID) ? (
+                    "Đã thêm vào giỏ"
+                  ) : (
+                    "Thêm vào giỏ"
+                  )
+                )}
               </button>
             </div>
           </form>

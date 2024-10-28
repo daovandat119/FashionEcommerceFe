@@ -13,11 +13,13 @@ const HomePages = () => {
     <div>
       <Headers />
       <Banners />
+      <br />
       <BlogCards />
-      
+      <br />
       <Products_Trendy />
+      <br />
       <CountDown />
-      <br /><br />
+      <br/><br/>
       <Products_Limited />
       <Support />
       <Footers />

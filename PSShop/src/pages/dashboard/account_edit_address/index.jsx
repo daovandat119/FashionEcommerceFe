@@ -19,7 +19,10 @@ export default function AccountEditAddressPage() {
           <h2 className="page-title">Addresses</h2>
           <div className="row">
             <DashboardSidebar />
-            <EditAddress />
+         
+              <EditAddress />
+          
+
           </div>
         </section>
       </main>

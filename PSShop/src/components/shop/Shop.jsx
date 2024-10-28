@@ -16,8 +16,7 @@ const itemPerRow = [2, 3, 4];
 export default function Shop1() {
   const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(4);
-  const { addProductToCart, isAddedToCartProducts } = useContextElement();
-  const [currentCategory, setCurrentCategory] = useState(menuCategories[0]);
+  const [currentCategory] = useState(menuCategories[0]);
   const [products, setProducts] = useState([]); // State to store products
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -146,13 +145,13 @@ export default function Shop1() {
                       </svg>
                     </span>
                   </Swiper>
-                  <button
+                  {/* <button
                     className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                    onClick={() => addProductToCart(elm.id)}
+                    
                     title={isAddedToCartProducts(elm.id) ? "Already Added" : "Add to Cart"}
                   >
                     {isAddedToCartProducts(elm.id) ? "Already Added" : "Add To Cart"}
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="pc__info position-relative">
@@ -187,8 +186,10 @@ export default function Shop1() {
                   )}
 
                   <button
-                    className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${isAddedtoWishlist(elm.id) ? "active" : ""}`}
-                    onClick={() => toggleWishlist(elm.id)}
+                    className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
+                      isAddedtoWishlist(elm.ProductID) ? "active" : ""
+                    }`}
+                    onClick={() => toggleWishlist(elm.ProductID)}
                     title="Add To Wishlist"
                   >
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

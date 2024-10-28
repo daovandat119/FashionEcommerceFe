@@ -1,165 +1,137 @@
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-
 import { useContextElement } from "../../../context/Context";
-import React, { useEffect } from "react";
 
 export default function CartDrawer() {
-  const { cartProducts, setCartProducts, totalPrice } = useContextElement();
+  const { cartProducts, totalPrice, loading, updateCartItem, removeFromCart, fetchCartItems } = useContextElement();
   const { pathname } = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
   const closeCart = () => {
-    document
-      .getElementById("cartDrawerOverlay")
-      .classList.remove("page-overlay_visible");
+    document.getElementById("cartDrawerOverlay").classList.remove("page-overlay_visible");
     document.getElementById("cartDrawer").classList.remove("aside_visible");
+    setIsOpen(false);
   };
-  const setQuantity = (id, quantity) => {
-    if (quantity >= 1) {
-      const item = cartProducts.filter((elm) => elm.id == id)[0];
-      const items = [...cartProducts];
-      const itemIndex = items.indexOf(item);
-      item.quantity = quantity;
-      items[itemIndex] = item;
-      setCartProducts(items);
-    }
-  };
-  const removeItem = (id) => {
-    setCartProducts((pre) => [...pre.filter((elm) => elm.id != id)]);
-  };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [fetchCartItems]);
+
   useEffect(() => {
     closeCart();
   }, [pathname]);
 
+  const handleQuantityChange = async (item, newQuantity) => {
+    if (newQuantity < 1) return;
+    
+    await updateCartItem(item.id, {
+      productID: item.ProductID,
+      colorID: item.ColorID,
+      sizeID: item.SizeID,
+      quantity: newQuantity
+    });
+  };
+
   return (
     <>
-      <div
-        className="aside aside_right overflow-hidden cart-drawer "
-        id="cartDrawer"
-      >
+      <div className="aside aside_right overflow-hidden cart-drawer" id="cartDrawer">
         <div className="aside-header d-flex align-items-center">
           <h3 className="text-uppercase fs-6 mb-0">
-            SHOPPING BAG (
-            <span className="cart-amount js-cart-items-count">
-              {cartProducts.length}
-            </span>{" "}
-            )
+            GIỎ HÀNG ({cartProducts?.length || 0})
           </h3>
-          <button
-            onClick={closeCart}
-            className="btn-close-lg js-close-aside btn-close-aside ms-auto"
-          ></button>
+          <button onClick={closeCart} className="btn-close-lg js-close-aside btn-close-aside ms-auto"></button>
         </div>
-        {cartProducts.length ? (
+
+        {cartProducts?.length ? (
           <div className="aside-content cart-drawer-items-list">
-            {cartProducts.map((elm, i) => (
+            {cartProducts.map((item, i) => (
               <React.Fragment key={i}>
                 <div className="cart-drawer-item d-flex position-relative">
                   <div className="position-relative">
                     <img
                       loading="lazy"
                       className="cart-drawer-item__img"
-                      width={330}
-                      height={400}
-                      style={{ height: "fit-content" }}
-                      src={elm.imgSrc}
-                      alt="image"
+                      src={item.MainImageURL}
+                      alt={item.product_name}
                     />
                   </div>
                   <div className="cart-drawer-item__info flex-grow-1">
                     <h6 className="cart-drawer-item__title fw-normal">
-                      {elm.title}
+                      {item.product_name}
                     </h6>
                     <p className="cart-drawer-item__option text-secondary">
-                      Color: Yellow
+                      Màu sắc: {item.color}
                     </p>
                     <p className="cart-drawer-item__option text-secondary">
-                      Size: L
+                      Kích thước: {item.size}
+                    </p>
+                    <p className="cart-drawer-item__option text-secondary">
+                      Đơn giá: ${item.Price}
                     </p>
                     <div className="d-flex align-items-center justify-content-between mt-1">
                       <div className="qty-control position-relative">
-                        <input
-                          type="number"
-                          name="quantity"
-                          onChange={(e) =>
-                            setQuantity(elm.id, e.target.value / 1)
-                          }
-                          value={elm.quantity}
-                          min="1"
-                          className="qty-control__number border-0 text-center"
-                        />
-                        <div
-                          onClick={() => {
-                            setQuantity(elm.id, elm.quantity - 1);
-                          }}
-                          className="qty-control__reduce text-start"
+                        <button
+                          className="qty-control__reduce"
+                          onClick={() => handleQuantityChange(item, item.Quantity - 1)}
+                          disabled={loading || item.Quantity <= 1}
                         >
                           -
-                        </div>
-                        <div
-                          onClick={() => setQuantity(elm.id, elm.quantity + 1)}
-                          className="qty-control__increase text-end"
+                        </button>
+                        <span className="qty-control__number">
+                          {item.Quantity}
+                        </span>
+                        <button
+                          className="qty-control__increase"
+                          onClick={() => handleQuantityChange(item, item.Quantity + 1)}
+                          disabled={loading}
                         >
                           +
-                        </div>
+                        </button>
                       </div>
-
-                      <span className="cart-drawer-item__price money price">
-                        ${elm.price * elm.quantity}
-                      </span>
+                      <button
+                        className="btn btn-remove"
+                        onClick={() => removeFromCart(item.id)}
+                        disabled={loading}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => removeItem(elm.id)}
-                    className="btn-close-xs position-absolute top-0 end-0 js-cart-item-remove"
-                  ></button>
                 </div>
-                {/* <!-- /.cart-drawer-item d-flex --> */}
-
                 <hr className="cart-drawer-divider" />
               </React.Fragment>
             ))}
-
-            {/* <!-- /.cart-drawer-item d-flex --> */}
           </div>
         ) : (
           <div className="fs-18 mt-5 px-5">
-            Your cart is empty. Start shopping!
+            Giỏ hàng của bạn đang trống!
           </div>
         )}
-        {/* <!-- /.aside-content --> */}
 
         <div className="cart-drawer-actions position-absolute start-0 bottom-0 w-100">
           <hr className="cart-drawer-divider" />
           <div className="d-flex justify-content-between">
-            <h6 className="fs-base fw-medium">SUBTOTAL:</h6>
-            <span className="cart-subtotal fw-medium">${totalPrice}</span>
+            <h6 className="fs-base fw-medium">TỔNG TIỀN:</h6>
+            <span className="cart-subtotal fw-medium">${totalPrice.toFixed(2)}</span>
           </div>
-          {/* <!-- /.d-flex justify-content-between --> */}
-          {cartProducts.length ? (
+
+          {cartProducts?.length ? (
             <>
               <Link to="/shop_cart" className="btn btn-light mt-3 d-block">
-                View Cart
+                Xem giỏ hàng
               </Link>
-              <Link
-                to="/shop_checkout"
-                className="btn btn-primary mt-3 d-block"
-              >
-                Checkout
+              <Link to="/shop_checkout" className="btn btn-primary mt-3 d-block">
+                Thanh toán
               </Link>
             </>
           ) : (
-            <Link to="/shop-1" className="btn btn-light mt-3 d-block">
-              Explore shop
+            <Link to="/shop" className="btn btn-light mt-3 d-block">
+              Tiếp tục mua sắm
             </Link>
           )}
         </div>
-        {/* <!-- /.aside-content --> */}
       </div>
-      <div
-        id="cartDrawerOverlay"
-        onClick={closeCart}
-        className="page-overlay"
-      ></div>
+      <div id="cartDrawerOverlay" onClick={closeCart} className="page-overlay"></div>
     </>
   );
 }
