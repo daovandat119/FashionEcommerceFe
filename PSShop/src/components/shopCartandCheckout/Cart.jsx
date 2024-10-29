@@ -2,9 +2,11 @@ import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useCheckout } from '../../context/CheckoutContext';
 
 export default function Cart() {
   const { cartProducts, setCartProducts, totalPrice, setTotalPrice } = useContextElement();
+  const { updateOrderData } = useCheckout();
   
   const [checkboxes, setCheckboxes] = useState({
     free_shipping: false,
@@ -37,7 +39,19 @@ export default function Cart() {
     } else {
       console.log("User not logged in");
     }
-  }, []);
+  }, [setCartProducts,setTotalPrice]);
+  
+  useEffect(() => {
+    if (cartProducts.length > 0) {
+      updateOrderData({
+        products: cartProducts.map(item => ({
+          ProductID: item.ProductID,
+          VariantID: item.VariantID,
+          Quantity: item.Quantity
+        }))
+      });
+    }
+  }, [cartProducts]);
   
   // Calculate total price
   const calculateTotalPrice = (products) => {
@@ -292,7 +306,18 @@ export default function Cart() {
                   </tr>
                 </tbody>
               </table>
-              <button className="btn btn-primary">PROCEED TO CHECKOUT</button>
+              <Link 
+                to="/shop_checkout" 
+                className="btn btn-primary"
+                onClick={(e) => {
+                  if (cartProducts.length === 0) {
+                    e.preventDefault();
+                    alert('Giỏ hàng trống!');
+                  }
+                }}
+              >
+                PROCEED TO CHECKOUT
+              </Link>
             </div>
           </div>
         </div>

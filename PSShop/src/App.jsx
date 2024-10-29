@@ -43,6 +43,7 @@ import UpdateSize from "./pages/admin/sizes/UpdateSize";
 import { LoginProvider } from "./components/login/LoginContext";
 import { AuthProvider } from './context/AuthContext';
 import UpdateVariant from "./pages/admin/products/UpdateVariant";
+import { CheckoutProvider } from './context/CheckoutContext';
 
 // Account pages imports
 import AccountPage from './pages/dashboard/account_dashboard';
@@ -53,10 +54,12 @@ import AccountEditPage from "./pages/dashboard/account_edit";
 
 function App() {
   return (
-    <Router>
-      <ToastContainer /> {/* Ensure ToastContainer is placed here */}
-      <AppRoutes />
-    </Router>
+    <CheckoutProvider>
+      <Router>
+        <ToastContainer /> {/* Ensure ToastContainer is placed here */}
+        <AppRoutes />
+      </Router>
+    </CheckoutProvider>
   );
 }
 

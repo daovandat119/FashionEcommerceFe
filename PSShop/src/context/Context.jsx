@@ -43,12 +43,9 @@ export default function ContextProvider({ children }) {
     }
   }, []);
 
-  // Cập nhật giỏ hàng tự động
-  useEffect(() => {
-    fetchCartItems();
-    const interval = setInterval(fetchCartItems, 5000);
-    return () => clearInterval(interval);
-  }, [fetchCartItems]);
+
+ 
+
 
   // Hàm thêm sản phẩm vào giỏ
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
@@ -92,8 +89,19 @@ export default function ContextProvider({ children }) {
       throw error;
     } finally {
       setLoading(false);
-    }
+
+
+    } // Thêm dấu đóng ngoặc nhọn cho hàm addProductToCart
   };
+
+  
+  useEffect(() => {
+    const storedWishlist = localStorage.getItem("wishList");
+    if (storedWishlist) {
+      setWishlist(JSON.parse(storedWishlist));
+
+    }
+  }, []); // Thêm mảng dependencies và dấu chấm phẩy
 
   // Hàm cập nhật số lượng
   const updateCartItem = async (cartItemId, updates) => {
@@ -111,6 +119,7 @@ export default function ContextProvider({ children }) {
           }
         }
       );
+
 
       if (response.data.message === 'Success') {
         await fetchCartItems();
