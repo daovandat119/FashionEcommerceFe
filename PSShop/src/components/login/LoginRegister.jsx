@@ -11,6 +11,7 @@ export default function LoginRegister() {
   const [registerPassword, setRegisterPassword] = useState("");
   const navigate = useNavigate(); // Hook để điều hướng
 
+  
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     loginUser(loginEmail, loginPassword, navigate);
