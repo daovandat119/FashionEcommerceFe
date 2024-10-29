@@ -1,11 +1,16 @@
-import { useContextElement } from "../../context/Context";
-import { useEffect, useState } from "react";
+import { useCheckout } from '../../context/CheckoutContext';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function OrderCompleted() {
-  const { cartProducts, totalPrice } = useContextElement();
-  const [showDate, setShowDate] = useState(false);
+  const { orderData } = useCheckout();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    setShowDate(true);
+    // Nếu không có orderCode, chuyển về trang cart
+    if (!orderData.orderCode) {
+      navigate('/shop_cart');
+    }
   }, []);
 
   return (
@@ -24,22 +29,22 @@ export default function OrderCompleted() {
             fill="white"
           />
         </svg>
-        <h3>Your order is completed!</h3>
-        <p>Thank you. Your order has been received.</p>
+        <h3>Đặt hàng thành công!</h3>
+        <p>Cảm ơn bạn. Đơn hàng của bạn đã được tiếp nhận.</p>
       </div>
       <div className="order-info">
         <div className="order-info__item">
-          <label>Order Number</label>
-          <span>13119</span>
+          <label>Mã đơn hàng</label>
+          <span>{orderData.orderCode}</span>
         </div>
         <div className="order-info__item">
-          <label>Date</label>
-          {showDate && <span>{new Date().toLocaleDateString()}</span>}
+          <label>Ngày đặt</label>
+          <span>{new Date().toLocaleDateString()}</span>
         </div>
         <div className="order-info__item">
           <label>Total</label>
 
-          <span>${totalPrice && totalPrice + 19}</span>
+          <span>${orderData.totalPrice && orderData.totalPrice + 19}</span>
         </div>
         <div className="order-info__item">
           <label>Paymetn Method</label>
@@ -57,12 +62,12 @@ export default function OrderCompleted() {
               </tr>
             </thead>
             <tbody>
-              {cartProducts.map((elm, i) => (
+              {orderData.products.map((elm, i) => (
                 <tr key={i}>
                   <td>
-                    {elm.title} x {elm.quantity}
+                    {elm.ProductName} x {elm.quantity}
                   </td>
-                  <td>${elm.price}</td>
+                  <td>${elm.Price}</td>
                 </tr>
               ))}
             </tbody>
@@ -71,7 +76,7 @@ export default function OrderCompleted() {
             <tbody>
               <tr>
                 <th>SUBTOTAL</th>
-                <td>${totalPrice}</td>
+                <td>${orderData.totalPrice}</td>
               </tr>
               <tr>
                 <th>SHIPPING</th>
@@ -79,11 +84,11 @@ export default function OrderCompleted() {
               </tr>
               <tr>
                 <th>VAT</th>
-                <td>${totalPrice && 19}</td>
+                <td>${orderData.totalPrice && 19}</td>
               </tr>
               <tr>
                 <th>TOTAL</th>
-                <td>${totalPrice && totalPrice + 19}</td>
+                <td>${orderData.totalPrice && orderData.totalPrice + 19}</td>
               </tr>
             </tbody>
           </table>

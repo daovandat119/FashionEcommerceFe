@@ -43,13 +43,12 @@ export default function ContextProvider({ children }) {
     }
   }, []);
 
-<<<<<<< HEAD
-  // Cập nhật giỏ hàng tự động
-  useEffect(() => {
-    fetchCartItems();
-    const interval = setInterval(fetchCartItems, 5000);
-    return () => clearInterval(interval);
-  }, [fetchCartItems]);
+  // // Cập nhật giỏ hàng tự động
+  // useEffect(() => {
+  //   fetchCartItems();
+  //   const interval = setInterval(fetchCartItems, 5000);
+  //   return () => clearInterval(interval);
+  // }, [fetchCartItems]);
 
   // Hàm thêm sản phẩm vào giỏ
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
@@ -93,17 +92,17 @@ export default function ContextProvider({ children }) {
       throw error;
     } finally {
       setLoading(false);
-=======
+    } // Thêm dấu đóng ngoặc nhọn cho hàm addProductToCart
+  };
+
   // Lấy dữ liệu wishlist từ localStorage khi component mount
   useEffect(() => {
     const storedWishlist = localStorage.getItem("wishList");
     if (storedWishlist) {
-      setWishList(JSON.parse(storedWishlist));
->>>>>>> 9b73a363ba8f8ca450418995339b2d6df0b6536d
+      setWishlist(JSON.parse(storedWishlist));
     }
-  };
+  }, []); // Thêm mảng dependencies và dấu chấm phẩy
 
-<<<<<<< HEAD
   // Hàm cập nhật số lượng
   const updateCartItem = async (cartItemId, updates) => {
     setLoading(true);
@@ -120,8 +119,8 @@ export default function ContextProvider({ children }) {
           }
         }
       );
-=======
->>>>>>> 9b73a363ba8f8ca450418995339b2d6df0b6536d
+
+
 
       if (response.data.message === 'Success') {
         await fetchCartItems();
