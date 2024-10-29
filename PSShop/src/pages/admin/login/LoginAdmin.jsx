@@ -5,6 +5,8 @@ import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../../../public/assets/images/logo.png";
 import { LoginAdmin } from "../service/api_service";
 import { useAuth } from '../../../context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const [Email, setEmail] = useState("");
@@ -46,12 +48,17 @@ const Login = () => {
         if (res && res.token) {
           // Lưu token khi đăng nhập thành công
           login(res.token); // Gọi hàm login với token
+          toast.success("Đăng nhập thành công!");
           navigate("/admin/dashboard");
         } else {
-          setLoi("Tài khoản hoặc mật khẩu không chính xác");
+          // Nếu API trả về thông báo lỗi
+          setLoi(res.message || "Tài khoản hoặc mật khẩu không chính xác");
+          toast.error(res.message || "Tài khoản hoặc mật khẩu không chính xác");
         }
       } catch (err) {
-        setLoi("Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
+        // Hiển thị thông báo lỗi từ API
+        setLoi(err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
+        toast.error(err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
         console.error("Lỗi đăng nhập:", err);
       }
     }
@@ -59,10 +66,11 @@ const Login = () => {
 
   return (
     <div className="bg-gradient-to-t from-slate-300 via-slate-200 to-slate-100 w-full h-[100vh] flex items-center">
+      <ToastContainer />
       <div className="w-[30%] mx-auto bg-white py-3 rounded-lg shadow-2xl">
         <img className="w-[1/4] mx-auto pt-5" src={logo} alt="Logo" />
         <div className="text-2xl font-semibold text-center py-3">
-          ĐĂNG NHẬP ADMIN
+          LOGIN ADMIN
         </div>
         <form
           onSubmit={handleClickBtn}
@@ -104,7 +112,7 @@ const Login = () => {
                   if (errors.Password) setErrors({ ...errors, Password: "" });
                 }}
                 className="outline-none w-full py-2 pl-10 text-lg"
-                placeholder="Mật khẩu"
+                placeholder="Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
@@ -119,7 +127,7 @@ const Login = () => {
 
           <div className="flex items-center gap-2 pl-3">
             <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me">Ghi nhớ đăng nhập</label>
+            <label htmlFor="remember-me">Remember me</label>
           </div>
 
           {loi && (
@@ -131,13 +139,13 @@ const Login = () => {
             className="bg-slate-600 mt-3 hover:from-slate-300 w-2/5 py-3 mx-auto text-center rounded-full
             active:opacity-40 transition-all duration-300 text-white font-semibold"
           >
-            ĐĂNG NHẬP
+            LOGIN
           </button>
           <Link
             to="/forgot-password"
             className="text-black opacity-50 hover:opacity-90 text-center w-full font-medium mt-14"
           >
-            Quên mật khẩu?
+            Forgot password ?
           </Link>
         </form>
       </div>

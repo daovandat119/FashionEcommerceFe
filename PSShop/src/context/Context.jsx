@@ -43,12 +43,9 @@ export default function ContextProvider({ children }) {
     }
   }, []);
 
-  // // Cập nhật giỏ hàng tự động
-  // useEffect(() => {
-  //   fetchCartItems();
-  //   const interval = setInterval(fetchCartItems, 5000);
-  //   return () => clearInterval(interval);
-  // }, [fetchCartItems]);
+
+ 
+
 
   // Hàm thêm sản phẩm vào giỏ
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
@@ -92,14 +89,17 @@ export default function ContextProvider({ children }) {
       throw error;
     } finally {
       setLoading(false);
+
+
     } // Thêm dấu đóng ngoặc nhọn cho hàm addProductToCart
   };
 
-  // Lấy dữ liệu wishlist từ localStorage khi component mount
+  
   useEffect(() => {
     const storedWishlist = localStorage.getItem("wishList");
     if (storedWishlist) {
       setWishlist(JSON.parse(storedWishlist));
+
     }
   }, []); // Thêm mảng dependencies và dấu chấm phẩy
 
@@ -119,7 +119,6 @@ export default function ContextProvider({ children }) {
           }
         }
       );
-
 
 
       if (response.data.message === 'Success') {

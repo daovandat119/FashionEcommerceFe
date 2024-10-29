@@ -4,30 +4,26 @@ import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
 import { Link, useLocation } from "react-router-dom";
-import { ListCategories, DeleteCategories, UpdateCategoryStatus } from "../service/api_service"; // Import hàm mới
+import { ListCategories, DeleteCategories, UpdateCategoryStatus } from "../service/api_service";
 import ReactPaginate from "react-paginate";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const CategoriesList = () => {
   const [ListCategory, setListCategory] = useState([]);
   const [TotalCategory, setTotalCategory] = useState(0);
   const [TotalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState(""); // Thêm state cho từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState("");
   const location = useLocation();
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [updating, setUpdating] = useState(false); // Thêm biến cờ
-  const [statusUpdate, setStatusUpdate] = useState(null); // Thêm state để lưu thông tin cập nhật trạng thái
+  const [updating, setUpdating] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Biến cờ để theo dõi trạng thái tải
-
-  // Biến để theo dõi số lần gọi API
-  const [apiCallCount, setApiCallCount] = useState(0);
-  const [apiCallTimeout, setApiCallTimeout] = useState(null);
 
   // Gọi API khi component được mount
   useEffect(() => {
-    setIsLoading(true); // Đặt cờ đang tải
+    setIsLoading(true);
     getCategories(currentPage, searchTerm);
   }, []); // Chỉ gọi một lần khi component được mount
 
@@ -47,46 +43,19 @@ const CategoriesList = () => {
 
       window.history.replaceState({}, document.title);
     }
-  }, [location]); // Chỉ gọi khi location thay đổi
-
-  useEffect(() => {
-    if (statusUpdate) {
-      const { CategoryID, status } = statusUpdate;
-      UpdateCategoryStatus(CategoryID, { Status: status })
-        .then(response => {
-          console.log("Response from API:", response);
-          if (response.success) {
-            toast.success(response.message);
-          } else {
-            toast.error("Cập nhật trạng thái không thành công");
-          }
-        })
-        .catch(error => {
-          console.error("Lỗi khi cập nhật trạng thái danh mục:", error);
-          toast.error("Đã xảy ra lỗi khi cập nhật trạng thái danh mục");
-        })
-        .finally(() => {
-          setStatusUpdate(null); // Đặt lại state sau khi hoàn thành
-        });
-    }
-  }, [statusUpdate]); // Chạy effect khi statusUpdate thay đổi
+  }, [location]);
 
   const getCategories = useCallback((page, search = "") => {
     if (isLoading) return; // Ngăn chặn nếu đang tải
-    if (apiCallCount >= 10) {
-      toast.error("Thao tác quá nhanh, vui lòng thử lại sau.");
-      return; // Chặn gọi API nếu đã gọi quá 10 lần
-    }
 
     setIsLoading(true);
     ListCategories(page, search)
       .then(res => {
         if (res && res.data) {
           setTotalCategory(res.total);
-          setListCategory(res.data.map(item => ({ ...item, isActive: item.Status === "ACTIVE" }))); // Thiết lập trạng thái
+          setListCategory(res.data.map(item => ({ ...item, isActive: item.Status === "ACTIVE" })));
           setTotalPages(res.totalPage);
           setCurrentPage(page);
-          setApiCallCount(prev => prev + 1); // Tăng số lần gọi API
         }
       })
       .catch(error => {
@@ -96,26 +65,16 @@ const CategoriesList = () => {
       .finally(() => {
         setIsLoading(false); // Đặt lại cờ sau khi hoàn thành
       });
-  }, [isLoading, apiCallCount]);
-
-  // Reset apiCallCount sau 10 giây
-  useEffect(() => {
-    if (apiCallCount > 0) {
-      if (apiCallTimeout) clearTimeout(apiCallTimeout); // Xóa timeout cũ
-      setApiCallTimeout(setTimeout(() => {
-        setApiCallCount(0); // Đặt lại số lần gọi API
-      }, 10000)); // 10 giây
-    }
-  }, [apiCallCount]);
+  }, [isLoading]);
 
   const handleSearch = useCallback(() => {
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
-    getCategories(1, searchTerm); // Gọi API với từ kh��a tìm kiếm
+    setCurrentPage(1);
+    getCategories(1, searchTerm);
   }, [searchTerm, getCategories]);
 
   const handlePageClick = useCallback((event) => {
     const newPage = event.selected + 1;
-    setCurrentPage(newPage); // Cập nhật trang hiện tại
+    setCurrentPage(newPage);
   }, []);
 
   const handleSelectCategory = useCallback((CategoryID) => {
@@ -141,7 +100,7 @@ const CategoriesList = () => {
 
             if (deletedCount > 0) {
               toast.success(`Đã xóa ${deletedCount} danh mục thành công`);
-              getCategories(currentPage); // Tải lại danh sách
+              getCategories(currentPage);
             }
           } else {
             throw new Error("Không thể xóa danh mục");
@@ -155,25 +114,30 @@ const CategoriesList = () => {
   }, [currentPage]);
 
   const handleToggle = useCallback((CategoryID) => {
-    if (updating) return; // Ngăn chặn nếu đang cập nhật
+    if (updating) return;
 
-    setUpdating(true); // Đặt cờ đang cập nhật
-    console.log("Toggling status for CategoryID:", CategoryID); // Kiểm tra số lần gọi
-
-    // Cập nhật trạng thái
+    setUpdating(true);
     setListCategory((prevList) =>
       prevList.map((item) => {
         if (item.CategoryID === CategoryID) {
-          const newStatus = !item.isActive; // Đảo ngược trạng thái
-          setStatusUpdate({ CategoryID, status: newStatus ? "ACTIVE" : "INACTIVE" }); // Lưu thông tin vào state
-          return { ...item, isActive: newStatus }; // Cập nhật trạng thái trong danh sách
+          const newStatus = item.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+          UpdateCategoryStatus(CategoryID, { Status: newStatus })
+            .then(() => {
+              toast.success(`Cập nhật trạng thái thành công`);
+              getCategories(currentPage);
+            })
+            .catch((error) => {
+              console.error("Lỗi khi cập nhật trạng thái:", error);
+              toast.error("Cập nhật trạng thái thất bại");
+            });
+          return { ...item, Status: newStatus };
         }
         return item;
       })
     );
 
-    setUpdating(false); // Đặt lại cờ sau khi cập nhật
-  }, [updating]);
+    setUpdating(false);
+  }, [updating, currentPage]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -184,8 +148,8 @@ const CategoriesList = () => {
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search categories"
-            value={searchTerm} // Gán giá trị từ state
-            onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật từ khóa tìm kiếm
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
@@ -204,25 +168,27 @@ const CategoriesList = () => {
           </button>
         </div>
       </div>
-      {isLoading ? ( // Kiểm tra trạng thái tải
-        <div className="flex justify-center items-center h-64">
-          <span className="text-lg">Đang tải danh mục...</span>
-        </div>
-      ) : (
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
+
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
+        {isLoading ? ( // Hiển thị loading trong bảng
+          <div className="flex justify-center items-center h-64">
+            <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            <span className="ml-4 text-lg">Đang tải danh mục, vui lòng chờ...</span>
+          </div>
+        ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-white">
-              <tr>
-                <th className="border-b p-4 w-1/6 text-left">Select</th>
-                <th className="border-b p-4 text-left">Name</th>
-                <th className="border-b p-4 text-left">Active</th>
-                <th className="border-b p-4 text-left">Actions</th>
+              <tr className="text-center">
+                <th className="border-b p-4 w-1/6 ">Select</th>
+                <th className="border-b p-4 ">Name</th>
+                <th className="border-b p-4 ">Active</th>
+                <th className="border-b p-4 ">Actions</th>
               </tr>
             </thead>
             <tbody>
               {ListCategory.map((item) => (
-                <tr key={item.CategoryID} className="hover:bg-gray-50">
-                  <td className="border-b p-1">
+                <tr key={item.CategoryID} className="hover:bg-gray-50 text-center">
+                  <td className="border-b w-1 p-1">
                     <Checkbox
                       checked={selectedCategories.includes(item.CategoryID)}
                       onChange={() => handleSelectCategory(item.CategoryID)}
@@ -232,8 +198,8 @@ const CategoriesList = () => {
                   <td className="border-b p-4">{item.CategoryName}</td>
                   <td className="border-b p-4">
                     <ToggleSwitch
-                      isOn={item.isActive} // Truyền trạng thái isActive vào ToggleSwitch
-                      handleToggle={() => handleToggle(item.CategoryID)} // Gọi hàm toggle
+                      isOn={item.Status === "ACTIVE"}
+                      handleToggle={() => handleToggle(item.CategoryID)}
                     />
                   </td>
                   <td className="border-b p-4">
@@ -244,7 +210,7 @@ const CategoriesList = () => {
                       <PencilIcon className="h-4 w-4" />
                     </Link>
                     <button
-                      onClick={() => handleDeleteCategories([item.CategoryID])} // Gọi hàm xóa với ID của danh mục
+                      onClick={() => handleDeleteCategories([item.CategoryID])}
                       className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
                     >
                       <TrashIcon className="h-4 w-4" />
@@ -254,29 +220,29 @@ const CategoriesList = () => {
               ))}
             </tbody>
           </table>
-          {TotalPages > 1 && (
-            <ReactPaginate
-              breakLabel="..."
-              nextLabel=" >"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={TotalPages}
-              previousLabel="<"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination flex justify-center space-x-2 mt-4"
-              activeClassName="active bg-blue-500 text-white"
-              forcePage={currentPage - 1}
-            />
-          )}
-        </div>
-      )}
+        )}
+        {TotalPages > 1 && (
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={TotalPages}
+            previousLabel="<"
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination flex justify-center space-x-2 mt-4"
+            activeClassName="active bg-blue-500 text-white"
+            forcePage={currentPage - 1}
+          />
+        )}
+      </div>
     </div>
   );
 };

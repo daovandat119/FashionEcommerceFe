@@ -141,15 +141,14 @@ const BlockedUser = (UserID) => {
   return axios.delete(`/api/users/${UserID}`); // Sử dụng DELETE để chặn người dùng
 };
 
-const UpdateUserStatus = (UserID, data) => {
-  return axios.post(`/api/users/restore/${UserID}`, data); // Gọi API để cập nhật trạng thái người dùng
+const UpdateUserStatus = (UserID, data = null) => {
+  // Nếu data không được cung cấp, gọi API để khôi phục người dùng
+  if (!data) {
+    return axios.post(`/api/users/restore/${UserID}`); // Gửi yêu cầu POST để khôi phục người dùng
+  } else {
+    return axios.post(`/api/users/restore/${UserID}`, data); // Gọi API để cập nhật trạng thái người dùng
+  }
 };
-
-const RestoreUser = (UserID) => {
-  return axios.post(`/api/users/restore/${UserID}`); // Gửi yêu cầu POST để khôi phục người dùng
-};
-
-
 
 export {
   LoginAdmin,
@@ -183,6 +182,5 @@ export {
   UpdateCategoryStatus,
   GetUserById,
   BlockedUser,
-  UpdateUserStatus,
-  RestoreUser
+  UpdateUserStatus
 };

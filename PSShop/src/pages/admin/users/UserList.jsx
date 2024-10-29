@@ -9,6 +9,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { ListUsers, BlockedUser } from "../service/api_service"; // Import hàm ListUsers, BlockedUser
 import { toast, ToastContainer } from "react-toastify"; // Import toast
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const UserList = () => {
   const [Users, setUsers] = useState([]);
@@ -107,9 +108,10 @@ const UserList = () => {
         </Link>
       </div>
       <div className="overflow-x-auto bg-white rounded-lg shadow">
-        {isLoading ? ( // Hiển thị loading chỉ cho bảng
+        {isLoading ? ( // Hiển thị loading
           <div className="flex justify-center items-center h-64">
-            <span className="text-lg">Đang tải người dùng...</span>
+            <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            <span className="ml-4 text-lg">Đang tải người dùng...</span>
           </div>
         ) : (
           <table className="w-full min-w-max border-collapse">

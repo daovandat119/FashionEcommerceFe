@@ -8,9 +8,6 @@ import UsersManager from "./users/UsersManager";
 const Admin = () => {
   return (
     <Card>
-      <Typography variant="h4" color="blue-gray">
-        ADMIN
-      </Typography>
       <Login />
       <Dashboard />
       <ProductsManager />
