@@ -162,18 +162,22 @@ const UpdateProducts = () => {
 
     UpdateProduct(ProductID, formData)
       .then((response) => {
-        navigate("/admin/products", {
-          state: {
-            success: true,
-            message: "Sản phẩm đã được cập nhật thành công!",
-            updatedProduct: response.data,
-          },
-        });
-        toast.success("Sản phẩm đã được cập nhật thành công!"); // Hiển thị thông báo thành công
+        if (response) {
+          toast.success("Sản phẩm đã được cập nhật thành công", {
+            onClose: () => navigate("/admin/products"),
+          });
+        } else {
+          throw new Error(response.data.message || "Không thể cập nhật sản phẩm");
+        }
       })
       .catch((error) => {
-        console.error("Error updating product:", error);
-        toast.error("Đã xảy ra lỗi khi cập nhật sản phẩm");
+        console.error("Lỗi khi cập nhật sản phẩm:", error);
+        // Hiển thị thông báo lỗi từ API
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.message || "Đã xảy ra lỗi khi cập nhật sản phẩm");
+        } else {
+          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -390,7 +394,7 @@ const UpdateProducts = () => {
             </div>
             {renderImageUpload("Main Image", "MainImageURL")}
             {renderImageUpload("Other Images", "ImagePath", true)}
-            <div className="mb-4">
+            <div className="my-4">
               <Textarea
                 label="Short Description"
                 name="ShortDescription"

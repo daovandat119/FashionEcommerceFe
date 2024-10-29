@@ -12,6 +12,7 @@ import {
 import ReactPaginate from "react-paginate";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const ProductsList = () => {
   const [listProducts, setListProducts] = useState([]);
@@ -21,10 +22,10 @@ const ProductsList = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const location = useLocation(); // Khai báo useLocation
+  const location = useLocation();
 
   const getProducts = useCallback(async (page, search = "") => {
-    setIsLoading(true); // Đặt cờ đang tải
+    setIsLoading(true);
     try {
       const res = await ListProducts(page, search);
       if (res) {
@@ -40,32 +41,32 @@ const ProductsList = () => {
     } catch (error) {
       console.error("Lỗi khi lấy danh sách sản phẩm:", error);
     } finally {
-      setIsLoading(false); // Đặt lại cờ sau khi hoàn thành
+      setIsLoading(false);
     }
   }, []);
 
   // Hàm tìm kiếm
   const handleSearch = () => {
-    getProducts(currentPage, searchTerm); // Gọi API khi tìm kiếm
+    getProducts(currentPage, searchTerm);
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value); // Cập nhật từ khóa tìm kiếm
+    setSearchTerm(e.target.value);
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSearch(); // Gọi hàm tìm kiếm khi nhấn Enter
+      handleSearch();
     }
   };
 
   useEffect(() => {
-    getProducts(currentPage, searchTerm); // Gọi getProducts khi currentPage hoặc searchTerm thay đổi
-  }, [currentPage, searchTerm, getProducts]); // Chỉ gọi khi currentPage hoặc searchTerm thay đổi
+    getProducts(currentPage, searchTerm);
+  }, [currentPage, searchTerm, getProducts]);
 
   const handlePageClick = useCallback((event) => {
     const newPage = event.selected + 1;
-    setCurrentPage(newPage); // Cập nhật currentPage
+    setCurrentPage(newPage);
   }, []);
 
   const handleSelectProduct = useCallback((ProductID) => {
@@ -78,7 +79,7 @@ const ProductsList = () => {
 
   const handleDeleteProduct = useCallback((ProductID) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-      DeleteProducts(ProductID) // Gọi API để xóa sản phẩm
+      DeleteProducts(ProductID)
         .then((response) => {
           if (response.success) {
             setListProducts((prevList) => prevList.filter(product => product.ProductID !== ProductID));
@@ -95,13 +96,13 @@ const ProductsList = () => {
   }, []);
 
   const handleToggleActive = useCallback((item) => {
-    const newStatus = item.isActive ? "INACTIVE" : "ACTIVE";
-    UpdateProductStatus(item.ProductID, { Status: newStatus }) // Gọi API để cập nhật trạng thái
+    const newStatus = item.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+    UpdateProductStatus(item.ProductID, { Status: newStatus })
       .then((response) => {
         if (response.success) {
           const updatedProducts = listProducts.map((product) =>
             product.ProductID === item.ProductID
-              ? { ...product, isActive: !product.isActive }
+              ? { ...product, Status: newStatus }
               : product
           );
           setListProducts(updatedProducts);
@@ -118,9 +119,9 @@ const ProductsList = () => {
 
   useEffect(() => {
     if (location.state && location.state.success) {
-      toast.success(location.state.message); // Hiển thị thông báo thành công
+      toast.success(location.state.message);
     }
-  }, [location.state]); // Chạy khi location.state thay đổi
+  }, [location.state]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -132,8 +133,8 @@ const ProductsList = () => {
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search products"
             value={searchTerm}
-            onChange={handleSearchChange} // Sử dụng hàm mới
-            onKeyPress={handleKeyPress} // Gọi hàm khi nhấn phím
+            onChange={handleSearchChange}
+            onKeyPress={handleKeyPress}
           />
         </div>
         
@@ -145,13 +146,13 @@ const ProductsList = () => {
         </Link>
       </div>
 
-      {/* Hiển thị loading khi đang tải */}
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <span className="text-lg">Đang tải sản phẩm...</span>
-        </div>
-      ) : (
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
+        {isLoading ? ( // Hiển thị loading trong bảng
+          <div className="flex justify-center items-center h-64">
+            <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            <span className="ml-4 text-lg">Đang tải sản phẩm, vui lòng chờ...</span>
+          </div>
+        ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-white">
               <tr>
@@ -197,7 +198,7 @@ const ProductsList = () => {
                   <td className="border-b p-4">{item.SalePrice}</td>
                   <td className="border-b p-4">
                     <ToggleSwitch
-                      isOn={item.isActive}
+                      isOn={item.Status === "ACTIVE"}
                       handleToggle={() => handleToggleActive(item)}
                     />
                   </td>
@@ -219,29 +220,29 @@ const ProductsList = () => {
               ))}
             </tbody>
           </table>
-          {totalPages > 1 && (
-            <ReactPaginate
-              breakLabel="..."
-              nextLabel=" >"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={totalPages}
-              previousLabel="<"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination flex justify-center space-x-2 mt-4"
-              activeClassName="active bg-blue-500 text-white"
-              forcePage={currentPage - 1}
-            />
-          )}
-        </div>
-      )}
+        )}
+        {totalPages > 1 && (
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={totalPages}
+            previousLabel="<"
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination flex justify-center space-x-2 mt-4"
+            activeClassName="active bg-blue-500 text-white"
+            forcePage={currentPage - 1}
+          />
+        )}
+      </div>
     </div>
   );
 };

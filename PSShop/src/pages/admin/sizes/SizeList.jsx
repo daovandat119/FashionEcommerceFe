@@ -6,6 +6,7 @@ import { ListSizes, DeleteSizes } from '../service/api_service';
 import ReactPaginate from "react-paginate";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const SizeList = () => {
   const [sizes, setSizes] = useState([]);
@@ -119,12 +120,13 @@ const SizeList = () => {
           </button>
         </div>
       </div>
-      {isLoading ? ( // Hiển thị loading
-        <div className="flex justify-center items-center h-64">
-          <span className="text-lg">Đang tải kích thước...</span>
-        </div>
-      ) : (
-        <div className="overflow-x-auto bg-white rounded-lg shadow border-2">
+      <div className="overflow-x-auto bg-white rounded-lg shadow border-2">
+        {isLoading ? ( // Hiển thị loading trong bảng
+          <div className="flex justify-center items-center h-64">
+            <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            <span className="ml-4 text-lg">Đang tải kích thước, vui lòng chờ...</span>
+          </div>
+        ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-gray-100">
               <tr className='text-center'>
@@ -169,29 +171,29 @@ const SizeList = () => {
               ))}
             </tbody>
           </table>
-          {totalPages > 1 && (
-            <ReactPaginate
-              breakLabel="..."
-              nextLabel=" >"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={totalPages}
-              previousLabel="<"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination flex justify-center space-x-2 mt-4"
-              activeClassName="active bg-blue-500 text-white"
-              forcePage={currentPage - 1}
-            />
-          )}
-        </div>
-      )}
+        )}
+        {totalPages > 1 && (
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={totalPages}
+            previousLabel="<"
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination flex justify-center space-x-2 mt-4"
+            activeClassName="active bg-blue-500 text-white"
+            forcePage={currentPage - 1}
+          />
+        )}
+      </div>
     </div>
   );
 };

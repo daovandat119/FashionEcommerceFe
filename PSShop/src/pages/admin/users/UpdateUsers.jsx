@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
-import { Link, useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
-import { GetUserById, UpdateUserStatus, RestoreUser } from '../service/api_service'; // Import hàm RestoreUser
-import { toast } from 'react-toastify'; // Import toast
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { GetUserById, UpdateUserStatus, BlockedUser } from '../service/api_service'; // Import hàm BlockedUser
+import { toast } from 'react-toastify';
 
 const UpdateUser = () => {
   const { id } = useParams(); // Lấy UserID từ URL
@@ -44,14 +44,13 @@ const UpdateUser = () => {
     try {
       let response;
       if (userData.isActive) {
-        // Gọi API RestoreUser nếu trạng thái là Active
-        response = await RestoreUser(id);
+        // Gọi API UpdateUserStatus nếu trạng thái là Active
+        response = await UpdateUserStatus(id); // Gọi API để cập nhật trạng thái người dùng
       } else {
         // Gọi API BlockedUser nếu trạng thái là Blocked
-        response = await UpdateUserStatus(id, { isActive: 0 }); // Giả sử 0 là trạng thái Blocked
+        response = await BlockedUser(id); // Gọi API để chặn người dùng
       }
       // Hiển thị thông báo từ API
-     
       navigate("/admin/users", { state: { success: true, message: response.message || "Cập nhật trạng thái người dùng thành công!" } }); // Điều hướng về danh sách người dùng
     } catch (err) {
       console.error("Error updating user:", err);

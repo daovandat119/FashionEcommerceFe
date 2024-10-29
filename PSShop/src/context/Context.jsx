@@ -43,7 +43,6 @@ export default function ContextProvider({ children }) {
     }
   }, []);
 
-<<<<<<< HEAD
   // Cập nhật giỏ hàng tự động
   useEffect(() => {
     fetchCartItems();
@@ -93,17 +92,9 @@ export default function ContextProvider({ children }) {
       throw error;
     } finally {
       setLoading(false);
-=======
-  // Lấy dữ liệu wishlist từ localStorage khi component mount
-  useEffect(() => {
-    const storedWishlist = localStorage.getItem("wishList");
-    if (storedWishlist) {
-      setWishList(JSON.parse(storedWishlist));
->>>>>>> 9b73a363ba8f8ca450418995339b2d6df0b6536d
     }
   };
 
-<<<<<<< HEAD
   // Hàm cập nhật số lượng
   const updateCartItem = async (cartItemId, updates) => {
     setLoading(true);
@@ -120,8 +111,6 @@ export default function ContextProvider({ children }) {
           }
         }
       );
-=======
->>>>>>> 9b73a363ba8f8ca450418995339b2d6df0b6536d
 
       if (response.data.message === 'Success') {
         await fetchCartItems();
