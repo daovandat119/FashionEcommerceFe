@@ -22,16 +22,13 @@ const AddSizeComponent = () => {
       .then(response => {
         console.log("Kích thước đã được thêm:", response);
         if (response && response.data) {
-          toast.success("Thêm kích thước mới thành công!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
+          // Điều hướng về trang danh sách với thông báo thành công
           navigate("/admin/sizes", {
-            state: { success: true, newSize: response.data },
+            state: { 
+              success: true, 
+              message: "Thêm kích thước mới thành công!", 
+              newSize: response.data // Thêm thông tin kích thước mới vào state
+            } 
           });
         } else {
           setError("Không thể thêm kích thước. Vui lòng thử lại.");

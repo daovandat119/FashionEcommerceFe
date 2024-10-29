@@ -39,13 +39,18 @@ const SizeList = () => {
       setHasFetched(true); // Đánh dấu là đã gọi API
     }
 
+    // Hiển thị thông báo thành công khi thêm kích thước
     if (location.state?.success) {
-      toast.success(location.state.message || "Thao tác thành công!");
-      if (location.state.updatedSize) {
-        setSizes(prevSizes => prevSizes.map(size => 
-          size.SizeID === location.state.updatedSize.SizeID ? location.state.updatedSize : size
-        ));
+      toast.success(location.state.message || "Thao tác thành công!", {
+        autoClose: 3000,
+      });
+
+      // Logic mới cho việc thêm kích thước mới
+      if (location.state?.newSize) {
+        setSizes(prevSizes => [location.state.newSize, ...prevSizes]);
+        setTotalPages(prevTotal => prevTotal + 1);
       }
+
       window.history.replaceState({}, document.title);
     }
   }, [location, hasFetched]);
