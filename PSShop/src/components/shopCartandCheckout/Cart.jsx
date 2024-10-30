@@ -146,7 +146,12 @@ export default function Cart() {
                             (checkboxes.flat_rate ? 49 : 0) +
                             (checkboxes.local_pickup ? 8 : 0)
                           )}
-                      </span>
+  {formatPrice(
+    parseFloat(totalPrice) +
+    (checkboxes.flat_rate ? 49 : 0) +
+    (checkboxes.local_pickup ? 8 : 0)
+  )}
+                    </span>
                     </td>
                   </tr>
                 ))}
@@ -167,7 +172,8 @@ export default function Cart() {
                     ></span>
                   ) : null}
                   Delete selected products ({selectedItems.length})
-                </button>
+                  Xóa sản phẩm đã chọn ({selectedItems.length})
+             </button>
               </div>
             </div>
           </>
