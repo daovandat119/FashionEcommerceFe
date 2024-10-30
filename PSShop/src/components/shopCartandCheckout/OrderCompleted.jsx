@@ -1,17 +1,62 @@
-import { useCheckout } from '../../context/CheckoutContext';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useContextElement } from "../../context/Context";
 
 export default function OrderCompleted() {
-  const { orderData } = useCheckout();
-  const navigate = useNavigate();
+  const { orderId } = useParams(); 
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [error, setError] = useState("");
+  const token = localStorage.getItem("token");
+  const { cartProducts } = useContextElement();
 
   useEffect(() => {
-    // Nếu không có orderCode, chuyển về trang cart
-    if (!orderData.orderCode) {
-      navigate('/shop_cart');
-    }
-  }, []);
+    const fetchOrderDetails = async () => {
+      if (!orderId) {
+        setError("Không tìm thấy mã đơn hàng");
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/order/${orderId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!response.data.data || response.data.data.length === 0) {
+          setError("Không tìm thấy thông tin đơn hàng");
+          return;
+        }
+        setOrderDetails(response.data.data[0]);
+      } catch (err) {
+        console.error("Chi tiết lỗi API:", err);
+        setError("Không thể tải thông tin đơn hàng");
+      }
+    };
+
+    fetchOrderDetails();
+  }, [orderId, token]);
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!orderDetails) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4">Đang tải thông tin đơn hàng...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="order-complete">
@@ -29,22 +74,21 @@ export default function OrderCompleted() {
             fill="white"
           />
         </svg>
-        <h3>Đặt hàng thành công!</h3>
-        <p>Cảm ơn bạn. Đơn hàng của bạn đã được tiếp nhận.</p>
+        <h3>Your order is completed!</h3>
+        <p>Thank you. Your order has been received.</p>
       </div>
       <div className="order-info">
         <div className="order-info__item">
-          <label>Mã đơn hàng</label>
-          <span>{orderData.orderCode}</span>
+          <label>Order Number</label>
+          <span>#{orderDetails.OrderID}</span>
         </div>
         <div className="order-info__item">
-          <label>Ngày đặt</label>
+          <label>Date</label>
           <span>{new Date().toLocaleDateString()}</span>
         </div>
         <div className="order-info__item">
           <label>Total</label>
-
-          <span>${orderData.totalPrice && orderData.totalPrice + 19}</span>
+          <span>${orderDetails.TotalPrice}</span>{" "}
         </div>
         <div className="order-info__item">
           <label>Paymetn Method</label>
@@ -62,10 +106,22 @@ export default function OrderCompleted() {
               </tr>
             </thead>
             <tbody>
-              {orderData.products.map((elm, i) => (
+              {cartProducts.map((elm, i) => (
                 <tr key={i}>
                   <td>
-                    {elm.ProductName} x {elm.quantity}
+                    <h4>
+                      {elm.ProductName} - {elm.ColorName} - {elm.SizeName} x{" "}
+                      {elm.Quantity}
+                    </h4>
+                    <img
+                      src={elm.MainImageURL}
+                      alt={elm.ProductName}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        objectFit: "cover",
+                      }}
+                    />
                   </td>
                   <td>${elm.Price}</td>
                 </tr>
@@ -76,7 +132,7 @@ export default function OrderCompleted() {
             <tbody>
               <tr>
                 <th>SUBTOTAL</th>
-                <td>${orderData.totalPrice}</td>
+                <td>${orderDetails.TotalPrice}</td>
               </tr>
               <tr>
                 <th>SHIPPING</th>
@@ -84,11 +140,11 @@ export default function OrderCompleted() {
               </tr>
               <tr>
                 <th>VAT</th>
-                <td>${orderData.totalPrice && 19}</td>
+                <td>${(19).toFixed(2)}</td>
               </tr>
               <tr>
                 <th>TOTAL</th>
-                <td>${orderData.totalPrice && orderData.totalPrice + 19}</td>
+                <td>${orderDetails.TotalPrice + 19}</td>
               </tr>
             </tbody>
           </table>

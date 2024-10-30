@@ -1,13 +1,9 @@
-/* eslint-disable react/prop-types */
-import  { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// Tạo DataContext
 const Context = createContext();
 
-// Tạo hook để sử dụng context
-// eslint-disable-next-line react-refresh/only-export-components
 export const useContextElement = () => useContext(Context);
 
 export default function ContextProvider({ children }) {
@@ -15,26 +11,69 @@ export default function ContextProvider({ children }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [checkboxes, setCheckboxes] = useState({
+    free_shipping: false,
+    flat_rate: false,
+    local_pickup: false,
+  });
 
-  // Hàm fetch cart items với useCallback
+
+  // Hàm xử lý chọn/bỏ chọn item
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      // Sử dụng CartItemID thay vì id
+      const ids = cartProducts.map(item => item.CartItemID);
+      setSelectedItems(ids);
+    } else {
+      setSelectedItems([]);
+    }
+  };
+  // Xử lý chọn/bỏ chọn item
+  const handleSelectItem = (cartItemId) => {
+    setSelectedItems(prev => {
+      if (prev.includes(cartItemId)) {
+        return prev.filter(id => id !== cartItemId);
+      } else {
+        return [...prev, cartItemId];
+      }
+    });
+  };
+
+  // Tính tổng giá
+  const calculateTotalPrice = (products) => {
+    if (!products || products.length === 0) return 0;
+    
+    const total = products.reduce((total, product) => {
+      const price = parseFloat(product.Price) || 0;
+      const quantity = parseInt(product.Quantity) || 0;
+      return total + (price * quantity);
+    }, 0);
+  
+    return total;
+  };
+  const formatPrice = (price) => {
+    if (typeof price !== 'number') return "0.00";
+    return price.toFixed(2);
+  };
+  
+
+  // Fetch cart items
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
-
+  
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/cart-items', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
+  
       if (response.data.message === 'Success') {
-        setCartProducts(response.data.data || []);
-        // Tính tổng tiền
-        const total = (response.data.data || []).reduce((sum, item) => {
-          return sum + (item.Price * item.Quantity);
-        }, 0);
-        setTotalPrice(total);
+        setCartProducts(response.data.data);
+        const total = calculateTotalPrice(response.data.data);
+        setTotalPrice(parseFloat(total));
       }
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -42,12 +81,17 @@ export default function ContextProvider({ children }) {
       setTotalPrice(0);
     }
   }, []);
+  
+  
 
+  // Auto update cart
+  useEffect(() => {
+    fetchCartItems();
+    const interval = setInterval(fetchCartItems, 5000);
+    return () => clearInterval(interval);
+  }, [fetchCartItems]);
 
- 
-
-
-  // Hàm thêm sản phẩm vào giỏ
+  // Thêm sản phẩm vào giỏ
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
     setLoading(true);
     const token = localStorage.getItem('token');
@@ -55,12 +99,7 @@ export default function ContextProvider({ children }) {
     try {
       const response = await axios.post(
         'http://127.0.0.1:8000/api/cart-items',
-        {
-          productID,
-          colorID,
-          sizeID,
-          quantity
-        },
+        { productID, colorID, sizeID, quantity },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -89,29 +128,67 @@ export default function ContextProvider({ children }) {
       throw error;
     } finally {
       setLoading(false);
-
-
-    } // Thêm dấu đóng ngoặc nhọn cho hàm addProductToCart
-  };
-
-  
-  useEffect(() => {
-    const storedWishlist = localStorage.getItem("wishList");
-    if (storedWishlist) {
-      setWishlist(JSON.parse(storedWishlist));
-
     }
-  }, []); // Thêm mảng dependencies và dấu chấm phẩy
-
-  // Hàm cập nhật số lượng
-  const updateCartItem = async (cartItemId, updates) => {
+  };
+  const setQuantity = async (cartItemId, newQuantity) => {
+    if (!cartItemId || newQuantity < 1) return;
+  
+    try {
+      const cartItem = cartProducts.find(item => item.CartItemID === cartItemId);
+      
+      if (!cartItem) {
+        console.error('Cart item not found:', cartItemId);
+        return;
+      }
+  
+      // Log để kiểm tra dữ liệu
+      console.log('Cart item data:', cartItem);
+  
+      // Kiểm tra các giá trị trước khi tạo updateData
+      if (!cartItem.ProductID || !cartItem.ColorID || !cartItem.SizeID) {
+        console.error('Missing required fields:', cartItem);
+        return;
+      }
+  
+      const updateData = {
+        productID: cartItem.ProductID,
+        colorID: cartItem.ColorID,   // Sử dụng ColorID
+        sizeID: cartItem.SizeID,     // Sử dụng SizeID
+        quantity: newQuantity
+      };
+  
+      console.log('Sending update data:', updateData);
+  
+      await updateCartItem(cartItemId, updateData);
+  
+      const updatedItems = cartProducts.map((item) =>
+        item.CartItemID === cartItemId ? { ...item, Quantity: newQuantity } : item
+      );
+      setCartProducts(updatedItems);
+      setTotalPrice(calculateTotalPrice(updatedItems));
+    } catch (error) {
+      console.error('Error setting quantity:', error);
+      Swal.fire({
+        title: "Lỗi",
+        text: "Không thể cập nhật số lượng sản phẩm",
+        icon: "error"
+      });
+    }
+  };
+  
+  const updateCartItem = async (cartItemId, data) => {
     setLoading(true);
     const token = localStorage.getItem('token');
     
     try {
       const response = await axios.patch(
         `http://127.0.0.1:8000/api/cart-items/${cartItemId}`,
-        updates,
+        {
+          productID: data.productID,
+          colorID: data.colorID,     // Gửi colorID
+          sizeID: data.sizeID,       // Gửi sizeID
+          quantity: data.quantity
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -119,71 +196,98 @@ export default function ContextProvider({ children }) {
           }
         }
       );
-
-
+  
       if (response.data.message === 'Success') {
         await fetchCartItems();
         Swal.fire({
           title: "Thành công",
-          text: "Đã cập nhật giỏ hàng",
+          text: "Đã cập nhật số lượng sản phẩm",
           icon: "success",
           timer: 1500
         });
       }
     } catch (error) {
-      console.error('Error updating cart:', error);
-      Swal.fire({
-        title: "Lỗi",
-        text: error.response?.data?.message || "Đã có lỗi xảy ra",
-        icon: "error"
-      });
+      console.error('Error updating cart:', error.response?.data);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
-
-  // Hàm xóa sản phẩm
-  const removeFromCart = async (cartItemId) => {
+  
+  const removeSelectedItems = async () => {
+    if (selectedItems.length === 0) {
+      Swal.fire({
+        title: "Lỗi",
+        text: "Vui lòng chọn sản phẩm cần xóa",
+        icon: "error"
+      });
+      return;
+    }
+  
     setLoading(true);
     const token = localStorage.getItem('token');
     
     try {
-      const response = await axios.delete(
-        `http://127.0.0.1:8000/api/cart-items/${cartItemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
+      const result = await Swal.fire({
+        title: "Xác nhận",
+        text: `Bạn có chắc chắn muốn xóa ${selectedItems.length} sản phẩm đã chọn?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy"
+      });
+  
+      if (result.isConfirmed) {
+        const response = await axios.delete(
+          'http://127.0.0.1:8000/api/cart-items',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            data: { ids: selectedItems } // Gửi data trong option data cho DELETE request
           }
+        );
+  
+        if (response.data.message === 'Success') {
+          setSelectedItems([]);
+          await fetchCartItems();
+          Swal.fire({
+            title: "Thành công",
+            text: `Đã xóa ${response.data.deleted_count} sản phẩm khỏi giỏ hàng`,
+            icon: "success",
+            timer: 1500
+          });
         }
-      );
-
-      if (response.data.message === 'Success') {
-        await fetchCartItems();
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã xóa sản phẩm khỏi giỏ hàng",
-          icon: "success",
-          timer: 1500
-        });
       }
     } catch (error) {
       console.error('Error removing from cart:', error);
       Swal.fire({
         title: "Lỗi",
-        text: error.response?.data?.message || "Đã có lỗi xảy ra",
+        text: error.response?.data?.message || "Không thể xóa sản phẩm khỏi giỏ hàng",
         icon: "error"
       });
     } finally {
       setLoading(false);
     }
   };
+  // Xử lý checkbox shipping
+  const handleCheckboxChange = (event) => {
+    const { id, checked } = event.target;
+    setCheckboxes((prevCheckboxes) => ({
+      ...prevCheckboxes,
+      [id]: checked,
+    }));
+  };
 
+  // Wishlist functions
   const toggleWishlist = (productId) => {
     setWishlist(prev => {
-      if (prev.includes(productId)) {
-        return prev.filter(id => id !== productId);
-      }
-      return [...prev, productId];
+      const newWishlist = prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId];
+      localStorage.setItem("wishList", JSON.stringify(newWishlist));
+      return newWishlist;
     });
   };
 
@@ -191,17 +295,32 @@ export default function ContextProvider({ children }) {
     return wishlist.includes(productId);
   };
 
+  // Load wishlist from localStorage
+  useEffect(() => {
+    const storedWishlist = localStorage.getItem("wishList");
+    if (storedWishlist) {
+      setWishlist(JSON.parse(storedWishlist));
+    }
+  }, []);
+
   const value = {
     cartProducts,
     totalPrice,
     loading,
+    checkboxes,
+    formatPrice,
     addProductToCart,
     updateCartItem,
-    removeFromCart,
+    removeSelectedItems,
     fetchCartItems,
+    setQuantity,
+    handleCheckboxChange,
     wishlist,
     toggleWishlist,
-    isAddedtoWishlist
+    isAddedtoWishlist,
+    handleSelectItem,  // Đảm bảo export function này
+    handleSelectAll,   // Đảm bảo export function này
+    selectedItems      // Đảm bảo export state này
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

@@ -7,7 +7,7 @@ const Footers = () => {
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-between">
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
-                            <img alt="UOMO logo" className="mb-4" height="50"  src="/assets/images/logo.png" width="100" />
+                            <img alt="UOMO logo" className="mb-4" height="50"  src="/assets/images/1.jpg" width="100" />
                             <p>
                                 1418 River Drive, Suite 35 Cottonhall, CA 96222
                                 <br />
