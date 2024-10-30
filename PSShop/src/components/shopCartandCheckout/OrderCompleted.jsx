@@ -11,7 +11,7 @@ export default function OrderCompleted() {
     if (!orderData.orderCode) {
       navigate('/shop_cart');
     }
-  }, []);
+  }, [navigate, orderData.orderCode]);
 
   return (
     <div className="order-complete">
