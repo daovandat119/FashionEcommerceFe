@@ -4,6 +4,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [roleID, setRoleID] = useState(null);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
@@ -17,6 +18,10 @@ export const AuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setIsAuthenticated(true);
+      const storedRoleID = localStorage.getItem('RoleID');
+      if (storedRoleID) {
+        setRoleID(storedRoleID);
+      }
     }
 
     const handleBeforeUnload = () => {
@@ -30,20 +35,24 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const login = (token) => {
+  const login = (token, role) => {
     localStorage.setItem('token', token);
+    localStorage.setItem('RoleID', role);
     setIsAuthenticated(true);
+    setRoleID(role);
     setShowToast(true);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('roleID');
     setIsAuthenticated(false);
+    setRoleID(null);
     setShowToast(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, showToast, setShowToast }}>
+    <AuthContext.Provider value={{ isAuthenticated, roleID, login, logout, showToast, setShowToast }}>
       {children}
     </AuthContext.Provider>
   );
