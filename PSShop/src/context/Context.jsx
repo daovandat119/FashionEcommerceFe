@@ -85,11 +85,6 @@ export default function ContextProvider({ children }) {
   
 
   // Auto update cart
-  useEffect(() => {
-    fetchCartItems();
-    const interval = setInterval(fetchCartItems, 5000);
-    return () => clearInterval(interval);
-  }, [fetchCartItems]);
 
   // Thêm sản phẩm vào giỏ
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
