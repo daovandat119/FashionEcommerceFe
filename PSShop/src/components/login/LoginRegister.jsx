@@ -3,14 +3,24 @@ import { Link, useNavigate } from "react-router-dom";
 import { LoginContext } from "./LoginContext"; // Đảm bảo đúng đường dẫn
 
 export default function LoginRegister() {
-  const { registerUser, loginUser, errorMessage, successMessage } = useContext(LoginContext);
+  const { 
+    registerUser, 
+    loginUser, 
+    verifyEmail,          // Thêm
+    resendVerificationCode, // Thêm
+    errorMessage, 
+    successMessage,
+    verificationStep,     // Thêm
+    tempEmail,           // Thêm
+    userId              // Thêm
+  } = useContext(LoginContext);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const navigate = useNavigate(); // Hook để điều hướng
-
+  const [verificationCode, setVerificationCode] = useState("");
+  const navigate = useNavigate();
   
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -21,7 +31,55 @@ export default function LoginRegister() {
     e.preventDefault();
     registerUser(registerUsername, registerEmail, registerPassword, navigate);
   };
+  const handleVerificationSubmit = (e) => {
+    e.preventDefault();
+    verifyEmail(verificationCode, userId, navigate);
+  };
+  if (verificationStep && tempEmail) {
+    return (
+      <section className="login-register container">
+        <h2 className="d-none">Email Verification</h2>
+        
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+        {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
+        <div className="login-form">
+          <form onSubmit={handleVerificationSubmit} className="needs-validation">
+            <h4 className="text-center mb-4">Xác thực email</h4>
+            <p className="text-center mb-4">
+              Mã xác thực đã được gửi đến email: {tempEmail}
+            </p>
+            
+            <div className="form-floating mb-3">
+              <input
+                type="text"
+                className="form-control form-control_gray"
+                placeholder="Nhập mã xác thực"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
+                required
+              />
+              <label>Nhập mã xác thực</label>
+            </div>
+
+            <button className="btn btn-primary w-100 text-uppercase mb-3" type="submit">
+              Xác thực
+            </button>
+
+            <div className="text-center">
+              <button
+                type="button"
+                className="btn btn-link"
+                onClick={resendVerificationCode}
+              >
+                Gửi lại mã xác thực
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="login-register container">
       <h2 className="d-none">Login & Register</h2>
@@ -29,6 +87,7 @@ export default function LoginRegister() {
       {/* Hiển thị lỗi và thông báo thành công */}
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
+
 
       <ul className="nav nav-tabs mb-5" id="login_register" role="tablist">
         <li className="nav-item" role="presentation">
