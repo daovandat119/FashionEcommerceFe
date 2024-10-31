@@ -50,7 +50,7 @@ import AccountPage from './pages/dashboard/account_dashboard';
 import AccountOrderPage from "./pages/dashboard/account_orders";
 import AccountEditAddressPage from './pages/dashboard/account_edit_address/index';
 import AccountEditPage from "./pages/dashboard/account_edit";
-
+// import Add_Address from './components/otherPages/Add_Address';
 
 function App() {
   return (
@@ -102,10 +102,10 @@ const AppRoutes = () => {
 
             {/* Account routes */}
             <Route path="account_dashboard" element={<AccountPage />} />
-
             <Route path="account_orders" element={<AccountOrderPage />} />         
             <Route path="account_edit_address" element={<AccountEditAddressPage />} />
             <Route path="account_edit" element={<AccountEditPage />} />
+            {/* <Route path="add_address" element={<Add_Address />} /> */}
 
             {/* Admin routes */}
             <Route path="/admin/login" element={<LoginAdmin />} />
