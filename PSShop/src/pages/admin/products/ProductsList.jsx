@@ -67,7 +67,8 @@ const ProductsList = () => {
   const handlePageClick = useCallback((event) => {
     const newPage = event.selected + 1;
     setCurrentPage(newPage);
-  }, []);
+    getProducts(newPage, searchTerm);
+  }, [searchTerm, getProducts]);
 
   const handleSelectProduct = useCallback((ProductID) => {
     setSelectedProducts((prev) =>

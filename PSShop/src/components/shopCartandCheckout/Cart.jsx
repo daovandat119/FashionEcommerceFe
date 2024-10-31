@@ -61,7 +61,7 @@ export default function Cart() {
                     />
                   </th>
                   <th>Product</th>
-                  <th></th>
+                  <th>Color and Size</th>
                   <th>Price</th>
                   <th>Quantity</th>
                   <th>Subtotal</th>
@@ -95,8 +95,8 @@ export default function Cart() {
                       <div className="shopping-cart__product-item__detail">
                         <h4>{item.product_name}</h4>
                         <ul className="shopping-cart__product-item__options">
-                          <li>Color: {item.color}</li>
-                          <li>Size: {item.size}</li>
+                        <li>Color: {item.ColorName || item.color}</li>
+                        <li>Size: {item.SizeName || item.size}</li>
                         </ul>
                       </div>
                     </td>
@@ -141,12 +141,17 @@ export default function Cart() {
                     <td>
                       <span className="shopping-cart__subtotal">
                       $
+                          {formatPrice(
+                            parseFloat(totalPrice) +
+                            (checkboxes.flat_rate ? 49 : 0) +
+                            (checkboxes.local_pickup ? 8 : 0)
+                          )}
   {formatPrice(
     parseFloat(totalPrice) +
     (checkboxes.flat_rate ? 49 : 0) +
     (checkboxes.local_pickup ? 8 : 0)
   )}
-                      </span>
+                    </span>
                     </td>
                   </tr>
                 ))}
@@ -166,8 +171,9 @@ export default function Cart() {
                       aria-hidden="true"
                     ></span>
                   ) : null}
+                  Delete selected products ({selectedItems.length})
                   Xóa sản phẩm đã chọn ({selectedItems.length})
-                </button>
+             </button>
               </div>
             </div>
           </>

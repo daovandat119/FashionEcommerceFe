@@ -89,16 +89,24 @@ export default function Checkout() {
           }
         }
       );
-
+    
+      console.log('Response từ API đặt hàng:', response.data);
+    
       if (response.data.data) {
-        updateOrderData({ orderCode: response.data.data.OrderCode });
+        const orderId = response.data.data.OrderID;
+        
+        updateOrderData({ 
+          orderCode: response.data.data.OrderCode,
+          orderId: orderId
+        });
         
         setCartItems([]);
         if (typeof setTotalPrice === 'function') {
           setTotalPrice(0);
         }
         
-        navigate('/shop_order_complete');
+        // Sửa cách navigate
+        navigate(`/shop_order_complete/${orderId}`);
       }
     } catch (err) {
       console.error('Chi tiết payload:', orderPayload);
@@ -115,14 +123,14 @@ export default function Checkout() {
       {error && <div className="error-message text-red-500 mb-4">{error}</div>}
       
       <div className="address-section p-6 bg-white rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">Chọn địa chỉ giao hàng</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">ADDRESS</h3>
         
         <select 
           className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-200 focus:outline-none"
           value={orderData.AddressID || ''}
           onChange={(e) => handleAddressSelect(e.target.value)}
         >
-          <option value="">-- Chọn địa chỉ giao hàng --</option>
+          <option value="">-- ADDRESS --</option>
           {addresses.map(address => (
             <option key={address.AddressID} value={address.AddressID}>
               {address.Username} | {address.PhoneNumber} | {address.Address}
@@ -132,7 +140,7 @@ export default function Checkout() {
 
         {/* Order Summary section */}
         <div className="order-summary mt-8 bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800">Đơn hàng của bạn</h3>
+          <h3 className="text-xl font-semibold mb-4 text-gray-800">Your Order</h3>
           <div className="products-list space-y-3">
             {cartItems.map(item => (
               <div 
@@ -151,7 +159,7 @@ export default function Checkout() {
           
           <div className="totals mt-4 space-y-2">
             <div className="subtotal flex justify-between text-gray-600">
-              <span>Tạm tính:</span>
+              <span>SUBTOTAL</span>
               <span>${totalPrice.toFixed(2)}</span>
             </div>
             <div className="vat flex justify-between text-gray-600">
@@ -159,7 +167,7 @@ export default function Checkout() {
               <span>${(19).toFixed(2)}</span>
             </div>
             <div className="total flex justify-between text-lg font-semibold mt-4 pt-2 border-t">
-              <span>Tổng cộng:</span>
+              <span>TOTAL</span>
               <span>${(totalPrice + 19).toFixed(2)}</span>
             </div>
           </div>
@@ -170,7 +178,7 @@ export default function Checkout() {
             className="w-full bg-gray-800 text-white p-4 rounded-md hover:bg-gray-900 mt-6 
                        transition-colors duration-200 font-medium text-lg"
           >
-            ĐẶT HÀNG
+            PLACE ORDER
           </button>
         </div>
       </div>

@@ -75,7 +75,8 @@ const CategoriesList = () => {
   const handlePageClick = useCallback((event) => {
     const newPage = event.selected + 1;
     setCurrentPage(newPage);
-  }, []);
+    getCategories(newPage, searchTerm);
+  }, [searchTerm, getCategories]);
 
   const handleSelectCategory = useCallback((CategoryID) => {
     setSelectedCategories((prev) =>
@@ -139,6 +140,13 @@ const CategoriesList = () => {
     setUpdating(false);
   }, [updating, currentPage]);
 
+  const handleSearchChange = (e) => {
+    const value = e.target.value; // Get the current input value
+    setSearchTerm(value); // Update the search term
+    setCurrentPage(1); // Reset to the first page on search
+    getCategories(1, value); // Call getCategories with the updated search term
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
@@ -149,7 +157,7 @@ const CategoriesList = () => {
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Search categories"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
@@ -222,7 +230,8 @@ const CategoriesList = () => {
           </table>
         )}
         {TotalPages > 1 && (
-          <ReactPaginate
+         <div className="pb-4">
+           <ReactPaginate
             breakLabel="..."
             nextLabel=" >"
             onPageChange={handlePageClick}
@@ -241,6 +250,7 @@ const CategoriesList = () => {
             activeClassName="active bg-blue-500 text-white"
             forcePage={currentPage - 1}
           />
+         </div>
         )}
       </div>
     </div>
