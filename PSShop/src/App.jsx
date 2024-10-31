@@ -55,10 +55,12 @@ import AccountEditPage from "./pages/dashboard/account_edit";
 function App() {
   return (
     <CheckoutProvider>
-      <Router>
-        <ToastContainer /> {/* Ensure ToastContainer is placed here */}
-        <AppRoutes />
-      </Router>
+      <LoginProvider>
+        <Router>
+          <ToastContainer />
+          <AppRoutes />
+        </Router>
+      </LoginProvider>
     </CheckoutProvider>
   );
 }

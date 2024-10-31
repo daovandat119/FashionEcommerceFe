@@ -50,7 +50,7 @@ export default function Products_Limited() {
     // Gọi API PHP từ React
     axios.get('http://127.0.0.1:8000/api/products')
       .then(response => {
-        setProducts(response.data.data || response.data); // Điều chỉnh nếu cần
+        setProducts(response.data.data); // Điều chỉnh nếu cần
         setLoading(false);
       })
       .catch(error => {

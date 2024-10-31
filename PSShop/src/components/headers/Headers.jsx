@@ -1,23 +1,34 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Nav from "./components/Nav";
 import CartLength from "./components/CartLength";
 import CartDrawer from "./components/CartDrawer"; 
-import AuthPopup from "./components/AuthPopup";
+
 import { openCart } from "../../utlis/openCart";
-import { LoginProvider } from "../login/LoginContext";
 import SearchBar from "./components/SearchBar"; 
-  
+import { LoginContext } from "../login/LoginContext";
+
 export default function Headers() {
   const [isSearchVisible, setSearchVisible] = useState(false);
-  const [isAuthOpen, setAuthOpen] = useState(false); 
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const { isAuthenticated } = useContext(LoginContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Header - isAuthenticated:", isAuthenticated);
+  }, [isAuthenticated]);
 
   const toggleSearch = () => {
     setSearchVisible((prev) => !prev);
   };
 
-  const toggleAuth = () => {
-    setAuthOpen((prev) => !prev); 
+  const handleUserClick = () => {
+    console.log("Click - isAuthenticated:", isAuthenticated);
+    if (isAuthenticated) {
+      navigate('/account_dashboard');
+    } else {
+      setDropdownOpen(!isDropdownOpen);
+    }
   };
 
   const handleSearchResults = (results) => {
@@ -47,7 +58,7 @@ export default function Headers() {
           </nav>
 
           <div className="header-tools d-flex align-items-center">
-            {/* Thanh tìm kiếm */}
+            {/* Search button */}
             {isSearchVisible ? (
               <SearchBar onSearch={handleSearchResults} />
             ) : (
@@ -61,14 +72,41 @@ export default function Headers() {
               </div>
             )}
 
-            {/* Biểu tượng người dùng để mở AuthPopup */}
-            <div className="header-tools__item hover-container">
+            {/* User button với dropdown */}
+            <div className="header-tools__item hover-container relative">
               <button
                 className="header-tools__item js-open-aside flex items-center justify-center p-2"
-                onClick={toggleAuth}
+                onClick={handleUserClick}
               >
                 <i className="fas fa-user text-black text-lg"></i>
               </button>
+
+              {!isAuthenticated && isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg overflow-hidden z-50">
+                  {/* Header của dropdown với nút đóng */}
+                  <div className="px-4 py-3 border-b relative">
+                    <h3 className="text-sm font-medium text-gray-900">Tài khoản</h3>
+                    <button 
+                      onClick={() => setDropdownOpen(false)}
+                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <i className="fas fa-times text-sm"></i>
+                    </button>
+                  </div>
+                  
+                  {/* Menu item */}
+                  <div className="py-2">
+                    <Link
+                      to="/login_register"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-all"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <i className="fas fa-sign-in-alt mr-3 text-gray-400"></i>
+                      Đăng nhập / Đăng ký
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
 
             <Link className="header-tools__item flex items-center justify-center p-2" to="/account_wishlist">
@@ -88,13 +126,7 @@ export default function Headers() {
         </div>
       </div>
 
-      {/* Drawer giỏ hàng */}
       <CartDrawer />
-
-      {/* Popup đăng nhập/đăng ký */}
-      <LoginProvider>
-        <AuthPopup isOpen={isAuthOpen} closePopup={toggleAuth} />
-      </LoginProvider>
     </header>
   );
 }

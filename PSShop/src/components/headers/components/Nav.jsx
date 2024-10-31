@@ -1,19 +1,8 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+
 
 export default function Nav() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Kiểm tra token hoặc trạng thái đăng nhập
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
-
+ 
   return (
     <>
       <li className="navigation__item">
@@ -42,14 +31,7 @@ export default function Nav() {
         </Link>
       </li>
 
-      {/* Hiển thị My Account khi đã đăng nhập */}
-      {isLoggedIn && (
-        <li className="navigation__item">
-          <Link to="/account_dashboard" className={`navigation__link`}>
-            My Account
-          </Link>
-        </li>
-      )}
+      
     </>
   );
 }

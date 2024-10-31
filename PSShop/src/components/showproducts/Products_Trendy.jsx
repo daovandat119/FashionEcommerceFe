@@ -19,9 +19,9 @@ export default function Products_Trendy() {
     axios
       .get("http://127.0.0.1:8000/api/products")
       .then((response) => {
-        console.log("Response data:", response.data);
+        // console.log("Response data:", response.data);
         const fetchedProducts = response.data.data || response.data;
-        console.log("Fetched Products:", fetchedProducts); // Kiểm tra dữ liệu nhận được
+        // console.log("Fetched Products:", fetchedProducts); // Kiểm tra dữ liệu nhận được
         setProducts(fetchedProducts);
         setFiltered(getRandomProducts(fetchedProducts, 4)); // Khởi tạo với 4 sản phẩm ngẫu nhiên
         setLoading(false);
@@ -36,7 +36,7 @@ export default function Products_Trendy() {
   useEffect(() => {
     if (currentCategory === "All") {
       setFiltered(products.slice(0, 8)); // Hiển thị 8 sản phẩm đầu tiên khi chọn "All"
-      console.log("Filtered (All):", products.slice(0, 8));
+      // console.log("Filtered (All):", products.slice(0, 8));
     } else {
       setFiltered(getRandomProducts(products, 4)); // Hiển thị 4 sản phẩm ngẫu nhiên cho các danh mục khác
       console.log(`Filtered (${currentCategory}):`, getRandomProducts(products, 4));

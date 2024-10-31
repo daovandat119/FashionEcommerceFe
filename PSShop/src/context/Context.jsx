@@ -181,7 +181,7 @@ export default function ContextProvider({ children }) {
     const token = localStorage.getItem('token');
     
     try {
-      const response = await axios.patch(
+       await axios.patch(
         `http://127.0.0.1:8000/api/cart-items/${cartItemId}`,
         {
           productID: data.productID,
@@ -197,15 +197,15 @@ export default function ContextProvider({ children }) {
         }
       );
   
-      if (response.data.message === 'Success') {
-        await fetchCartItems();
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã cập nhật số lượng sản phẩm",
-          icon: "success",
-          timer: 1500
-        });
-      }
+      // if (response.data.message === 'Success') {
+      //   await fetchCartItems();
+      //   Swal.fire({
+      //     title: "Thành công",
+      //     text: "Đã cập nhật số lượng sản phẩm",
+      //     icon: "success",
+      //     timer: 1500
+      //   });
+      // }
     } catch (error) {
       console.error('Error updating cart:', error.response?.data);
       throw error;
