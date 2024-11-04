@@ -234,7 +234,6 @@ const updateCartItem = async (cartItemId, data) => {
     throw error;
   }
 };
-
 // Sửa lại hàm xóa nhiều sản phẩm
 const removeSelectedItems = async () => {
   if (selectedItems.length === 0) return;
