@@ -8,7 +8,8 @@ export function CheckoutProvider({ children }) {
     AddressID: null,
     products: [],
     PaymentMethodID: 1,
-    orderCode: null
+    orderCode: null,
+    OrderID: null
   });
 
   const updateOrderData = (data) => {

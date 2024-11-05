@@ -132,13 +132,12 @@ export default function ContextProvider({ children }) {
           })
         );
 
-        console.log("Detailed Cart Items:", detailedCartItems);
+
         setCartProducts(detailedCartItems);
         const total = calculateTotalPrice(detailedCartItems);
         setTotalPrice(total);
       }
     } catch (error) {
-      console.error("Error fetching cart items:", error);
       setCartProducts([]);
       setTotalPrice(0);
     }

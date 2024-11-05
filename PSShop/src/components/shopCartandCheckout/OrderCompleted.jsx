@@ -1,154 +1,228 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useContextElement } from "../../context/Context";
+import {
+  FaCheckCircle,
+  FaMapMarkerAlt,
+  FaUser,
+  FaPhone,
+  FaMoneyBill,
+  FaCreditCard,
+} from "react-icons/fa";
 
 export default function OrderCompleted() {
-  const { orderId } = useParams(); 
-  const [orderDetails, setOrderDetails] = useState(null);
-  const [error, setError] = useState("");
+  const [orderDetails, setOrderDetails] = useState([]); // Thay đổi thành array
+  const [addressInfo, setAddressInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { orderId } = useParams();
   const token = localStorage.getItem("token");
-  const { cartProducts } = useContextElement();
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
-      if (!orderId) {
-        setError("Không tìm thấy mã đơn hàng");
-        return;
-      }
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
+        const orderResponse = await axios.get(
           `http://127.0.0.1:8000/api/order/${orderId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        if (!response.data.data || response.data.data.length === 0) {
-          setError("Không tìm thấy thông tin đơn hàng");
-          return;
-        }
-        setOrderDetails(response.data.data[0]);
-      } catch (err) {
-        console.error("Chi tiết lỗi API:", err);
-        setError("Không thể tải thông tin đơn hàng");
+        setOrderDetails(orderResponse.data.data); // Lưu toàn bộ mảng data
+
+        const addressResponse = await axios.get(
+          "http://127.0.0.1:8000/api/address",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const defaultAddress =
+          addressResponse.data.data.find((addr) => addr.IsDefault === 1) ||
+          addressResponse.data.data[0];
+        setAddressInfo(defaultAddress);
+      } catch (error) {
+        console.error("Lỗi khi tải thông tin:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchOrderDetails();
+    fetchData();
   }, [orderId, token]);
 
-  if (error) {
+  // Tính tổng tiền của tất cả sản phẩm
+  const calculateTotal = () => {
+    return orderDetails.reduce((sum, item) => sum + Number(item.TotalPrice), 0);
+  };
+
+  if (loading) {
     return (
-      <div className="max-w-2xl mx-auto p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
   }
 
-  if (!orderDetails) {
-    return (
-      <div className="max-w-2xl mx-auto p-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4">Đang tải thông tin đơn hàng...</p>
-        </div>
-      </div>
-    );
-  }
+  // Xác định trạng thái đơn hàng
+  const getOrderStatusColor = (status) => {
+    switch (status) {
+      case "Pending":
+        return "text-yellow-500";
+      case "Processing":
+        return "text-blue-500";
+      case "Completed":
+        return "text-green-500";
+      default:
+        return "text-gray-500";
+    }
+  };
 
   return (
-    <div className="order-complete">
-      <div className="order-complete__message">
-        <svg
-          width="80"
-          height="80"
-          viewBox="0 0 80 80"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Header Section - giữ nguyên */}
+      <div className="text-center mb-8">
+        <FaCheckCircle className="text-green-500 text-6xl mx-auto mb-4" />
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          Đặt hàng thành công!
+        </h1>
+        <p className="text-gray-600">
+          Mã đơn hàng: #{orderDetails[0]?.OrderID}
+        </p>
+        <p
+          className={`text-lg font-semibold ${getOrderStatusColor(
+            orderDetails[0]?.OrderStatus
+          )}`}
         >
-          <circle cx="40" cy="40" r="40" fill="#B9A16B" />
-          <path
-            d="M52.9743 35.7612C52.9743 35.3426 52.8069 34.9241 52.5056 34.6228L50.2288 32.346C49.9275 32.0446 49.5089 31.8772 49.0904 31.8772C48.6719 31.8772 48.2533 32.0446 47.952 32.346L36.9699 43.3449L32.048 38.4062C31.7467 38.1049 31.3281 37.9375 30.9096 37.9375C30.4911 37.9375 30.0725 38.1049 29.7712 38.4062L27.4944 40.683C27.1931 40.9844 27.0257 41.4029 27.0257 41.8214C27.0257 42.24 27.1931 42.6585 27.4944 42.9598L33.5547 49.0201L35.8315 51.2969C36.1328 51.5982 36.5513 51.7656 36.9699 51.7656C37.3884 51.7656 37.8069 51.5982 38.1083 51.2969L40.385 49.0201L52.5056 36.8996C52.8069 36.5982 52.9743 36.1797 52.9743 35.7612Z"
-            fill="white"
-          />
-        </svg>
-        <h3>Your order is completed!</h3>
-        <p>Thank you. Your order has been received.</p>
+          Trạng thái: {orderDetails[0]?.OrderStatus}
+        </p>
       </div>
-      <div className="order-info">
-        <div className="order-info__item">
-          <label>Order Number</label>
-          <span>#{orderDetails.OrderID}</span>
-        </div>
-        <div className="order-info__item">
-          <label>Date</label>
-          <span>{new Date().toLocaleDateString()}</span>
-        </div>
-        <div className="order-info__item">
-          <label>Total</label>
-          <span>${orderDetails.TotalPrice}</span>{" "}
-        </div>
-        <div className="order-info__item">
-          <label>Paymetn Method</label>
-          <span>Direct Bank Transfer</span>
+
+      {/* Thanh trạng thái - giữ nguyên phần cũ */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div className="flex justify-between items-center">
+          {/* ... code thanh trạng thái ... */}
         </div>
       </div>
-      <div className="checkout__totals-wrapper">
-        <div className="checkout__totals">
-          <h3>Order Details</h3>
-          <table className="checkout-cart-items">
+
+      {/* Thêm phần thông tin giao hàng và thanh toán */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Địa chỉ giao hàng */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <FaMapMarkerAlt className="mr-2 text-gray-600" />
+            Địa chỉ giao hàng
+          </h2>
+          <div className="space-y-2 text-gray-600">
+            <p className="flex items-center">
+              <FaUser className="mr-2" />
+              {addressInfo?.Username}
+            </p>
+            <p className="flex items-center">
+              <FaPhone className="mr-2" />
+              {addressInfo?.PhoneNumber}
+            </p>
+            <p className="ml-6">{addressInfo?.Address}</p>
+            {addressInfo?.IsDefault === 1 && (
+              <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                Địa chỉ mặc định
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Phương thức thanh toán */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <FaMoneyBill className="mr-2 text-gray-600" />
+            Phương thức thanh toán
+          </h2>
+          <div className="space-y-2 text-gray-600">
+            <p className="flex items-center">
+              <FaCreditCard className="mr-2" />
+              {/* Thay thế text cứng bằng dữ liệu từ API */}
+              {orderDetails[0]?.PaymentMethod === 1
+                ? "Thanh toán khi nhận hàng (COD)"
+                : "Chuyển khoản ngân hàng"}
+            </p>
+            <p className="ml-6 text-sm text-gray-500">
+              {orderDetails[0]?.PaymentMethod === 1
+                ? // Hiển thị hướng dẫn COD
+                  `Vui lòng chuẩn bị số tiền mặt ${(
+                    calculateTotal() + 19
+                  ).toFixed(2)}$ khi nhận hàng`
+                : // Hiển thị thông tin chuyển khoản
+                  "Vui lòng chuyển khoản theo thông tin tài khoản được cung cấp"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <h2 className="text-xl font-semibold mb-4">Chi tiết đơn hàng</h2>
+
+        {/* Bảng chi tiết sản phẩm */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
             <thead>
-              <tr>
-                <th>PRODUCT</th>
-                <th>SUBTOTAL</th>
+              <tr className="border-b">
+                <th className="text-left py-3 px-4">Sản phẩm</th>
+                <th className="text-center py-3 px-4">Màu sắc</th>
+                <th className="text-center py-3 px-4">Kích thước</th>
+                <th className="text-center py-3 px-4">Số lượng</th>
+                <th className="text-center py-3 px-4">Đơn giá</th>
+                <th className="text-right py-3 px-4">Thành tiền</th>
               </tr>
             </thead>
             <tbody>
-              {cartProducts.map((elm, i) => (
-                <tr key={i}>
-                  <td>
-                    <h4>
-                      {elm.ProductName} - {elm.ColorName} - {elm.SizeName} x{" "}
-                      {elm.Quantity}
-                    </h4>
-                    <img
-                      src={elm.MainImageURL}
-                      alt={elm.ProductName}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        objectFit: "cover",
-                      }}
-                    />
+              {orderDetails.map((item, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="py-3 px-4">
+                    <span className="font-medium">{item.ProductName}</span>
                   </td>
-                  <td>${elm.Price}</td>
+                  <td className="text-center py-3 px-4">{item.VariantColor}</td>
+                  <td className="text-center py-3 px-4">{item.VariantSize}</td>
+                  <td className="text-center py-3 px-4">
+                    {item.TotalQuantity}
+                  </td>
+                  <td className="text-center py-3 px-4">
+                    ${Number(item.VariantPrice).toFixed(2)}
+                  </td>
+                  <td className="text-right py-3 px-4 font-medium">
+                    ${Number(item.TotalPrice).toFixed(2)}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <table className="checkout-totals">
-            <tbody>
-              <tr>
-                <th>SUBTOTAL</th>
-                <td>${orderDetails.TotalPrice}</td>
-              </tr>
-              <tr>
-                <th>SHIPPING</th>
-                <td>Free shipping</td>
-              </tr>
-              <tr>
-                <th>VAT</th>
-                <td>${(19).toFixed(2)}</td>
-              </tr>
-              <tr>
-                <th>TOTAL</th>
-                <td>${orderDetails.TotalPrice + 19}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
+
+        {/* Tổng cộng */}
+        <div className="mt-6 space-y-2 border-t pt-4">
+          <div className="flex justify-end text-gray-600 space-x-20">
+            <span>Tạm tính:</span>
+            <span className="w-32 text-right">
+              ${calculateTotal().toFixed(2)}
+            </span>
+          </div>
+          <div className="flex justify-end text-gray-600 space-x-20">
+            <span>Phí vận chuyển & VAT:</span>
+            <span className="w-32 text-right">$19.00</span>
+          </div>
+          <div className="flex justify-end text-xl font-bold pt-4 border-t space-x-20">
+            <span>Tổng cộng:</span>
+            <span className="w-32 text-right">
+              ${(calculateTotal() + 19).toFixed(2)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Nút tiếp tục mua sắm */}
+      <div className="text-center mt-8">
+        <a
+          href="/"
+          className="inline-block bg-gray-800 text-white px-8 py-3 rounded-md hover:bg-gray-900 transition-colors"
+        >
+          Tiếp tục mua sắm
+        </a>
       </div>
     </div>
   );
