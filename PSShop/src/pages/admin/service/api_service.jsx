@@ -1,7 +1,7 @@
 import axios from "./axios_customize";
 
 const LoginAdmin = (Email, Password) => {
-  return axios.post("/api/login", { Email, Password });
+  return axios.post("/api/admin/login", { Email, Password });
 };
 
 const ListCategories = (page, search = "") => {
