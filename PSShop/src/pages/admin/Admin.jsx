@@ -5,6 +5,7 @@ import ProductsManager from "./products/ProductsManager";
 import CategoryManager from "./categories/CategoryManager";
 import Login from "./login/LoginAdmin";
 import UsersManager from "./users/UsersManager";
+import CartList from "./cart/CartList";
 const Admin = () => {
   return (
     <Card>
@@ -12,8 +13,8 @@ const Admin = () => {
       <Dashboard />
       <ProductsManager />
       <CategoryManager />
-
       <UsersManager />
+      <CartList />
     </Card>
   );
 };

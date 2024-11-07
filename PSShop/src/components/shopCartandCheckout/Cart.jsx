@@ -147,7 +147,7 @@ export default function Cart() {
                       aria-hidden="true"
                     ></span>
                   ) : null}
-                  Xóa sản phẩm đã chọn ({selectedItems.length})
+  Xóa sản phẩm đã chọn ({selectedItems.length})
                 </button>
               </div>
             </div>

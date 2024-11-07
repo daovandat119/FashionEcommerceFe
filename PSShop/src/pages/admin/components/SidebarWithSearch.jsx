@@ -110,6 +110,16 @@ export function SidebarWithSearch() {
             Users
           </ListItem>
         </Link >
+
+        <Link to="/admin/cart" className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
+          <ListItem>
+            <ListItemPrefix>
+              <ShoppingBagIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Cart
+          </ListItem>
+        </Link>
+
         <ListItem className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
           <ListItemPrefix>
             <Cog6ToothIcon className="h-5 w-5"  />
