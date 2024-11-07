@@ -6,7 +6,6 @@ import Pagination1 from "../common/Pagination1";
 import { useEffect, useState } from "react";
 import BreadCumb from "./BreadCumb";
 import { Link } from "react-router-dom";
-import { useContextElement } from "../../context/Context";
 import axios from 'axios'; // Import Axios
 import { openModalShopFilter } from "../../utlis/aside";
 import { menuCategories, sortingOptions } from "../../data/products/productCategories";
@@ -14,27 +13,60 @@ import { menuCategories, sortingOptions } from "../../data/products/productCateg
 const itemPerRow = [2, 3, 4];
 
 export default function Shop1() {
-  const { toggleWishlist, isAddedtoWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(4);
   const [currentCategory] = useState(menuCategories[0]);
-  const [products, setProducts] = useState([]); // State to store products
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
   useEffect(() => {
-    // Gọi API PHP từ React
-    axios.get('http://127.0.0.1:8000/api/products')
-      .then(response => {
-        setProducts(response.data.data || response.data); // Điều chỉnh nếu cần
-        setLoading(false);
-      })
-      .catch(error => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/products');
+        setProducts(response.data.data || response.data);
+      } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);
         setError("Không thể tải sản phẩm.");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="text-xl text-red-600 mb-4">{error}</div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
+        >
+          Thử lại
+        </button>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (!products || products.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl text-gray-600">Không có sản phẩm nào</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -186,11 +218,7 @@ export default function Shop1() {
                   )}
 
                   <button
-                    className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
-                      isAddedtoWishlist(elm.ProductID) ? "active" : ""
-                    }`}
-                    onClick={() => toggleWishlist(elm.ProductID)}
-                    title="Add To Wishlist"
+                    className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 "  
                   >
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <use href="#icon_heart" />

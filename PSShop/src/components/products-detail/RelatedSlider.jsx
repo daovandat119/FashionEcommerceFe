@@ -76,6 +76,25 @@ export default function RelatedSlider() {
             style={{ maxWidth: "100vw", overflow: "hidden" }}
             {...swiperOptions}
             className="swiper-container js-swiper-slider"
+            loop={products.length > 4}
+            breakpoints={{
+              0: {
+                slidesPerView: 1,
+                loop: products.length > 1
+              },
+              576: {
+                slidesPerView: 2,
+                loop: products.length > 2
+              },
+              768: {
+                slidesPerView: 3,
+                loop: products.length > 3
+              },
+              992: {
+                slidesPerView: 4,
+                loop: products.length > 4
+              }
+            }}
           >
             {products.map((product, i) => (
               <SwiperSlide key={i} className="swiper-slide product-card">

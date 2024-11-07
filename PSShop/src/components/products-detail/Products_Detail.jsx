@@ -17,7 +17,16 @@ const ProductDetail = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [variantInfo, setVariantInfo] = useState(null);
 
-  const { addProductToCart, isAddedToCartProducts } = useContextElement();
+  const { 
+    addProductToCart, 
+    isAddedToCartProducts, 
+    addToWishlist, 
+    wishlistProducts,
+    fetchWishlistItems 
+  } = useContextElement();
+
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -63,13 +72,48 @@ const ProductDetail = () => {
       });
   }, [id]);
 
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        await fetchWishlistItems();
+      } catch (error) {
+        console.error("Error loading wishlist:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [fetchWishlistItems]);
+
+  useEffect(() => {
+    if (wishlistProducts && product) {
+      const exists = wishlistProducts.some(
+        item => parseInt(item.ProductID) === parseInt(product.ProductID)
+      );
+      setIsInWishlist(exists);
+    }
+  }, [wishlistProducts, product]);
+
+  const handleAddToWishlist = async () => {
+    if (!product) return;
+    
+    try {
+      await addToWishlist(product.ProductID);
+    } catch (error) {
+      console.error("Lỗi khi thêm vào wishlist:", error);
+    }
+  };
+
   const checkProductVariant = async () => {
     if (!selectedSize || !selectedColor) return null;
 
     const token = localStorage.getItem("token");
+    if (!token) return null;
+
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/product-variants/getVariantByID", // Sửa URL endpoint
+        `http://127.0.0.1:8000/api/product-variants/getVariantByID`,
         {
           ProductID: product.ProductID,
           SizeID: selectedSize.SizeID,
@@ -84,6 +128,10 @@ const ProductDetail = () => {
       );
       return response.data.data;
     } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Lỗi xác thực token");
+        // Có thể xử lý logout hoặc refresh token tại đây
+      }
       console.error("Lỗi khi kiểm tra biến thể:", error);
       return null;
     }
@@ -158,6 +206,14 @@ const ProductDetail = () => {
     };
     checkVariant();
   }, [selectedSize, selectedColor]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   if (!product) {
     return <div>Loading...</div>;
@@ -250,93 +306,105 @@ const ProductDetail = () => {
 
             {/* Số lượng sản phẩm */}
             <div className="product-single__addtocart">
-              
-              <div className="qty-control position-relative">
-                <input
-                  type="number"
-                  name="quantity"
-                  value={quantity}
-                  min="1"
-                  className="qty-control__number text-center"
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                />
-                <div
-                  className="qty-control__reduce"
-                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                >
-                  -
-                </div>
-                <div
-                  className="qty-control__increase"
-                  onClick={() => setQuantity(quantity + 1)}
-                >
-                  +
+              {/* Số lượng và controls */}
+              <div className="flex items-center gap-4 mb-4">
+                {/* Số lượng sản phẩm */}
+                <div className="relative flex items-center border rounded-lg w-32">
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={quantity}
+                    min="1"
+                    className="w-full px-3 py-2 text-center focus:outline-none"
+                    onChange={(e) => setQuantity(Number(e.target.value))}
+                  />
+                  <div className="absolute inset-y-0 left-0 flex items-center">
+                    <button
+                      type="button"
+                      className="px-2 py-1 text-gray-600 hover:text-gray-800"
+                      onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                    >
+                      -
+                    </button>
+                  </div>
+                  <div className="absolute inset-y-0 right-0 flex items-center">
+                    <button
+                      type="button"
+                      className="px-2 py-1 text-gray-600 hover:text-gray-800"
+                      onClick={() => setQuantity(quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Hiển thị thông tin tồn kho */}
-              {variantInfo && (
-                <div className="stock-info mt-2 mb-2">
-                  <span
-                    className={`stock-status d-inline-block py-1 px-3 rounded-pill ${
-                      variantInfo.Quantity > 0
-                        ? "bg-success-subtle text-success"
-                        : "bg-danger-subtle text-danger"
+              {/* Buttons Container */}
+              <div className="flex gap-3 mb-4">
+                {/* Add to Cart Button */}
+                <button
+                  type="submit"
+                  disabled={isChecking || (variantInfo && variantInfo.Quantity === 0)}
+                  className={`flex-1 px-6 py-3 text-sm font-medium text-white rounded-lg transition-all duration-300 
+                    ${isChecking || (variantInfo && variantInfo.Quantity === 0)
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-dark active:transform active:scale-95'
                     }`}
-                    style={{
-                      fontSize: "0.9rem",
-                      fontWeight: "500",
-                      border: `1px solid ${
-                        variantInfo.Quantity > 0 ? "#198754" : "#dc3545"
-                      }`,
-                      color: variantInfo.Quantity > 0 ? "#0a3622" : "#842029",
-                      letterSpacing: "0.3px",
-                    }}
+                >
+                  {isChecking
+                    ? "Đang kiểm tra..."
+                    : variantInfo && variantInfo.Quantity === 0
+                    ? "Hết hàng"
+                    : typeof isAddedToCartProducts === "function" &&
+                      isAddedToCartProducts(product.ProductID)
+                    ? "Đã thêm vào giỏ"
+                    : "Thêm vào giỏ"}
+                </button>
+
+                {/* Wishlist Button */}
+                <button
+                  type="button"
+                  onClick={handleAddToWishlist}
+                  className={`w-12 h-12 flex items-center justify-center rounded-lg transition-all duration-300
+                    ${isInWishlist 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-white border-2 border-red-500 text-red-500 hover:bg-red-50'
+                    }
+                    focus:outline-none active:transform active:scale-95`}
+                >
+                  <i className={`fas fa-heart ${
+                    isInWishlist 
+                      ? 'animate-heartBeat' 
+                      : 'hover:scale-110 transition-transform duration-300'
+                  }`}></i>
+                </button>
+              </div>
+
+              {/* Stock Info */}
+              {variantInfo && (
+                <div className="mt-3">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                    ${variantInfo.Quantity > 0
+                      ? 'bg-green-100 text-green-800 border border-green-800'
+                      : 'bg-red-100 text-red-800 border border-red-800'
+                    }`}
                   >
                     {variantInfo.Quantity > 0 ? (
                       <>
-                        <i
-                          className="fas fa-check-circle me-1"
-                          style={{ color: "#0a3622" }}
-                        ></i>
-                        <span style={{ color: "#0a3622" }}>
-                          Còn <strong>{variantInfo.Quantity}</strong> sản phẩm
-                          trong kho
+                        <i className="fas fa-check-circle mr-2"></i>
+                        <span>
+                          Còn <strong>{variantInfo.Quantity}</strong> sản phẩm trong kho
                         </span>
                       </>
                     ) : (
                       <>
-                        <i
-                          className="fas fa-times-circle me-1"
-                          style={{ color: "#842029" }}
-                        ></i>
-                        <span style={{ color: "#842029", fontWeight: "600" }}>
-                          Hết hàng
-                        </span>
+                        <i className="fas fa-times-circle mr-2"></i>
+                        <span className="font-semibold">Hết hàng</span>
                       </>
                     )}
                   </span>
                 </div>
               )}
-
-              <button
-                type="submit"
-                className="btn btn-primary btn-addtocart"
-                disabled={
-                  isChecking || (variantInfo && variantInfo.Quantity === 0)
-                }
-              >
-                {isChecking
-                  ? "Đang kiểm tra..."
-                  : variantInfo && variantInfo.Quantity === 0
-                  ? "Hết hàng"
-                  : // Thêm kiểm tra isAddedToCartProducts
-                  typeof isAddedToCartProducts === "function" &&
-                    isAddedToCartProducts(product.ProductID)
-                  ? "Đã thêm vào giỏ"
-                  : "Thêm vào giỏ"}
-              </button>
-
             </div>
           </form>
         </div>

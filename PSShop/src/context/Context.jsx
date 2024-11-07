@@ -10,19 +10,21 @@ import Swal from "sweetalert2";
 
 const Context = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useContextElement = () => useContext(Context);
 
+// eslint-disable-next-line react/prop-types
 export default function ContextProvider({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [wishlist, setWishlist] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [checkboxes, setCheckboxes] = useState({
     free_shipping: false,
     flat_rate: false,
     local_pickup: false,
   });
+  const [wishlistProducts, setWishlistProducts] = useState([]);
 
   // Hàm xử lý chọn/bỏ chọn item
   const handleSelectAll = (checked) => {
@@ -64,6 +66,11 @@ export default function ContextProvider({ children }) {
 
   // Thêm function để lấy thông tin sản phẩm
   const getProductDetails = async (productId) => {
+    if (!productId) {
+      console.warn('ProductID is undefined');
+      return null;
+    }
+
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
@@ -142,6 +149,10 @@ export default function ContextProvider({ children }) {
       setTotalPrice(0);
     }
   }, []);
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [fetchCartItems]);
 
   // Thêm sản phẩm vào giỏ
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
@@ -290,28 +301,121 @@ const removeCartItem = async (cartItemId) => {
     }));
   };
 
-  // Wishlist functions
-  const toggleWishlist = (productId) => {
-    setWishlist((prev) => {
-      const newWishlist = prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId];
-      localStorage.setItem("wishList", JSON.stringify(newWishlist));
-      return newWishlist;
-    });
+  
+
+  const addToWishlist = async (productId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích",
+        icon: "warning",
+      });
+      return;
+    }
+
+    try {
+      const existingItem = wishlistProducts.find(
+        item => parseInt(item.ProductID) === parseInt(productId)
+      );
+
+      if (existingItem) {
+        await removeFromWishlist(existingItem.WishlistID);
+      } else {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/wishlist",
+          { ProductID: productId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.message === "Success") {
+          await fetchWishlistItems();
+          Swal.fire({
+            title: "Thành công",
+            text: "Đã thêm vào danh sách yêu thích",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error managing wishlist:", error);
+      Swal.fire({
+        title: "Lỗi",
+        text: "Đã có lỗi xảy ra, vui lòng thử lại",
+        icon: "error"
+      });
+    }
   };
 
-  const isAddedtoWishlist = (productId) => {
-    return wishlist.includes(productId);
-  };
+  const fetchWishlistItems = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  // Load wishlist from localStorage
-  useEffect(() => {
-    const storedWishlist = localStorage.getItem("wishList");
-    if (storedWishlist) {
-      setWishlist(JSON.parse(storedWishlist));
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/wishlist", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.message === "Success") {
+        setWishlistProducts(response.data.data);
+      } else {
+        console.error("Error in wishlist response:", response.data);
+        setWishlistProducts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      if (error.response?.status === 500) {
+        Swal.fire({
+          title: "Lỗi",
+          text: "Có lỗi xảy ra khi tải danh sách yêu thích",
+          icon: "error",
+          timer: 2000
+        });
+      }
+      setWishlistProducts([]);
     }
   }, []);
+
+  useEffect(() => {
+    fetchWishlistItems();
+  }, [fetchWishlistItems]);
+
+  const removeFromWishlist = async (wishlistId) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/api/wishlist/${wishlistId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.message === "Success") {
+        await fetchWishlistItems();
+       
+      }
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      Swal.fire({
+        title: "Lỗi",
+        text: "Không thể xóa sản phẩm",
+        icon: "error"
+      });
+    }
+  };
 
   const value = {
     cartProducts,
@@ -325,13 +429,14 @@ const removeCartItem = async (cartItemId) => {
     fetchCartItems,
     setQuantity,
     handleCheckboxChange,
-    wishlist,
     removeCartItem,
-    toggleWishlist,
-    isAddedtoWishlist,
-    handleSelectItem, // Đảm bảo export function này
-    handleSelectAll, // Đảm bảo export function này
-    selectedItems, // Đảm bảo export state này
+    handleSelectItem, 
+    handleSelectAll, 
+    selectedItems,
+    wishlistProducts,
+    addToWishlist,
+    fetchWishlistItems,
+    removeFromWishlist,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

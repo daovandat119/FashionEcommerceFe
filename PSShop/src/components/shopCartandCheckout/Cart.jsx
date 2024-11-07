@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -146,8 +147,7 @@ export default function Cart() {
                       aria-hidden="true"
                     ></span>
                   ) : null}
-                  Delete selected products ({selectedItems.length}) Xóa sản phẩm
-                  đã chọn ({selectedItems.length})
+                  Xóa sản phẩm đã chọn ({selectedItems.length})
                 </button>
               </div>
             </div>
