@@ -45,7 +45,7 @@ import { AuthProvider } from './context/AuthContext';
 import UpdateVariant from "./pages/admin/products/UpdateVariant";
 import { CheckoutProvider } from './context/CheckoutContext';
 import CartList from "./pages/admin/cart/CartList";
-
+import ShopFilter from "./components/asides/ShopFilter";
 // Account pages imports
 import AccountPage from './pages/dashboard/account_dashboard';
 import AccountOrderPage from "./pages/dashboard/account_orders";
@@ -138,6 +138,8 @@ const AppRoutes = () => {
           </Routes>
         </ThemeProvider>
       </Context>
+      <ShopFilter />
+      <div className="page-overlay" id="pageOverlay"></div>
     </AuthProvider>
   );
 };

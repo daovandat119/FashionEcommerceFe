@@ -146,8 +146,7 @@ export default function Cart() {
                       aria-hidden="true"
                     ></span>
                   ) : null}
-                  Delete selected products ({selectedItems.length}) Xóa sản phẩm
-                  đã chọn ({selectedItems.length})
+                  Delete selected products ({selectedItems.length})
                 </button>
               </div>
             </div>
