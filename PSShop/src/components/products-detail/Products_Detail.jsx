@@ -225,7 +225,7 @@ const ProductDetail = () => {
       }
     };
     checkVariant();
-  }, [selectedSize, selectedColor,checkProductVariant,product]);
+  }, [selectedSize, selectedColor,checkProductVariant]);
 
   if (loading || !product) {
     return (
@@ -320,7 +320,7 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* S lượng sản phẩm */}
+            {/* Số lượng sản phẩm */}
             <div className="product-single__addtocart">
               {/* Số lượng và controls */}
               <div className="flex items-center gap-4 mb-4">

@@ -22,7 +22,7 @@ export default function DashboardSidebar() {
   return (
     <div className="col-lg-3">
       <ul className="account-nav">
-        {dashboardMenuItems.map((elm) => (
+        {dashboardMenuItems.map((elm) => (  
           <li key={elm.id}>
             {elm.title === "LOGOUT" ? (
               <button

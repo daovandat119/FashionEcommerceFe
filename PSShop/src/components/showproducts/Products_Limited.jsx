@@ -90,13 +90,14 @@ export default function Products_Limited() {
                       className="pc__img"
                     />
                   </Link>
-                  <button
-                    className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                    title="Add to Cart"
-                    // Thêm logic thêm vào giỏ hàng nếu cần
-                  >
-                    Add To Cart
-                  </button>
+                  <Link to={`/shop-detail/${product.ProductID}`}>
+                      <button
+                        className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
+                        
+                      >
+                        VIEW 
+                      </button>
+                      </Link>
                 </div>
 
                 <div className="pc__info position-relative">
