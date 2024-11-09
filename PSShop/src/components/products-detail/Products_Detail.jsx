@@ -17,12 +17,12 @@ const ProductDetail = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [variantInfo, setVariantInfo] = useState(null);
 
-  const { 
-    addProductToCart, 
-    isAddedToCartProducts, 
-    addToWishlist, 
+  const {
+    addProductToCart,
+    isAddedToCartProducts,
+    addToWishlist,
     wishlistProducts,
-    fetchWishlistItems 
+    fetchWishlistItems,
   } = useContextElement();
 
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -89,7 +89,7 @@ const ProductDetail = () => {
   useEffect(() => {
     if (wishlistProducts && product) {
       const exists = wishlistProducts.some(
-        item => parseInt(item.ProductID) === parseInt(product.ProductID)
+        (item) => parseInt(item.ProductID) === parseInt(product.ProductID)
       );
       setIsInWishlist(exists);
     }
@@ -97,7 +97,7 @@ const ProductDetail = () => {
 
   const handleAddToWishlist = async () => {
     if (!product) return;
-    
+
     try {
       await addToWishlist(product.ProductID);
     } catch (error) {
@@ -279,26 +279,47 @@ const ProductDetail = () => {
 
               {/* Hiển thị màu sắc */}
               <div className="product-swatch color-swatches">
-                <label>Màu sắc</label>
-                <div className="swatch-list">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Màu sắc
+                </label>
+                <div className="flex flex-wrap gap-2">
                   {colors.map((color) => (
-                    <React.Fragment key={color.ColorID}>
+                    <div key={color.ColorID} className="relative">
                       <input
                         type="radio"
                         name="color"
                         id={`color-${color.ColorID}`}
+                        className="sr-only"
                         onChange={() => setSelectedColor(color)}
                       />
                       <label
-                        className={`swatch swatch-color js-swatch ${
-                          selectedColor?.ColorID === color.ColorID
-                            ? "active"
-                            : ""
-                        }`}
                         htmlFor={`color-${color.ColorID}`}
-                        style={{ backgroundColor: color.ColorName }}
-                      ></label>
-                    </React.Fragment>
+                        className={`
+            group flex items-center justify-center w-8 h-8 rounded-full 
+            cursor-pointer border transition-all duration-200
+            ${
+              selectedColor?.ColorID === color.ColorID
+                ? "border-blue-500 ring-1 ring-blue-500 ring-offset-1"
+                : "border-gray-300 hover:border-gray-400"
+            }
+          `}
+                      >
+                        <span
+                          className="w-6 h-6 rounded-full"
+                          style={{ backgroundColor: color.ColorName }}
+                        ></span>
+                        <span className="sr-only">{color.ColorName}</span>
+
+                        {/* Tooltip nhỏ hơn */}
+                        <span
+                          className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 
+            px-1.5 py-0.5 text-xs font-medium text-white bg-gray-900 rounded opacity-0 
+            group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+                        >
+                          {color.ColorName}
+                        </span>
+                      </label>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -344,11 +365,14 @@ const ProductDetail = () => {
                 {/* Add to Cart Button */}
                 <button
                   type="submit"
-                  disabled={isChecking || (variantInfo && variantInfo.Quantity === 0)}
+                  disabled={
+                    isChecking || (variantInfo && variantInfo.Quantity === 0)
+                  }
                   className={`flex-1 px-6 py-3 text-sm font-medium text-white rounded-lg transition-all duration-300 
-                    ${isChecking || (variantInfo && variantInfo.Quantity === 0)
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-dark active:transform active:scale-95'
+                    ${
+                      isChecking || (variantInfo && variantInfo.Quantity === 0)
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-dark active:transform active:scale-95"
                     }`}
                 >
                   {isChecking
@@ -366,34 +390,40 @@ const ProductDetail = () => {
                   type="button"
                   onClick={handleAddToWishlist}
                   className={`w-12 h-12 flex items-center justify-center rounded-lg transition-all duration-300
-                    ${isInWishlist 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-white border-2 border-red-500 text-red-500 hover:bg-red-50'
+                    ${
+                      isInWishlist
+                        ? "bg-red-500 hover:bg-red-600 text-white"
+                        : "bg-white border-2 border-red-500 text-red-500 hover:bg-red-50"
                     }
                     focus:outline-none active:transform active:scale-95`}
                 >
-                  <i className={`fas fa-heart ${
-                    isInWishlist 
-                      ? 'animate-heartBeat' 
-                      : 'hover:scale-110 transition-transform duration-300'
-                  }`}></i>
+                  <i
+                    className={`fas fa-heart ${
+                      isInWishlist
+                        ? "animate-heartBeat"
+                        : "hover:scale-110 transition-transform duration-300"
+                    }`}
+                  ></i>
                 </button>
               </div>
 
               {/* Stock Info */}
               {variantInfo && (
                 <div className="mt-3">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                    ${variantInfo.Quantity > 0
-                      ? 'bg-green-100 text-green-800 border border-green-800'
-                      : 'bg-red-100 text-red-800 border border-red-800'
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                    ${
+                      variantInfo.Quantity > 0
+                        ? "bg-green-100 text-green-800 border border-green-800"
+                        : "bg-red-100 text-red-800 border border-red-800"
                     }`}
                   >
                     {variantInfo.Quantity > 0 ? (
                       <>
                         <i className="fas fa-check-circle mr-2"></i>
                         <span>
-                          Còn <strong>{variantInfo.Quantity}</strong> sản phẩm trong kho
+                          Còn <strong>{variantInfo.Quantity}</strong> sản phẩm
+                          trong kho
                         </span>
                       </>
                     ) : (
