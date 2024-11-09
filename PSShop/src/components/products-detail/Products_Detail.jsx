@@ -21,57 +21,56 @@ const ProductDetail = () => {
   const { 
     addProductToCart, 
     isAddedToCartProducts, 
-    addToWishlist, 
+    addToWishlist,
+    removeFromWishlist, 
+    isInWishlist,
+    isLoadingWishlist,
     wishlistProducts,
     fetchWishlistItems,
   } = useContextElement();
 
-  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found. Redirecting to login...");
-      return;
-    }
+    const initializeData = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        // Fetch product data
+        const [productRes, sizesRes, colorsRes] = await Promise.all([
+          axios.get(`http://127.0.0.1:8000/api/products/${id}`, config),
+          axios.get("http://127.0.0.1:8000/api/sizes", config),
+          axios.get("http://127.0.0.1:8000/api/colors", config),
+        ]);
+
+        setProduct(productRes.data.data);
+        setSizes(sizesRes.data.data);
+        setColors(colorsRes.data.data);
+
+        // Fetch wishlist
+        await fetchWishlistItems();
+      } catch (error) {
+        console.error("Error initializing data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-
-    // Lấy dữ liệu sản phẩm từ API
-    axios
-      .get(`http://127.0.0.1:8000/api/products/${id}`, config)
-      .then((response) => {
-        setProduct(response.data.data); // Chỉ lấy phần dữ liệu từ API
-      })
-      .catch((error) => {
-        console.error("Error fetching product:", error);
-      });
-
-    // Lấy dữ liệu kích thước từ API
-    axios
-      .get("http://127.0.0.1:8000/api/sizes", config)
-      .then((response) => {
-        setSizes(response.data.data); // Lưu kích thước từ API
-      })
-      .catch((error) => {
-        console.error("Error fetching sizes:", error);
-      });
-
-    // Lấy dữ liệu màu sắc từ API
-    axios
-      .get("http://127.0.0.1:8000/api/colors", config)
-      .then((response) => {
-        setColors(response.data.data); // Lưu màu sắc từ API
-      })
-      .catch((error) => {
-        console.error("Error fetching colors:", error);
-      });
-  }, [id]);
+    initializeData();
+  }, [id, fetchWishlistItems]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,40 +87,57 @@ const ProductDetail = () => {
   }, [fetchWishlistItems]);
 
   useEffect(() => {
-    if (wishlistProducts && product) {
-      const exists = wishlistProducts.some(
-        item => parseInt(item.ProductID) === parseInt(product.ProductID)
-      );
-      setIsInWishlist(exists);
+    if (product && !isLoadingWishlist && typeof isInWishlist === 'function') {
+      const status = isInWishlist(product.ProductID);
+      setInWishlist(status);
     }
-  }, [wishlistProducts, product]);
+  }, [product, isInWishlist, isLoadingWishlist, wishlistProducts]);
 
-  const handleAddToWishlist = async () => {
-    if (!product) return;
-    
-    if (isInWishlist) {
-      Swal.fire({
-        title: "Thông báo",
-        text: "Sản phẩm đã có trong danh sách yêu thích",
-        icon: "info",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      return;
-    }
-
-    setIsInWishlist(true);
+  const handleWishlistClick = async () => {
+    if (!product || wishlistLoading) return;
 
     try {
-      await addToWishlist(product.ProductID);
+      setWishlistLoading(true);
+      
+      if (!localStorage.getItem("token")) {
+        Swal.fire({
+          title: "Thông báo",
+          text: "Vui lòng đăng nhập để sử dụng tính năng này",
+          icon: "warning"
+        });
+        return;
+      }
+
+      if (inWishlist) {
+        await removeFromWishlist(product.ProductID);
+        setInWishlist(false);
+        Swal.fire({
+          title: "Thành công",
+          text: "Đã xóa khỏi danh sách yêu thích",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
+        await addToWishlist(product.ProductID);
+        setInWishlist(true);
+        Swal.fire({
+          title: "Thành công",
+          text: "Đã thêm vào danh sách yêu thích",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
     } catch (error) {
-      setIsInWishlist(false);
-      console.error("Error adding to wishlist:", error);
+      console.error("Error handling wishlist:", error);
       Swal.fire({
         title: "Lỗi",
-        text: "Không thể thêm vào danh sách yêu thích",
+        text: error.message || "Có lỗi xảy ra, vui lòng thử lại",
         icon: "error"
       });
+    } finally {
+      setWishlistLoading(false);
     }
   };
 
@@ -150,6 +166,7 @@ const ProductDetail = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         console.error("Lỗi xác thực token");
+        // Có thể xử lý logout hoặc refresh token tại đây
       }
       console.error("Lỗi khi kiểm tra biến thể:", error);
       return null;
@@ -380,24 +397,26 @@ const ProductDetail = () => {
                 {/* Wishlist Button */}
                 <button
                   type="button"
-                  onClick={handleAddToWishlist}
+                  onClick={handleWishlistClick}
+                  disabled={wishlistLoading || isLoadingWishlist}
                   className={`
                     w-12 h-12 
                     flex items-center justify-center 
                     rounded-lg 
                     transform transition-all duration-300 ease-in-out
-                    ${isInWishlist 
+                    ${inWishlist 
                       ? 'bg-red-500 scale-110' 
                       : 'bg-white hover:scale-105'
                     }
                     border-2 border-red-500
                     focus:outline-none 
-                    active:scale-95
+                    ${(wishlistLoading || isLoadingWishlist) ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}
                   `}
                 >
                   <i 
-                    className={`fas fa-heart text-xl
-                      ${isInWishlist 
+                    className={`
+                      fas ${(wishlistLoading || isLoadingWishlist) ? 'fa-spinner fa-spin' : 'fa-heart'} text-xl
+                      ${inWishlist 
                         ? 'text-white animate-heartBeat' 
                         : 'text-red-500'
                       }

@@ -275,7 +275,7 @@ const removeSelectedItems = async () => {
 
   try {
     await axios.delete(
-      `http://127.0.0.1:8000/api/cart-items`,
+      `http://127.0.0.1:8000/api/cart-items/${selectedItems[0]}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -287,13 +287,6 @@ const removeSelectedItems = async () => {
     
     setSelectedItems([]);
     await fetchCartItems();
-    Swal.fire({
-      title: "Thành công",
-      text: "Đã xóa sản phẩm khỏi giỏ hàng",
-      icon: "success",
-      showConfirmButton: false,
-      timer: 1500
-    });
   } catch (error) {
     console.error('Error removing from cart:', error);
     Swal.fire({
@@ -321,13 +314,6 @@ const removeCartItem = async (cartItemId) => {
     );
 
     await fetchCartItems();
-    Swal.fire({
-      title: "Thành công",
-      text: "Đã xóa sản phẩm khỏi giỏ hàng",
-      icon: "success",
-      showConfirmButton: false,
-      timer: 1500
-    });
   } catch (error) {
     console.error('Error removing item from cart:', error);
     Swal.fire({
