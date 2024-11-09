@@ -28,6 +28,7 @@ export default function ContextProvider({ children }) {
     local_pickup: false,
   });
   const [wishlistProducts, setWishlistProducts] = useState([]);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
 
   // Hàm xử lý chọn/bỏ chọn item
   const handleSelectAll = (checked) => {
@@ -349,6 +350,7 @@ const removeCartItem = async (cartItemId) => {
     }
 
     try {
+      setIsLoadingWishlist(true);
       const response = await axios.post(
         "http://127.0.0.1:8000/api/wishlist",
         { ProductID: productId },
@@ -360,29 +362,14 @@ const removeCartItem = async (cartItemId) => {
       );
 
       if (response.status === 201) {
-        // Cập nhật danh sách wishlist ngay lập tức
         await fetchWishlistItems();
         
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã thêm vào danh sách yêu thích",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500
-        });
       }
     } catch (error) {
-      if (error.response?.status === 409) {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Sản phẩm đã có trong danh sách yêu thích",
-          icon: "info",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        return;
-      }
+      
       console.error("Error adding to wishlist:", error);
+    } finally {
+      setIsLoadingWishlist(false);
     }
   };
 
@@ -391,6 +378,7 @@ const removeCartItem = async (cartItemId) => {
     if (!token) return;
 
     try {
+      setIsLoadingWishlist(true);
       const response = await axios.get(
         "http://127.0.0.1:8000/api/wishlist",
         {
@@ -403,7 +391,9 @@ const removeCartItem = async (cartItemId) => {
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
-      setWishlistProducts([]); // Reset về mảng rỗng nếu có lỗi
+      setWishlistProducts([]);
+    } finally {
+      setIsLoadingWishlist(false);
     }
   }, []);
 
@@ -416,12 +406,13 @@ const removeCartItem = async (cartItemId) => {
     if (!token) return;
 
     try {
+      setIsLoadingWishlist(true);
       // Cập nhật UI trước
       setWishlistProducts(prev => 
         prev.filter(item => item.WishlistID !== wishlistId)
       );
 
-      const response = await axios.delete(
+       await axios.delete(
         `http://127.0.0.1:8000/api/wishlist/${wishlistId}`,
         {
           headers: {
@@ -430,17 +421,16 @@ const removeCartItem = async (cartItemId) => {
         }
       );
 
-      if (response.status === 200) {
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã xóa sản phẩm khỏi danh sách yêu thích",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500
-        });
-      }
+      // if (response.status === 200) {
+      //   Swal.fire({
+      //     title: "Thành công",
+      //     text: "Đã xóa sản phẩm khỏi danh sách yêu thích",
+      //     icon: "success",
+      //     showConfirmButton: false,
+      //     timer: 1500
+      //   });
+      // }
     } catch (error) {
-      // Nếu có lỗi, khôi phục lại state ban đầu
       console.error("Error removing from wishlist:", error);
       await fetchWishlistItems();
       
@@ -458,11 +448,21 @@ const removeCartItem = async (cartItemId) => {
           icon: "error"
         });
       }
+    } finally {
+      setIsLoadingWishlist(false);
     }
   };
 
   // Thêm hàm kiểm tra sản phẩm có trong wishlist không
   const isProductInWishlist = useCallback((productId) => {
+    return wishlistProducts.some(item => 
+      parseInt(item.ProductID) === parseInt(productId)
+    );
+  }, [wishlistProducts]);
+
+  // Định nghĩa isInWishlist như một function
+  const isInWishlist = useCallback((productId) => {
+    if (!wishlistProducts || !Array.isArray(wishlistProducts)) return false;
     return wishlistProducts.some(item => 
       parseInt(item.ProductID) === parseInt(productId)
     );
@@ -489,6 +489,8 @@ const removeCartItem = async (cartItemId) => {
     fetchWishlistItems,
     removeFromWishlist,
     isProductInWishlist,
+    isInWishlist,
+    isLoadingWishlist,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

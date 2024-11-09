@@ -17,21 +17,21 @@ export default function AccountWishlist() {
 
   const handleRemoveFromWishlist = async (wishlistId) => {
     try {
-      const result = await Swal.fire({
-        title: "Xác nhận xóa",
-        text: "Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Đồng ý",
-        cancelButtonText: "Hủy"
-      });
+      // const result = await Swal.fire({
+      //   title: "Xác nhận xóa",
+      //   text: "Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?",
+      //   icon: "warning",
+      //   showCancelButton: true,
+      //   confirmButtonColor: "#3085d6",
+      //   cancelButtonColor: "#d33",
+      //   confirmButtonText: "Đồng ý",
+      //   cancelButtonText: "Hủy"
+      // });
 
-      if (result.isConfirmed) {
+      
         await removeFromWishlist(wishlistId);
         await fetchWishlistItems(); // Cập nhật lại danh sách sau khi xóa
-      }
+      
     } catch (error) {
       console.error("Lỗi khi xóa sản phẩm:", error);
       Swal.fire({

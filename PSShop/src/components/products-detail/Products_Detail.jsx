@@ -25,12 +25,11 @@ const ProductDetail = () => {
     removeFromWishlist, 
     isInWishlist,
     isLoadingWishlist,
-    wishlistProducts,
     fetchWishlistItems,
   } = useContextElement();
 
-  const [inWishlist, setInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -87,14 +86,14 @@ const ProductDetail = () => {
   }, [fetchWishlistItems]);
 
   useEffect(() => {
-    if (product && !isLoadingWishlist && typeof isInWishlist === 'function') {
+    if (product && typeof isInWishlist === 'function') {
       const status = isInWishlist(product.ProductID);
       setInWishlist(status);
     }
-  }, [product, isInWishlist, isLoadingWishlist, wishlistProducts]);
+  }, [product, isInWishlist]);
 
   const handleWishlistClick = async () => {
-    if (!product || wishlistLoading) return;
+    if (wishlistLoading || isLoadingWishlist) return;
 
     try {
       setWishlistLoading(true);
@@ -111,23 +110,10 @@ const ProductDetail = () => {
       if (inWishlist) {
         await removeFromWishlist(product.ProductID);
         setInWishlist(false);
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã xóa khỏi danh sách yêu thích",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500
-        });
+       
       } else {
         await addToWishlist(product.ProductID);
         setInWishlist(true);
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã thêm vào danh sách yêu thích",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500
-        });
       }
     } catch (error) {
       console.error("Error handling wishlist:", error);
@@ -415,11 +401,10 @@ const ProductDetail = () => {
                 >
                   <i 
                     className={`
-                      fas ${(wishlistLoading || isLoadingWishlist) ? 'fa-spinner fa-spin' : 'fa-heart'} text-xl
-                      ${inWishlist 
-                        ? 'text-white animate-heartBeat' 
-                        : 'text-red-500'
-                      }
+                      fas 
+                      ${(wishlistLoading || isLoadingWishlist) ? 'fa-spinner fa-spin' : 'fa-heart'} 
+                      text-xl
+                      ${inWishlist ? 'text-white animate-heartBeat' : 'text-red-500'}
                       transform transition-all duration-300
                     `}
                   ></i>

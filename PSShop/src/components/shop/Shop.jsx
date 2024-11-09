@@ -6,9 +6,11 @@ import Pagination1 from "../common/Pagination1";
 import { useEffect, useState } from "react";
 import BreadCumb from "./BreadCumb";
 import { Link } from "react-router-dom";
-import axios from 'axios'; // Import Axios
+import axios from 'axios'; 
 import { openModalShopFilter } from "../../utlis/aside";
 import { menuCategories, sortingOptions } from "../../data/products/productCategories";
+import { useContextElement } from "../../context/Context";
+import Swal from "sweetalert2";
 
 const itemPerRow = [2, 3, 4];
 
@@ -18,7 +20,88 @@ export default function Shop1() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const { 
+    addToWishlist,
+    removeFromWishlist, 
+    isInWishlist,
+    isLoadingWishlist,
+    fetchWishlistItems,
+  } = useContextElement();
+
+  const [wishlistLoadingStates, setWishlistLoadingStates] = useState({});
+  const [wishlistStates, setWishlistStates] = useState({});
+
+  useEffect(() => {
+    const initializeWishlist = async () => {
+      try {
+        await fetchWishlistItems();
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      }
+    };
+    initializeWishlist();
+  }, [fetchWishlistItems]);
+
+  useEffect(() => {
+    if (products && Array.isArray(products) && typeof isInWishlist === 'function') {
+      const newWishlistStates = {};
+      products.forEach(product => {
+        newWishlistStates[product.ProductID] = isInWishlist(product.ProductID);
+      });
+      setWishlistStates(newWishlistStates);
+    }
+  }, [products, isInWishlist]);
+
+  const handleWishlistToggle = async (productId) => {
+    if (wishlistLoadingStates[productId]) return;
+
+    try {
+      setWishlistLoadingStates(prev => ({ ...prev, [productId]: true }));
+      
+      if (!localStorage.getItem("token")) {
+        Swal.fire({
+          title: "Thông báo",
+          text: "Vui lòng đăng nhập để sử dụng tính năng này",
+          icon: "warning"
+        });
+        return;
+      }
+
+      const isCurrentlyInWishlist = wishlistStates[productId];
+
+      if (isCurrentlyInWishlist) {
+        await removeFromWishlist(productId);
+        setWishlistStates(prev => ({ ...prev, [productId]: false }));
+        Swal.fire({
+          title: "Thành công",
+          text: "Đã xóa khỏi danh sách yêu thích",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
+        await addToWishlist(productId);
+        setWishlistStates(prev => ({ ...prev, [productId]: true }));
+        Swal.fire({
+          title: "Thành công",
+          text: "Đã thêm vào danh sách yêu thích",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+    } catch (error) {
+      console.error("Error handling wishlist:", error);
+      Swal.fire({
+        title: "Lỗi",
+        text: error.message || "Có lỗi xảy ra, vui lòng thử lại",
+        icon: "error"
+      });
+    } finally {
+      setWishlistLoadingStates(prev => ({ ...prev, [productId]: false }));
+    }
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -218,11 +301,23 @@ export default function Shop1() {
                   )}
 
                   <button
-                    className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 "  
+                    onClick={() => handleWishlistToggle(elm.ProductID)}
+                    disabled={wishlistLoadingStates[elm.ProductID] || isLoadingWishlist}
+                    className={`
+                      pc__btn-wl position-absolute top-0 end-0 
+                      bg-transparent border-0 
+                      transition-all duration-300
+                      ${wishlistLoadingStates[elm.ProductID] || isLoadingWishlist ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}
+                    `}
                   >
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_heart" />
-                    </svg>
+                    <i 
+                      className={`
+                        fas 
+                        ${wishlistLoadingStates[elm.ProductID] ? 'fa-spinner fa-spin' : 'fa-heart'} 
+                        ${wishlistStates[elm.ProductID] ? 'text-red-500 animate-heartBeat' : 'text-gray-400'}
+                        transition-all duration-300
+                      `}
+                    ></i>
                   </button>
                 </div>
               </div>
