@@ -17,12 +17,12 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
   const [variantInfo, setVariantInfo] = useState(null);
-
-  const { 
-    addProductToCart, 
-    isAddedToCartProducts, 
+  const [variantPrice, setVariantPrice] = useState(null);
+  const {
+    addProductToCart,
+    isAddedToCartProducts,
     addToWishlist,
-    removeFromWishlist, 
+    removeFromWishlist,
     isInWishlist,
     isLoadingWishlist,
     wishlistProducts,
@@ -87,7 +87,7 @@ const ProductDetail = () => {
   }, [fetchWishlistItems]);
 
   useEffect(() => {
-    if (product && !isLoadingWishlist && typeof isInWishlist === 'function') {
+    if (product && !isLoadingWishlist && typeof isInWishlist === "function") {
       const status = isInWishlist(product.ProductID);
       setInWishlist(status);
     }
@@ -98,12 +98,12 @@ const ProductDetail = () => {
 
     try {
       setWishlistLoading(true);
-      
+
       if (!localStorage.getItem("token")) {
         Swal.fire({
           title: "Thông báo",
           text: "Vui lòng đăng nhập để sử dụng tính năng này",
-          icon: "warning"
+          icon: "warning",
         });
         return;
       }
@@ -116,7 +116,7 @@ const ProductDetail = () => {
           text: "Đã xóa khỏi danh sách yêu thích",
           icon: "success",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       } else {
         await addToWishlist(product.ProductID);
@@ -126,7 +126,7 @@ const ProductDetail = () => {
           text: "Đã thêm vào danh sách yêu thích",
           icon: "success",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       }
     } catch (error) {
@@ -134,7 +134,7 @@ const ProductDetail = () => {
       Swal.fire({
         title: "Lỗi",
         text: error.message || "Có lỗi xảy ra, vui lòng thử lại",
-        icon: "error"
+        icon: "error",
       });
     } finally {
       setWishlistLoading(false);
@@ -234,15 +234,26 @@ const ProductDetail = () => {
   };
 
   // Thêm useEffect để kiểm tra biến thể khi chọn size và color
+  // Xóa useEffect cũ và giữ lại useEffect này
   useEffect(() => {
     const checkVariant = async () => {
       if (selectedSize && selectedColor && product) {
         const variant = await checkProductVariant();
         setVariantInfo(variant);
+        // Cập nhật giá nếu biến thể tồn tại và có giá
+        if (variant && variant.Price) {
+          setVariantPrice(variant.Price);
+        } else {
+          // Nếu không có biến thể hoặc không có giá, dùng giá gốc
+          setVariantPrice(product.Price);
+        }
+      } else {
+        // Reset về giá gốc khi không có size hoặc color được chọn
+        setVariantPrice(null);
       }
     };
     checkVariant();
-  }, [selectedSize, selectedColor,checkProductVariant]);
+  }, [selectedSize, selectedColor, product]);
 
   if (loading || !product) {
     return (
@@ -273,8 +284,15 @@ const ProductDetail = () => {
         {/* Thông tin sản phẩm */}
         <div className="col-lg-5">
           <h1 className="product-single__name">{product.ProductName}</h1>
-          <div className="product-single__price">
-            <span className="current-price">${product.Price}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-semibold text-blue-600">
+              ${(variantPrice || product?.Price || 0).toLocaleString()}
+            </span>
+            {variantPrice && variantPrice !== product?.Price && (
+              <span className="text-sm text-gray-500 line-through">
+                ${product?.Price.toLocaleString()}
+              </span>
+            )}
           </div>
 
           <div className="product-single__short-desc">
@@ -282,26 +300,30 @@ const ProductDetail = () => {
           </div>
 
           {/* Chọn kích thước và màu sắc */}
-          <form onSubmit={handleAddToCart}>
-            <div className="product-single__swatches">
-              {/* Hiển thị kích thước */}
+          <form onSubmit={handleAddToCart} className="space-y-6">
+            {/* Product Sizes */}
+            <div className="product-single__swatches space-y-4">
               <div className="product-swatch text-swatches">
-                <label>Kích thước</label>
-                <div className="swatch-list">
+                <label className="font-semibold text-gray-700">
+                  Kích thước
+                </label>
+                <div className="swatch-list flex gap-2">
                   {sizes.map((size) => (
                     <React.Fragment key={size.SizeID}>
                       <input
                         type="radio"
                         name="size"
                         id={`size-${size.SizeID}`}
+                        className="hidden"
                         onChange={() => setSelectedSize(size)}
                       />
                       <label
-                        className={`swatch js-swatch ${
-                          selectedSize?.SizeID === size.SizeID ? "active" : ""
+                        className={`swatch js-swatch cursor-pointer py-2 px-4 rounded-md transition-colors ${
+                          selectedSize?.SizeID === size.SizeID
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200"
                         }`}
                         htmlFor={`size-${size.SizeID}`}
-                        aria-label={size.SizeName}
                       >
                         {size.SizeName}
                       </label>
@@ -310,148 +332,159 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Hiển thị màu sắc */}
+              {/* Product Colors */}
               <div className="product-swatch color-swatches">
-                <label>Màu sắc</label>
-                <div className="swatch-list">
-                  {colors.map((color) => (
-                    <React.Fragment key={color.ColorID}>
-                      <input
-                        type="radio"
-                        name="color"
-                        id={`color-${color.ColorID}`}
-                        onChange={() => setSelectedColor(color)}
-                      />
-                      <label
-                        className={`swatch swatch-color js-swatch ${
-                          selectedColor?.ColorID === color.ColorID
-                            ? "active"
-                            : ""
-                        }`}
-                        htmlFor={`color-${color.ColorID}`}
-                        style={{ backgroundColor: color.ColorName }}
-                      ></label>
-                    </React.Fragment>
-                  ))}
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Màu sắc
+                </label>
+                <div className="relative">
+                  <div className="swatch-list flex gap-2 overflow-x-auto pb-1 hide-scrollbar max-w-[195px]">
+                    {colors.map((color) => (
+                      <div key={color.ColorID} className="flex-shrink-0 ml-1">
+                        <input
+                          type="radio"
+                          name="color"
+                          id={`color-${color.ColorID}`}
+                          className="hidden peer"
+                          onChange={() => setSelectedColor(color)}
+                        />
+                        <label
+                          className={`
+              block w-7 h-7 rounded-full cursor-pointer
+              transition-all duration-200 relative
+              hover:scale-110
+              ${
+                selectedColor?.ColorID === color.ColorID
+                  ? "ring-1 ring-blue-500 ring-offset-1"
+                  : "ring-[0.5px] ring-gray-200"
+              }
+            `}
+                          htmlFor={`color-${color.ColorID}`}
+                          title={color.ColorName}
+                        >
+                          <span
+                            className="absolute inset-0 rounded-full"
+                            style={{ backgroundColor: color.ColorName }}
+                          />
+                          {color.ColorName.toLowerCase() === "black" && (
+                            <span className="absolute inset-[30%] rounded-full bg-white opacity-20" />
+                          )}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Số lượng sản phẩm */}
-            <div className="product-single__addtocart">
-              {/* Số lượng và controls */}
-              <div className="flex items-center gap-4 mb-4">
-                {/* Số lượng sản phẩm */}
-                <div className="relative flex items-center border rounded-lg w-32">
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={quantity}
-                    min="1"
-                    className="w-full px-3 py-2 text-center focus:outline-none"
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                  />
-                  <div className="absolute inset-y-0 left-0 flex items-center">
-                    <button
-                      type="button"
-                      className="px-2 py-1 text-gray-600 hover:text-gray-800"
-                      onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                    >
-                      -
-                    </button>
-                  </div>
-                  <div className="absolute inset-y-0 right-0 flex items-center">
-                    <button
-                      type="button"
-                      className="px-2 py-1 text-gray-600 hover:text-gray-800"
-                      onClick={() => setQuantity(quantity + 1)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Buttons Container */}
-              <div className="flex gap-3 mb-4">
-                {/* Add to Cart Button */}
-                <button
-                  type="submit"
-                  disabled={isChecking || (variantInfo && variantInfo.Quantity === 0)}
-                  className={`flex-1 px-6 py-3 text-sm font-medium text-white rounded-lg transition-all duration-300 
-                    ${isChecking || (variantInfo && variantInfo.Quantity === 0)
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-dark active:transform active:scale-95'
-                    }`}
-                >
-                  {isChecking
-                    ? "Đang kiểm tra..."
-                    : variantInfo && variantInfo.Quantity === 0
-                    ? "Hết hàng"
-                    : typeof isAddedToCartProducts === "function" &&
-                      isAddedToCartProducts(product.ProductID)
-                    ? "Đã thêm vào giỏ"
-                    : "Thêm vào giỏ"}
-                </button>
-
-                {/* Wishlist Button */}
+            {/* Quantity Selector */}
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700">
+                Số lượng
+              </label>
+              <div className="relative flex items-center w-32 h-10 border rounded-lg bg-white">
                 <button
                   type="button"
-                  onClick={handleWishlistClick}
-                  disabled={wishlistLoading || isLoadingWishlist}
-                  className={`
-                    w-12 h-12 
-                    flex items-center justify-center 
-                    rounded-lg 
-                    transform transition-all duration-300 ease-in-out
-                    ${inWishlist 
-                      ? 'bg-red-500 scale-110' 
-                      : 'bg-white hover:scale-105'
-                    }
-                    border-2 border-red-500
-                    focus:outline-none 
-                    ${(wishlistLoading || isLoadingWishlist) ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}
-                  `}
+                  className="absolute left-0 w-8 h-full flex items-center justify-center
+        text-gray-500 hover:text-gray-700 transition-colors"
+                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
                 >
-                  <i 
-                    className={`
-                      fas ${(wishlistLoading || isLoadingWishlist) ? 'fa-spinner fa-spin' : 'fa-heart'} text-xl
-                      ${inWishlist 
-                        ? 'text-white animate-heartBeat' 
-                        : 'text-red-500'
-                      }
-                      transform transition-all duration-300
-                    `}
-                  ></i>
+                  <i className="fas fa-minus text-xs"></i>
+                </button>
+
+                <input
+                  type="number"
+                  name="quantity"
+                  value={quantity}
+                  min="1"
+                  className="w-full h-full text-center text-gray-700 focus:outline-none
+    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                />
+
+                <button
+                  type="button"
+                  className="absolute right-0 w-8 h-full flex items-center justify-center
+        text-gray-500 hover:text-gray-700 transition-colors"
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  <i className="fas fa-plus text-xs"></i>
                 </button>
               </div>
-
-              {/* Stock Info */}
-              {variantInfo && (
-                <div className="mt-3">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                    ${variantInfo.Quantity > 0
-                      ? 'bg-green-100 text-green-800 border border-green-800'
-                      : 'bg-red-100 text-red-800 border border-red-800'
-                    }`}
-                  >
-                    {variantInfo.Quantity > 0 ? (
-                      <>
-                        <i className="fas fa-check-circle mr-2"></i>
-                        <span>
-                          Còn <strong>{variantInfo.Quantity}</strong> sản phẩm trong kho
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-times-circle mr-2"></i>
-                        <span className="font-semibold">Hết hàng</span>
-                      </>
-                    )}
-                  </span>
-                </div>
-              )}
             </div>
+
+            {/* Add to Cart and Wishlist Buttons */}
+            <div className="flex items-center gap-4">
+              <button
+                type="submit"
+                disabled={
+                  isChecking || (variantInfo && variantInfo.Quantity === 0)
+                }
+                className={`flex-1 px-4 py-3 text-sm font-medium text-white rounded-lg transition-all duration-300 ${
+                  isChecking || (variantInfo && variantInfo.Quantity === 0)
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-dark active:transform active:scale-95"
+                }`}
+              >
+                {isChecking
+                  ? "Đang kiểm tra..."
+                  : variantInfo && variantInfo.Quantity === 0
+                  ? "Hết hàng"
+                  : typeof isAddedToCartProducts === "function" &&
+                    isAddedToCartProducts(product.ProductID)
+                  ? "Đã thêm vào giỏ"
+                  : "Thêm vào giỏ"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleWishlistClick}
+                disabled={wishlistLoading || isLoadingWishlist}
+                className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 border-red-500 transition-all duration-300 ${
+                  inWishlist ? "bg-red-500" : "bg-white hover:scale-105"
+                } ${
+                  wishlistLoading || isLoadingWishlist
+                    ? "opacity-50 cursor-not-allowed"
+                    : "active:scale-95"
+                }`}
+              >
+                <i
+                  className={`fas text-xl ${
+                    wishlistLoading || isLoadingWishlist
+                      ? "fa-spinner fa-spin"
+                      : "fa-heart"
+                  } ${
+                    inWishlist ? "text-white" : "text-red-500"
+                  } transition-all duration-300`}
+                ></i>
+              </button>
+            </div>
+
+            {/* Stock Information */}
+            {variantInfo && (
+              <div className="mt-4">
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                    variantInfo.Quantity > 0
+                      ? "bg-green-100 text-green-800 border border-green-800"
+                      : "bg-red-100 text-red-800 border border-red-800"
+                  }`}
+                >
+                  {variantInfo.Quantity > 0 ? (
+                    <>
+                      <i className="fas fa-check-circle mr-2"></i>
+                      Còn <strong>{variantInfo.Quantity}</strong> sản phẩm trong
+                      kho
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-times-circle mr-2"></i>
+                      Hết hàng
+                    </>
+                  )}
+                </span>
+              </div>
+            )}
           </form>
         </div>
       </div>
@@ -504,26 +537,29 @@ const ProductDetail = () => {
             role="tabpanel"
             aria-labelledby="tab-description-tab"
           >
-            <Description description={{
-              title: product.ProductName,
-              mainContent: product.Description,
-              features: {
-                title: "Đặc điểm sản phẩm",
-                items: product.Features ? product.Features.split('\n') : []
-              },
-              details: {
-                title: "Thông tin chi tiết",
-                items: [
-                  `Giá: $${product.Price}`,
-                  `Thương hiệu: ${product.Brand || 'Chưa cập nhật'}`,
-                  `Danh mục: ${product.Category || 'Chưa cập nhật'}`
-                ]
-              },
-              additional: {
-                title: "Thông tin bổ sung",
-                content: product.AdditionalInfo || 'Không có thông tin bổ sung'
-              }
-            }} />
+            <Description
+              description={{
+                title: product.ProductName,
+                mainContent: product.Description,
+                features: {
+                  title: "Đặc điểm sản phẩm",
+                  items: product.Features ? product.Features.split("\n") : [],
+                },
+                details: {
+                  title: "Thông tin chi tiết",
+                  items: [
+                    `Giá: $${product.Price}`,
+                    `Thương hiệu: ${product.Brand || "Chưa cập nhật"}`,
+                    `Danh mục: ${product.Category || "Chưa cập nhật"}`,
+                  ],
+                },
+                additional: {
+                  title: "Thông tin bổ sung",
+                  content:
+                    product.AdditionalInfo || "Không có thông tin bổ sung",
+                },
+              }}
+            />
           </div>
           <div
             className="tab-pane fade"

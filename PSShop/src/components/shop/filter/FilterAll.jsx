@@ -1,46 +1,66 @@
-import {
-  brands,
-  categories,
-  colors,
-  filters,
-  sizes,
-} from "../../../data/products/productFilterOptions";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import Slider from "rc-slider";
 
-export default function FilterAll() {
-  const [activeColor, setActiveColor] = useState(colors[0]);
-  const [activeSizes, setActiveSizes] = useState([]);
-  const [filterFacts, setFilterFacts] = useState(filters);
-  const toggleSize = (size) => {
-    if (activeSizes.includes(size)) {
-      setActiveSizes((pre) => [...pre.filter((elm) => elm != size)]);
-    } else {
-      setActiveSizes((pre) => [...pre, size]);
-    }
-  };
-  const [activeBrands, setActiveBrands] = useState([]);
-  const toggleBrands = (brand) => {
-    if (activeBrands.includes(brand)) {
-      setActiveBrands((pre) => [...pre.filter((elm) => elm != brand)]);
-    } else {
-      setActiveBrands((pre) => [...pre, brand]);
-    }
-  };
-  const [searchQuery, setSearchQuery] = useState("");
+// eslint-disable-next-line react/prop-types
+export default function FilterAll({ onFilterChange }) {
+  const [categories, setCategories] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 100000]);
+
+  // State cho các filter đã chọn
+  const [selectedFilters, setSelectedFilters] = useState({
+    categoryId: null,
+    colorId: null,
+    sizeId: null,
+    minPrice: 0,
+    maxPrice: 100000,
+  });
+
   useEffect(() => {
-    setActiveBrands((pre) => [
-      ...pre.filter((elm) =>
-        elm.name.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    ]);
-  }, [searchQuery]);
-  const [price, setPrice] = useState([20, 70987]);
-  const handleOnChange = (value) => {
-    setPrice(value);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [categoriesRes, colorsRes, sizesRes] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/categories"),
+          axios.get("http://127.0.0.1:8000/api/colors"),
+          axios.get("http://127.0.0.1:8000/api/sizes"),
+        ]);
+
+        setCategories(categoriesRes.data.data);
+        setColors(colorsRes.data.data);
+        setSizes(sizesRes.data.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  // Xử lý khi filter thay đổi
+  const handleFilterChange = (type, value) => {
+    const newFilters = {
+      ...selectedFilters,
+      [type]: value,
+    };
+    setSelectedFilters(newFilters);
+    onFilterChange(newFilters); // Gửi filters lên component cha
   };
+
+  // Xử lý thay đổi giá
+  const handlePriceChange = (value) => {
+    setPriceRange(value);
+    handleFilterChange("minPrice", value[0]);
+    handleFilterChange("maxPrice", value[1]);
+  };
+
   return (
     <>
+      {/* Categories */}
       <div className="accordion" id="categories-list">
         <div className="accordion-item mb-4">
           <h5 className="accordion-header" id="accordion-heading-11">
@@ -48,10 +68,21 @@ export default function FilterAll() {
           </h5>
           <div className="accordion-body px-0 pb-0">
             <ul className="list list-inline row row-cols-2 mb-0">
-              {categories.map((category, index) => (
-                <li key={index} className="list-item">
-                  <a href="#" className="menu-link py-1">
-                    {category}
+              {categories.map((category) => (
+                <li key={category.CategoryID} className="list-item">
+                  <a
+                    href="#"
+                    className={`menu-link py-1 ${
+                      selectedFilters.categoryId === category.CategoryID
+                        ? "active"
+                        : ""
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleFilterChange("categoryId", category.CategoryID);
+                    }}
+                  >
+                    {category.CategoryName}
                   </a>
                 </li>
               ))}
@@ -59,33 +90,76 @@ export default function FilterAll() {
           </div>
         </div>
       </div>
-      {/* /.accordion-item */}
-      {/* /.accordion-item */}
-      <div className="accordion" id="color-filters">
-        <div className="accordion-item mb-4">
-          <h5 className="accordion-header" id="accordion-heading-1">
-            Color
-          </h5>
 
-          <div className="accordion-body px-0 pb-0">
-            <div className="d-flex flex-wrap">
-              {colors.map((swatch, index) => (
+      {/* Colors */}
+      <div className="accordion" id="color-filters">
+        <h5 className="accordion-header fw-bold mb-3" id="accordion-heading-1">
+          Color Selection
+        </h5>
+        <div className="accordion-body px-0 pb-0">
+          <div className="d-flex flex-wrap gap-2">
+            {colors.map((color) => (
+              <div key={color.ColorID} className="color-item position-relative">
                 <a
-                  onClick={() => setActiveColor(swatch)}
-                  key={index}
-                  className={`swatch-color js-filter ${
-                    activeColor == swatch ? "swatch_active" : ""
+                  className={`swatch-color d-inline-block rounded-circle shadow-sm ${
+                    selectedFilters.colorId === color.ColorID ? "active" : ""
                   }`}
-                  style={{ color: swatch.color }}
-                />
-              ))}
-            </div>
+                  onClick={() => handleFilterChange("colorId", color.ColorID)}
+                  style={{
+                    backgroundColor: color.ColorName.toLowerCase(),
+                    width: "30px",
+                    height: "30px",
+                    cursor: "pointer",
+                    transition: "transform 0.2s",
+                    transform:
+                      selectedFilters.colorId === color.ColorID
+                        ? "scale(1.1)"
+                        : "scale(1)",
+                    border:
+                      color.ColorName.toLowerCase() === "black"
+                        ? "2px solid #e0e0e0"
+                        : "2px solid transparent",
+                    position: "relative",
+                  }}
+                  title={color.ColorName}
+                >
+                  {color.ColorName.toLowerCase() === "black" && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "60%",
+                        height: "60%",
+                        backgroundColor: "white",
+                        borderRadius: "50%",
+                        opacity: 0.2,
+                      }}
+                    />
+                  )}
+                </a>
+                {selectedFilters.colorId === color.ColorID && (
+                  <span
+                    className="position-absolute"
+                    style={{
+                      top: "-5px",
+                      right: "-5px",
+                      width: "15px",
+                      height: "15px",
+                      backgroundColor: "#28a745",
+                      borderRadius: "50%",
+                      border: "2px solid white",
+                    }}
+                  />
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      {/* /.accordion-item */}
 
-      {/* /.accordion */}
+      {/* Sizes */}
       <div className="accordion" id="size-filters">
         <div className="accordion-item mb-4">
           <h5 className="accordion-header" id="accordion-heading-size">
@@ -93,66 +167,23 @@ export default function FilterAll() {
           </h5>
           <div className="accordion-body px-0 pb-0">
             <div className="d-flex flex-wrap">
-              {sizes.map((elm, i) => (
+              {sizes.map((size) => (
                 <a
-                  key={i}
-                  onClick={() => toggleSize(elm)}
+                  key={size.SizeID}
                   className={`swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter ${
-                    activeSizes.includes(elm) ? "swatch_active" : ""
-                  } `}
+                    selectedFilters.sizeId === size.SizeID ? "active" : ""
+                  }`}
+                  onClick={() => handleFilterChange("sizeId", size.SizeID)}
                 >
-                  {elm}
+                  {size.SizeName}
                 </a>
               ))}
             </div>
           </div>
         </div>
       </div>
-      {/* /.accordion-item */}
 
-      {/* /.accordion */}
-      <div className="accordion" id="brand-filters">
-        <div className="accordion-item mb-4">
-          <h5 className="accordion-header" id="accordion-heading-brand">
-            Brands
-          </h5>
-
-          <div className="search-field multi-select accordion-body px-0 pb-0">
-            <div className="search-field__input-wrapper mb-3">
-              <input
-                type="text"
-                name="search_text"
-                className="search-field__input form-control form-control-sm border-light border-2"
-                placeholder="SEARCH"
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <ul className="multi-select__list list-unstyled">
-              {brands
-                .filter((elm) =>
-                  elm.name.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-                .map((elm, i) => (
-                  <li
-                    key={i}
-                    onClick={() => toggleBrands(elm)}
-                    className={`search-suggestion__item multi-select__item text-primary js-search-select js-multi-select ${
-                      activeBrands.includes(elm)
-                        ? "mult-select__item_selected"
-                        : ""
-                    }`}
-                  >
-                    <span className="me-auto">{elm.name}</span>
-                    <span className="text-secondary">{elm.count}</span>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {/* /.accordion-item */}
-
-      {/* /.accordion */}
+      {/* Price Range */}
       <div className="accordion" id="price-filters">
         <div className="accordion-item mb-4">
           <h5 className="accordion-header mb-2" id="accordion-heading-price">
@@ -160,44 +191,55 @@ export default function FilterAll() {
           </h5>
           <Slider
             range
-            formatLabel={() => ``}
-            max={100000}
             min={0}
-            defaultValue={price}
-            onChange={(value) => handleOnChange(value)}
-            id="slider"
+            max={100000}
+            value={priceRange}
+            onChange={handlePriceChange}
+            className="mb-3"
           />
           <div className="price-range__info d-flex align-items-center mt-2">
             <div className="me-auto">
               <span className="text-secondary">Min Price: </span>
-              <span className="price-range__min">${price[0]}</span>
+              <span className="price-range__min">${priceRange[0]}</span>
             </div>
             <div>
               <span className="text-secondary">Max Price: </span>
-              <span className="price-range__max">${price[1]}</span>
+              <span className="price-range__max">${priceRange[1]}</span>
             </div>
           </div>
         </div>
       </div>
-      {/* /.accordion-item */}
 
-      {/* /.accordion */}
+      {/* Active Filters */}
       <div className="filter-active-tags pt-2">
-        {filterFacts.map((filter) => (
-          <button
-            onClick={() =>
-              setFilterFacts((pre) => [
-                ...pre.filter((elm) => elm.label != filter.label),
-              ])
+        {Object.entries(selectedFilters).map(([key, value]) => {
+          if (value) {
+            let label = "";
+            if (key === "categoryId") {
+              label = categories.find(
+                (c) => c.CategoryID === value
+              )?.CategoryName;
+            } else if (key === "colorId") {
+              label = colors.find((c) => c.ColorID === value)?.ColorName;
+            } else if (key === "sizeId") {
+              label = sizes.find((s) => s.SizeID === value)?.SizeName;
             }
-            key={filter.id}
-            className="filter-tag d-inline-flex align-items-center mb-3 me-3 text-uppercase js-filter"
-          >
-            <i className="btn-close-xs d-inline-block" />
-            <span className="ms-2">{filter.label}</span>
-          </button>
-        ))}
-        <div></div>
+
+            if (label) {
+              return (
+                <button
+                  key={key}
+                  className="filter-tag d-inline-flex align-items-center mb-3 me-3 text-uppercase js-filter"
+                  onClick={() => handleFilterChange(key, null)}
+                >
+                  <i className="btn-close-xs d-inline-block" />
+                  <span className="ms-2">{label}</span>
+                </button>
+              );
+            }
+          }
+          return null;
+        })}
       </div>
     </>
   );

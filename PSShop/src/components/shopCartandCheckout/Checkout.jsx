@@ -161,120 +161,157 @@ export default function Checkout() {
   };
 
   return (
-    <div className="checkout-page">
-      {error && <div className="error-message text-red-500 mb-4">{error}</div>}
-
-      <div className="address-section p-6 bg-white rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">ADDRESS</h3>
-
-        <select
-          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-200 focus:outline-none"
-          value={orderData.AddressID || ""}
-          onChange={(e) => handleAddressSelect(e.target.value)}
-        >
-          <option value="">-- ADDRESS --</option>
-          {addresses.map((address) => (
-            <option key={address.AddressID} value={address.AddressID}>
-              {address.Username} | {address.PhoneNumber} | {address.Address}
-            </option>
-          ))}
-        </select>
-
-        <div className="payment-section mt-6 p-6 bg-white rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800">
-            PHƯƠNG THỨC THANH TOÁN
-          </h3>
-          <div className="payment-methods space-y-4">
-            {paymentMethods.map((method) => (
-              <div
-                key={method.id}
-                className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                  orderData.PaymentMethodID === method.id
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-300"
-                }`}
-                onClick={() => handlePaymentMethodSelect(method.id)}
+    <div className="bg-gray-50 min-h-screen py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-2xl font-bold text-gray-900 mb-8">Checkout</div>
+        
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600">{error}</p>
+          </div>
+        )}
+  
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Cột bên trái - Thông tin giao hàng và thanh toán */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Phần địa chỉ giao hàng */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Địa Chỉ Giao Hàng
+              </h3>
+              <select
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 
+                           focus:ring-blue-500 focus:border-blue-500"
+                value={orderData.AddressID || ""}
+                onChange={(e) => handleAddressSelect(e.target.value)}
               >
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id={`payment-${method.id}`}
-                    name="payment-method"
-                    value={method.id}
-                    checked={orderData.PaymentMethodID === method.id}
-                    onChange={() => handlePaymentMethodSelect(method.id)}
-                    className="mr-3"
-                  />
-                  <div>
-                    <label
-                      htmlFor={`payment-${method.id}`}
-                      className="font-medium text-gray-700 cursor-pointer"
-                    >
-                      {method.name}
-                    </label>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {method.description}
-                    </p>
+                <option value="">-- Chọn địa chỉ giao hàng --</option>
+                {addresses.map((address) => (
+                  <option key={address.AddressID} value={address.AddressID}>
+                    {address.Username} | {address.PhoneNumber} | {address.Address}
+                  </option>
+                ))}
+              </select>
+            </div>
+  
+            {/* Phần phương thức thanh toán */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Phương Thức Thanh Toán
+              </h3>
+              <div className="space-y-4">
+                {paymentMethods.map((method) => (
+                  <label
+                    key={method.id}
+                    className={`
+                      block p-4 border rounded-lg cursor-pointer transition-all
+                      ${orderData.PaymentMethodID === method.id 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-blue-300'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="payment"
+                        value={method.id}
+                        checked={orderData.PaymentMethodID === method.id}
+                        onChange={() => handlePaymentMethodSelect(method.id)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <div className="ml-3">
+                        <div className="font-medium text-gray-900">{method.name}</div>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {method.description}
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+  
+          {/* Cột bên phải - Tổng quan đơn hàng */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Tổng Quan Đơn Hàng
+                </h3>
+  
+                {/* Danh sách sản phẩm */}
+                <div className="space-y-4 mb-6">
+                  {cartItems.map((item, index) => (
+                    <div key={index} className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                      <div className="flex-grow">
+                        <h4 className="text-sm font-medium text-gray-900">
+                          {item.ProductName}
+                        </h4>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {item.ColorName} • {item.SizeName} • x{item.Quantity}
+                        </div>
+                        <div className="text-sm font-medium text-gray-900 mt-1">
+                          ${(item.Price * item.Quantity).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+  
+                {/* Chi tiết thanh toán */}
+                <div className="border-t border-gray-200 pt-4 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Tạm tính</span>
+                    <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Phí vận chuyển</span>
+                    <span className="font-medium">$19.00</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">VAT (10%)</span>
+                    <span className="font-medium">
+                      ${(totalPrice * 0.1).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <div className="flex justify-between">
+                      <span className="text-base font-medium text-gray-900">
+                        Tổng cộng
+                      </span>
+                      <span className="text-base font-semibold text-blue-600">
+                        ${(totalPrice + 19 + totalPrice * 0.1).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-        {/* Order Summary section */}
-        <div className="order-summary mt-8 bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800">
-            Your Order
-          </h3>
-          <div className="products-list space-y-3">
-            {cartItems.map((item) => (
-              <div
-                key={`product-${item.ProductID}`}
-                className="product-item flex justify-between items-center border-b pb-2"
-              >
-                <span className="text-gray-700">
-                  {item.ProductName} - {item.ColorName} - {item.SizeName} x{" "}
-                  {item.Quantity}
-                </span>
-                <span className="font-medium">
-                  ${(item.Price * item.Quantity).toFixed(2)}
-                </span>
+  
+              {/* Nút đặt hàng */}
+              <div className="p-6 bg-gray-50 border-t border-gray-200">
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={!orderData.AddressID || cartItems.length === 0}
+                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-medium
+                             hover:bg-blue-700 transition-colors duration-200
+                             disabled:opacity-50 disabled:cursor-not-allowed
+                             flex items-center justify-center gap-2"
+                >
+                  <span>Đặt Hàng</span>
+                  <span className="text-sm">
+                    (${(totalPrice + 19 + totalPrice * 0.1).toFixed(2)})
+                  </span>
+                </button>
+                {!orderData.AddressID && (
+                  <p className="text-sm text-red-500 mt-2">
+                    Vui lòng chọn địa chỉ giao hàng
+                  </p>
+                )}
               </div>
-            ))}
-          </div>
-
-          <div className="totals mt-4 space-y-2">
-            <div className="subtotal flex justify-between text-gray-600">
-              <span>SUBTOTAL</span>
-              <span>${totalPrice.toFixed(2)}</span>
-            </div>
-            <div className="vat flex justify-between text-gray-600">
-              <span>VAT:</span>
-              <span>${(19).toFixed(2)}</span>
-            </div>
-            <div className="total flex justify-between text-lg font-semibold mt-4 pt-2 border-t">
-              <span>TOTAL</span>
-              <span>${(totalPrice + 19).toFixed(2)}</span>
             </div>
           </div>
-
-          <div className="payment-info mt-4 pb-4 border-b border-gray-200">
-            <p className="text-gray-600">
-              Phương thức thanh toán:{" "}
-              <span className="font-medium">
-                {paymentMethods.find((m) => m.id === orderData.PaymentMethodID)
-                  ?.name || "Chưa chọn"}
-              </span>
-            </p>
-          </div>
-          <button
-            onClick={handlePlaceOrder}
-            type="submit"
-            className="w-full bg-gray-800 text-white p-4 rounded-md hover:bg-gray-900 mt-6 
-                       transition-colors duration-200 font-medium text-lg"
-          >
-            PLACE ORDER
-          </button>
         </div>
       </div>
     </div>

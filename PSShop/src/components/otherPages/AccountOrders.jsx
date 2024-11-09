@@ -22,6 +22,7 @@ export default function AccountOrders() {
                 <th>Order ID</th>
                 <th>Status</th>             
                 <th>Total Quantity</th>
+                <th>Total Amount</th>
                 <th>Payment Status</th>
                 <th>Actions</th>
               </tr>
@@ -32,6 +33,7 @@ export default function AccountOrders() {
                   <td>#{order.OrderID}</td>
                   <td>{order.OrderStatus}</td>             
                   <td>{order.TotalQuantity || '0'} items</td>
+                  <td>{order.TotalAmount}</td>
                   <td>{order.PaymentStatus || 'N/A'}</td>
                   <td>
                     <button className="btn btn-primary">VIEW</button>
