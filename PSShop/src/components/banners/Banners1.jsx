@@ -16,7 +16,7 @@ export default function Banner1() {
           >
             <img
               loading="lazy"
-              src="/assets/images/shop/shop_banner_character1.png"
+              src="/assets/images/shop/banneshop1.png"
               width="1759"
               height="420"
               alt="Pattern"

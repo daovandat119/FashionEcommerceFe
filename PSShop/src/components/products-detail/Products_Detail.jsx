@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useContextElement } from "../../context/Context";
 import AdditionalInfo from "./AdditionalInfo";
 import Reviews from "./Reviews";
 import Swal from "sweetalert2";
+import Description from "./Description";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const ProductDetail = () => {
     isAddedToCartProducts, 
     addToWishlist, 
     wishlistProducts,
-    fetchWishlistItems 
+    fetchWishlistItems,
   } = useContextElement();
 
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -98,14 +99,33 @@ const ProductDetail = () => {
   const handleAddToWishlist = async () => {
     if (!product) return;
     
+    if (isInWishlist) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Sản phẩm đã có trong danh sách yêu thích",
+        icon: "info",
+        showConfirmButton: false,
+        timer: 1500
+      });
+      return;
+    }
+
+    setIsInWishlist(true);
+
     try {
       await addToWishlist(product.ProductID);
     } catch (error) {
-      console.error("Lỗi khi thêm vào wishlist:", error);
+      setIsInWishlist(false);
+      console.error("Error adding to wishlist:", error);
+      Swal.fire({
+        title: "Lỗi",
+        text: "Không thể thêm vào danh sách yêu thích",
+        icon: "error"
+      });
     }
   };
 
-  const checkProductVariant = async () => {
+  const checkProductVariant = useCallback(async () => {
     if (!selectedSize || !selectedColor) return null;
 
     const token = localStorage.getItem("token");
@@ -130,12 +150,12 @@ const ProductDetail = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         console.error("Lỗi xác thực token");
-        // Có thể xử lý logout hoặc refresh token tại đây
       }
       console.error("Lỗi khi kiểm tra biến thể:", error);
       return null;
     }
-  };
+  }, [selectedSize, selectedColor, product]);
+
   const handleAddToCart = async (e) => {
     e.preventDefault(); // Thêm dòng này
 
@@ -205,18 +225,14 @@ const ProductDetail = () => {
       }
     };
     checkVariant();
-  }, [selectedSize, selectedColor]);
+  }, [selectedSize, selectedColor,checkProductVariant,product]);
 
-  if (loading) {
+  if (loading || !product) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
-  }
-
-  if (!product) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -304,7 +320,7 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* Số lượng sản phẩm */}
+            {/* S lượng sản phẩm */}
             <div className="product-single__addtocart">
               {/* Số lượng và controls */}
               <div className="flex items-center gap-4 mb-4">
@@ -365,18 +381,29 @@ const ProductDetail = () => {
                 <button
                   type="button"
                   onClick={handleAddToWishlist}
-                  className={`w-12 h-12 flex items-center justify-center rounded-lg transition-all duration-300
+                  className={`
+                    w-12 h-12 
+                    flex items-center justify-center 
+                    rounded-lg 
+                    transform transition-all duration-300 ease-in-out
                     ${isInWishlist 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-white border-2 border-red-500 text-red-500 hover:bg-red-50'
+                      ? 'bg-red-500 scale-110' 
+                      : 'bg-white hover:scale-105'
                     }
-                    focus:outline-none active:transform active:scale-95`}
+                    border-2 border-red-500
+                    focus:outline-none 
+                    active:scale-95
+                  `}
                 >
-                  <i className={`fas fa-heart ${
-                    isInWishlist 
-                      ? 'animate-heartBeat' 
-                      : 'hover:scale-110 transition-transform duration-300'
-                  }`}></i>
+                  <i 
+                    className={`fas fa-heart text-xl
+                      ${isInWishlist 
+                        ? 'text-white animate-heartBeat' 
+                        : 'text-red-500'
+                      }
+                      transform transition-all duration-300
+                    `}
+                  ></i>
                 </button>
               </div>
 
@@ -458,7 +485,26 @@ const ProductDetail = () => {
             role="tabpanel"
             aria-labelledby="tab-description-tab"
           >
-            {/* <Description /> */}
+            <Description description={{
+              title: product.ProductName,
+              mainContent: product.Description,
+              features: {
+                title: "Đặc điểm sản phẩm",
+                items: product.Features ? product.Features.split('\n') : []
+              },
+              details: {
+                title: "Thông tin chi tiết",
+                items: [
+                  `Giá: $${product.Price}`,
+                  `Thương hiệu: ${product.Brand || 'Chưa cập nhật'}`,
+                  `Danh mục: ${product.Category || 'Chưa cập nhật'}`
+                ]
+              },
+              additional: {
+                title: "Thông tin bổ sung",
+                content: product.AdditionalInfo || 'Không có thông tin bổ sung'
+              }
+            }} />
           </div>
           <div
             className="tab-pane fade"
