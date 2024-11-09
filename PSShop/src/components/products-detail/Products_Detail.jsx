@@ -537,6 +537,7 @@ const ProductDetail = () => {
             role="tabpanel"
             aria-labelledby="tab-description-tab"
           >
+
             <Description
               description={{
                 title: product.ProductName,
@@ -579,7 +580,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-      {/* Thông tin bổ sung và đánh giá */}
+      
     </section>
   );
 };
