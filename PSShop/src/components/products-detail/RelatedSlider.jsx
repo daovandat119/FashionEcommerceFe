@@ -9,33 +9,35 @@ const swiperOptions = {
   autoplay: {
     delay: 5000,
   },
+  spaceBetween: 30,
   slidesPerView: 4,
-  slidesPerGroup: 4,
+  slidesPerGroup: 1,
   effect: "none",
   loop: true,
   pagination: {
-    el: "#product_carousel .products-pagination",
+    el: ".products-pagination",
     type: "bullets",
     clickable: true,
   },
   navigation: {
-    nextEl: "#product_carousel .products-carousel__next",
-    prevEl: "#product_carousel .products-carousel__prev",
+    nextEl: ".products-carousel__next",
+    prevEl: ".products-carousel__prev",
   },
   breakpoints: {
     320: {
+      slidesPerView: 1,
+      spaceBetween: 15,
+    },
+    576: {
       slidesPerView: 2,
-      slidesPerGroup: 2,
-      spaceBetween: 14,
+      spaceBetween: 20,
     },
     768: {
       slidesPerView: 3,
-      slidesPerGroup: 3,
-      spaceBetween: 24,
+      spaceBetween: 25,
     },
     992: {
       slidesPerView: 4,
-      slidesPerGroup: 2,
       spaceBetween: 30,
     },
   },
@@ -62,40 +64,17 @@ export default function RelatedSlider() {
   }, []);
 
   return (
-    <section className="products-carousel container">
+    <section className="products-carousel container position-relative">
       <h2 className="h3 text-uppercase mb-4 pb-xl-2 mb-xl-4">
         Related <strong>Products</strong>
       </h2>
-      <div id="product_carousel" className="position-relative">
+      <div className="position-relative">
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
           <p>{error}</p>
         ) : (
-          <Swiper
-            style={{ maxWidth: "100vw", overflow: "hidden" }}
-            {...swiperOptions}
-            className="swiper-container js-swiper-slider"
-            loop={products.length > 4}
-            breakpoints={{
-              0: {
-                slidesPerView: 1,
-                loop: products.length > 1
-              },
-              576: {
-                slidesPerView: 2,
-                loop: products.length > 2
-              },
-              768: {
-                slidesPerView: 3,
-                loop: products.length > 3
-              },
-              992: {
-                slidesPerView: 4,
-                loop: products.length > 4
-              }
-            }}
-          >
+          <Swiper {...swiperOptions}>
             {products.map((product, i) => (
               <SwiperSlide key={i} className="swiper-slide product-card">
                 <div className="pc__img-wrapper">
@@ -157,29 +136,23 @@ export default function RelatedSlider() {
             ))}
           </Swiper>
         )}
-        <div className="cursor-pointer products-carousel__prev position-absolute top-50 d-flex align-items-center justify-content-center">
-          <svg
-            width="25"
-            height="25"
-            viewBox="0 0 25 25"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+        
+        <div className="products-carousel__prev cursor-pointer position-absolute top-50 start-0 translate-middle-y z-1 bg-white rounded-circle shadow d-flex align-items-center justify-content-center" 
+             style={{ width: '40px', height: '40px', left: '-20px' }}>
+          <svg width="20" height="20" viewBox="0 0 25 25">
             <use href="#icon_prev_md" />
           </svg>
         </div>
-        <div className="cursor-pointer products-carousel__next position-absolute top-50 d-flex align-items-center justify-content-center">
-          <svg
-            width="25"
-            height="25"
-            viewBox="0 0 25 25"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+        
+        <div className="products-carousel__next cursor-pointer position-absolute top-50 end-0 translate-middle-y z-1 bg-white rounded-circle shadow d-flex align-items-center justify-content-center"
+             style={{ width: '40px', height: '40px', right: '-20px' }}>
+          <svg width="20" height="20" viewBox="0 0 25 25">
             <use href="#icon_next_md" />
           </svg>
         </div>
-        <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center"></div>
+        
+        <div className="products-pagination mt-4 d-flex align-items-center justify-content-center"></div>
       </div>
-     
     </section>
   );
 }

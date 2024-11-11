@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   createContext,
   useContext,
@@ -7,6 +8,8 @@ import {
 } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+
+// Thêm hàm axiosWithRetry
 
 const Context = createContext();
 
@@ -25,6 +28,7 @@ export default function ContextProvider({ children }) {
     local_pickup: false,
   });
   const [wishlistProducts, setWishlistProducts] = useState([]);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
 
   // Hàm xử lý chọn/bỏ chọn item
   const handleSelectAll = (checked) => {
@@ -64,23 +68,34 @@ export default function ContextProvider({ children }) {
     return price.toFixed(2);
   };
 
-  // Thêm function để lấy thông tin sản phẩm
+  // Thêm cache để lưu trữ dữ liệu
+  const cache = {
+    products: new Map(),
+    variants: new Map()
+  };
+
+  // Sửa lại hàm getProductDetails
   const getProductDetails = async (productId) => {
-    if (!productId) {
-      console.warn('ProductID is undefined');
-      return null;
+    if (!productId) return null;
+    
+    // Kiểm tra cache trước
+    if (cache.products.has(productId)) {
+      return cache.products.get(productId);
     }
 
     const token = localStorage.getItem("token");
     try {
+      await new Promise(resolve => setTimeout(resolve, 300)); // Thêm delay 300ms
+      
       const response = await axios.get(
         `http://127.0.0.1:8000/api/products/${productId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
+      
+      // Lưu vào cache
+      cache.products.set(productId, response.data.data);
       return response.data.data;
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -88,18 +103,28 @@ export default function ContextProvider({ children }) {
     }
   };
 
-  // Sửa lại endpoint và response mapping
+  // Sửa lại hàm getVariantDetails
   const getVariantDetails = async (variantId) => {
+    if (!variantId) return null;
+
+    // Kiểm tra cache trước
+    if (cache.variants.has(variantId)) {
+      return cache.variants.get(variantId);
+    }
+
     const token = localStorage.getItem("token");
     try {
+      await new Promise(resolve => setTimeout(resolve, 300)); // Thêm delay 300ms
+      
       const response = await axios.get(
         `http://127.0.0.1:8000/api/product-variants/${variantId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
+      
+      // Lưu vào cache
+      cache.variants.set(variantId, response.data.data);
       return response.data.data;
     } catch (error) {
       console.error("Error fetching variant details:", error);
@@ -265,6 +290,11 @@ const removeSelectedItems = async () => {
     await fetchCartItems();
   } catch (error) {
     console.error('Error removing from cart:', error);
+    Swal.fire({
+      title: "Lỗi",
+      text: "Không thể xóa sản phẩm khỏi giỏ hàng",
+      icon: "error"
+    });
   }
 };
 
@@ -274,7 +304,7 @@ const removeCartItem = async (cartItemId) => {
 
   try {
     await axios.delete(
-      `http://127.0.0.1:8000/api/cart-items/${cartItemId}`,
+      `http://127.0.0.1:8000/api/cart-items`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -287,6 +317,11 @@ const removeCartItem = async (cartItemId) => {
     await fetchCartItems();
   } catch (error) {
     console.error('Error removing item from cart:', error);
+    Swal.fire({
+      title: "Lỗi",
+      text: "Không thể xóa sản phẩm khỏi giỏ hàng",
+      icon: "error"
+    });
   }
 };
 
@@ -308,49 +343,33 @@ const removeCartItem = async (cartItemId) => {
     if (!token) {
       Swal.fire({
         title: "Thông báo",
-        text: "Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích",
-        icon: "warning",
+        text: "Vui lòng đăng nhập để sử dụng tính năng này",
+        icon: "warning"
       });
       return;
     }
 
     try {
-      const existingItem = wishlistProducts.find(
-        item => parseInt(item.ProductID) === parseInt(productId)
+      setIsLoadingWishlist(true);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/wishlist",
+        { ProductID: productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      if (existingItem) {
-        await removeFromWishlist(existingItem.WishlistID);
-      } else {
-        const response = await axios.post(
-          "http://127.0.0.1:8000/api/wishlist",
-          { ProductID: productId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.data.message === "Success") {
-          await fetchWishlistItems();
-          Swal.fire({
-            title: "Thành công",
-            text: "Đã thêm vào danh sách yêu thích",
-            icon: "success",
-            timer: 1500,
-            showConfirmButton: false
-          });
-        }
+      if (response.status === 201) {
+        await fetchWishlistItems();
+        
       }
     } catch (error) {
-      console.error("Error managing wishlist:", error);
-      Swal.fire({
-        title: "Lỗi",
-        text: "Đã có lỗi xảy ra, vui lòng thử lại",
-        icon: "error"
-      });
+      
+      console.error("Error adding to wishlist:", error);
+    } finally {
+      setIsLoadingWishlist(false);
     }
   };
 
@@ -359,29 +378,22 @@ const removeCartItem = async (cartItemId) => {
     if (!token) return;
 
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/wishlist", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      setIsLoadingWishlist(true);
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/wishlist",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.data.message === "Success") {
         setWishlistProducts(response.data.data);
-      } else {
-        console.error("Error in wishlist response:", response.data);
-        setWishlistProducts([]);
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
-      if (error.response?.status === 500) {
-        Swal.fire({
-          title: "Lỗi",
-          text: "Có lỗi xảy ra khi tải danh sách yêu thích",
-          icon: "error",
-          timer: 2000
-        });
-      }
       setWishlistProducts([]);
+    } finally {
+      setIsLoadingWishlist(false);
     }
   }, []);
 
@@ -394,7 +406,13 @@ const removeCartItem = async (cartItemId) => {
     if (!token) return;
 
     try {
-      const response = await axios.delete(
+      setIsLoadingWishlist(true);
+      // Cập nhật UI trước
+      setWishlistProducts(prev => 
+        prev.filter(item => item.WishlistID !== wishlistId)
+      );
+
+       await axios.delete(
         `http://127.0.0.1:8000/api/wishlist/${wishlistId}`,
         {
           headers: {
@@ -403,19 +421,52 @@ const removeCartItem = async (cartItemId) => {
         }
       );
 
-      if (response.data.message === "Success") {
-        await fetchWishlistItems();
-       
-      }
+      // if (response.status === 200) {
+      //   Swal.fire({
+      //     title: "Thành công",
+      //     text: "Đã xóa sản phẩm khỏi danh sách yêu thích",
+      //     icon: "success",
+      //     showConfirmButton: false,
+      //     timer: 1500
+      //   });
+      // }
     } catch (error) {
       console.error("Error removing from wishlist:", error);
-      Swal.fire({
-        title: "Lỗi",
-        text: "Không thể xóa sản phẩm",
-        icon: "error"
-      });
+      await fetchWishlistItems();
+      
+      if (error.response?.status === 404) {
+        Swal.fire({
+          title: "Thông báo",
+          text: "Không tìm thấy sản phẩm trong danh sách yêu thích",
+          icon: "info",
+          timer: 1500
+        });
+      } else {
+        Swal.fire({
+          title: "Lỗi",
+          text: "Không thể xóa sản phẩm",
+          icon: "error"
+        });
+      }
+    } finally {
+      setIsLoadingWishlist(false);
     }
   };
+
+  // Thêm hàm kiểm tra sản phẩm có trong wishlist không
+  const isProductInWishlist = useCallback((productId) => {
+    return wishlistProducts.some(item => 
+      parseInt(item.ProductID) === parseInt(productId)
+    );
+  }, [wishlistProducts]);
+
+  // Định nghĩa isInWishlist như một function
+  const isInWishlist = useCallback((productId) => {
+    if (!wishlistProducts || !Array.isArray(wishlistProducts)) return false;
+    return wishlistProducts.some(item => 
+      parseInt(item.ProductID) === parseInt(productId)
+    );
+  }, [wishlistProducts]);
 
   const value = {
     cartProducts,
@@ -437,6 +488,9 @@ const removeCartItem = async (cartItemId) => {
     addToWishlist,
     fetchWishlistItems,
     removeFromWishlist,
+    isProductInWishlist,
+    isInWishlist,
+    isLoadingWishlist,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

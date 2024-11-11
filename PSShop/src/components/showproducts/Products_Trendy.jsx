@@ -51,17 +51,6 @@ export default function Products_Trendy() {
   };
 
   // Hàm thêm sản phẩm vào giỏ hàng
-  const addProductToCart = (ProductID) => {
-    if (!cart.includes(ProductID)) {
-      setCart([...cart, ProductID]);
-      console.log(`Added ProductID ${ProductID} to cart`);
-    }
-  };
-
-  // Hàm kiểm tra sản phẩm đã có trong giỏ hàng hay chưa
-  const isAddedToCartProducts = (ProductID) => {
-    return cart.includes(ProductID);
-  };
 
   // Hàm thêm hoặc loại bỏ sản phẩm khỏi danh sách yêu thích
   const toggleWishlist = (ProductID) => {
@@ -141,19 +130,14 @@ export default function Products_Trendy() {
                           alt={`${product.ProductName} secondary`}
                         />
                       </Link>
+                      <Link to={`/shop-detail/${product.ProductID}`}>
                       <button
                         className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                        onClick={() => addProductToCart(product.ProductID)}
-                        title={
-                          isAddedToCartProducts(product.ProductID)
-                            ? "Already Added"
-                            : "Add to Cart"
-                        }
+                        
                       >
-                        {isAddedToCartProducts(product.ProductID)
-                          ? "Already Added"
-                          : "Add To Cart"}
+                        VIEW 
                       </button>
+                      </Link>
                     </div>
 
                     <div className="pc__info position-relative">

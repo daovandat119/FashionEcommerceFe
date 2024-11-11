@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
 export const LoginContext = createContext();
 
@@ -47,6 +48,7 @@ export const LoginProvider = ({ children }) => {
         setSuccessMessage("Đăng nhập thành công!");
         localStorage.setItem("token", data.token);
         setUser(data.user);
+        setIsAuthenticated(true);
         setTimeout(() => {
           navigate("/");
         }, 1000);
@@ -243,4 +245,8 @@ export const LoginProvider = ({ children }) => {
       {children}
     </LoginContext.Provider>
   );
+};
+
+LoginProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };

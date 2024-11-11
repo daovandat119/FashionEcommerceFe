@@ -4,7 +4,7 @@ import { AddCategory } from "../service/api_service";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+//Add Category
 const AddCategoryComponent = () => {
   const [CategoryName, setCategoryName] = useState("");
   const [error, setError] = useState("");
