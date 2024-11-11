@@ -1,12 +1,13 @@
-import React, { createContext, useState, useEffect } from 'react';
+import  { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 // Tạo context
 export const OrderContext = createContext();
 
 // Tạo một component provider
 export const OrderProvider = ({ children }) => {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState({ data: [], totalAmount: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -20,8 +21,8 @@ export const OrderProvider = ({ children }) => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log("Dữ liệu đơn hàng từ API:", response.data);
-        setOrders(response.data);
+        
+        setOrders({ data: response.data.data || [], totalAmount: 0 });
       } catch (err) {
         setError(err.message);
       } finally {
@@ -37,4 +38,9 @@ export const OrderProvider = ({ children }) => {
       {children}
     </OrderContext.Provider>
   );
+};
+
+// Định nghĩa kiểu dữ liệu cho props
+OrderProvider.propTypes = {
+  children: PropTypes.node.isRequired, // Xác định children là một node và là bắt buộc
 };

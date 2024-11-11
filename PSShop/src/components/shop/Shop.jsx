@@ -106,7 +106,7 @@ export default function Shop1() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/products');
-        setProducts(response.data.data || response.data);
+        setProducts(response.data.data || response.data.data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);
         setError("Không thể tải sản phẩm.");
