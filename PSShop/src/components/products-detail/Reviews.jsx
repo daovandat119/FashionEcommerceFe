@@ -66,7 +66,7 @@ export default function Reviews() {
           </p>
           <div className="select-star-rating">
             <label>Your rating *</label>
-            <span className="star-rating ">
+            <span className="star-rating flex ">
               {Array.from({ length: 5 }).map((_, index) => (
                 <React.Fragment key={index}>
                   {ratingLength >= index + 1 ? (
