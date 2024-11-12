@@ -63,7 +63,7 @@ const AddCategoryComponent = () => {
               type="text"
               value={CategoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              
+              //
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

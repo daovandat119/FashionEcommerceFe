@@ -150,6 +150,15 @@ const UpdateUserStatus = (UserID, data = null) => {
   }
 };
 
+const GetCoupons = () => {
+  const token = localStorage.getItem('token'); // Lấy token từ localStorage
+  return axios.post("/api/coupons/checkCoupon?admin=1", {}, {
+    headers: {
+      Authorization: `Bearer ${token}` // Gửi token trong header
+    }
+  });
+};
+
 export {
   LoginAdmin,
   ListCategories,
@@ -182,5 +191,6 @@ export {
   UpdateCategoryStatus,
   GetUserById,
   BlockedUser,
-  UpdateUserStatus
+  UpdateUserStatus,
+  GetCoupons
 };

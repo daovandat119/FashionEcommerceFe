@@ -44,7 +44,6 @@ import { LoginProvider } from "./components/login/LoginContext";
 import { AuthProvider } from './context/AuthContext';
 import UpdateVariant from "./pages/admin/products/UpdateVariant";
 import { CheckoutProvider } from './context/CheckoutContext';
-import CartList from "./pages/admin/cart/CartList";
 import ShopFilter from "./components/asides/ShopFilter";
 // Account pages imports
 import AccountPage from './pages/dashboard/account_dashboard';
@@ -53,6 +52,9 @@ import AccountEditAddressPage from './pages/dashboard/account_edit_address/index
 import AccountEditPage from "./pages/dashboard/account_edit";
 // import Add_Address from './components/otherPages/Add_Address';
 import AccountWishlist from "./pages/dashboard/account_wishlist";
+import OrderList from "./pages/admin/oder/OderList";
+import UpdateOrder from "./pages/admin/oder/UpdateOder";
+import VoucherList from "./pages/admin/voucher/VoucherList";
 
 function App() {
   return (
@@ -135,7 +137,9 @@ const AppRoutes = () => {
               <Route path="sizes/add" element={<AddSizeComponent />} />
               <Route path="sizes/edit/:SizeID" element={<UpdateSize />} />
               <Route path="products/edit-variant/:VariantID" element={<UpdateVariant />} />
-              <Route path="cart" element={<CartList />} />
+              <Route path="orders" element={<OrderList />} />
+              <Route path="orders/update" element={<UpdateOrder />} />
+              <Route path="vouchers" element={<VoucherList />} />
             </Route>
           </Routes>
         </ThemeProvider>
