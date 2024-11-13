@@ -23,230 +23,242 @@ export const LoginProvider = ({ children }) => {
     setErrorMessage("");
     setSuccessMessage("");
 
+    // Kiểm tra email và mật khẩu hợp lệ
     if (!isValidEmail(Email)) {
-      setErrorMessage("Email không hợp lệ.");
-      return;
+        setErrorMessage("Email không hợp lệ.");
+        return;
     }
     if (!isValidPassword(Password)) {
-      setErrorMessage("Mật khẩu phải có ít nhất 8 ký tự.");
-      return;
+        setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+        return;
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ Email, Password }),
-      });
+        const response = await fetch("http://127.0.0.1:8000/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ Email, Password }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-        setSuccessMessage("Đăng nhập thành công!");
-        localStorage.setItem("token", data.token);
-        setUser(data.user);
-        setIsAuthenticated(true);
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
-      } else if (response.status === 403) {
-        setErrorMessage(data.message);
-        setVerificationStep(true);
-        setTempEmail(Email);
-        if (data.UserID) {
-          setUserId(data.UserID);
+        if (response.ok) {
+            // Xử lý thành công
+            setSuccessMessage("Đăng nhập thành công!");
+            localStorage.setItem("token", data.token);
+            setUser(data.user);
+            setIsAuthenticated(true);
+            if (data.user?.UserID) {
+                setUserId(data.user.UserID);
+                localStorage.setItem("tempUserId", data.user.UserID); // Lưu tạm UserID
+            }
+            setTimeout(() => {
+                navigate("/");
+            }, 1000);
+        } else if (response.status === 403) {
+            // Trường hợp cần xác thực
+            setErrorMessage(data.message);
+            setVerificationStep(true);
+            setTempEmail(Email);
+            if (data.UserID) {
+                setUserId(data.UserID); // Lưu UserID để sử dụng trong xác thực
+                localStorage.setItem("tempUserId", data.UserID); // Lưu tạm UserID
+            }
+            setTempLoginInfo({ Email, Password });
+        } else {
+            // Lỗi khác
+            setErrorMessage(data.message || "Email hoặc mật khẩu không đúng");
         }
-        setTempLoginInfo({ Email, Password });
-      } else {
-        setErrorMessage(data.message || "Email hoặc mật khẩu không đúng");
-      }
     } catch (error) {
-      setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+        setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");
     }
-  };
+};
 
-  const registerUser = async (Username, Email, Password) => {
+const registerUser = async (Username, Email, Password) => {
     setErrorMessage("");
     setSuccessMessage("");
 
     if (!isValidUsername(Username)) {
-      setErrorMessage("Username phải có ít nhất 3 ký tự và chỉ chứa chữ cái, số hoặc dấu gạch dưới.");
-      return;
+        setErrorMessage("Username phải có ít nhất 3 ký tự và chỉ chứa chữ cái, số hoặc dấu gạch dưới.");
+        return;
     }
     if (!isValidEmail(Email)) {
-      setErrorMessage("Email không hợp lệ.");
-      return;
+        setErrorMessage("Email không hợp lệ.");
+        return;
     }
     if (!isValidPassword(Password)) {
-      setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
-      return;
+        setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+        return;
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ Username, Email, Password }),
-      });
+        const response = await fetch("http://127.0.0.1:8000/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ Username, Email, Password }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.status === 201) {
-        setSuccessMessage(data.message);
-        setVerificationStep(true);
-        setTempEmail(Email);
-        if (data.user?.UserID) {
-          setUserId(data.user.UserID);
-        }
-        setTempLoginInfo({ Email, Password });
-      } else {
-        if (response.status === 422 && data.errors) {
-          const errorMessages = Object.values(data.errors)
-            .map(errors => errors[0])
-            .join('\n');
-          setErrorMessage(errorMessages);
+        if (response.status === 201) {
+            setSuccessMessage(data.message);
+            setVerificationStep(true);
+            setTempEmail(Email);
+            if (data.user?.UserID) {
+                setUserId(data.user.UserID);
+            }
+            setTempLoginInfo({ Email, Password });
         } else {
-          setErrorMessage(data.message || "Đăng ký thất bại");
+            if (response.status === 422 && data.errors) {
+                const errorMessages = Object.values(data.errors)
+                    .map(errors => errors[0])
+                    .join('\n');
+                setErrorMessage(errorMessages);
+            } else {
+                setErrorMessage(data.message || "Đăng ký thất bại");
+            }
         }
-      }
     } catch (error) {
-      setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+        setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");
     }
-  };
+};
 
-  const verifyEmail = async (code, userId, navigate) => {
-    if (!userId) {
-      setErrorMessage("Không tìm thấy thông tin người dùng");
-      return;
+const verifyEmail = async (code, userId, navigate) => {
+    const storedUserId = userId || localStorage.getItem("tempUserId");
+    if (!storedUserId) {
+        setErrorMessage("Không tìm thấy thông tin người dùng");
+        return;
     }
+
     if (!isValidVerificationCode(code)) {
-      setErrorMessage("Mã xác thực phải là 6 ký tự chữ hoa hoặc số.");
-      return;
+        setErrorMessage("Mã xác thực phải là 6 ký tự chữ hoa hoặc số.");
+        return;
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/email/verify/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ CodeId: code.toUpperCase() })
-      });
+        const response = await fetch(`http://127.0.0.1:8000/api/email/verify/${storedUserId}?CodeId=${code.toUpperCase()}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-        setSuccessMessage(data.message);
-        setVerificationStep(false);
-        if (tempLoginInfo) {
-          await loginUser(tempLoginInfo.Email, tempLoginInfo.Password, navigate);
-          setTempLoginInfo(null);
+        if (response.ok) {
+            setSuccessMessage(data.message);
+            setVerificationStep(false);
+            localStorage.removeItem("tempUserId"); // Xóa UserID tạm sau khi xác thực thành công
+
+            if (tempLoginInfo) {
+                await loginUser(tempLoginInfo.Email, tempLoginInfo.Password, navigate);
+                setTempLoginInfo(null); // Xóa thông tin đăng nhập tạm
+            } else {
+                navigate("/login_register");
+            }
         } else {
-          navigate("/login_register");
+            setErrorMessage(data.message || "Xác thực thất bại");
         }
-      } else {
-        setErrorMessage(data.message || "Xác thực thất bại");
-      }
     } catch (error) {
-      setErrorMessage("Đã xảy ra lỗi khi xác thực.");
+        setErrorMessage("Đã xảy ra lỗi khi xác thực.");
     }
-  };
+};
 
-  const resendVerificationCode = async () => {
+const resendVerificationCode = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/resend-verification-code", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ Email: tempEmail }),
-      });
+        const response = await fetch("http://127.0.0.1:8000/api/resend-verification-code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ Email: tempEmail }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-        setSuccessMessage(data.message);
-      } else {
-        setErrorMessage(data.message);
-      }
+        if (response.ok) {
+            setSuccessMessage(data.message);
+        } else {
+            setErrorMessage(data.message);
+        }
     } catch (error) {
-      setErrorMessage("Đã xảy ra lỗi khi gửi lại mã xác thực.");
+        setErrorMessage("Đã xảy ra lỗi khi gửi lại mã xác thực.");
     }
-  };
+};
 
-  const logout = () => {
+const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
     setIsAuthenticated(false);
     toast.success("Đã đăng xuất");
-  };
+};
 
-  useEffect(() => {
+useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsAuthenticated(true);
+        setIsAuthenticated(true);
     }
-  }, []);
+}, []);
 
-  const checkAuthStatus = async () => {
+const checkAuthStatus = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      setUser(null);
-      return;
+        setUser(null);
+        return;
     }
 
     try {
-      const response = await  ("http://127.0.0.1:8000/api/user", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/json"
-        }
-      });
+        const response = await fetch("http://127.0.0.1:8000/api/user", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/json"
+            }
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      } else {
+        if (response.ok) {
+            const data = await response.json();
+            setUser(data.user);
+        } else {
+            localStorage.removeItem("token");
+            setUser(null);
+        }
+    } catch (error) {
         localStorage.removeItem("token");
         setUser(null);
-      }
-    } catch (error) {
-      localStorage.removeItem("token");
-      setUser(null);
     }
-  };
+};
 
-  return (
+return (
     <LoginContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        loginUser,
-        registerUser,
-        verifyEmail,
-        resendVerificationCode,
-        logout,
-        checkAuthStatus,
-        errorMessage,
-        successMessage,
-        verificationStep,
-        tempEmail,
-        userId
-      }}
+        value={{
+            user,
+            isAuthenticated,
+            loginUser,
+            registerUser,
+            verifyEmail,
+            resendVerificationCode,
+            logout,
+            checkAuthStatus,
+            errorMessage,
+            successMessage,
+            verificationStep,
+            tempEmail,
+            userId
+        }}
     >
-      {children}
+        {children}
     </LoginContext.Provider>
-  );
+);
 };
 
 LoginProvider.propTypes = {
-  children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired
 };
