@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GetCoupons, UpdateVouchers } from "../service/api_service";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {
+  GetCoupons,
+  UpdateVouchers,
+  GetCouponDetails,
+} from "../service/api_service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateVoucher = () => {
   const { VoucherID } = useParams();
@@ -16,12 +20,12 @@ const UpdateVoucher = () => {
     UsageLimit: "",
     ExpiresAt: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchVoucherDetails = async () => {
       try {
-        const response = await GetCoupons(VoucherID);
+        const response = await GetCouponDetails(VoucherID);
         if (response.data && response.data.length > 0) {
           const voucher = response.data[0];
           setVoucherData({
@@ -48,15 +52,20 @@ const UpdateVoucher = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
       await UpdateVouchers(VoucherID, voucherData);
-      localStorage.setItem('successMessage', 'Voucher đã được cập nhật thành công!');
-      navigate('/admin/vouchers');
+      localStorage.setItem(
+        "successMessage",
+        "Voucher đã được cập nhật thành công!"
+      );
+      navigate("/admin/vouchers");
     } catch (error) {
-      console.error('Lỗi khi cập nhật voucher:', error);
-      const errorMessage = error.response?.data?.message || 'Lỗi khi cập nhật voucher. Vui lòng thử lại.';
+      console.error("Lỗi khi cập nhật voucher:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Lỗi khi cập nhật voucher. Vui lòng thử lại.";
       setError(errorMessage);
       toast.error(errorMessage);
     }
@@ -124,10 +133,10 @@ const UpdateVoucher = () => {
           <Button type="submit" color="green" className="w-full">
             Update Voucher
           </Button>
-          <Button 
-            type="button" 
-            color="blue" 
-            className="w-full mt-4" 
+          <Button
+            type="button"
+            color="blue"
+            className="w-full mt-4"
             onClick={handleBackToList}
           >
             List Voucher
