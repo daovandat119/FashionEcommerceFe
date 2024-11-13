@@ -20,8 +20,8 @@ export default function Checkout() {
     },
     {
       id: 2,
-      name: "Chuyển khoản ngân hàng",
-      description: "Chuyển khoản qua tài khoản ngân hàng",
+      name: "Thanh toán qua VNPAY",
+      description: "Thanh toán trực tuyến qua VNPAY",
     },
   ];
 
@@ -37,8 +37,9 @@ export default function Checkout() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAddresses(response.data.data);
-      } catch (err) {
+      } catch (error) {
         setError("Không thể tải địa chỉ");
+        console.error(error);
       }
     };
     fetchAddresses();
@@ -74,6 +75,31 @@ export default function Checkout() {
     updateOrderData({ AddressID: addressId });
   };
 
+  const handlePayment = async () => {
+    const totalAmount = totalPrice + 19; // Tính tổng tiền
+    const userId = orderData.UserID || localStorage.getItem("userId"); // Lấy UserID từ orderData hoặc local storage
+
+    // Kiểm tra xem userId có hợp lệ không
+    if (!userId) {
+      setError("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.");
+      navigate('/login'); // Điều hướng đến trang đăng nhập
+      return;
+    }
+
+    try {
+      // Gọi API thanh toán với tổng tiền và userId
+      const response = await axios.get(`http://127.0.0.1:8000/pay/${totalAmount}/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      // Chuyển hướng đến URL thanh toán VNPAY
+      window.location.href = response.data.paymentUrl; // Giả sử API trả về paymentUrl
+    } catch (error) {
+      setError("Lỗi khi thanh toán. Vui lòng thử lại.");
+      console.error(error);
+    }
+  };
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError("");
@@ -93,14 +119,20 @@ export default function Checkout() {
 
     const orderPayload = {
       AddressID: parseInt(orderData.AddressID),
-      PaymentMethodID: 1,
-      TotalAmount: total, // Thêm TotalAmount vào payload
+      PaymentMethodID: orderData.PaymentMethodID, // Sử dụng phương thức thanh toán đã chọn
+      TotalAmount: total,
       products: cartItems.map((item) => ({
         ProductID: item.ProductID,
         VariantID: item.VariantID,
         Quantity: item.Quantity,
       })),
     };
+
+    // Nếu phương thức thanh toán là VNPAY, gọi hàm handlePayment
+    if (orderData.PaymentMethodID === 2) {
+      handlePayment();
+      return; // Ngừng thực hiện các bước tiếp theo
+    }
 
     try {
       const response = await axios.post(
@@ -186,12 +218,22 @@ export default function Checkout() {
                 onChange={(e) => handleAddressSelect(e.target.value)}
               >
                 <option value="">-- Chọn địa chỉ giao hàng --</option>
-                {addresses.map((address) => (
+                {addresses.filter(address => address.IsDefault).map((address) => (
                   <option key={address.AddressID} value={address.AddressID}>
-                    {address.Username} | {address.PhoneNumber} | {address.Address}
+                    {address.UserName} | {address.PhoneNumber} | {address.Address}
                   </option>
                 ))}
               </select>
+              {orderData.AddressID && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => navigate('/account_edit_address')}
+                    className="text-gray-600 hover:text-blue-800  transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Thay đổi địa chỉ
+                  </button>
+                </div>
+              )}
             </div>
   
             {/* Phần phương thức thanh toán */}
@@ -281,7 +323,7 @@ export default function Checkout() {
                       <span className="text-base font-medium text-gray-900">
                         Tổng cộng
                       </span>
-                      <span className="text-base font-semibold text-blue-600">
+                      <span className="text-base font-semibold text-gray-600">
                         ${(totalPrice + 19 + totalPrice * 0.1).toFixed(2)}
                       </span>
                     </div>
@@ -294,8 +336,8 @@ export default function Checkout() {
                 <button
                   onClick={handlePlaceOrder}
                   disabled={!orderData.AddressID || cartItems.length === 0}
-                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-medium
-                             hover:bg-blue-700 transition-colors duration-200
+                  className="w-full bg-gray-600 text-white py-4 px-6 rounded-lg font-medium
+                             hover:bg-gray-700 transition-colors duration-200
                              disabled:opacity-50 disabled:cursor-not-allowed
                              flex items-center justify-center gap-2"
                 >

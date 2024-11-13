@@ -81,7 +81,7 @@ const ProductDetail = () => {
     };
 
     initializeData();
-  }, [id]); // Chỉ phụ thuộc vào id
+  }, [id,fetchWishlistItems]); // Chỉ phụ thuộc vào id
 
   useEffect(() => {
     const loadData = async () => {

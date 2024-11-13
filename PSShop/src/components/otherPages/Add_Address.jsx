@@ -1,26 +1,31 @@
 import PropTypes from 'prop-types';
-import  { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function Add_Address({ onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
-    Username: '',
+    UserName: '',
     PhoneNumber: '',
     Address: '',
+    DistrictID: '',
+    WardCode: '',
     isDefault: false
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const fieldMapping = {
-      'fullName': 'Username',
+      'fullName': 'UserName',
       'phoneNumber': 'PhoneNumber',
       'address': 'Address',
+      'districtID': 'DistrictID',
+      'wardCode': 'WardCode',
       'isDefault': 'isDefault'
     };
 
     const stateField = fieldMapping[name] || name;
-    
+
     setFormData(prevState => ({
       ...prevState,
       [stateField]: type === 'checkbox' ? checked : value
@@ -29,23 +34,27 @@ function Add_Address({ onSuccess, onCancel }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    
-    if (!formData.Username || !formData.PhoneNumber || !formData.Address) {
+
+    if (!formData.UserName || !formData.PhoneNumber || !formData.Address || !formData.DistrictID || !formData.WardCode) {
       alert('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
+    const token = localStorage.getItem('token');
     const dataToSend = {
-      UserName: formData.Username,
+      UserID: localStorage.getItem('userId'), // Giả sử bạn lưu userId trong localStorage
+      UserName: formData.UserName,
       PhoneNumber: formData.PhoneNumber,
       Address: formData.Address,
-      isDefault: formData.isDefault ? 1 : 0
+      DistrictID: formData.DistrictID,
+      WardCode: formData.WardCode,
+      IsDefault: formData.isDefault ? 1 : 0,
+      Status: 'ACTIVE'
     };
 
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/api/address', 
+        'http://127.0.0.1:8000/api/address',
         dataToSend,
         {
           headers: {
@@ -55,15 +64,13 @@ function Add_Address({ onSuccess, onCancel }) {
         }
       );
 
-      console.log('Response:', response);
-      
-      if (response.status === 200 || response.status === 201) {
-        alert('Thêm địa chỉ thành công!');
+      if (response.status === 201) {
+        toast.success('Thêm địa chỉ thành công!');
         onSuccess();
       }
     } catch (error) {
       console.error('Lỗi chi tiết:', error.response?.data);
-      alert('Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!');
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!');
     }
   };
 
@@ -78,7 +85,7 @@ function Add_Address({ onSuccess, onCancel }) {
               type="text"
               className="form-control"
               name="fullName"
-              value={formData.Username}
+              value={formData.UserName}
               onChange={handleChange}
               required
             />
@@ -103,6 +110,30 @@ function Add_Address({ onSuccess, onCancel }) {
             className="form-control"
             name="address"
             value={formData.Address}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Mã quận</label>
+          <input
+            type="text"
+            className="form-control"
+            name="districtID"
+            value={formData.DistrictID}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Mã phường</label>
+          <input
+            type="text"
+            className="form-control"
+            name="wardCode"
+            value={formData.WardCode}
             onChange={handleChange}
             required
           />

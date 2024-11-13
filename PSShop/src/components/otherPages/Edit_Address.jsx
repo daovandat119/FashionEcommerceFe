@@ -5,54 +5,79 @@ import { toast } from 'react-toastify';
 
 function Edit_Address({ address, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
-    Username: '',
+    UserName: '',
     PhoneNumber: '',
     Address: '',
+    DistrictID: '',
+    WardCode: '',
     isDefault: false
   });
 
   useEffect(() => {
     if (address) {
       setFormData({
-        Username: address.Username,
+        UserName: address.UserName,
         PhoneNumber: address.PhoneNumber,
         Address: address.Address,
+        DistrictID: address.DistrictID,
+        WardCode: address.WardCode,
         isDefault: address.IsDefault === 1
+      });
+    } else {
+      setFormData({
+        UserName: '',
+        PhoneNumber: '',
+        Address: '',
+        DistrictID: '',
+        WardCode: '',
+        isDefault: false
       });
     }
   }, [address]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+    const fieldMapping = {
+      'fullName': 'UserName',
+      'phoneNumber': 'PhoneNumber',
+      'address': 'Address',
+      'districtID': 'DistrictID',
+      'wardCode': 'WardCode',
+      'isDefault': 'isDefault'
+    };
+
+    const stateField = fieldMapping[name] || name;
+
     setFormData(prevState => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value
+      [stateField]: type === 'checkbox' ? checked : value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log('Address prop:', address);
-    
     const token = localStorage.getItem('token');
-    
-    if (!formData.Username || !formData.PhoneNumber || !formData.Address) {
+
+    if (!formData.UserName || !formData.PhoneNumber || !formData.Address || !formData.DistrictID || !formData.WardCode) {
       alert('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
     const dataToSend = {
       UserID: address.UserID,
-      UserName: formData.Username,
+      UserName: formData.UserName,
       PhoneNumber: formData.PhoneNumber,
       Address: formData.Address,
+      DistrictID: formData.DistrictID,
+      WardCode: formData.WardCode,
       IsDefault: formData.isDefault ? 1 : 0
     };
 
+    // console.log("Data to send:", dataToSend);
+
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/address/${address.AddressID}`, 
+        `http://127.0.0.1:8000/api/address/${address.AddressID}`,
         dataToSend,
         {
           headers: {
@@ -63,12 +88,38 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       );
 
       if (response.status === 200) {
-       toast.success('Cập nhật địa chỉ thành công!');
+        toast.success('Cập nhật địa chỉ thành công!');
         onSuccess();
       }
     } catch (error) {
       console.error('Lỗi chi tiết:', error.response?.data);
       toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại!');
+    }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    const token = localStorage.getItem('token');
+    if (formData.isDefault) {
+      alert('Vui lòng chuyển địa chỉ mặc định sang địa chỉ khác trước khi xóa!');
+      return;
+    }
+    if (window.confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+      try {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/address/${addressId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 200) {
+          toast.success('Địa chỉ đã được xóa thành công!');
+          onSuccess();
+        }
+      } catch (error) {
+        console.error('Lỗi khi xóa địa chỉ:', error.response?.data);
+        toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa địa chỉ.');
+      }
     }
   };
 
@@ -82,8 +133,8 @@ function Edit_Address({ address, onSuccess, onCancel }) {
             <input
               type="text"
               className="form-control"
-              name="Username"
-              value={formData.Username}
+              name="fullName"
+              value={formData.UserName || ''}
               onChange={handleChange}
               required
             />
@@ -93,7 +144,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
             <input
               type="tel"
               className="form-control"
-              name="PhoneNumber"
+              name="phoneNumber"
               value={formData.PhoneNumber}
               onChange={handleChange}
               required
@@ -106,7 +157,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
           <input
             type="text"
             className="form-control"
-            name="Address"
+            name="address"
             value={formData.Address}
             onChange={handleChange}
             required
@@ -114,19 +165,27 @@ function Edit_Address({ address, onSuccess, onCancel }) {
         </div>
 
         <div className="mb-3">
-          <div className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              name="isDefault"
-              id="isDefault"
-              checked={formData.isDefault}
-              onChange={handleChange}
-            />
-            <label className="form-check-label" htmlFor="isDefault">
-              Đặt làm địa chỉ mặc định ({formData.isDefault ? '1' : '0'})
-            </label>
-          </div>
+          <label className="form-label">Mã quận</label>
+          <input
+            type="text"
+            className="form-control"
+            name="districtID"
+            value={formData.DistrictID}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Mã phường</label>
+          <input
+            type="text"
+            className="form-control"
+            name="wardCode"
+            value={formData.WardCode}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <div className="d-flex gap-2">
@@ -140,6 +199,13 @@ function Edit_Address({ address, onSuccess, onCancel }) {
           >
             Hủy
           </button>
+          <button 
+            type="button" 
+            className="btn btn-danger"
+            onClick={() => handleDeleteAddress(address.AddressID)}
+          >
+            Xóa địa chỉ
+          </button>
         </div>
       </form>
     </div>
@@ -150,9 +216,11 @@ Edit_Address.propTypes = {
   address: PropTypes.shape({
     AddressID: PropTypes.number.isRequired,
     UserID: PropTypes.number.isRequired,
-    Username: PropTypes.string.isRequired,
+    UserName: PropTypes.string.isRequired,
     PhoneNumber: PropTypes.string.isRequired,
     Address: PropTypes.string.isRequired,
+    DistrictID: PropTypes.string.isRequired,
+    WardCode: PropTypes.string.isRequired,
     IsDefault: PropTypes.number.isRequired
   }).isRequired,
   onSuccess: PropTypes.func.isRequired,

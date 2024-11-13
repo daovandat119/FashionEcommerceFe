@@ -60,7 +60,16 @@ export default function Headers() {
           <div className="header-tools d-flex align-items-center">
             {/* Search button */}
             {isSearchVisible ? (
-              <SearchBar onSearch={handleSearchResults} />
+              <div className="relative flex items-center">
+                <SearchBar onSearch={handleSearchResults} />
+                {/* Nút đóng thanh tìm kiếm */}
+                <button 
+                  className="absolute right-0 top-0 p-2 text-gray-500"
+                  onClick={toggleSearch}
+                >
+                  x
+                </button>
+              </div>
             ) : (
               <div className="header-tools__item hover-container">
                 <button
