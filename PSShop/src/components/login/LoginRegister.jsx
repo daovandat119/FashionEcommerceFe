@@ -1,25 +1,30 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginContext } from "./LoginContext"; // Đảm bảo đúng đường dẫn
+import GoogleLogin from './GoogleLogin'; // Import component đăng nhập bằng Google
 
 export default function LoginRegister() {
   const { 
     registerUser, 
     loginUser, 
-    verifyEmail,          // Thêm
-    resendVerificationCode, // Thêm
+    verifyEmail, 
+    resendVerificationCode, 
     errorMessage, 
     successMessage,
-    verificationStep,     // Thêm
-    tempEmail,           // Thêm
-    userId              // Thêm
+    verificationStep, 
+    tempEmail, 
+    userId,
+    forgotPassword // Thêm forgotPassword vào context
   } = useContext(LoginContext);
+
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState(""); // Thêm trạng thái quên mật khẩu
+  const [showForgotPassword, setShowForgotPassword] = useState(false); // Trạng thái hiển thị form quên mật khẩu
   const navigate = useNavigate();
   
   const handleLoginSubmit = (e) => {
@@ -31,10 +36,21 @@ export default function LoginRegister() {
     e.preventDefault();
     registerUser(registerUsername, registerEmail, registerPassword, navigate);
   };
+
   const handleVerificationSubmit = (e) => {
     e.preventDefault();
     verifyEmail(verificationCode, userId, navigate);
   };
+
+  const handleForgotPasswordSubmit = (e) => {
+    e.preventDefault();
+    forgotPassword(forgotPasswordEmail).then(() => {
+        // Chuyển hướng về trang đăng nhập sau khi gửi yêu cầu thành công
+        setShowForgotPassword(false);
+        setLoginEmail(forgotPasswordEmail); // Tự động điền email vào ô đăng nhập
+    });
+};
+
   if (verificationStep && tempEmail) {
     return (
       <section className="login-register container">
@@ -79,7 +95,38 @@ export default function LoginRegister() {
         </div>
       </section>
     );
+  } else if (showForgotPassword) { // Hiển thị form quên mật khẩu
+    return (
+      <section className="login-register container">
+        <h2 className="d-none">Quên mật khẩu</h2>
+        
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+        {successMessage && <div className="alert alert-success">{successMessage}</div>}
+
+        <div className="forgot-password-form">
+          <form onSubmit={handleForgotPasswordSubmit} className="needs-validation">
+            <h4 className="text-center mb-4">Quên mật khẩu</h4>
+            <div className="form-floating mb-3">
+              <input
+                type="email"
+                className="form-control form-control_gray"
+                placeholder="Nhập email của bạn"
+                value={forgotPasswordEmail}
+                onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                required
+              />
+              <label>Nhập email của bạn</label>
+            </div>
+
+            <button className="btn btn-primary w-100 text-uppercase mb-3" type="submit">
+              Gửi yêu cầu đặt lại mật khẩu
+            </button>
+          </form>
+        </div>
+      </section>
+    );
   }
+
   return (
     <section className="login-register container">
       <h2 className="d-none">Login & Register</h2>
@@ -87,7 +134,6 @@ export default function LoginRegister() {
       {/* Hiển thị lỗi và thông báo thành công */}
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
-
 
       <ul className="nav nav-tabs mb-5" id="login_register" role="tablist">
         <li className="nav-item" role="presentation">
@@ -169,9 +215,9 @@ export default function LoginRegister() {
                     Remember me
                   </label>
                 </div>
-                <Link to="/reset_password" className="btn-text ms-auto">
-                  Lost password?
-                </Link>
+                <button type="button" className="btn-text ms-auto" onClick={() => setShowForgotPassword(true)}>
+                  Quên mật khẩu?
+                </button>
               </div>
 
               <button className="btn btn-primary w-100 text-uppercase" type="submit">
@@ -259,6 +305,11 @@ export default function LoginRegister() {
             </form>
           </div>
         </div>
+      </div>
+
+      {/* Giao diện đăng nhập bằng Google */}
+      <div className="text-center mt-4">
+        <GoogleLogin />
       </div>
     </section>
   );

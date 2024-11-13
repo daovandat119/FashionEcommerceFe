@@ -236,10 +236,43 @@ const checkAuthStatus = async () => {
     }
 };
 
+const forgotPassword = async (email) => {
+  setErrorMessage("");
+  setSuccessMessage("");
+
+  try {
+      const response = await fetch("http://127.0.0.1:8000/api/forgot-password", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+          },
+          body: JSON.stringify({ Email: email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+          setSuccessMessage(data.message);
+      } else {
+          setErrorMessage(data.message);
+      }
+  } catch (error) {
+      setErrorMessage("Đã xảy ra lỗi khi gửi yêu cầu đặt lại mật khẩu.");
+  }
+};
+
+const googleLogin = async () => {
+  // Thực hiện logic đăng nhập bằng Google ở đây
+  // Có thể sử dụng Firebase hoặc một thư viện khác để xử lý đăng nhập bằng Google
+};
+
 return (
     <LoginContext.Provider
         value={{
             user,
+            googleLogin,
+            forgotPassword,
             isAuthenticated,
             loginUser,
             registerUser,
