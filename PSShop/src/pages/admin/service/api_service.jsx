@@ -6,7 +6,7 @@ const LoginAdmin = (Email, Password) => {
 
 const ListCategories = (page, search = "") => {
   return axios.get(
-    `/api/categories?Page=${page}&Search=${encodeURIComponent(search)}`
+    `/api/categories/admin?Page=${page}&Search=${encodeURIComponent(search)}`
   ); // Thêm tham số tìm kiếm
 };
 
@@ -15,7 +15,7 @@ const AddCategory = (CategoryName) => {
 };
 
 const GetCategoryById = (CategoryID) => {
-  return axios.get(`/api/categories/${CategoryID}`);
+  return axios.get(`/api/categories${CategoryID}`);
 };
 
 const UpdateCategory = (CategoryID, CategoryName) => {
@@ -28,8 +28,8 @@ const DeleteCategories = (ids) => {
 };
 
 const ListProducts = (page, search = "") => {
-  return axios.get(
-    `/api/products?Page=${page}&Search=${encodeURIComponent(search)}`
+  return axios.post(
+    `/api/products/admin?Page=${page}&Search=${encodeURIComponent(search)}`
   ); // Thêm tham số tìm kiếm
 };
 
@@ -150,6 +150,46 @@ const UpdateUserStatus = (UserID, data = null) => {
   }
 };
 
+const GetCoupons = () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.post(
+    "/api/coupons/checkCoupon?admin=1",
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    }
+  );
+};
+
+const GetCouponDetails = (code) => {
+  return axios.post("/api/coupons/details", { Code: code });
+};
+
+const AddVouchers = (voucherData) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.post("/api/coupons", voucherData, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Gửi token trong header
+    },
+  });
+};
+
+const UpdateVouchers = (VoucherID, voucherData) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.put(`/api/coupons/${VoucherID}`, voucherData, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Gửi token trong header
+    },
+  });
+};
+
+const DeleteVouchers = (ids) => {
+  const idsString = Array.isArray(ids) ? ids.join(",") : ids; // Chuyển đổi mảng ID thành chuỗi
+  return axios.delete(`/api/coupons?ids=${idsString}`); // Gọi API xóa voucher
+};
+
 export {
   LoginAdmin,
   ListCategories,
@@ -182,5 +222,10 @@ export {
   UpdateCategoryStatus,
   GetUserById,
   BlockedUser,
-  UpdateUserStatus
+  UpdateUserStatus,
+  GetCoupons,
+  GetCouponDetails,
+  AddVouchers,
+  UpdateVouchers,
+  DeleteVouchers,
 };
