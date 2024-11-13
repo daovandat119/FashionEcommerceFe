@@ -325,10 +325,15 @@ const AddProducts = () => {
             )}
           </div>
           <div className="mb-4">
-            {renderImageUpload("Main Image", "MainImageURL")}
-          </div>
-          <div className="mb-4">
-            {renderImageUpload("Additional Images", "ImagePath", true)}
+            <h2 className="text-lg font-semibold mb-2">Upload Images</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border border-dashed border-gray-300 rounded-md p-4">
+                {renderImageUpload("Main Image", "MainImageURL")}
+              </div>
+              <div className="border border-dashed border-gray-300 rounded-md p-4">
+                {renderImageUpload("Additional Images", "ImagePath", true)}
+              </div>
+            </div>
           </div>
           <div className="mb-4">
             <Textarea
