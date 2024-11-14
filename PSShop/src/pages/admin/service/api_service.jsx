@@ -153,7 +153,7 @@ const UpdateUserStatus = (UserID, data = null) => {
 const GetCoupons = () => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(
-    "/api/coupons/checkCoupon?admin=1",
+    "/api/coupons/checkCoupon",
     {},
     {
       headers: {
@@ -163,8 +163,8 @@ const GetCoupons = () => {
   );
 };
 
-const GetCouponDetails = (code) => {
-  return axios.post("/api/coupons/details", { Code: code });
+const GetCouponDetails = (id) => {
+  return axios.get(`/api/coupons/${id}`);
 };
 
 const AddVouchers = (voucherData) => {
