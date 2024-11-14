@@ -619,7 +619,7 @@ const ProductDetail = () => {
                   items: product.Features ? product.Features.split("\n") : [],
                 },
                 details: {
-                  title: "Thng tin chi tit",
+                  title: "Thông tin chi tiết",
                   items: [
                     `Gi: $${product.Price}`,
                     `Thương hiệu: ${product.Brand || "Chưa cập nhật"}`,
