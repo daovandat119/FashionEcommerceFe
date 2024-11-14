@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Cart() {
   const {
@@ -20,19 +21,55 @@ export default function Cart() {
     fetchCartItems,
   } = useContextElement();
 
-  useEffect(() => {
-    fetchCartItems(); // Fetch dữ liệu khi component mount
-  }, [fetchCartItems]);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchCartItems(); // Fetch dữ liệu khi component mount
   }, [fetchCartItems]);
+
+  const applyCoupon = async () => {
+    const token = localStorage.getItem("token"); // Lấy token từ localStorage
+    if (!token) {
+      setError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/coupons/details", { Code: couponCode }, {
+        headers: { Authorization: `Bearer ${token}` }, // Thêm header xác thực
+      });
+      const coupon = response.data.data;
+
+      if (coupon) {
+        if (totalPrice >= coupon.MinimumOrderValue) {
+          const discountAmount = (totalPrice * coupon.DiscountPercentage) / 100;
+          setDiscount(discountAmount);
+          setError(""); // Xóa thông báo lỗi nếu áp dụng thành công
+        } else {
+          setError("Mã không được áp dụng. Giá trị đơn hàng phải lớn hơn " + coupon.MinimumOrderValue);
+        }
+      } else {
+        setError("Mã giảm giá không hợp lệ.");
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.status === 401) {
+        setError("Bạn cần đăng nhập để thực hiện hành động này.");
+      } else {
+        setError("Lỗi khi kiểm tra mã giảm giá.");
+      }
+    }
+  };
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
       <div className="cart-table__wrapper">
         {cartProducts.length ? (
           <>
+           
+
             <table className="cart-table">
               <thead>
                 <tr>
@@ -147,10 +184,27 @@ export default function Cart() {
                       aria-hidden="true"
                     ></span>
                   ) : null}
-  Xóa sản phẩm đã chọn ({selectedItems.length})
+                  Xóa sản phẩm đã chọn ({selectedItems.length})
                 </button>
               </div>
             </div>
+
+<br /><br />
+            <div className="coupon-section">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="Nhập mã giảm giá"
+                className="form-control"
+              />
+              <button onClick={applyCoupon} className="btn btn-primary">
+                Áp dụng
+              </button>
+              {error && <div className="text-danger">{error}</div>}
+            </div>
+
+
           </>
         ) : (
           <>
@@ -174,58 +228,15 @@ export default function Cart() {
                     <td>${formatPrice(totalPrice)}</td>
                   </tr>
                   <tr>
-                    <th>Shipping</th>
-                    <td>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="free_shipping"
-                          checked={checkboxes.free_shipping}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="free_shipping"
-                        >
-                          Free shipping
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="flat_rate"
-                          checked={checkboxes.flat_rate}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label className="form-check-label" htmlFor="flat_rate">
-                          Flat rate: $49
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="local_pickup"
-                          checked={checkboxes.local_pickup}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="local_pickup"
-                        >
-                          Local pickup: $8
-                        </label>
-                      </div>
-                    </td>
+                    <th>Discount</th>
+                    <td>${formatPrice(discount)}</td>
                   </tr>
                   <tr>
                     <th>Total</th>
                     <td>
                       $
                       {formatPrice(
-                        parseFloat(totalPrice) +
+                        parseFloat(totalPrice) - discount +
                           (checkboxes.flat_rate ? 49 : 0) +
                           (checkboxes.local_pickup ? 8 : 0)
                       )}

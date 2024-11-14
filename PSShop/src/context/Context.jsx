@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   createContext,
@@ -134,7 +135,12 @@ export default function ContextProvider({ children }) {
 
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+
+    if (!token) {
+      setCartProducts([]);
+      setTotalPrice(0);
+      return;
+    }
 
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
@@ -163,7 +169,6 @@ export default function ContextProvider({ children }) {
             };
           })
         );
-
 
         setCartProducts(detailedCartItems);
         const total = calculateTotalPrice(detailedCartItems);
@@ -210,7 +215,7 @@ export default function ContextProvider({ children }) {
       console.error("Error adding to cart:", error);
       Swal.fire({
         title: "Lỗi",
-        text: error.response?.data?.message || "Đã có lỗi xảy ra",
+        text: error.response?.data?.message || "ã có lỗi xảy ra",
         icon: "error",
       });
       throw error;

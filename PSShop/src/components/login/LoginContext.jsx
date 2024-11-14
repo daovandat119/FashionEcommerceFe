@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { createContext, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
@@ -49,14 +50,17 @@ export const LoginProvider = ({ children }) => {
             // Xử lý thành công
             setSuccessMessage("Đăng nhập thành công!");
             localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.user.UserID);
             setUser(data.user);
             setIsAuthenticated(true);
+           
             if (data.user?.UserID) {
                 setUserId(data.user.UserID);
-                localStorage.setItem("tempUserId", data.user.UserID); // Lưu tạm UserID
+                localStorage.setItem("UserId", data.user.UserID); // Lưu tạm UserID
             }
             setTimeout(() => {
                 navigate("/");
+                window.location.reload();
             }, 1000);
         } else if (response.status === 403) {
             // Trường hợp cần xác thực
@@ -65,7 +69,7 @@ export const LoginProvider = ({ children }) => {
             setTempEmail(Email);
             if (data.UserID) {
                 setUserId(data.UserID); // Lưu UserID để sử dụng trong xác thực
-                localStorage.setItem("tempUserId", data.UserID); // Lưu tạm UserID
+                localStorage.setItem("UserId", data.UserID); // Lưu tạm UserID
             }
             setTempLoginInfo({ Email, Password });
         } else {
