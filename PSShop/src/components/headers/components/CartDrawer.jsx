@@ -20,6 +20,7 @@ export default function CartDrawer() {
       .classList.remove("page-overlay_visible");
     document.getElementById("cartDrawer").classList.remove("aside_visible");
     setIsOpen(false);
+    fetchCartItems(); // Cập nhật giỏ hàng sau khi đóng
   };
 
   useEffect(() => {
@@ -74,29 +75,32 @@ export default function CartDrawer() {
                     </p>
                     <div className="flex items-center justify-between w-32">
                       <div className="flex items-center space-x-2">
-                      <button
-                        className="w-6 h-6 flex items-center justify-center border rounded"
-                        onClick={() => setQuantity(item.CartItemID, item.Quantity - 1)}
-                        disabled={loading || item.Quantity <= 1}
-                      >
-                        -
-                      </button>
+                        <button
+                          className="w-6 h-6 flex items-center justify-center border rounded"
+                          onClick={() => setQuantity(item.CartItemID, item.Quantity - 1)}
+                          disabled={loading || item.Quantity <= 1}
+                        >
+                          -
+                        </button>
                         <span className="w-8 text-center">{item.Quantity}</span>
                         <button
-                        className="w-6 h-6 flex items-center justify-center border rounded"
-                        onClick={() => setQuantity(item.CartItemID, item.Quantity + 1)}
-                        disabled={loading}
-                      >
-                        +
-                      </button>
+                          className="w-6 h-6 flex items-center justify-center border rounded"
+                          onClick={() => setQuantity(item.CartItemID, item.Quantity + 1)}
+                          disabled={loading}
+                        >
+                          +
+                        </button>
                       </div>
                       <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => removeCartItem(item.CartItemID)}
-                      disabled={loading}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => {
+                          removeCartItem(item.CartItemID);
+                          fetchCartItems(); // Cập nhật giỏ hàng sau khi xóa
+                        }}
+                        disabled={loading}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
                     </div>
                   </div>
                 </div>

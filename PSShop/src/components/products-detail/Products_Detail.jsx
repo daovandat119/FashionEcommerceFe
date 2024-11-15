@@ -303,8 +303,11 @@ const ProductDetail = () => {
 
         {/* Thông tin sản phẩm */}
         <div className="col-lg-5">
-          <h1 className="product-single__name">{product.ProductName}</h1>
-          <div className="flex items-center gap-3">
+          <h1 className="product-single__name text-2xl font-bold mb-4">
+            {product.ProductName}
+          </h1>
+
+          <div className="flex items-center gap-3 mb-4">
             <span className="text-xl font-semibold text-blue-600">
               ${(variantPrice || product?.Price || 0).toLocaleString()}
             </span>
@@ -320,16 +323,20 @@ const ProductDetail = () => {
             )}
           </div>
 
-          <div className="product-rating mt-2">
-            <span>Average Rating: {product.average_rating}</span>
-            <span>Total Sold: {product.total_sold}</span>
+          <div className="product-rating mt-2 mb-4">
+            <span className="text-sm">
+              Average Rating: {product.average_rating}
+            </span>
+            <span className="text-sm ml-4">
+              Total Sold: {product.total_sold}
+            </span>
           </div>
 
-          <p className="product-views">Views: {product.Views}</p>
-          <p className="product-single__short-desc">
+          <p className="product-views text-sm mb-2">Views: {product.Views}</p>
+          <p className="product-single__short-desc mb-2">
             {product.ShortDescription}
           </p>
-          <p className="description">{product.Description}</p>
+          <p className="description mb-4">{product.Description}</p>
 
           {/* Chọn kích thước và màu sắc */}
           <form onSubmit={handleAddToCart} className="space-y-6">
@@ -366,13 +373,13 @@ const ProductDetail = () => {
 
               {/* Product Colors */}
               <div className="product-swatch color-swatches">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 ">
                   Màu sắc
                 </label>
                 <div className="relative">
                   <div className="swatch-list flex gap-2 overflow-x-auto pb-1 hide-scrollbar max-w-[195px]">
                     {colors.map((color) => (
-                      <div key={color.ColorID} className="flex-shrink-0 ml-1">
+                      <div key={color.ColorID} className="flex-shrink-0">
                         <input
                           type="radio"
                           name="color"
@@ -381,12 +388,11 @@ const ProductDetail = () => {
                           onChange={() => setSelectedColor(color)}
                         />
                         <label
-                          className={`block w-7 h-7 rounded-full cursor-pointer transition-all duration-200 relative hover:scale-110
-                    ${
-                      selectedColor?.ColorID === color.ColorID
-                        ? "ring-1 ring-blue-500 ring-offset-1"
-                        : "ring-[0.5px] ring-gray-200"
-                    }`}
+                          className={`block w-7 h-7 rounded-full cursor-pointer transition-all duration-200 relative hover:scale-110 ${
+                            selectedColor?.ColorID === color.ColorID
+                              ? "ring-1 ring-blue-500 ring-offset-1"
+                              : "ring-[0.5px] ring-gray-200"
+                          }`}
                           htmlFor={`color-${color.ColorID}`}
                           title={color.ColorName}
                         >
@@ -406,7 +412,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Quantity Selector */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mb-4">
               <label className="text-sm font-medium text-gray-700">
                 Số lượng
               </label>
@@ -490,7 +496,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Add to Cart and Wishlist Buttons */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mb-4">
               <button
                 type="submit"
                 disabled={

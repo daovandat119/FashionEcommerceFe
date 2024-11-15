@@ -211,7 +211,7 @@ export default function ContextProvider({ children }) {
   const removeSelectedItems = async () => {
     if (selectedItems.length === 0) return;
     const token = localStorage.getItem('token');
-
+    const ids = selectedItems.join(','); 
     try {
       await axios.delete(
         `http://127.0.0.1:8000/api/cart-items`,
@@ -220,7 +220,7 @@ export default function ContextProvider({ children }) {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          data: { ids: selectedItems },
+          data: { ids }, 
         }
       );
 
@@ -236,31 +236,29 @@ export default function ContextProvider({ children }) {
     }
   };
 
-  const removeCartItem = async (cartItemId) => {
+  const removeCartItem = async () => {
     const token = localStorage.getItem('token');
-
+    const ids = selectedItems.join(','); 
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/api/cart-items`,
+        `http://127.0.0.1:8000/api/cart-items`, // Đảm bảo URL đúng
         {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          data: { ids: [cartItemId] },
+          data: { ids },  // Gửi ID dưới dạng mảng
         }
-      );
-
-      await fetchCartItems();
+      ); // Cập nhật giỏ hàng sau khi xóa
     } catch (error) {
-      console.error('Error removing item from cart:', error);
-      Swal.fire({
-        title: "Lỗi",
-        text: "Không thể xóa sản phẩm khỏi giỏ hàng",
-        icon: "error",
-      });
+        console.error('Error removing item from cart:', error);
+        Swal.fire({
+            title: "Lỗi",
+            text: "Không thể xóa sản phẩm khỏi giỏ hàng",
+            icon: "error",
+        });
     }
-  };
+};
 
   const handleCheckboxChange = (event) => {
     const { id, checked } = event.target;
