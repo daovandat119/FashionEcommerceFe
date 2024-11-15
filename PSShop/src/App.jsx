@@ -53,6 +53,7 @@ import AccountEditAddressPage from './pages/dashboard/account_edit_address/index
 import AccountEditPage from "./pages/dashboard/account_edit";
 // import Add_Address from './components/otherPages/Add_Address';
 import AccountWishlist from "./pages/dashboard/account_wishlist";
+import ErrorPage from "./pages/error/ErrorPage";
 
 function App() {
   return (
@@ -137,6 +138,9 @@ const AppRoutes = () => {
               <Route path="products/edit-variant/:VariantID" element={<UpdateVariant />} />
               <Route path="cart" element={<CartList />} />
             </Route>
+
+            {/* Error route - Phải đặt ở cuối cùng */}
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </ThemeProvider>
       </Context>

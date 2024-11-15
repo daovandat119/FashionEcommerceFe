@@ -1,6 +1,6 @@
 // src/pages/ProductDetailsPage2.jsx hoặc nơi bạn muốn sử dụng Tabs
 
-import { Tabs, Tab } from 'react-bootstrap';
+// import { Tabs, Tab } from 'react-bootstrap';
 import { useParams } from "react-router-dom";
 import Products_Detail from "../Products_Detail";
 import RelatedSlider from "../RelatedSlider";
@@ -29,6 +29,8 @@ export default function ProductDetailsPage2() {
         <div className="mb-md-1 pb-md-3"></div>
         <Products_Detail product={product} />
         <RelatedSlider />
+        <br />
+        
       </main>
       <Footers />
     </>
