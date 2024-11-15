@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 
 export default function Dashboards() {
+ 
+
   return (
     <div className="col-lg-9">
       <div className="page-content my-account__dashboard">
+        
         <p>
           Hello <strong>alitfn58</strong> (not <strong>alitfn58?</strong>
           <Link to="/login_register">Log out</Link>)

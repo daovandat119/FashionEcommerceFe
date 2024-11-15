@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from '../../../context/AuthContext';
-import {
-  Card,
-  List,
-  ListItem,
-  ListItemPrefix,
-} from "@material-tailwind/react";
+import { useAuth } from "../../../context/AuthContext";
+import { Card, List, ListItem, ListItemPrefix } from "@material-tailwind/react";
 import {
   ChartBarIcon,
   ShoppingBagIcon,
@@ -17,7 +12,9 @@ import {
   SwatchIcon,
   ArrowsPointingOutIcon,
   CogIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ShoppingCartIcon,
+  TicketIcon,
 } from "@heroicons/react/24/solid";
 
 import logo from "../../../../public/assets/images/logo.png";
@@ -44,7 +41,10 @@ export function SidebarWithSearch() {
       </div>
 
       <List>
-        <Link to="/admin/dashboard" className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
+        <Link
+          to="/admin/dashboard"
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
+        >
           <ListItem>
             <ListItemPrefix>
               <ChartBarIcon className="h-5 w-5" />
@@ -53,21 +53,32 @@ export function SidebarWithSearch() {
           </ListItem>
         </Link>
 
-        <ListItem onClick={toggleDropdown} className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
-          <ListItemPrefix >
+        <ListItem
+          onClick={toggleDropdown}
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
+        >
+          <ListItemPrefix>
             <CogIcon className="h-5 w-5" />
           </ListItemPrefix>
-         Management
-         
-         <ChevronRightIcon className="h-5 w-5 ml-10"/>
-         
+          Management
+          <ChevronRightIcon className="h-5 w-5 ml-10" />
         </ListItem>
-        
-        <div className={`ml-6 transition-all duration-800 ease-in-out ${isDropdownOpen ? 'h-48 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+
+        <div
+          className={`ml-6 transition-all duration-800 ease-in-out ${
+            isDropdownOpen
+              ? "h-48 opacity-100"
+              : "max-h-0 opacity-0 overflow-hidden"
+          }`}
+        >
           {isDropdownOpen && (
             <>
               <Link to="/admin/products">
-                <ListItem className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${isDropdownOpen ? 'opacity-100' : 'opacity-0'}`}>
+                <ListItem
+                  className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${
+                    isDropdownOpen ? "opacity-100" : "opacity-0"
+                  }`}
+                >
                   <ListItemPrefix>
                     <ShoppingBagIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -75,7 +86,11 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/categories">
-                <ListItem className={`hover:bg-gray-200 duration-800 rounded-xl  transition-opacity duration-300 ${isDropdownOpen ? 'opacity-100' : 'opacity-0'}`}>
+                <ListItem
+                  className={`hover:bg-gray-200 duration-800 rounded-xl  transition-opacity duration-300 ${
+                    isDropdownOpen ? "opacity-100" : "opacity-0"
+                  }`}
+                >
                   <ListItemPrefix>
                     <InboxIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -83,7 +98,11 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/colors">
-                <ListItem className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${isDropdownOpen ? 'opacity-100' : 'opacity-0'}`}>
+                <ListItem
+                  className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${
+                    isDropdownOpen ? "opacity-100" : "opacity-0"
+                  }`}
+                >
                   <ListItemPrefix>
                     <SwatchIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -91,7 +110,11 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/sizes">
-                <ListItem className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${isDropdownOpen ? 'opacity-100' : 'opacity-0'}`}>
+                <ListItem
+                  className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${
+                    isDropdownOpen ? "opacity-100" : "opacity-0"
+                  }`}
+                >
                   <ListItemPrefix>
                     <ArrowsPointingOutIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -102,39 +125,59 @@ export function SidebarWithSearch() {
           )}
         </div>
 
-        <Link to="/admin/users" className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
+        <Link
+          to="/admin/users"
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
+        >
           <ListItem>
             <ListItemPrefix>
               <UserCircleIcon className="h-5 w-5 " />
             </ListItemPrefix>
             Users
           </ListItem>
-        </Link >
-
-        <Link to="/admin/cart" className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
-          <ListItem>
-            <ListItemPrefix>
-              <ShoppingBagIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Cart
-          </ListItem>
         </Link>
 
+        <Link
+          to="/admin/orders"
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
+        >
+          <ListItem>
+            <ListItemPrefix>
+              <ShoppingCartIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Orders
+          </ListItem>
+        </Link>
+        
+        <Link
+          to="/admin/vouchers"
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
+        >
+          <ListItem>
+            <ListItemPrefix>
+              <TicketIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Vouchers
+          </ListItem>
+        </Link>
         <ListItem className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
           <ListItemPrefix>
-            <Cog6ToothIcon className="h-5 w-5"  />
+            <Cog6ToothIcon className="h-5 w-5" />
           </ListItemPrefix>
           Settings
         </ListItem>
 
-       <div onClick={handleLogout} className="w-[80%] absolute bottom-5 hover:bg-gray-200 rounded-xl">
-       <ListItem  >
-          <ListItemPrefix>
-            <PowerIcon className="h-5 w-5 " />
-          </ListItemPrefix>
-          Logout
-        </ListItem>
-       </div>
+        <div
+          onClick={handleLogout}
+          className="w-[80%] absolute bottom-5 hover:bg-gray-200 rounded-xl"
+        >
+          <ListItem>
+            <ListItemPrefix>
+              <PowerIcon className="h-5 w-5 " />
+            </ListItemPrefix>
+            Logout
+          </ListItem>
+        </div>
       </List>
     </Card>
   );

@@ -4,7 +4,6 @@ import { Input, Button, Textarea, Checkbox } from "@material-tailwind/react";
 import {
   ChevronDownIcon,
   CloudArrowUpIcon,
-  PlusIcon,
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";

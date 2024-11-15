@@ -113,7 +113,7 @@ export default function OrderCompleted() {
           <div className="space-y-2 text-gray-600">
             <p className="flex items-center">
               <FaUser className="mr-2" />
-              {addressInfo?.Username}
+              {addressInfo?.UserName}
             </p>
             <p className="flex items-center">
               <FaPhone className="mr-2" />

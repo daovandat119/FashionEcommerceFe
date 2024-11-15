@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
+import { toast } from 'react-toastify';
 
 export default function EditAddress() {
   const [addresses, setAddresses] = useState([]);
@@ -29,6 +30,29 @@ export default function EditAddress() {
   useEffect(() => {
     fetchAddresses();
   }, [fetchAddresses]);
+
+  const handleSetDefaultAddress = async (addressId) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/address/setDefaultAddress/${addressId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success('Địa chỉ đã được đặt làm mặc định!');
+        fetchAddresses(); // Cập nhật danh sách địa chỉ
+      }
+    } catch (error) {
+      console.error('Lỗi khi đặt địa chỉ mặc định:', error.response?.data);
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đặt địa chỉ mặc định.');
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -62,21 +86,30 @@ export default function EditAddress() {
         <div className="my-account__address-list">
           {addresses.length > 0 ? (
             addresses.map((address) => (
-              <div key={address.AddressID} className="my-account__address-item">
-                <div className="my-account__address-item__title">
-                  <h5>{address.Username}</h5>
-                  <div className="d-flex gap-2">
+              <div key={address.AddressID} className={`my-account__address-item p-4 rounded-lg shadow-md transition-transform duration-200 ${address.IsDefault ? 'border-2 border-gray-600 bg-blue-50' : 'border border-gray-200'}`}>
+                <div className="my-account__address-item__title flex justify-between items-center">
+                  <h5 className={`text-lg font-semibold ${address.IsDefault ? 'text-gray-600' : 'text-gray-800'}`}>{address.UserName}</h5>
+                  <div className="flex gap-2">
                     <button 
                       className="btn btn-warning btn-sm"
                       onClick={() => setEditingAddress(address)}
                     >
                       Sửa
                     </button>
+                    <button 
+                      className="btn btn-success btn-sm"
+                      onClick={() => handleSetDefaultAddress(address.AddressID)}
+                    >
+                      Đặt làm mặc định
+                    </button>
                   </div>
                 </div>
-                <div className="my-account__address-item__detail">
-                  <p>{address.Address}</p>
-                  <p>Phone: {address.PhoneNumber}</p>
+                <div className="my-account__address-item__detail mt-2">
+                  <p className="text-gray-700">{address.Address}</p>
+                  <p className="text-gray-600">Phone: {address.PhoneNumber}</p>
+                  {address.IsDefault && (
+                    <span className="inline-block bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-full mt-2">Địa chỉ mặc định</span>
+                  )}
                 </div>
               </div>
             ))
