@@ -3,6 +3,8 @@ import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Cart() {
   const {
@@ -19,9 +21,13 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [error, setError] = useState("");
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
 
   useEffect(() => {
     fetchCartItems(); 
+    fetchColors();
+    fetchSizes();
   }, [fetchCartItems]);
 
   const handleError = (message) => {
@@ -91,9 +97,52 @@ export default function Cart() {
     handleQuantityChange(itemId, productID, colorID, sizeID, newQuantity);
   };
 
+  const fetchColors = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/colors", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setColors(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy màu sắc:", error);
+      handleError("Không thể tải dữ liệu màu sắc.");
+    }
+  };
+
+  const fetchSizes = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/sizes", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSizes(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy kích thước:", error);
+      handleError("Không thể tải dữ liệu kích thước.");
+    }
+  };
+
+  const checkProductVariant = async (productID, colorID, sizeID) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.post("/product-variants/getVariantByID", {
+        ProductID: productID,
+        ColorID: colorID,
+        SizeID: sizeID,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.data; // Trả về dữ liệu biến thể
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra biến thể:", error);
+      return null;
+    }
+  };
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
+      <ToastContainer />
       <div className="cart-table__wrapper">
         {cartProducts.length ? (
           <>
@@ -145,8 +194,52 @@ export default function Cart() {
                       <div className="shopping-cart__product-item__detail">
                         <h4>{item.ProductName}</h4>
                         <ul className="shopping-cart__product-item__options">
-                          <li>Color: {item.ColorName}</li>
-                          <li>Size: {item.SizeName}</li>
+                          <li>
+                            Color: 
+                            <select 
+                              value={item.ColorID} 
+                              onChange={async (e) => {
+                                const newColorID = e.target.value;
+                                const variant = await checkProductVariant(item.ProductID, newColorID, item.SizeID);
+                                if (variant) {
+                                  handleQuantityChange(item.CartItemID, item.ProductID, newColorID, item.SizeID, item.Quantity);
+                                } else {
+                                  toast.error("Hết hàng.");
+                                }
+                              }}
+                            >
+                              {colors.length > 0 ? (
+                                colors.map(color => (
+                                  <option key={color.id} value={color.id}>{color.ColorName}</option>
+                                ))
+                              ) : (
+                                <option value="">Không có màu nào</option>
+                              )}
+                            </select>
+                          </li>
+                          <li>
+                            Size: 
+                            <select 
+                              value={item.SizeID} 
+                              onChange={async (e) => {
+                                const newSizeID = e.target.value;
+                                const variant = await checkProductVariant(item.ProductID, item.ColorID, newSizeID);
+                                if (variant) {
+                                  handleQuantityChange(item.CartItemID, item.ProductID, item.ColorID, newSizeID, item.Quantity);
+                                } else {
+                                  toast.error("Hết hàng.");
+                                }
+                              }}
+                            >
+                              {sizes.length > 0 ? (
+                                sizes.map(size => (
+                                  <option key={size.id} value={size.id}>{size.SizeName}</option>
+                                ))
+                              ) : (
+                                <option value="">Không có kích thước nào</option>
+                              )}
+                            </select>
+                          </li>
                         </ul>
                       </div>
                     </td>
