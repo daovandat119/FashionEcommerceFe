@@ -44,7 +44,6 @@ import { LoginProvider } from "./components/login/LoginContext";
 import { AuthProvider } from './context/AuthContext';
 import UpdateVariant from "./pages/admin/products/UpdateVariant";
 import { CheckoutProvider } from './context/CheckoutContext';
-import CartList from "./pages/admin/cart/CartList";
 import ShopFilter from "./components/asides/ShopFilter";
 // Account pages imports
 import AccountPage from './pages/dashboard/account_dashboard';
@@ -136,7 +135,6 @@ const AppRoutes = () => {
               <Route path="sizes/add" element={<AddSizeComponent />} />
               <Route path="sizes/edit/:SizeID" element={<UpdateSize />} />
               <Route path="products/edit-variant/:VariantID" element={<UpdateVariant />} />
-              <Route path="cart" element={<CartList />} />
             </Route>
 
             {/* Error route - Phải đặt ở cuối cùng */}
