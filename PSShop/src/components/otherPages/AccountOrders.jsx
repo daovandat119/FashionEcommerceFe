@@ -3,7 +3,7 @@ import { OrderContext } from './OrderContext';
 import axios from 'axios';
 
 export default function AccountOrders() {
-  const { orders, loading, error } = useContext(OrderContext);
+  const { orders, loading, cancelOrder } = useContext(OrderContext);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [orderProducts, setOrderProducts] = useState({});
   
@@ -41,14 +41,17 @@ export default function AccountOrders() {
     }
   };
 
+  const handleCancelOrder = async (orderId) => {
+    await cancelOrder(orderId); // Gọi hàm hủy đơn hàng
+  };
+
   if (loading) {
-    return <p className="text-center">Loading orders...</p>;
+    return (
+        <div className="flex justify-center items-center h-full">
+            <div className="loader"></div> {/* Spinner loading */}
+        </div>
+    );
   }
-
-  if (error) {
-    return <p className="text-red-500">Error: {error}</p>;
-  }
-
   // Tính toán chỉ số bắt đầu và kết thúc cho trang hiện tại
   const indexOfLastOrder = currentPage * itemsPerPage;
   const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
@@ -56,6 +59,7 @@ export default function AccountOrders() {
 
   // Tính toán tổng số trang
   const totalPages = Math.ceil(orders.data.length / itemsPerPage);
+
 
   return (
     <div className="col-lg-9">
@@ -98,7 +102,7 @@ export default function AccountOrders() {
                     <p className="text-gray-500">Ngày mua: {new Date(order.PurchaseDate).toLocaleDateString()}</p>
                   </div>
                   <div>
-                    <button className="bg-red-500 text-white py-1 px-2 rounded mr-2">HỦY ĐƠN HÀNG</button>
+                    <button onClick={() => handleCancelOrder(order.OrderID)} className="bg-red-500 text-white py-1 px-2 rounded mr-2">HỦY ĐƠN HÀNG</button>
                     <button className="bg-yellow-500 text-white py-1 px-2 rounded">LIÊN HỆ NGƯỜI BÁN</button>
                   </div>
                 </div>

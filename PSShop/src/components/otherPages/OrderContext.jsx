@@ -33,8 +33,34 @@ export const OrderProvider = ({ children }) => {
     fetchOrders();
   }, [token]);
 
+  const cancelOrder = async (orderId) => {
+    const token = localStorage.getItem('token');
+    const orderStatusID = 3; // Giả sử 3 là ID cho trạng thái "Đã hủy"
+
+    try {
+      // Gọi API để cập nhật trạng thái đơn hàng
+      await axios.post(`http://127.0.0.1:8000/api/order/status/${orderId}`, {
+        OrderStatusID: orderStatusID, // Gửi OrderStatusID
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // Cập nhật trạng thái đơn hàng trong state
+      setOrders(prevOrders => ({
+        ...prevOrders,
+        data: prevOrders.data.map(order =>
+          order.OrderID === orderId ? { ...order, OrderStatus: 'Đã hủy' } : order
+        ),
+      }));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
-    <OrderContext.Provider value={{ orders, loading, error }}>
+    <OrderContext.Provider value={{ orders, loading, error, cancelOrder }}>
       {children}
     </OrderContext.Provider>
   );

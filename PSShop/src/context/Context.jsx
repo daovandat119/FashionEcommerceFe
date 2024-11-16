@@ -109,7 +109,7 @@ export default function ContextProvider({ children }) {
     } finally {
       setIsFetchingCart(false);
     }
-  }, []);
+  }, [cartProducts.length]);
 
   useEffect(() => {
     fetchCartItems();
@@ -132,15 +132,6 @@ export default function ContextProvider({ children }) {
         }
       );
 
-      if (response.data.message === "Success") {
-        await fetchCartItems();
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã thêm sản phẩm vào giỏ hàng",
-          icon: "success",
-          timer: 1500,
-        });
-      }
     } catch (error) {
       console.error("Error adding to cart:", error);
       Swal.fire({

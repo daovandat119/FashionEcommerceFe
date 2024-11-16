@@ -1,17 +1,13 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useContextElement } from "../../context/Context";
 import AdditionalInfo from "./AdditionalInfo";
 import Reviews from "./Reviews";
-import Swal from "sweetalert2";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Description from "./Description";
-
-// Tạo axios instance
-const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
-  timeout: 5000,
-});
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -37,71 +33,54 @@ const ProductDetail = () => {
 
   const [inWishlist, setInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
-
   const [loading, setLoading] = useState(true);
-
   const [isExceedQuantity, setIsExceedQuantity] = useState(false);
+  
+  useEffect(() => {
+    // Cuộn lên đầu trang khi component được tải
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
       try {
-        // Load song song các API
-        const [productRes, sizesRes, colorsRes] = await Promise.all([
-          api.get(`/products/${id}`), // Sửa endpoint
-          api.get("/sizes"),
-          api.get("/colors"),
-        ]);
-
+        // Gọi API cho sản phẩm
+        const productRes = await axios.get(`http://127.0.0.1:8000/api/products/${id}`);
         if (productRes.data.success) {
-          setProduct(productRes.data.data); // Cập nhật data format
-          setSizes(sizesRes.data.data);
-          setColors(colorsRes.data.data);
-          setVariantPrice(productRes.data.data.Price); // Cập nhật price path
+          setProduct(productRes.data.data);
         }
 
-        // Load wishlist riêng nếu có token
+        // Gọi fetchWishlistItems chỉ một lần
         const token = localStorage.getItem("token");
         if (token) {
-          fetchWishlistItems().catch(console.error);
+          await fetchWishlistItems();
         }
+
+        // Gọi API cho sizes và colors
+        const [sizesRes, colorsRes] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/sizes"),
+          axios.get("http://127.0.0.1:8000/api/colors"),
+        ]);
+        setSizes(sizesRes.data.data);
+        setColors(colorsRes.data.data);
       } catch (error) {
         console.error("Error:", error);
-        Swal.fire({
-          title: "Lỗi",
-          text: "Không thể tải thông tin sản phẩm",
-          icon: "error",
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        toast.error("Không thể tải thông tin sản phẩm");
       } finally {
         setLoading(false);
       }
     };
 
     initializeData();
-  }, [id, fetchWishlistItems]); // Chỉ phụ thuộc vào id
+  }, [id, fetchWishlistItems]);
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        await fetchWishlistItems();
-      } catch (error) {
-        console.error("Error loading wishlist:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, [fetchWishlistItems]);
-
-  useEffect(() => {
-    if (product && !isLoadingWishlist && typeof isInWishlist === "function") {
+    if (product && typeof isInWishlist === "function") {
       const status = isInWishlist(product.ProductID);
       setInWishlist(status);
     }
-  }, [product, isInWishlist, isLoadingWishlist, wishlistProducts]);
+  }, [product, isInWishlist]);
 
   const handleWishlistClick = async () => {
     if (!product || wishlistLoading) return;
@@ -110,42 +89,22 @@ const ProductDetail = () => {
       setWishlistLoading(true);
 
       if (!localStorage.getItem("token")) {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Vui lòng đăng nhập để sử dụng tính năng này",
-          icon: "warning",
-        });
+        toast.warning("Vui lòng đăng nhập để sử dụng tính năng này");
         return;
       }
 
       if (inWishlist) {
         await removeFromWishlist(product.ProductID);
         setInWishlist(false);
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã xóa khỏi danh sách yêu thích",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        toast.success("Đã xóa khỏi danh sách yêu thích");
       } else {
         await addToWishlist(product.ProductID);
         setInWishlist(true);
-        Swal.fire({
-          title: "Thành công",
-          text: "Đã thêm vào danh sách yêu thích",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        toast.success("Đã thêm vào danh sách yêu thích");
       }
     } catch (error) {
       console.error("Error handling wishlist:", error);
-      Swal.fire({
-        title: "Lỗi",
-        text: error.message || "Có lỗi xảy ra, vui lòng thử lại",
-        icon: "error",
-      });
+      toast.error(error.message || "Có lỗi xảy ra, vui lòng thử lại");
     } finally {
       setWishlistLoading(false);
     }
@@ -155,13 +114,11 @@ const ProductDetail = () => {
     if (!selectedSize || !selectedColor || !product) return null;
 
     try {
-      const response = await api.post("/product-variants/getVariantByID", {
+      const response = await axios.post("http://127.0.0.1:8000/api/product-variants/getVariantByID", {
         ProductID: product.ProductID,
         SizeID: selectedSize.SizeID,
         ColorID: selectedColor.ColorID,
       });
-
-      // console.log('Variant Response:', response.data); // Debug
 
       if (response.data.message === "Success" && response.data.data) {
         return {
@@ -182,20 +139,12 @@ const ProductDetail = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      Swal.fire({
-        title: "Thông báo",
-        text: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
-        icon: "warning",
-      });
+      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
       return;
     }
 
     if (!selectedSize || !selectedColor) {
-      Swal.fire({
-        title: "Thông báo",
-        text: "Vui lòng chọn kích thước và màu sắc",
-        icon: "warning",
-      });
+      toast.warning("Vui lòng chọn kích thước và màu sắc");
       return;
     }
 
@@ -204,11 +153,7 @@ const ProductDetail = () => {
       const variant = await checkProductVariant();
 
       if (!variant) {
-        Swal.fire({
-          title: "Hết hàng",
-          text: "Rất tiếc, sản phẩm này tạm hết hàng với màu sắc và kích thước đã chọn",
-          icon: "warning",
-        });
+        toast.warning("Rất tiếc, sản phẩm này tạm hết hàng với màu sắc và kích thước đã chọn");
         return;
       }
 
@@ -219,20 +164,10 @@ const ProductDetail = () => {
         quantity
       );
 
-      await Swal.fire({
-        title: "Thành công",
-        text: "Đã thêm sản phẩm vào giỏ hàng",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      toast.success("Đã thêm sản phẩm vào giỏ hàng");
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
-      Swal.fire({
-        title: "Lỗi",
-        text: "Đã có lỗi xảy ra, vui lòng thử lại sau",
-        icon: "error",
-      });
+      toast.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
     } finally {
       setIsChecking(false);
     }
@@ -244,7 +179,6 @@ const ProductDetail = () => {
         setIsChecking(true);
         try {
           const variant = await checkProductVariant();
-          // console.log('Processed Variant:', variant); // Debug
 
           if (variant && variant.Quantity > 0) {
             // Kiểm tra số lượng > 0
@@ -285,6 +219,7 @@ const ProductDetail = () => {
 
   return (
     <section className="product-single container">
+      <ToastContainer />
       <div className="row">
         {/* Hình ảnh sản phẩm */}
         <div className="col-lg-7">
@@ -307,7 +242,6 @@ const ProductDetail = () => {
                 ))}
               </div>
             </div>
-
           </div>
         </div>
 
@@ -486,11 +420,7 @@ const ProductDetail = () => {
                   onClick={() => {
                     if (variantInfo && quantity >= variantInfo.Quantity) {
                       setIsExceedQuantity(true);
-                      Swal.fire({
-                        title: "Thông báo",
-                        text: `Số lượng không được vượt quá ${variantInfo.Quantity}`,
-                        icon: "warning",
-                      });
+                      toast.warning(`Số lượng không được vượt quá ${variantInfo.Quantity}`);
                       return;
                     }
                     setQuantity(quantity + 1);
