@@ -19,7 +19,6 @@ import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_trackin
 import BlogPage1 from "./pages/blogs";
 import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
-import UpdateVoucher from "./pages/admin/voucher/UpdateVoucher";
 
 // Admin imports
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -53,10 +52,7 @@ import AccountEditAddressPage from './pages/dashboard/account_edit_address/index
 import AccountEditPage from "./pages/dashboard/account_edit";
 // import Add_Address from './components/otherPages/Add_Address';
 import AccountWishlist from "./pages/dashboard/account_wishlist";
-import OrderList from "./pages/admin/oder/OderList";
-import UpdateOrder from "./pages/admin/oder/UpdateOder";
-import VoucherList from "./pages/admin/voucher/VoucherList";
-import AddVoucher from "./pages/admin/voucher/AddVoucher";
+import ErrorPage from "./pages/error/ErrorPage";
 
 function App() {
   return (
@@ -139,12 +135,10 @@ const AppRoutes = () => {
               <Route path="sizes/add" element={<AddSizeComponent />} />
               <Route path="sizes/edit/:SizeID" element={<UpdateSize />} />
               <Route path="products/edit-variant/:VariantID" element={<UpdateVariant />} />
-              <Route path="orders" element={<OrderList />} />
-              <Route path="orders/update" element={<UpdateOrder />} />
-              <Route path="vouchers" element={<VoucherList />} />
-              <Route path="vouchers/edit/:VoucherID" element={<UpdateVoucher />} />
-              <Route path="vouchers/add" element={<AddVoucher />} />
             </Route>
+
+            {/* Error route - Phải đặt ở cuối cùng */}
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </ThemeProvider>
       </Context>

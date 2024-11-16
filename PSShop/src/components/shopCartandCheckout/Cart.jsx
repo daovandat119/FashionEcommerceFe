@@ -3,6 +3,8 @@ import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Cart() {
   const {
@@ -19,6 +21,8 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [error, setError] = useState("");
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
 
   useEffect(() => {
     fetchCartItems(); 
@@ -93,14 +97,15 @@ export default function Cart() {
 
 
   return (
-    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
+    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)", padding: "20px", backgroundColor: "#f9f9f9" }}>
+      <ToastContainer />
       <div className="cart-table__wrapper">
         {cartProducts.length ? (
           <>
-            <table className="cart-table">
+            <table className="cart-table" style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  <th>
+                  <th style={{ width: "5%" }}>
                     <input
                       type="checkbox"
                       onChange={(e) => handleSelectAll(e.target.checked)}
@@ -119,8 +124,8 @@ export default function Cart() {
               </thead>
               <tbody>
                 {cartProducts.map((item) => (
-                  <tr key={item.CartItemID}>
-                    <td style={{ width: "5%" }}>
+                  <tr key={item.CartItemID} style={{ borderBottom: "1px solid #ddd" }}>
+                    <td>
                       <input
                         type="checkbox"
                         checked={selectedItems.includes(item.CartItemID)}
@@ -191,7 +196,7 @@ export default function Cart() {
             <div className="cart-table-footer d-flex justify-content-between align-items-center mt-4">
               <div className="d-flex gap-3">
                 <button
-                  className="btn btn-danger"
+                  className="btn btn-dark"
                   onClick={() => removeSelectedItems()}
                   disabled={selectedItems.length === 0 || loading}
                 >

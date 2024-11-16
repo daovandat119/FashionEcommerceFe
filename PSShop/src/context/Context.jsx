@@ -7,6 +7,7 @@ import {
 } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import PropTypes from 'prop-types';
 
 const Context = createContext();
 
@@ -78,6 +79,9 @@ export default function ContextProvider({ children }) {
 
     if (cartProducts.length > 0) return;
 
+
+    if (cartProducts.length > 0) return;
+
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
         headers: { Authorization: `Bearer ${token}` },
@@ -135,7 +139,6 @@ export default function ContextProvider({ children }) {
       setLoading(false);
     }
   };
-
   const setQuantity = async (cartItemId, newQuantity) => {
     if (!cartItemId || newQuantity < 1) return;
 
@@ -143,15 +146,32 @@ export default function ContextProvider({ children }) {
       const cartItem = cartProducts.find(item => item.CartItemID === cartItemId);
       if (!cartItem) return;
 
-      const variantDetails = await getVariantDetails(cartItem.VariantID);
+      const currentVariantQuantity = cartItem.Quantity;
+
+      if (newQuantity > currentVariantQuantity) {
+        Swal.fire({
+          title: "Lỗi",
+          text: "Số lượng yêu cầu vượt quá số lượng có sẵn.",
+          icon: "error",
+        });
+        return;
+      }
+
       const updateData = {
         productID: cartItem.ProductID,
-        sizeID: variantDetails.SizeID,
-        colorID: variantDetails.ColorID,
+        sizeID: cartItem.SizeID,
+        colorID: cartItem.ColorID,
         quantity: newQuantity,
       };
 
       await updateCartItem(cartItemId, updateData);
+
+      setCartProducts(prev => 
+        prev.map(item => 
+          item.CartItemID === cartItemId ? { ...item, Quantity: newQuantity } : item
+        )
+      );
+
       await fetchCartItems();
     } catch (error) {
       console.error('Error setting quantity:', error);
@@ -384,3 +404,7 @@ export default function ContextProvider({ children }) {
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
+
+ContextProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
