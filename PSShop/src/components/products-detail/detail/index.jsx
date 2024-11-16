@@ -1,13 +1,8 @@
-// src/pages/ProductDetailsPage2.jsx hoặc nơi bạn muốn sử dụng Tabs
-
-// import { Tabs, Tab } from 'react-bootstrap';
 import { useParams } from "react-router-dom";
 import Products_Detail from "../Products_Detail";
 import RelatedSlider from "../RelatedSlider";
-
 import Headers from "../../headers/Headers";
 import Footers from "../../footers/Footers";
-// import { allProducts } from "../../../data/products";
 import MetaComponent from '../../common/MetaComponent';
 import { useEffect, useState } from "react";
 
@@ -19,20 +14,15 @@ const metadata = {
 export default function ProductDetailsPage2() {
   let params = useParams();
   const productId = params.id;
-  const [product, setProduct] = useState(null);
+  const [product] = useState(null);
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/api/products/${productId}`);
-        const data = await response.json();
-        setProduct(data);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
-    };
+    // Bỏ phần gọi API ở đây nếu đã có trong Products_Detail.jsx
+    // const fetchProduct = async () => {
+    //   ...
+    // };
 
-    fetchProduct();
+    // fetchProduct();
   }, [productId]);
 
   return (

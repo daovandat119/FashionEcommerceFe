@@ -35,6 +35,7 @@ const ProductDetail = () => {
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isExceedQuantity, setIsExceedQuantity] = useState(false);
+  const hasFetchedData = React.useRef(false);
 
   useEffect(() => {
     // Cuộn lên đầu trang khi component được tải
@@ -42,7 +43,16 @@ const ProductDetail = () => {
   }, []);
 
   useEffect(() => {
+    const cachedProduct = localStorage.getItem(`product_${id}`);
+    if (cachedProduct) {
+      setProduct(JSON.parse(cachedProduct));
+      setLoading(false);
+      return;
+    }
+
     const initializeData = async () => {
+      if (hasFetchedData.current) return;
+
       setLoading(true);
       try {
         // Gọi API cho sản phẩm
@@ -51,6 +61,7 @@ const ProductDetail = () => {
         );
         if (productRes.data.success) {
           setProduct(productRes.data.data);
+          // localStorage.setItem(`product_${id}`, JSON.stringify(productRes.data.data));
         }
 
         // Gọi fetchWishlistItems chỉ một lần
@@ -66,6 +77,7 @@ const ProductDetail = () => {
         ]);
         setSizes(sizesRes.data.data);
         setColors(colorsRes.data.data);
+        hasFetchedData.current = true;
       } catch (error) {
         console.error("Error:", error);
         toast.error("Không thể tải thông tin sản phẩm");
@@ -81,6 +93,12 @@ const ProductDetail = () => {
     if (product && typeof isInWishlist === "function") {
       const status = isInWishlist(product.ProductID);
       setInWishlist(status);
+
+      // Kiểm tra localStorage
+      const isFavorited = localStorage.getItem(`wishlist_${product.ProductID}`);
+      if (isFavorited) {
+        setInWishlist(true);
+      }
     }
   }, [product, isInWishlist]);
 
@@ -98,10 +116,12 @@ const ProductDetail = () => {
       if (inWishlist) {
         await removeFromWishlist(product.ProductID);
         setInWishlist(false);
+        localStorage.removeItem(`wishlist_${product.ProductID}`);
         toast.success("Đã xóa khỏi danh sách yêu thích");
       } else {
         await addToWishlist(product.ProductID);
         setInWishlist(true);
+        localStorage.setItem(`wishlist_${product.ProductID}`, true);
         toast.success("Đã thêm vào danh sách yêu thích");
       }
     } catch (error) {
@@ -217,6 +237,11 @@ const ProductDetail = () => {
     };
     checkVariant();
   }, [selectedSize, selectedColor, product, checkProductVariant]);
+
+
+
+
+
 
   if (loading || !product) {
     return (

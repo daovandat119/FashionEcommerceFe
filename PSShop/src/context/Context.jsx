@@ -45,13 +45,13 @@ export default function ContextProvider({ children }) {
     );
   };
 
-  const calculateTotalPrice = (products) => {
-    return products.reduce((total, product) => {
-      const price = parseFloat(product.Price) || 0;
-      const quantity = parseInt(product.Quantity) || 0;
-      return total + price * quantity;
-    }, 0);
-  };
+  // const calculateTotalPrice = (products) => {
+  //   return products.reduce((total, product) => {
+  //     const price = parseFloat(product.Price) || 0;
+  //     const quantity = parseInt(product.Quantity) || 0;
+  //     return total + price * quantity;
+  //   }, 0);
+  // };
 
   const formatPrice = (price) => {
     return typeof price === "number" ? price.toFixed(2) : "0.00";
@@ -62,17 +62,17 @@ export default function ContextProvider({ children }) {
     variants: new Map(),
   };
 
-  const fetchWithCache = async (url, cacheMap) => {
-    if (cacheMap.has(url)) {
-      return cacheMap.get(url);
-    }
-    const token = localStorage.getItem("token");
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    cacheMap.set(url, response.data.data);
-    return response.data.data;
-  };
+  // const fetchWithCache = async (url, cacheMap) => {
+  //   if (cacheMap.has(url)) {
+  //     return cacheMap.get(url);
+  //   }
+  //   const token = localStorage.getItem("token");
+  //   const response = await axios.get(url, {
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   });
+  //   cacheMap.set(url, response.data.data);
+  //   return response.data.data;
+  // };
 
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -315,7 +315,7 @@ export default function ContextProvider({ children }) {
           },
         }
       );
-
+      // console.log("Response from addToWishlist:", response);
       if (response.status === 201) {
         await fetchWishlistItems();
       }
@@ -332,24 +332,26 @@ export default function ContextProvider({ children }) {
 
     try {
       setIsLoadingWishlist(true);
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/wishlist",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get("http://127.0.0.1:8000/api/wishlist", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.message === "Success") {
         setWishlistProducts(response.data.data);
+      } else {
+        // Xử lý trường hợp không thành công
+        console.error("Failed to fetch wishlist items:", response.data.message);
+        setWishlistProducts([]);
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
-      setWishlistProducts([]);
+      setWishlistProducts([]); // Đặt lại danh sách nếu có lỗi
     } finally {
       setIsLoadingWishlist(false);
     }
   }, []);
 
+  // Gọi fetchWishlistItems khi component mount
   useEffect(() => {
     fetchWishlistItems();
   }, [fetchWishlistItems]);
