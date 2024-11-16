@@ -318,19 +318,15 @@ const ProductDetail = () => {
           </h1>
 
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xl font-semibold text-blue-600">
-              ${(variantPrice || product?.Price || 0).toLocaleString()}
+            <strong className="text-xl font-semibold text-blue-600">
+              {`₫${(product.SalePrice).toLocaleString()}`}
+            </strong>
+            <span className="line-through text-gray-500">
+              {`₫${(product.Price).toLocaleString()}`}
             </span>
-            {variantPrice && variantPrice !== product?.Price && (
-              <span className="text-sm text-gray-500 line-through">
-                ${product?.Price.toLocaleString()}
-              </span>
-            )}
-            {product.discount_percentage && (
-              <span className="bg-yellow-200 text-yellow-800 px-2 rounded">
-                -{product.discount_percentage}%
-              </span>
-            )}
+            <span className="bg-blue-100 text-blue-600 px-2 rounded">
+              -{product.discount_percentage}%
+            </span>
           </div>
 
           <div className="product-rating mt-2 mb-4">
@@ -387,7 +383,7 @@ const ProductDetail = () => {
                   Màu sắc
                 </label>
                 <div className="relative">
-                  <div className="swatch-list flex gap-2 overflow-x-auto pb-1 hide-scrollbar max-w-[195px]">
+                  <div className="swatch-list flex gap-2 overflow-x-auto pb-1 hide-scrollbar max-w-[305px]">
                     {colors.map((color) => (
                       <div key={color.ColorID} className="flex-shrink-0">
                         <input
@@ -607,11 +603,11 @@ const ProductDetail = () => {
               className="nav-link nav-link_underscore active"
               id="tab-description-tab"
               data-bs-toggle="tab"
-              href="#tab-description"
+              href="#tab-description" 
               role="tab"
               aria-controls="tab-description"
               aria-selected="true"
-            >
+            > 
               Description
             </a>
           </li>
@@ -660,9 +656,8 @@ const ProductDetail = () => {
                 details: {
                   title: "Thông tin chi tiết",
                   items: [
-                    `Gi: $${product.Price}`,
-                    `Thương hiệu: ${product.Brand || "Chưa cập nhật"}`,
-                    `Danh mục: ${product.Category || "Chưa cập nhật"}`,
+                    `Giá: $${product.Price}`,
+                    `Danh mục: ${product.category_name || "Chưa cập nhật"}`,
                   ],
                 },
                 additional: {

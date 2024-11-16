@@ -1,4 +1,7 @@
+
 /* eslint-disable no-unused-vars */
+
+
 import {
   createContext,
   useContext,
@@ -73,7 +76,6 @@ export default function ContextProvider({ children }) {
     return response.data.data;
   };
 
-
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
 
@@ -85,8 +87,11 @@ export default function ContextProvider({ children }) {
 
     if (hasFetchedCartItems.current) return;
 
+
     hasFetchedCartItems.current = true;
     setIsFetchingCart(true);
+
+    if (cartProducts.length > 0) return;
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
         headers: { Authorization: `Bearer ${token}` },
@@ -94,13 +99,9 @@ export default function ContextProvider({ children }) {
 
       if (response.data.message === "Success") {
         const cartData = response.data.data;
-
         const totalPrice = Number(cartData.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2));
-
         setTotalPrice(totalPrice);
-
         setCartProducts(cartData);
-
       }
     } catch (error) {
       setCartProducts([]);
@@ -249,15 +250,15 @@ export default function ContextProvider({ children }) {
     const ids = selectedItems.join(','); 
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/api/cart-items`, // Đảm bảo URL đúng
+        `http://127.0.0.1:8000/api/cart-items`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          data: { ids },  // Gửi ID dưới dạng mảng
+          data: { ids },
         }
-      ); // Cập nhật giỏ hàng sau khi xóa
+      );
     } catch (error) {
         console.error('Error removing item from cart:', error);
         Swal.fire({

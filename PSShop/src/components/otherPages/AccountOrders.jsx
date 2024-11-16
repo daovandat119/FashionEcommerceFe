@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { OrderContext } from './OrderContext';
 import axios from 'axios';
 
@@ -9,10 +9,18 @@ export default function AccountOrders() {
   
   // Thêm state cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2
-  ; // Số lượng đơn hàng trên mỗi trang
+  const itemsPerPage = 2; // Số lượng đơn hàng trên mỗi trang
 
-  const fetchOrderProducts = async (orderId) => {
+  // Fetch orders when component mounts
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    // Implement your logic to fetch orders if needed
+  };
+
+  const fetchOrderDetails = async (orderId) => {
     const token = localStorage.getItem('token');
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/order/${orderId}`, {
@@ -22,14 +30,14 @@ export default function AccountOrders() {
       });
       setOrderProducts(prev => ({ ...prev, [orderId]: response.data.data || [] }));
     } catch (err) {
-      console.error("Error fetching order products:", err);
+      console.error("Error fetching order details:", err);
     }
   };
 
   const handleToggleOrder = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
     if (expandedOrder !== orderId) {
-      fetchOrderProducts(orderId);
+      fetchOrderDetails(orderId); // Fetch order details when expanding
     }
   };
 
@@ -60,7 +68,7 @@ export default function AccountOrders() {
                 <h3 className="font-bold flex justify-between items-center">
                   Đơn hàng #{order.OrderID}
                   <button onClick={() => handleToggleOrder(order.OrderID)} className="text-blue-500">
-                    {expandedOrder === order.OrderID ? 'Ẩn bớt' : 'Xem tất cả sản phẩm'}
+                    {expandedOrder === order.OrderID ? 'Ẩn bớt' : 'Hiển thị thêm'}
                   </button>
                 </h3>
                 <p>Trạng thái: {order.OrderStatus}</p>
@@ -70,13 +78,11 @@ export default function AccountOrders() {
 
                 {expandedOrder === order.OrderID && orderProducts[order.OrderID] && (
                   <div className="mt-2">
-                    {/* Nhóm sản phẩm theo ProductID */}
                     {orderProducts[order.OrderID].map(product => (
                       <div key={`${product.ProductID}-${product.VariantColor}-${product.VariantSize}`} className="flex items-center py-2">
                         <img src={product.MainImageURL} alt={product.ProductName} className="w-20 h-20 object-cover mr-4" />
                         <div className="flex-grow">
                           <h4 className="font-bold">{product.ProductName}</h4>
-                          {/* Hiển thị thông tin biến thể */}
                           <div className="text-gray-600">
                             <p>Số lượng: {product.TotalQuantity} | Màu: {product.VariantColor} | Kích thước: {product.VariantSize} | Giá: {product.VariantPrice} VND</p>
                           </div>

@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 function Add_Address({ onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -13,7 +14,27 @@ function Add_Address({ onSuccess, onCancel }) {
     isDefault: false
   });
 
-  const handleChange = (e) => {
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/provinces');
+        if (response.data.message === 'Success') {
+          setProvinces(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+        toast.error('Không thể tải danh sách tỉnh thành.');
+      }
+    };
+
+    fetchProvinces();
+  }, []);
+
+  const handleChange = async (e) => {
     const { name, value, type, checked } = e.target;
     const fieldMapping = {
       'fullName': 'UserName',
@@ -26,6 +47,34 @@ function Add_Address({ onSuccess, onCancel }) {
 
     const stateField = fieldMapping[name] || name;
 
+    if (name === 'provinceID' && value) {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/districts', {
+          province_id: value
+        });
+        if (response.data.message === 'Success') {
+          setDistricts(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching districts:', error);
+        toast.error('Không thể tải danh sách quận huyện.');
+      }
+    }
+
+    if (name === 'districtID' && value) {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/wards', {
+          district_id: value
+        });
+        if (response.data.message === 'Success') {
+          setWards(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching wards:', error);
+        toast.error('Không thể tải danh sách xã phường.');
+      }
+    }
+
     setFormData(prevState => ({
       ...prevState,
       [stateField]: type === 'checkbox' ? checked : value
@@ -34,22 +83,15 @@ function Add_Address({ onSuccess, onCancel }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.UserName || !formData.PhoneNumber || !formData.Address || !formData.DistrictID || !formData.WardCode) {
-      alert('Vui lòng điền đầy đủ thông tin!');
-      return;
-    }
-
     const token = localStorage.getItem('token');
+
     const dataToSend = {
-      UserID: localStorage.getItem('userId'), // Giả sử bạn lưu userId trong localStorage
       UserName: formData.UserName,
       PhoneNumber: formData.PhoneNumber,
       Address: formData.Address,
       DistrictID: formData.DistrictID,
       WardCode: formData.WardCode,
-      IsDefault: formData.isDefault ? 1 : 0,
-      Status: 'ACTIVE'
+      ProvinceID: formData.provinceID,
     };
 
     try {
@@ -65,7 +107,13 @@ function Add_Address({ onSuccess, onCancel }) {
       );
 
       if (response.status === 201) {
-        toast.success('Thêm địa chỉ thành công!');
+        Swal.fire({
+          title: "Thông báo",
+          text: "Địa chỉ đã được thêm thành công!",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 5000,
+        });
         onSuccess();
       }
     } catch (error) {
@@ -73,6 +121,8 @@ function Add_Address({ onSuccess, onCancel }) {
       toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!');
     }
   };
+
+  
 
   return (
     <div className="border p-4 rounded bg-light">
@@ -105,41 +155,59 @@ function Add_Address({ onSuccess, onCancel }) {
 
         <div className="mb-3">
           <label className="form-label">Chọn tỉnh thành</label>
-          <input
-            type="text"
+          <select
             className="form-control"
             name="provinceID"
             value={formData.ProvinceID}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Chọn tỉnh thành</option>
+            {provinces.map(province => (
+              <option key={province.ProvinceID} value={province.ProvinceID}>
+                {province.ProvinceName}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-3">
           <label className="form-label">Chọn quận huyện</label>
-          <input
-            type="text"
+          <select
             className="form-control"
             name="districtID"
             value={formData.DistrictID}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Chọn quận huyện</option>
+            {districts.map(district => (
+              <option key={district.DistrictID} value={district.DistrictID}>
+                {district.DistrictName}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-3">
           <label className="form-label">Chọn phường xã</label>
-          <input
-            type="text"
+          <select
             className="form-control"
             name="wardCode"
             value={formData.WardCode}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Chọn phường xã</option>
+            {wards.map(ward => (
+              <option key={ward.WardCode} value={ward.WardCode}>
+                {ward.WardName}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Địa chỉ</label>
+          <label className="form-label">Địa chỉ cụ thể</label>
           <input
             type="text"
             className="form-control"
@@ -148,22 +216,6 @@ function Add_Address({ onSuccess, onCancel }) {
             onChange={handleChange}
             required
           />
-        </div>
-
-        <div className="mb-3">
-          <div className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              name="isDefault"
-              id="isDefault"
-              checked={formData.isDefault}
-              onChange={handleChange}
-            />
-            <label className="form-check-label" htmlFor="isDefault">
-              Đặt làm địa chỉ mặc định
-            </label>
-          </div>
         </div>
 
         <div className="d-flex gap-2">

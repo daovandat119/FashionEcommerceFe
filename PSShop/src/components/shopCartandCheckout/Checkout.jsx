@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
@@ -7,19 +7,19 @@ import Swal from "sweetalert2";
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
-  const {  totalPrice } = useContextElement();
+  const { setTotalPrice, totalPrice } = useContextElement();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loadingAddresses, setLoadingAddresses] = useState(true);
-  const [loadingCartItems, setLoadingCartItems] = useState(true); // Loading state for cart items
-  const [loadingCoupons, setLoadingCoupons] = useState(true); // Loading state for coupons
+  const [loadingCartItems, setLoadingCartItems] = useState(true);
+  const [loadingCoupons, setLoadingCoupons] = useState(true);
   const token = localStorage.getItem("token");
   const [addresses, setAddresses] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [discount, setDiscount] = useState(0);
-  const [appliedCoupon, setAppliedCoupon] = useState(""); // State for applied coupon
-  const [coupons, setCoupons] = useState([]); // State to store fetched coupons
-  const [shippingFee, setShippingFee] = useState(0); // State to store shipping fee
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [coupons, setCoupons] = useState([]);
+  const [shippingFee, setShippingFee] = useState(0);
 
   useEffect(() => {
     if (!orderData.PaymentMethodID) {
@@ -46,7 +46,7 @@ export default function Checkout() {
 
   useEffect(() => {
     const fetchAddresses = async () => {
-      setLoadingAddresses(true); // Start loading
+      setLoadingAddresses(true);
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/address", {
           headers: { Authorization: `Bearer ${token}` },
@@ -56,69 +56,43 @@ export default function Checkout() {
         setError("Không thể tải địa chỉ");
         console.error(error);
       } finally {
-        setLoadingAddresses(false); // End loading
+        setLoadingAddresses(false);
       }
     };
+
+    const fetchCartItems = async () => {
+      setLoadingCartItems(true);
+      if (!token) {
+        setError("Vui lòng đăng nhập để lấy thông tin giỏ hàng.");
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data.data) {
+          setCartItems(response.data.data);
+        }
+      } catch (err) {
+        console.error("Lỗi khi lấy cart items:", err);
+        setError("Không thể lấy thông tin giỏ hàng");
+      } finally {
+        setLoadingCartItems(false);
+      }
+    };
+
     fetchAddresses();
+    fetchCartItems();
   }, [token]);
 
-  const fetchCartItems = async () => {
-    setLoadingCartItems(true); // Start loading
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Vui lòng đăng nhập để lấy thông tin giỏ hàng.");
-      return;
-    }
-
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.data.data) {
-        setCartItems(response.data.data);
-      }
-    } catch (err) {
-      console.error("Lỗi khi lấy cart items:", err);
-      setError("Không thể lấy thông tin giỏ hàng");
-    } finally {
-      setLoadingCartItems(false); // End loading
-    }
-  };
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      await fetchCartItems();
-    };
-
-    fetchItems();
-  }, [token]);
-
-  const fetchShippingFee = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/address/shipping-fee", null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.data.data) {
-        const shippingFee = response.data.data.total;
-        setShippingFee(shippingFee);
-      }
-    } catch (error) {
-      setError("Không thể kiểm tra phí vận chuyển");
-      console.error(error);
-    }
-  }, []);
-
-  const checkAddressExists = useCallback(async () => {
-    const token = localStorage.getItem("token");
-
+  const checkAddressExists = async () => {
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/address/checkAddress", null, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (String(response.data.data) === "true") {
-        await fetchShippingFee(); 
+        await fetchShippingFee();
       } else {
         Swal.fire({
           title: "Thông báo",
@@ -131,29 +105,40 @@ export default function Checkout() {
     } catch (error) {
       setError("Không thể kiểm tra địa chỉ");
       console.error(error);
-      return false; 
     }
-  }, [fetchShippingFee, navigate]);
+  };
+
+  const fetchShippingFee = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/address/shipping-fee", null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data.data) {
+        setShippingFee(response.data.data.total);
+      }
+    } catch (error) {
+      setError("Không thể kiểm tra phí vận chuyển");
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    checkAddressExists();
-  }, [totalPrice, checkAddressExists, fetchShippingFee]);
+    const fetchAddressesAndShippingFee = async () => {
+      await checkAddressExists();
+      await fetchShippingFee();
+    };
 
-  useEffect(() => {
-    if (orderData.AddressID) {
-      fetchShippingFee(orderData.AddressID);
-    }
-  }, [fetchShippingFee, orderData.AddressID]);
+    fetchAddressesAndShippingFee();
+  }, [totalPrice]);
 
-  const fetchCoupon = useCallback(async () => {
-    setLoadingCoupons(true); // Start loading
-    const token = localStorage.getItem("token");
+  const fetchCoupon = async () => {
+    setLoadingCoupons(true);
     if (!token) {
       setError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
       return;
     }
 
-    const totalAmount = totalPrice + 19;
+    const totalAmount = totalPrice + shippingFee;
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/coupons/checkCoupon", { MinimumOrderValue: totalAmount.toFixed(2) }, {
@@ -164,19 +149,16 @@ export default function Checkout() {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoadingCoupons(false); // End loading
+      setLoadingCoupons(false);
     }
-  }, [totalPrice]); // Thêm totalPrice vào dependency array
+  };
 
   useEffect(() => {
-    const fetchCoupons = async () => {
-      await fetchCoupon(); // Gọi hàm fetchCoupon
-    };
-    fetchCoupons();
-  }, [totalPrice, fetchCoupon]); // Thêm fetchCoupon vào dependency array
+    fetchCoupon();
+  }, [totalPrice]);
 
   const handlePayment = async () => {
-    const totalAmount = totalPrice + 19 - discount;
+    const totalAmount = totalPrice + shippingFee;
     const userId = orderData.UserID || localStorage.getItem("userId");
 
     if (!userId) {
@@ -221,7 +203,7 @@ export default function Checkout() {
           "Content-Type": "application/json",
         },
       });
- 
+
       if (response.data.status === "success") {
         setCartItems([]);
         Swal.fire({
@@ -253,7 +235,7 @@ export default function Checkout() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h1 className="text-lg font-semibold text-gray-900 mb-4">Địa Chỉ Giao Hàng</h1>
-              {loadingAddresses ? ( // Show loading state
+              {loadingAddresses ? (
                 <p>Đang tải địa chỉ...</p>
               ) : addresses.find(address => address.IsDefault === 1) ? (
                 <div className="bg-white rounded-lg shadow-sm p-6">
@@ -294,10 +276,9 @@ export default function Checkout() {
                 ))}
               </div>
             </div>
-            {/* Phần mã giảm giá */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Mã Giảm Giá</h3>
-              {loadingCoupons ? ( // Show loading state
+              {loadingCoupons ? (
                 <p>Đang tải mã giảm giá...</p>
               ) : (
                 <select
@@ -306,7 +287,7 @@ export default function Checkout() {
                     const selectedCoupon = coupons.find(coupon => coupon.Code === e.target.value);
                     setAppliedCoupon(e.target.value);
                     if (selectedCoupon) {
-                      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100; // Calculate discount
+                      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
                       setDiscount(discountAmount);
                     } else {
                       setDiscount(0);
@@ -329,7 +310,7 @@ export default function Checkout() {
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Tổng Quan Đơn Hàng</h3>
                 <div className="space-y-4 mb-6">
-                  {loadingCartItems ? ( // Show loading state
+                  {loadingCartItems ? (
                     <p>Đang tải giỏ hàng...</p>
                   ) : cartItems.map((item, index) => (
                     <div key={index} className="flex items-center gap-4 pb-4 border-b border-gray-100">
@@ -345,14 +326,13 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
-
                     <span className="font-medium">${Number(totalPrice).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
                     <span className="font-medium">${shippingFee}</span>
                   </div>
-                  {discount > 0 && (  
+                  {discount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Giảm giá</span>
                       <span className="font-medium">-${discount.toFixed(2)}</span>
@@ -361,7 +341,7 @@ export default function Checkout() {
                   <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="flex justify-between">
                       <span className="text-base font-medium text-gray-900">Thanh toán</span>
-                      <span className="text-base font-semibold text-gray-600">${(totalPrice + 19 - discount).toFixed(2)}</span>
+                      <span className="text-base font-semibold text-gray-600">${(totalPrice + shippingFee - discount).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
