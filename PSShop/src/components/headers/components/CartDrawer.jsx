@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useContextElement } from "../../../context/Context";
@@ -8,8 +10,9 @@ export default function CartDrawer() {
     totalPrice,
     loading,
     setQuantity,
-    removeCartItem,
+    // removeSelectedItems,
     fetchCartItems,
+    // setCartProducts,
   } = useContextElement();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +34,9 @@ export default function CartDrawer() {
     closeCart();
   }, [pathname]);
 
+  // const removeSelectedItem = async () => {
+  //   await removeSelectedItems();
+  // };
   return (
     <>
       <div
@@ -79,7 +85,6 @@ export default function CartDrawer() {
                           className="w-6 h-6 flex items-center justify-center border rounded"
                           onClick={() => {
                             setQuantity(item.CartItemID, item.Quantity - 1);
-                            fetchCartItems();
                           }}
                           disabled={loading || item.Quantity <= 1}
                         >
@@ -90,23 +95,19 @@ export default function CartDrawer() {
                           className="w-6 h-6 flex items-center justify-center border rounded"
                           onClick={() => {
                             setQuantity(item.CartItemID, item.Quantity + 1);
-                            fetchCartItems();
                           }}
                           disabled={loading}
                         >
                           +
                         </button>
                       </div>
-                      <button
+                      {/* <button
                         className="text-red-500 hover:text-red-700"
-                        onClick={() => {
-                          removeCartItem(item.CartItemID);
-                          fetchCartItems(); // Cập nhật giỏ hàng sau khi xóa
-                        }}
+                        onClick={() => removeSelectedItems(item.CartItemID)}
                         disabled={loading}
                       >
                         <i className="fas fa-trash"></i>
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>

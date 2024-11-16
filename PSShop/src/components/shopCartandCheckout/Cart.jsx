@@ -1,73 +1,37 @@
-/* eslint-disable no-unused-vars */
+import {  toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
+
 
 export default function Cart() {
   const {
     cartProducts,
-    totalPrice,
     loading,
     selectedItems,
     handleSelectItem,
     handleSelectAll,
-    removeSelectedItems,
     fetchCartItems,
+    setCartProducts,
+    removeSelectedItems,
   } = useContextElement();
 
-  const [couponCode, setCouponCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [error, setError] = useState("");
+
 
   useEffect(() => {
     fetchCartItems(); 
   }, [fetchCartItems]);
 
-  const handleError = (message) => {
-    setError(message);
-  };
-
-  const applyCoupon = async () => {
-    const token = localStorage.getItem("token"); 
-    if (!token) {
-      handleError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
-      return;
-    }
-
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/coupons/details", { Code: couponCode }, {
-        headers: { Authorization: `Bearer ${token}` }, 
-      });
-      const coupon = response.data.data;
-
-      if (coupon) {
-        if (totalPrice >= coupon.MinimumOrderValue) {
-          const discountAmount = (totalPrice * coupon.DiscountPercentage) / 100;
-          setDiscount(discountAmount);
-          handleError(""); 
-        } else {
-          handleError("Mã không được áp dụng. Giá trị đơn hàng phải lớn hơn " + coupon.MinimumOrderValue);
-        }
-      } else {
-        handleError("Mã giảm giá không hợp lệ.");
-      }
-    } catch (err) {
-      console.error(err);
-      if (err.response && err.response.status === 401) {
-        handleError("Bạn cần đăng nhập để thực hiện hành động này.");
-      } else {
-        handleError("Lỗi khi kiểm tra mã giảm giá.");
-      }
-    }
-  };
+ 
+  
 
   const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
     if (newQuantity < 1) return; 
 
     const token = localStorage.getItem("token"); 
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
+       await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
         productID, 
         colorID, 
         sizeID, 
@@ -75,14 +39,17 @@ export default function Cart() {
       }, {
         headers: { Authorization: `Bearer ${token}` }, 
       });
-      fetchCartItems();
-      if (response.status === 400) {
-        alert("Số lượng không hợp lệ.");
-      }
+
+      // Cập nhật trạng thái giỏ hàng mà không cần gọi lại fetchCartItems
+      setCartProducts(prevProducts => 
+        prevProducts.map(item => 
+          item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
+        )
+      );
 
     } catch (err) {
       console.error(err);
-      handleError("Lỗi khi cập nhật số lượng."); 
+      toast.error("Lỗi cập nhật số lượng");
     }
   };
 
@@ -91,6 +58,9 @@ export default function Cart() {
     handleQuantityChange(itemId, productID, colorID, sizeID, newQuantity);
   };
 
+  const removeSelectedItem = async () => {
+    await removeSelectedItems();
+  };
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
@@ -191,8 +161,8 @@ export default function Cart() {
             <div className="cart-table-footer d-flex justify-content-between align-items-center mt-4">
               <div className="d-flex gap-3">
                 <button
-                  className="btn btn-danger"
-                  onClick={() => removeSelectedItems()}
+                  className="btn btn-dark"
+                  onClick={removeSelectedItem}
                   disabled={selectedItems.length === 0 || loading}
                 >
                   {loading ? (

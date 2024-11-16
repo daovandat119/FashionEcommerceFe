@@ -8,5 +8,7 @@ export default function CartLength() {
     fetchCartItems(); // Fetch cart data when component mounts
   }, [fetchCartItems]);
 
-  return <>{Array.isArray(cartProducts) ? cartProducts.length : 0}</>;
+  const token = localStorage.getItem("token"); // Kiểm tra token
+
+  return <>{token ? (Array.isArray(cartProducts) ? cartProducts.length : 0) : 0}</>;
 }
