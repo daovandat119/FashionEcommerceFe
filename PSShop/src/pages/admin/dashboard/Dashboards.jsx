@@ -1,34 +1,75 @@
-import React, { useEffect } from 'react';
-import { Typography, Card, CardBody, CardHeader } from "@material-tailwind/react";
-
-import { FaDollarSign, FaUsers, FaUserPlus } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast
-import WebsiteViewChart from './WebsiteViewChart'; // Đảm bảo đường dẫn đúng
-import DailySalesChart from './DailySalesChart'; // Đảm bảo đường dẫn đúng
-import CompletedTasksChart from './CompletedTasksChart'; // Đảm bảo đường dẫn đúng
+import React, { useEffect, useState } from 'react';
+import { Typography } from "@material-tailwind/react";
+import { FaDollarSign, FaUsers, FaUserPlus, FaUser, FaEye, FaSignOutAlt } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import { useAuth } from '../../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import WebsiteViewChart from './WebsiteViewChart';
+import DailySalesChart from './DailySalesChart';
+import CompletedTasksChart from './CompletedTasksChart';
 import TransactionHistory from './TransactionHistory';
 import CreditBalance from './CreditBalance';
-import { useAuth } from '../../../context/AuthContext'; // Import useAuth
-
-
 
 const Dashboard = () => {
-  const { showToast, setShowToast } = useAuth(); // Lấy showToast từ context
+  const { showToast, setShowToast, logout } = useAuth();
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (showToast) {
       toast.success("Đăng nhập thành công!");
-      setShowToast(false); // Đặt lại trạng thái sau khi hiển thị thông báo
+      setShowToast(false);
     }
   }, [showToast, setShowToast]);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/admin/login");
+  };
+
+  const handleProfileClick = () => {
+    navigate("/admin/users/profile");
+  };
 
   return (
     <>
       <ToastContainer />
-      <div className="px-4  bg-gray-100">
-        <Typography variant="h4" color="blue-gray" className="mb-6 font-bold">
-          Dashboard
-        </Typography>
+      <div className="px-4 bg-gray-100">
+        <div className="flex justify-between items-center mb-6">
+          <Typography variant="h4" color="blue-gray" className="font-bold ml-5">
+            Dashboard
+          </Typography>
+          <div className="relative flex items-center gap-2 z-10">
+            <div className='bg-black p-2 rounded-full cursor-pointer' onClick={toggleMenu}>
+              <FaUser className="text-white" />
+            </div>
+            <h1 className="text-gray-800 mr-10">Chào Admin</h1>
+            {menuOpen && (
+              <div className="absolute right-3 mt-36 w-40 bg-white shadow-lg rounded-lg">
+                <ul className="py-2">
+                  <li 
+                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={handleProfileClick}
+                  >
+                    <FaEye className="mr-2" />
+                    Profile
+                  </li>
+                  <li 
+                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <FaSignOutAlt className="mr-2" />
+                    Logout
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
 
         <div className="flex justify-between h-[150px] ">
           {/* Card Today's Money */}
@@ -90,6 +131,7 @@ const Dashboard = () => {
               -2% <p className='text-black'>than yesterday</p>
             </div>
           </div>
+
           {/* Card Sales */}
           <div className="shadow-lg transition-transform transform hover:scale-105 w-[24%] bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
             <div className='flex items-center justify-between pb-3 border-b-2'>
@@ -101,7 +143,7 @@ const Dashboard = () => {
               <div className='flex flex-col items-end'>
                 <p className="text-gray-600 font-medium">Sales</p>
                 <div className="text-2xl font-bold ">
-                $103,430
+                  $103,430
                 </div>
               </div>
             </div>
@@ -112,30 +154,25 @@ const Dashboard = () => {
         </div>
 
         {/* Biểu đồ */}
-        
-       <div className='flex justify-between gap-3 mt-4'>
-        
-        <div className='w-[50%]'>
-        <WebsiteViewChart />
+        <div className='flex justify-between gap-3 mt-4'>
+          <div className='w-[50%]'>
+            <WebsiteViewChart />
+          </div>
+          <div className='w-[50%]'>
+            <DailySalesChart />
+          </div>
         </div>
+        <div className='mt-3 w-full'> <CompletedTasksChart /></div>
 
-        <div className='w-[50%]'>
-        <DailySalesChart/>
+        <div className='flex gap-3 my-3'>
+          <div className='w-[30%]'>
+            <CreditBalance />
+          </div>
+          <div className='w-[70%]'>
+            <TransactionHistory />
+          </div>
         </div>
-
-       </div>
-      <div className='mt-3 w-full'> <CompletedTasksChart/></div>
-
-    <div className='flex gap-3 my-3'>
-    <div className='w-[30%]'>
-      <CreditBalance/>
-    </div>
-    <div className='w-[70%]'>
-      <TransactionHistory/>
-    </div>
-    
-    </div>
-    </div>
+      </div>
     </>
   );
 }

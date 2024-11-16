@@ -20,14 +20,8 @@ import {
 import logo from "../../../../public/assets/images/logo.png";
 
 export function SidebarWithSearch() {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+ 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/admin/login");
-  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -167,17 +161,7 @@ export function SidebarWithSearch() {
           Settings
         </ListItem>
 
-        <div
-          onClick={handleLogout}
-          className="w-[80%] absolute bottom-5 hover:bg-gray-200 rounded-xl"
-        >
-          <ListItem>
-            <ListItemPrefix>
-              <PowerIcon className="h-5 w-5 " />
-            </ListItemPrefix>
-            Logout
-          </ListItem>
-        </div>
+      
       </List>
     </Card>
   );

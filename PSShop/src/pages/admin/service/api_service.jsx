@@ -11,15 +11,30 @@ const ListCategories = (page, search = "") => {
 };
 
 const AddCategory = (CategoryName) => {
-  return axios.post("/api/categories", { CategoryName });
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.post("/api/categories", { CategoryName }, {
+    headers: {
+      Authorization: `Bearer ${token}` // Thêm token vào header
+    }
+  });
 };
 
 const GetCategoryById = (CategoryID) => {
-  return axios.get(`/api/categories${CategoryID}`);
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.get(`/api/categories/${CategoryID}`, {
+    headers: {
+      Authorization: `Bearer ${token}` // Thêm token vào header
+    }
+  });
 };
 
 const UpdateCategory = (CategoryID, CategoryName) => {
-  return axios.put(`/api/categories/${CategoryID}`, { CategoryName });
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.put(`/api/categories/${CategoryID}`, { CategoryName }, {
+    headers: {
+      Authorization: `Bearer ${token}` // Thêm token vào header
+    }
+  });
 };
 
 const DeleteCategories = (ids) => {
@@ -47,14 +62,19 @@ const AddProduct = (productData) => {
   });
 };
 
-const GetProductById = (ProductID) => {
-  return axios.get(`/api/products/${ProductID}`);
+const GetProductById = (ProductID, token) => {
+  return axios.get(`/api/products/${ProductID}`, {
+    headers: {
+      Authorization: `Bearer ${token}` // Thêm token xác thực nếu cần
+    }
+  });
 };
-
 const UpdateProduct = async (ProductID, productData) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(`/api/products/${ProductID}`, productData, {
     headers: {
       "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}` // Thêm token vào header
     },
   });
 };
@@ -101,14 +121,18 @@ const DeleteSizes = (SizeID) => {
 };
 
 const AddProductVariant = (variantData) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
   console.log(variantData);
-  return axios.post("/api/product-variants", variantData);
+  return axios.post("/api/product-variants", variantData, {
+    headers: {
+      Authorization: `Bearer ${token}` // Thêm token vào header
+    }
+  });
 };
 
 const GetProductVariants = (ProductID) => {
-  return axios.post(`/api/product-variants/productID`, { ProductID });
+  return axios.post(`/api/product-variants/productID`, { ProductID }); // Sử dụng POST để gửi ProductID
 };
-
 const ListUsers = (page) => {
   return axios.get(`/api/users?page=${page}`);
 };
@@ -190,6 +214,50 @@ const DeleteVouchers = (ids) => {
   return axios.delete(`/api/coupons?ids=${idsString}`); // Gọi API xóa voucher
 };
 
+// Hàm để lấy địa chỉ của người dùng dựa trên token
+const GetAddressByUserId = async () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.get(`/api/address`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Gửi token trong header
+    },
+  });
+};
+// Hàm để lấy danh sách tỉnh
+const GetProvinces = () => {
+  return axios.get("/api/provinces");
+};
+
+// Hàm để lấy danh sách huyện theo ID tỉnh
+const GetDistricts = (provinceId) => {
+  console.log(provinceId);
+  return axios.post("/api/districts", { province_id: provinceId });
+};
+
+// Hàm để lấy danh sách xã theo ID huyện
+const GetWards = (districtId) => {
+  return axios.post("/api/wards", { district_id: districtId });
+};
+
+// Function to update user address
+const UpdateAddress = (addressId, addressData) => {
+  return axios.put(`/api/address/${addressId}`, addressData, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token if needed
+    },
+  });
+};
+
+// Hàm để lấy đơn hàng
+const GetOrders = async () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.get("http://127.0.0.1:8000/api/order", {
+    headers: {
+      Authorization: `Bearer ${token}`, // Gửi token trong header
+    },
+  });
+};
+
 export {
   LoginAdmin,
   ListCategories,
@@ -228,4 +296,10 @@ export {
   AddVouchers,
   UpdateVouchers,
   DeleteVouchers,
+  GetAddressByUserId,
+  GetProvinces, // Thêm hàm lấy tỉnh
+  GetDistricts, // Thêm hàm lấy huyện
+  GetWards, // Thêm hàm lấy xã
+  UpdateAddress, // Add this line to export the function
+  GetOrders, // Thêm hàm lấy đơn hàng
 };

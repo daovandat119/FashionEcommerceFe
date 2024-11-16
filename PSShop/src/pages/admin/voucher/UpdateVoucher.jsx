@@ -26,8 +26,8 @@ const UpdateVoucher = () => {
     const fetchVoucherDetails = async () => {
       try {
         const response = await GetCouponDetails(VoucherID);
-        if (response.data && response.data.length > 0) {
-          const voucher = response.data[0];
+        if (response.data && response.data.CouponID) {
+          const voucher = response.data;
           setVoucherData({
             Name: voucher.Name,
             Code: voucher.Code,

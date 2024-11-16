@@ -57,6 +57,7 @@ import OrderList from "./pages/admin/oder/OderList";
 import UpdateOrder from "./pages/admin/oder/UpdateOder";
 import VoucherList from "./pages/admin/voucher/VoucherList";
 import AddVoucher from "./pages/admin/voucher/AddVoucher";
+import ProfileAdmin from "./pages/admin/profile_admin/ProfileAdmin";
 
 function App() {
   return (
@@ -132,6 +133,7 @@ const AppRoutes = () => {
               <Route path="users" element={<UserList />} />
               <Route path="users/add-users" element={<AddUsers />} />
               <Route path="users/edit-users/:id" element={<UpdateUsers />} />
+              <Route path="users/profile" element={<ProfileAdmin />} />
               <Route path="colors" element={<ColorList />} />
               <Route path="colors/add" element={<AddColor />} />
               <Route path="colors/edit/:ColorID" element={<UpdateColorComponent />} />

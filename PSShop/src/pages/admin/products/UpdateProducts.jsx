@@ -65,15 +65,21 @@ const UpdateProducts = () => {
       ListSizes(1, ""),
     ])
       .then(([productResponse, categoriesResponse, colorsResponse, sizesResponse]) => {
-        if (productResponse && productResponse.data) {
-          const product = productResponse.data.product;
-          const imagePaths = product.image_path ? product.image_path.split(",") : [];
+        if (productResponse && productResponse.success) {
+          const product = productResponse.data;
+          const imagePaths = product.image_paths ? product.image_paths.split(",") : [];
+          
+          // Check if MainImageURL is an array and handle it
+          const mainImageURL = Array.isArray(product.MainImageURL) ? product.MainImageURL[0] : product.MainImageURL;
+
           setProductData({
             ...product,
-            MainImagePreview: product.MainImageURL || null,
+            MainImagePreview: mainImageURL || null,
             ImagePath: imagePaths,
             ImagePathPreviews: imagePaths.map((path) => path.trim()),
           });
+        } else {
+          toast.error("Không tìm thấy thông tin sản phẩm");
         }
 
         setCategories(categoriesResponse.data);
@@ -86,7 +92,6 @@ const UpdateProducts = () => {
       .catch((error) => {
         console.error("Error fetching product data:", error);
         toast.error("Không thể tải thông tin sản phẩm");
-        navigate("/admin/products");
       });
   };
 
@@ -105,6 +110,7 @@ const UpdateProducts = () => {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
+  
     if (type === "file") {
       if (name === "MainImageURL") {
         const file = files[0];
@@ -113,7 +119,7 @@ const UpdateProducts = () => {
           reader.onload = (e) => {
             setProductData((prevData) => ({
               ...prevData,
-              [name]: file,
+              [name]: file, // Lưu tệp hình ảnh vào trạng thái
               MainImagePreview: e.target.result,
             }));
           };
@@ -128,11 +134,11 @@ const UpdateProducts = () => {
             reader.readAsDataURL(file);
           });
         });
-
+  
         Promise.all(readerPromises).then((results) => {
           setProductData((prevData) => ({
             ...prevData,
-            ImagePath: fileArray,
+            ImagePath: fileArray, // Lưu tệp hình ảnh vào trạng thái
             ImagePathPreviews: results,
           }));
         });
@@ -153,12 +159,44 @@ const UpdateProducts = () => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
-
+  
+    // Kiểm tra các trường bắt buộc
+    const requiredFields = ['ProductName', 'CategoryID', 'Price', 'ShortDescription', 'Description'];
+    const newErrors = {};
+    requiredFields.forEach(field => {
+      if (!productData[field]) {
+        newErrors[field] = ['Trường này là bắt buộc.'];
+      }
+    });
+  
+    // Kiểm tra định dạng tệp hình ảnh
+    if (productData.MainImageURL && !(productData.MainImageURL instanceof File)) {
+      newErrors.MainImageURL = ['Trường này phải là một tệp hình ảnh.'];
+    } else if (productData.MainImageURL && !['image/jpeg', 'image/png', 'image/gif'].includes(productData.MainImageURL.type)) {
+      newErrors.MainImageURL = ['Tệp hình ảnh không hợp lệ.'];
+    }
+  
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setLoading(false);
+      return;
+    }
+  
     const formData = new FormData();
     for (const key in productData) {
+      if (key === "ImagePath" && productData.ImagePath.length === 0) {
+        // Nếu không có ảnh mới, không thêm vào formData
+        continue;
+      }
       formData.append(key, productData[key]);
     }
-
+  
+    // Chỉ thêm MainImageURL nếu nó là một tệp
+    if (productData.MainImageURL instanceof File) {
+      formData.append("MainImageURL", productData.MainImageURL);
+    }
+  
+    // Gửi yêu cầu cập nhật sản phẩm
     UpdateProduct(ProductID, formData)
       .then((response) => {
         if (response) {
@@ -171,7 +209,6 @@ const UpdateProducts = () => {
       })
       .catch((error) => {
         console.error("Lỗi khi cập nhật sản phẩm:", error);
-        // Hiển thị thông báo lỗi từ API
         if (error.response && error.response.data) {
           toast.error(error.response.data.message || "Đã xảy ra lỗi khi cập nhật sản phẩm");
         } else {
@@ -187,7 +224,7 @@ const UpdateProducts = () => {
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          {label}
+{label}
         </label>
         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
           <div className="space-y-1 text-center">
@@ -272,7 +309,7 @@ const UpdateProducts = () => {
       ColorID: selectedColors.join(","),
       SizeID: selectedSizes.join(","),
       Price: parseFloat(variantPrice),
-      Quantity: parseInt(variantQuantity),
+Quantity: parseInt(variantQuantity),
     };
 
     AddProductVariant(variantData)
@@ -351,7 +388,7 @@ const UpdateProducts = () => {
                 <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
                   <ul className="py-1 overflow-auto text-base max-h-60">
                     {categories.map(category => (
-                      <li
+<li
                         key={category.CategoryID}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                         onClick={() => handleCategorySelect(category.CategoryID)}
@@ -431,7 +468,7 @@ const UpdateProducts = () => {
         {/* Phần bên phải - Colors, Sizes, và Add Product Variant */}
         <div className="w-[60%] bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
-          <div className="flex space-x-4 mb-4">
+<div className="flex space-x-4 mb-4">
             <input
               type="number"
               placeholder="Price"
@@ -502,7 +539,7 @@ const UpdateProducts = () => {
                       <th className="border border-gray-300  py-2">Select</th>
                       <th className="border border-gray-300 px-4 py-2">Color</th>
                       <th className="border border-gray-300 px-4 py-2">Size</th>
-                      <th className="border border-gray-300 px-4 py-2">Price</th>
+<th className="border border-gray-300 px-4 py-2">Price</th>
                       <th className="border border-gray-300 px-4 py-2">Quantity</th>
                       <th className="border border-gray-300 px-4 py-2">Actions</th>
                     </tr>
