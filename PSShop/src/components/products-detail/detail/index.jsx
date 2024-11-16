@@ -41,11 +41,7 @@ export default function ProductDetailsPage2() {
       <Headers />
       <main className="page-wrapper">
         <div className="mb-md-1 pb-md-3"></div>
-        {product ? (
           <Products_Detail product={product} />
-        ) : (
-          <p>Loading...</p>
-        )}
         <RelatedSlider />
         <br />
       </main>

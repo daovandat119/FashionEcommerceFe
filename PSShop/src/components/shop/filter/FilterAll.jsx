@@ -24,7 +24,7 @@ export default function FilterAll({ onFilterChange }) {
   useEffect(() => {
     const fetchData = async () => {
       if (hasFetchedData.current) return; // Ngăn không gọi lại nếu đã gọi
-
+  
       setLoading(true);
       try {
         const [categoriesRes, colorsRes, sizesRes] = await Promise.all([
@@ -32,7 +32,7 @@ export default function FilterAll({ onFilterChange }) {
           axios.get("http://127.0.0.1:8000/api/colors"),
           axios.get("http://127.0.0.1:8000/api/sizes"),
         ]);
-
+  
         setCategories(categoriesRes.data.data);
         setColors(colorsRes.data.data);
         setSizes(sizesRes.data.data);
@@ -42,9 +42,9 @@ export default function FilterAll({ onFilterChange }) {
       }
       setLoading(false);
     };
-
+  
     fetchData();
-  }, []);
+  }, []); 
 
   // Xử lý khi filter thay đổi
   const handleFilterChange = (type, value) => {
