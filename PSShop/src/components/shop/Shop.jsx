@@ -18,16 +18,18 @@ const itemPerRow = [2, 3, 4];
 export default function Shop1() {
   const { toggleWishlist, isInWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(3);
-  const [currentCategory, setCurrentCategory] = useState(menuCategories[0]);
+  const [currentCategory] = useState(menuCategories[0]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      if (products.length > 0) return;
+
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/products');
-        setProducts(response.data.data || response.data.data);
+        setProducts(response.data.data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);
         setError("Không thể tải sản phẩm.");
@@ -37,7 +39,7 @@ export default function Shop1() {
     };
 
     fetchProducts();
-  }, []);
+  }, [products]);
 
   // Loading state
   if (loading) {

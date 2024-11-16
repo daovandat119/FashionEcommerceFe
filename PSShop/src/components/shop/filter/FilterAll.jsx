@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Slider from "rc-slider";
 
@@ -19,8 +19,12 @@ export default function FilterAll({ onFilterChange }) {
     maxPrice: 100000,
   });
 
+  const hasFetchedData = useRef(false); // Thêm useRef để theo dõi việc đã gọi API
+
   useEffect(() => {
     const fetchData = async () => {
+      if (hasFetchedData.current) return; // Ngăn không gọi lại nếu đã gọi
+
       setLoading(true);
       try {
         const [categoriesRes, colorsRes, sizesRes] = await Promise.all([
@@ -32,6 +36,7 @@ export default function FilterAll({ onFilterChange }) {
         setCategories(categoriesRes.data.data);
         setColors(colorsRes.data.data);
         setSizes(sizesRes.data.data);
+        hasFetchedData.current = true; // Đánh dấu là đã gọi API
       } catch (error) {
         console.error("Error fetching data:", error);
       }

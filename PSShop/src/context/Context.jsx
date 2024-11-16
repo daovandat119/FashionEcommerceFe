@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   createContext,
   useContext,
   useState,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -27,6 +27,9 @@ export default function ContextProvider({ children }) {
   });
   const [wishlistProducts, setWishlistProducts] = useState([]);
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
+  const [isFetchingCart, setIsFetchingCart] = useState(false);
+
+  const hasFetchedCartItems = useRef(false);
 
   const handleSelectAll = (checked) => {
     const ids = checked ? cartProducts.map((item) => item.CartItemID) : [];
@@ -80,8 +83,10 @@ export default function ContextProvider({ children }) {
       return;
     }
 
-    if (cartProducts.length > 0) return;
+    if (hasFetchedCartItems.current) return;
 
+    hasFetchedCartItems.current = true;
+    setIsFetchingCart(true);
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
         headers: { Authorization: `Bearer ${token}` },
@@ -100,6 +105,8 @@ export default function ContextProvider({ children }) {
     } catch (error) {
       setCartProducts([]);
       setTotalPrice(0);
+    } finally {
+      setIsFetchingCart(false);
     }
   }, []);
 
@@ -107,6 +114,7 @@ export default function ContextProvider({ children }) {
     fetchCartItems();
   }, [fetchCartItems]);
 
+  
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
     setLoading(true);
     const token = localStorage.getItem("token");
@@ -182,6 +190,7 @@ export default function ContextProvider({ children }) {
     }
   };
 
+  
   const updateCartItem = async (cartItemId, data) => {
     const token = localStorage.getItem('token');
     
