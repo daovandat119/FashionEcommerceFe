@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   createContext,
   useContext,
@@ -69,14 +67,6 @@ export default function ContextProvider({ children }) {
     return response.data.data;
   };
 
-  const getProductDetails = (productId) => {
-    return fetchWithCache(`http://127.0.0.1:8000/api/products/${productId}`, cache.products);
-  };
-
-  const getVariantDetails = (variantId) => {
-    return fetchWithCache(`http://127.0.0.1:8000/api/product-variants/${variantId}`, cache.variants);
-  };
-
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
 
@@ -86,6 +76,8 @@ export default function ContextProvider({ children }) {
       return;
     }
 
+    if (cartProducts.length > 0) return;
+
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
         headers: { Authorization: `Bearer ${token}` },
@@ -93,26 +85,9 @@ export default function ContextProvider({ children }) {
 
       if (response.data.message === "Success") {
         const cartData = response.data.data;
-        const detailedCartItems = await Promise.all(
-          cartData.map(async (item) => {
-            const [productDetails, variantDetails] = await Promise.all([
-              getProductDetails(item.ProductID),
-              getVariantDetails(item.VariantID),
-            ]);
-            return {
-              ...item,
-              product_name: productDetails?.ProductName,
-              MainImageURL: productDetails?.MainImageURL,
-              color: variantDetails?.ColorName,
-              size: variantDetails?.SizeName,
-              Price: parseFloat(variantDetails?.Price || 0),
-              total_price: parseFloat(variantDetails?.Price || 0) * item.Quantity,
-            };
-          })
-        );
-
-        setCartProducts(detailedCartItems);
-        setTotalPrice(calculateTotalPrice(detailedCartItems));
+        const totalPrice = Number(cartData.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2));
+        setTotalPrice(totalPrice);
+        setCartProducts(cartData);
       }
     } catch (error) {
       setCartProducts([]);
@@ -241,15 +216,15 @@ export default function ContextProvider({ children }) {
     const ids = selectedItems.join(','); 
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/api/cart-items`, // Đảm bảo URL đúng
+        `http://127.0.0.1:8000/api/cart-items`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          data: { ids },  // Gửi ID dưới dạng mảng
+          data: { ids },
         }
-      ); // Cập nhật giỏ hàng sau khi xóa
+      );
     } catch (error) {
         console.error('Error removing item from cart:', error);
         Swal.fire({

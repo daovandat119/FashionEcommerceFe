@@ -20,7 +20,7 @@ export default function CartDrawer() {
       .classList.remove("page-overlay_visible");
     document.getElementById("cartDrawer").classList.remove("aside_visible");
     setIsOpen(false);
-    fetchCartItems(); // Cập nhật giỏ hàng sau khi đóng
+    fetchCartItems();
   };
 
   useEffect(() => {
@@ -56,19 +56,19 @@ export default function CartDrawer() {
                     <img
                       loading="lazy"
                       className="cart-drawer-item__img"
-                      src={item.MainImageURL}
-                      alt={item.product_name}
+                      src={item.ImageUrl}
+                      alt={item.ProductName}
                     />
                   </div>
                   <div className="cart-drawer-item__info flex-grow-1">
                     <h6 className="cart-drawer-item__title fw-normal">
-                      {item.product_name}
+                      {item.ProductName}
                     </h6>
                     <p className="cart-drawer-item__option text-secondary">
-                      Màu sắc: {item.color}
+                      Màu sắc: {item.ColorName}
                     </p>
                     <p className="cart-drawer-item__option text-secondary">
-                      Kích thước: {item.size}
+                      Kích thước: {item.SizeName}
                     </p>
                     <p className="cart-drawer-item__option text-secondary">
                       Đơn giá: ${item.Price}
@@ -77,7 +77,10 @@ export default function CartDrawer() {
                       <div className="flex items-center space-x-2">
                         <button
                           className="w-6 h-6 flex items-center justify-center border rounded"
-                          onClick={() => setQuantity(item.CartItemID, item.Quantity - 1)}
+                          onClick={() => {
+                            setQuantity(item.CartItemID, item.Quantity - 1);
+                            fetchCartItems();
+                          }}
                           disabled={loading || item.Quantity <= 1}
                         >
                           -
@@ -85,7 +88,10 @@ export default function CartDrawer() {
                         <span className="w-8 text-center">{item.Quantity}</span>
                         <button
                           className="w-6 h-6 flex items-center justify-center border rounded"
-                          onClick={() => setQuantity(item.CartItemID, item.Quantity + 1)}
+                          onClick={() => {
+                            setQuantity(item.CartItemID, item.Quantity + 1);
+                            fetchCartItems();
+                          }}
                           disabled={loading}
                         >
                           +
@@ -117,7 +123,7 @@ export default function CartDrawer() {
           <div className="d-flex justify-content-between">
             <h6 className="fs-base fw-medium">TỔNG TIỀN:</h6>
             <span className="cart-subtotal fw-medium">
-              ${totalPrice.toFixed(2)}
+              ${totalPrice}
             </span>
           </div>
 

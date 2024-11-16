@@ -15,7 +15,6 @@ export default function Headers() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Header - isAuthenticated:", isAuthenticated);
   }, [isAuthenticated]);
 
   const toggleSearch = () => {
