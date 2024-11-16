@@ -137,17 +137,17 @@ export default function RelatedSlider() {
           </Swiper>
         )}
         
-        <div className="products-carousel__prev cursor-pointer position-absolute top-50 start-0 translate-middle-y z-1 bg-white rounded-circle shadow d-flex align-items-center justify-content-center" 
-             style={{ width: '40px', height: '40px', left: '-20px' }}>
-          <svg width="20" height="20" viewBox="0 0 25 25">
-            <use href="#icon_prev_md" />
+        <div className="products-carousel__prev cursor-pointer position-absolute top-50 start-0 translate-middle-y z-1 bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center" 
+             style={{ width: '50px', height: '50px', left: '-25px' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
           </svg>
         </div>
         
-        <div className="products-carousel__next cursor-pointer position-absolute top-50 end-0 translate-middle-y z-1 bg-white rounded-circle shadow d-flex align-items-center justify-content-center"
-             style={{ width: '40px', height: '40px', right: '-20px' }}>
-          <svg width="20" height="20" viewBox="0 0 25 25">
-            <use href="#icon_next_md" />
+        <div className="products-carousel__next cursor-pointer position-absolute top-50 end-0 translate-middle-y z-1 bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+             style={{ width: '50px', height: '50px', right: '-25px' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l6-6-6-6"/>
           </svg>
         </div>
         
