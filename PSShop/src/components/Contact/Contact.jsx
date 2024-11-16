@@ -7,7 +7,7 @@ export default function Contact() {
         <div className="row mb-5">
           {storesLocations.slice(0, 2).map((elm, i) => (
             <div key={i} className="col-lg-6">
-              <h3 className="mb-4">Store in {elm.city}</h3>
+              <h3 className="mb-4">Cửa hàng ở {elm.city}</h3>
               <p className="mb-4">
                 {elm.address}
                 <br />
@@ -26,31 +26,31 @@ export default function Contact() {
             className="needs-validation"
             onSubmit={(e) => e.preventDefault()}
           >
-            <h3 className="mb-5">Get In Touch</h3>
+            <h3 className="mb-5">Liên hệ với chúng tôi</h3>
             <div className="form-floating my-4">
               <input
                 type="text"
                 className="form-control"
                 id="contact_us_name"
-                placeholder="Name *"
+                placeholder="Họ và tên *"
                 required
               />
-              <label htmlFor="contact_us_name">Name *</label>
+              <label htmlFor="contact_us_name">Họ và tên *</label>
             </div>
             <div className="form-floating my-4">
               <input
                 type="email"
                 className="form-control"
                 id="contact_us_email"
-                placeholder="Email address *"
+                placeholder="Địa chỉ email *"
                 required
               />
-              <label htmlFor="contact_us_name">Email address *</label>
+              <label htmlFor="contact_us_email">Địa chỉ email *</label>
             </div>
             <div className="my-4">
               <textarea
                 className="form-control form-control_gray"
-                placeholder="Your Message"
+                placeholder="Nội dung tin nhắn"
                 cols="30"
                 rows="8"
                 required
@@ -58,7 +58,7 @@ export default function Contact() {
             </div>
             <div className="my-4">
               <button type="submit" className="btn btn-primary">
-                Submit
+                Gửi
               </button>
             </div>
           </form>

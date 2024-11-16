@@ -1,82 +1,67 @@
 export default function About() {
-    return (
-      <section className="about-us container">
+  return (
+    <section className="about-us container">
+      <div className="mw-930">
+        <h2 className="page-title">GIỚI THIỆU VỀ CỬA HÀNG</h2>
+      </div>
+      <div className="about-us__content pb-5 mb-5">
+        <p className="mb-5">
+          <img
+            style={{ height: "fit-content" }}
+            loading="lazy"
+            className="w-100 h-auto d-block"
+            src="/assets/images/about/aboutbg.png"
+            width="1410"
+            height="550"
+            alt="hình ảnh"
+          />
+        </p>
         <div className="mw-930">
-          <h2 className="page-title">ABOUT SHOP</h2>
-        </div>
-        <div className="about-us__content pb-5 mb-5">
-          <p className="mb-5">
-            <img
-              style={{ height: "fit-content" }}
-              loading="lazy"
-              className="w-100 h-auto d-block"
-              src="/assets/images/about/aboutbg.png"
-              width="1410"
-              height="550"
-              alt="image"
-            />
+          <h3 className="mb-4">CÂU CHUYỆN CỦA CHÚNG TÔI</h3>
+          <p className="fs-6 fw-medium mb-4">
+            Chúng tôi luôn cam kết mang đến những sản phẩm và dịch vụ chất lượng tốt nhất cho khách hàng. Sứ mệnh của chúng tôi là đáp ứng các nhu cầu đa dạng và phong phú của bạn.
           </p>
-          <div className="mw-930">
-            <h3 className="mb-4">OUR STORY</h3>
-            <p className="fs-6 fw-medium mb-4">
-              Duis aute irure dolor in reprehenderit in voluptate velit esse
-              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-              cupidatat non proident, sunt in culpa qui officia deserunt mollit
-              anim id est laborum.
-            </p>
-            <p className="mb-4">
-              Saw wherein fruitful good days image them, midst, waters upon, saw.
-              Seas lights seasons. Fourth hath rule Evening Creepeth own lesser
-              years itself so seed fifth for grass evening fourth shall you are
-              unto that. Had. Female replenish for yielding so saw all one to
-              yielding grass you ll air sea it, open waters subdue, hath. Brought
-              second Made. Be. Under male male, firmament, beast had light after
-              fifth forth darkness thing hath sixth rule night multiply him life
-              give they are great.
-            </p>
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <h5 className="mb-3">Our Mission</h5>
-                <p className="mb-3">
-                  Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                  commodo consequat.
-                </p>
-              </div>
-              <div className="col-md-6">
-                <h5 className="mb-3">Our Vision</h5>
-                <p className="mb-3">
-                  Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                  commodo consequat.
-                </p>
-              </div>
+          <p className="mb-4">
+            Chúng tôi bắt đầu từ những ý tưởng nhỏ và đã phát triển thành một thương hiệu được nhiều người tin dùng. Mỗi sản phẩm chúng tôi tạo ra đều mang trong mình sự tận tâm và chú trọng đến từng chi tiết nhỏ.
+          </p>
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <h5 className="mb-3">Sứ Mệnh Của Chúng Tôi</h5>
+              <p className="mb-3">
+              Đem đến sản phẩm và dịch vụ chất lượng cao, góp phần tạo nên cuộc sống tốt đẹp hơn cho khách hàng.
+              </p>
             </div>
-          </div>
-          <div className="mw-930 d-lg-flex align-items-lg-center">
-            <div className="image-wrapper col-lg-6">
-              <img
-                style={{ height: "fit-content" }}
-                className="h-auto"
-                loading="lazy"
-                src="/assets/images/about/aboubg2.png"
-                width="450"
-                height="500"
-                alt="image"
-              />
-            </div>
-            <div className="content-wrapper col-lg-6 px-lg-4">
-              <h5 className="mb-3">The Company</h5>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet
-                sapien dignissim a elementum. Sociis metus, hendrerit mauris id
-                in. Quis sit sit ultrices tincidunt euismod luctus diam. Turpis
-                sodales orci etiam phasellus lacus id leo. Amet turpis nunc, nulla
-                massa est viverra interdum. Praesent auctor nulla morbi non
-                posuere mattis. Arcu eu id maecenas cras.
+            <div className="col-md-6">
+              <h5 className="mb-3">Tầm Nhìn Của Chúng Tôi</h5>
+              <p className="mb-3">
+                Trở thành thương hiệu hàng đầu, được khách hàng tin yêu và lựa chọn trên toàn thế giới.
               </p>
             </div>
           </div>
         </div>
-      </section>
-    );
-  }
-  
+        <div className="mw-930 d-lg-flex align-items-lg-center">
+          <div className="image-wrapper col-lg-6">
+            <img
+              style={{ height: "fit-content" }}
+              className="h-auto"
+              loading="lazy"
+              src="/assets/images/about/aboubg2.png"
+              width="450"
+              height="500"
+              alt="hình ảnh"
+            />
+          </div>
+          <div className="content-wrapper col-lg-6 px-lg-4">
+            <h5 className="mb-3">Về Công Ty</h5>
+            <p>
+              Chúng tôi là một tập thể gồm những con người đam mê, sáng tạo và không ngừng đổi mới. Với mục tiêu mang lại những giá trị bền vững cho khách hàng, chúng tôi luôn nỗ lực để cải tiến và nâng cao chất lượng sản phẩm.
+            </p>
+            <p>
+              Công ty chúng tôi đặt khách hàng làm trung tâm của mọi hoạt động, nhằm mang đến những trải nghiệm vượt trội và sự hài lòng cao nhất.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

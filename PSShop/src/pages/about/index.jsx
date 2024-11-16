@@ -4,14 +4,8 @@ import Headers from "../../components/headers/Headers";
 import About from "../../components/otherPages/about/About";
 
 import Support from "../../components/supports/Support";
-
-// import MetaComponent from "@/components/common/MetaComponent";
-// const metadata = {
-//   title: "About || Uomo eCommerce Reactjs Template",
-//   description: "Uomo eCommerce Reactjs Template",
-// };
 import Clients from "../../components/otherPages/about/Clients";
-import Services from "../../components/otherPages/about/Services";
+
 
 
 export default function AboutPage() {
@@ -25,7 +19,7 @@ export default function AboutPage() {
         <Support/>
       
 
-        <Services />
+       
         <Clients/>
 
       </main>

@@ -134,6 +134,11 @@ export default function Shop1() {
                               className="pc__img"
                             />
                           </Link>
+                          {elm.discount_percentage > 0 && (
+                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-indigo-900 text-white p-1 rounded">
+                          -{elm.discount_percentage}%
+                        </span>
+                      )}
                         </SwiperSlide>
                       ))}
                       <span className={`cursor-pointer pc__img-prev ${"prev" + i} `}>
@@ -150,35 +155,24 @@ export default function Shop1() {
                   </div>
 
                   <div className="pc__info position-relative">
-                    <p className="pc__category">{elm.category_name}</p>
-                    <h6 className="pc__title">
-                      <Link to={`/shop-detail/${elm.ProductID}`}>{elm.ProductName}</Link>
-                    </h6>
-                    <div className="product-card__price d-flex">
-                      {elm.priceOld ? (
-                        <>
-                          <span className="money price price-old">${elm.priceOld}</span>
-                          <span className="money price price-sale">${elm.Price}</span>
-                        </>
-                      ) : (
-                        <span className="money price">${elm.Price}</span>
-                      )}
-                    </div>
-                    {elm.colors && (
-                      <div className="d-flex align-items-center mt-1">
-                        <ColorSelection />
-                      </div>
-                    )}
-                    {elm.reviews && (
-                      <div className="product-card__review d-flex align-items-center">
-                        <div className="reviews-group d-flex">
-                          <Star stars={elm.rating} />
-                        </div>
+                  <div className="pc__info position-relative text-start m-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <p className="pc__category mb-0">{elm.category_name}</p>
+                      <div className="d-flex align-items-center">
+                        <Star stars={elm.average_rating} />
                         <span className="reviews-note text-lowercase text-secondary ms-1">
                           {elm.reviews}
                         </span>
                       </div>
-                    )}
+                    </div>
+                    <h6 className="pc__title">
+                      <Link to={`/shop-detail/${elm.ProductID}`}>{elm.ProductName}</Link>
+                    </h6>
+                    <div className="product-card__price d-flex justify-content-start">
+                      <span className="money price">{elm.Price}$</span>
+                    </div>
+                  </div>
+                    
                     <button
                       className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${isInWishlist(elm.ProductID) ? "active" : ""}`}
                       onClick={() => toggleWishlist(elm.ProductID)}

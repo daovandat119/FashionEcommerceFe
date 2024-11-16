@@ -37,6 +37,13 @@
   }
 }
 
+body {
+  font-family: 'Lora', serif; /* Sử dụng phông chữ Lora cho toàn bộ trang */
+}
+
+.navigation__link {
+  font-family: 'Lora', serif; /* Sử dụng phông chữ Lora cho các liên kết trong navigation */
+}
 .transition-all {
   animation: fadeInScale 0.3s ease-out;
 }
