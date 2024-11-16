@@ -110,11 +110,11 @@ export default function Cart() {
                       }
                     />
                   </th>
-                  <th>Product</th>
-                  <th>Color and Size</th>
-                  <th>Price</th>
-                  <th width="10%" className="text-center">Quantity</th>
-                  <th width="20%" className="text-center">Subtotal</th>
+                  <th>Sản phẩm</th>
+                  <th>Màu sắc và kích thước</th>
+                  <th>Giá</th>
+                  <th width="10%" className="text-center">Số lượng</th>
+                  <th width="20%" className="text-center">Tổng cộng</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,8 +145,8 @@ export default function Cart() {
                       <div className="shopping-cart__product-item__detail">
                         <h4>{item.ProductName}</h4>
                         <ul className="shopping-cart__product-item__options">
-                          <li>Color: {item.ColorName}</li>
-                          <li>Size: {item.SizeName}</li>
+                          <li>Màu: {item.ColorName}</li>
+                          <li>Kích thước: {item.SizeName}</li>
                         </ul>
                       </div>
                     </td>
@@ -209,9 +209,9 @@ export default function Cart() {
           </>
         ) : (
           <>
-            <div className="fs-20">Shop cart is empty</div>
+            <div className="fs-20">Giỏ hàng trống</div>
             <button className="btn mt-3 btn-light">
-              <Link to={"/shop"}>Explore Products</Link>
+              <Link to={"/shop"}>Xem thêm sản phẩm</Link>
             </button>
           </>
         )}
@@ -220,11 +220,11 @@ export default function Cart() {
       <div className="shopping-cart__totals-wrapper">
         <div className="sticky-content">
           <div className="shopping-cart__totals">
-            <h3>Cart Totals</h3>
+            <h3>Tổng số giỏ hàng</h3>
             <table className="cart-totals">
               <tbody>
                 <tr>
-                  <th>Total</th>
+                  <th>Tổng cộng</th>
                   <td>
                     ${ cartProducts.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2) }
                   </td>
@@ -241,7 +241,7 @@ export default function Cart() {
                 }
               }}
             >
-              PROCEED TO CHECKOUT
+              THANH TOÁN
             </Link>
           </div>
         </div>

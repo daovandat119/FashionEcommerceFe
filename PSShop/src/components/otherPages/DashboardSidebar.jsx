@@ -5,12 +5,12 @@ export default function DashboardSidebar() {
   const navigate = useNavigate();
 
   const dashboardMenuItems = [
-    { id: 1, href: "/account_dashboard", title: "Dashboard" },
-    { id: 2, href: "/account_orders", title: "Orders" },
-    { id: 3, href: "/account_edit_address", title: "Addresses" },
-    { id: 4, href: "/account_edit", title: "Account Details" },
-    { id: 5, href: "/account_wishlist", title: "Wishlist" },
-    { id: 6, href: "/login_register", title: "LOGOUT" }, // Changed to "Logout"
+    { id: 1, href: "/account_dashboard", title: "BẢNG ĐIỀU KHIỂN" },
+    { id: 2, href: "/account_orders", title: "ĐƠN HÀNG " },
+    { id: 3, href: "/account_edit_address", title: "ĐỊA CHỈ" },
+    { id: 4, href: "/account_edit", title: "Chi tiết tài khoản" },
+    { id: 5, href: "/account_wishlist", title: "SẢN PHẨM YÊU THÍCH" },
+    { id: 6, href: "/login_register", title: "ĐĂNG XUẤT" }, // Changed to "Logout"
   ];
 
   // Hàm xử lý logout
@@ -23,20 +23,22 @@ export default function DashboardSidebar() {
     <div className="col-lg-3">
       <ul className="account-nav">
         {dashboardMenuItems.map((elm) => (  
-          <li key={elm.id}>
+          <li key={elm.id} className="mb-2">
             {elm.title === "LOGOUT" ? (
               <button
                 onClick={handleLogout}
-                className="menu-link menu-link_us-s"
+                className="menu-link menu-link_us-s text-lg font-semibold text-gray-800 
+                  hover:text-blue-600 transition-colors duration-300"
               >
                 {elm.title}
               </button>
             ) : (
               <Link
                 to={elm.href}
-                className={`menu-link menu-link_us-s ${
-                  pathname === elm.href ? "menu-link_active" : ""
-                }`}
+                className={`menu-link menu-link_us-s text-lg font-semibold text-gray-800 
+                  hover:text-blue-600 transition-colors duration-300 ${
+                    pathname === elm.href ? "menu-link_active" : ""
+                  }`}
               >
                 {elm.title}
               </Link>

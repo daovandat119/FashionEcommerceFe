@@ -68,8 +68,8 @@ export default function FilterAll({ onFilterChange }) {
       {/* Categories */}
       <div className="accordion" id="categories-list">
         <div className="accordion-item mb-4">
-          <h5 className="accordion-header" id="accordion-heading-11">
-            Product Categories
+          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900" id="accordion-heading-11">
+            Danh mục sản phẩm
           </h5>
           <div className="accordion-body px-0 pb-0">
             <ul className="list list-inline row row-cols-2 mb-0">
@@ -77,10 +77,8 @@ export default function FilterAll({ onFilterChange }) {
                 <li key={category.CategoryID} className="list-item">
                   <a
                     href="#"
-                    className={`menu-link py-1 ${
-                      selectedFilters.categoryId === category.CategoryID
-                        ? "active"
-                        : ""
+                    className={`menu-link py-1 text-base font-medium font-sans text-gray-700 hover:text-blue-600 ${
+                      selectedFilters.categoryId === category.CategoryID ? "font-bold" : ""
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
@@ -98,16 +96,16 @@ export default function FilterAll({ onFilterChange }) {
 
       {/* Colors */}
       <div className="accordion" id="color-filters">
-        <h5 className="accordion-header fw-bold mb-3" id="accordion-heading-1">
-          Color Selection
+        <h5 className="accordion-header font-semibold text-lg font-sans text-gray-900 mb-3" id="accordion-heading-1">
+          Lựa chọn màu sắc
         </h5>
         <div className="accordion-body px-0 pb-0">
           <div className="d-flex flex-wrap gap-2">
             {colors.map((color) => (
               <div key={color.ColorID} className="color-item position-relative">
                 <a
-                  className={`swatch-color d-inline-block rounded-circle shadow-sm ${
-                    selectedFilters.colorId === color.ColorID ? "active" : ""
+                  className={`swatch-color d-inline-block rounded-circle shadow-sm font-sans ${
+                    selectedFilters.colorId === color.ColorID ? "scale-110 border-2 border-gray-500" : "border-2 border-transparent"
                   }`}
                   onClick={() => handleFilterChange("colorId", color.ColorID)}
                   style={{
@@ -116,15 +114,6 @@ export default function FilterAll({ onFilterChange }) {
                     height: "30px",
                     cursor: "pointer",
                     transition: "transform 0.2s",
-                    transform:
-                      selectedFilters.colorId === color.ColorID
-                        ? "scale(1.1)"
-                        : "scale(1)",
-                    border:
-                      color.ColorName.toLowerCase() === "black"
-                        ? "2px solid #e0e0e0"
-                        : "2px solid transparent",
-                    position: "relative",
                   }}
                   title={color.ColorName}
                 >
@@ -167,16 +156,16 @@ export default function FilterAll({ onFilterChange }) {
       {/* Sizes */}
       <div className="accordion" id="size-filters">
         <div className="accordion-item mb-4">
-          <h5 className="accordion-header" id="accordion-heading-size">
-            Sizes
+          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900" id="accordion-heading-size">
+            Kích thước
           </h5>
           <div className="accordion-body px-0 pb-0">
             <div className="d-flex flex-wrap">
               {sizes.map((size) => (
                 <a
                   key={size.SizeID}
-                  className={`swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter ${
-                    selectedFilters.sizeId === size.SizeID ? "active" : ""
+                  className={`swatch-size btn btn-sm btn-outline-light mb-3 me-3 text-base font-medium font-sans text-gray-700 hover:text-blue-600 ${
+                    selectedFilters.sizeId === size.SizeID ? "font-bold" : ""
                   }`}
                   onClick={() => handleFilterChange("sizeId", size.SizeID)}
                 >
@@ -191,8 +180,8 @@ export default function FilterAll({ onFilterChange }) {
       {/* Price Range */}
       <div className="accordion" id="price-filters">
         <div className="accordion-item mb-4">
-          <h5 className="accordion-header mb-2" id="accordion-heading-price">
-            Price
+          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900 mb-2" id="accordion-heading-price">
+            Giá
           </h5>
           <Slider
             range
@@ -202,7 +191,7 @@ export default function FilterAll({ onFilterChange }) {
             onChange={handlePriceChange}
             className="mb-3"
           />
-          <div className="price-range__info d-flex align-items-center mt-2">
+          <div className="price-range__info d-flex align-items-center mt-2 text-sm text-gray-700 font-sans">
             <div className="me-auto">
               <span className="text-secondary">Min Price: </span>
               <span className="price-range__min">${priceRange[0]}</span>
@@ -234,7 +223,7 @@ export default function FilterAll({ onFilterChange }) {
               return (
                 <button
                   key={key}
-                  className="filter-tag d-inline-flex align-items-center mb-3 me-3 text-uppercase js-filter"
+                  className="filter-tag d-inline-flex align-items-center mb-3 me-3 text-sm font-medium text-gray-700 hover:text-blue-600 font-sans"
                   onClick={() => handleFilterChange(key, null)}
                 >
                   <i className="btn-close-xs d-inline-block" />

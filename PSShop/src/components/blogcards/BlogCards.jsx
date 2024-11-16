@@ -13,7 +13,7 @@ export default function BlogCards() {
               <div
                 className="background-img"
                 style={{
-                  backgroundImage: "url(/assets/images/collection_grid_1.jpg)",
+                  backgroundImage: "url(/assets/images/4.jpg)",
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
@@ -38,7 +38,7 @@ export default function BlogCards() {
               <div
                 className="background-img"
                 style={{
-                  backgroundImage: "url(/assets/images/collection_grid_2.jpg)",
+                  backgroundImage: "url(/assets/images/2.jpg)",
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
@@ -63,7 +63,7 @@ export default function BlogCards() {
                       className="background-img"
                       style={{
                         backgroundImage:
-                          "url(/assets/images/collection_grid_3.jpg)",
+                          "url(/assets/images/3.jpg)",
                       }}
                     ></div>
                     <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
