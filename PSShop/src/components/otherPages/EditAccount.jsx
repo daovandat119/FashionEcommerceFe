@@ -14,22 +14,24 @@ export default function EditAccount() {
                     type="text"
                     className="form-control"
                     id="account_first_name"
-                    placeholder="First Name"
+                    placeholder="Họ"
                     required
                   />
-                  <label htmlFor="account_first_name">First Name</label>
+                  <label htmlFor="account_first_name">Họ</label>
                 </div>
               </div>
+
               <div className="col-md-6">
                 <div className="form-floating my-3">
                   <input
                     type="text"
                     className="form-control"
                     id="account_last_name"
-                    placeholder="Last Name"
+                    placeholder="Tên"
                     required
                   />
-                  <label htmlFor="account_last_name">Last Name</label>
+
+                  <label htmlFor="account_last_name">Tên</label>
                 </div>
               </div>
               <div className="col-md-12">
@@ -38,27 +40,29 @@ export default function EditAccount() {
                     type="text"
                     className="form-control"
                     id="account_display_name"
-                    placeholder="Display Name"
+                    placeholder="Tên hiển thị"
                     required
                   />
-                  <label htmlFor="account_display_name">Display Name</label>
+                  <label htmlFor="account_display_name">Tên hiển thị</label>
                 </div>
               </div>
+
               <div className="col-md-12">
                 <div className="form-floating my-3">
                   <input
                     type="email"
                     className="form-control"
                     id="account_email"
-                    placeholder="Email Address"
+                    placeholder="Địa chỉ email"
                     required
                   />
-                  <label htmlFor="account_email">Email Address</label>
+                  <label htmlFor="account_email">Địa chỉ email</label>
                 </div>
               </div>
+
               <div className="col-md-12">
                 <div className="my-3">
-                  <h5 className="text-uppercase mb-0">Password Change</h5>
+                  <h5 className="text-uppercase mb-0">Thay đổi mật khẩu</h5>
                 </div>
               </div>
               <div className="col-md-12">
@@ -67,11 +71,11 @@ export default function EditAccount() {
                     type="password"
                     className="form-control"
                     id="account_current_password"
-                    placeholder="Current password"
+                    placeholder="Mật khẩu hiện tại"
                     required
                   />
                   <label htmlFor="account_current_password">
-                    Current password
+                    Mật khẩu hiện tại
                   </label>
                 </div>
               </div>
@@ -81,10 +85,10 @@ export default function EditAccount() {
                     type="password"
                     className="form-control"
                     id="account_new_password"
-                    placeholder="New password"
+                    placeholder="Mật khẩu mới"
                     required
                   />
-                  <label htmlFor="account_new_password">New password</label>
+                  <label htmlFor="account_new_password">Mật khẩu mới</label>
                 </div>
               </div>
               <div className="col-md-12">
@@ -94,20 +98,20 @@ export default function EditAccount() {
                     className="form-control"
                     data-cf-pwd="#account_new_password"
                     id="account_confirm_password"
-                    placeholder="Confirm new password"
+                    placeholder="Xác nhận mật khẩu mới"
                     required
                   />
                   <label htmlFor="account_confirm_password">
-                    Confirm new password
+                    Xác nhận mật khẩu mới
                   </label>
-                  <div className="invalid-feedback">
-                    Passwords did not match!
-                  </div>
+
+                  <div className="invalid-feedback">Mật khẩu không khớp!</div>
                 </div>
               </div>
+
               <div className="col-md-12">
                 <div className="my-3">
-                  <button className="btn btn-primary">Save Changes</button>
+                  <button className="btn btn-primary">Lưu thay đổi</button>
                 </div>
               </div>
             </div>

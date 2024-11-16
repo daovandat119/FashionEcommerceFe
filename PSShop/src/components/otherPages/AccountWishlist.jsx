@@ -75,11 +75,11 @@ return (
                 </Link>
 
                 {/* Thông tin sản phẩm */}
-               <div className="p-2 justify-center  flex align-items-center gap-3">
+               <div className="mb-3 justify-center  flex align-items-center gap-3">
                     <div className="text-xs font-light">
                       {item.category_name}
                     </div>
-                    <h2 className="text-md font-semibold mb-1 line-clamp-2">
+                    <h2 className="text-lg font-semibold  text-gray-900">
                       <Link 
                         to={`/shop-detail/${item.ProductID}`}
                         className="text-dark"
