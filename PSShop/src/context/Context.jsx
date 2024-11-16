@@ -70,13 +70,6 @@ export default function ContextProvider({ children }) {
     return response.data.data;
   };
 
-  // const getProductDetails = (productId) => {
-  //   return fetchWithCache(`http://127.0.0.1:8000/api/products/${productId}`, cache.products);
-  // };
-
-  // const getVariantDetails = (variantId) => {
-  //   return fetchWithCache(`http://127.0.0.1:8000/api/product-variants/${variantId}`, cache.variants);
-  // };
 
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
