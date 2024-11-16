@@ -11,7 +11,7 @@ import { openModalShopFilter } from "../../utlis/aside";
 import { menuCategories, sortingOptions } from "../../data/products/productCategories";
 import FilterAll from "./filter/FilterAll";
 import axios from 'axios'; 
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 
 const itemPerRow = [2, 3, 4];
 
@@ -65,39 +65,6 @@ export default function Shop1() {
 
   return (
     <>
-      <section className="full-width_padding">
-        <div className="full-width_border border-2" style={{ borderColor: "#f5e6e0" }}>
-          <div className="shop-banner position-relative">
-            <div className="background-img" style={{ backgroundColor: "#f5e6e0" }}>
-              <img
-                loading="lazy"
-                src="/assets/images/shop/shop_banner_2.png"
-                width="1759"
-                height="420"
-                alt="Pattern"
-                className="slideshow-bg__img object-fit-cover"
-              />
-            </div>
-            <div className="shop-banner__content container position-absolute start-50 top-50 translate-middle">
-              <h2 className="h1 text-uppercase text-center fw-bold mb-3 mb-xl-4 mb-xl-5">
-                Shoes
-              </h2>
-              <ul className="d-flex justify-content-center flex-wrap list-unstyled text-uppercase h6">
-                {menuCategories.map((elm, i) => (
-                  <li key={i} className="me-3 me-xl-4 pe-1">
-                    <a
-                      onClick={() => setCurrentCategory(elm)}
-                      className={`menu-link menu-link_us-s ${currentCategory === elm ? "menu-link_active" : ""}`}
-                    >
-                      {elm}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
       <div className="mb-4 pb-lg-3"></div>
       <section className="shop-main container d-flex">
         <div className="shop-sidebar side-sticky bg-body">

@@ -104,19 +104,18 @@ function Add_Address({ onSuccess, onCancel }) {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Địa chỉ</label>
+          <label className="form-label">Chọn tỉnh thành</label>
           <input
             type="text"
             className="form-control"
-            name="address"
-            value={formData.Address}
+            name="provinceID"
+            value={formData.ProvinceID}
             onChange={handleChange}
             required
           />
         </div>
-
         <div className="mb-3">
-          <label className="form-label">Mã quận</label>
+          <label className="form-label">Chọn quận huyện</label>
           <input
             type="text"
             className="form-control"
@@ -128,12 +127,24 @@ function Add_Address({ onSuccess, onCancel }) {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Mã phường</label>
+          <label className="form-label">Chọn phường xã</label>
           <input
             type="text"
             className="form-control"
             name="wardCode"
             value={formData.WardCode}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Địa chỉ</label>
+          <input
+            type="text"
+            className="form-control"
+            name="address"
+            value={formData.Address}
             onChange={handleChange}
             required
           />

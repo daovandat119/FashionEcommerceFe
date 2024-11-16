@@ -290,14 +290,24 @@ const ProductDetail = () => {
         <div className="col-lg-7">
           <div className="product-single__media vertical-thumbnail product-media-initialized">
             <div className="product-single__image position-relative">
-              <img
-                src={product.MainImageURL}
-                alt={product.ProductName}
-                className="h-auto w-100"
-                width="674"
-                height="674"
-              />
+              <div className="main-image">
+                <img
+                  src={product.MainImageURL}
+                  alt={product.ProductName}
+                  className="h-auto w-full"
+                  width="674"
+                  height="674"
+                />
+              </div>
+              <div className="thumbnail-images flex gap-2 mt-2">
+                {Array.from(new Set(product.image_paths.split(","))).map((image, index) => (
+                  <div key={index} className="w-1/4">
+                    <img src={image} alt={`Product image ${index + 1}`} className="h-auto w-full" />
+                  </div>
+                ))}
+              </div>
             </div>
+
           </div>
         </div>
 
