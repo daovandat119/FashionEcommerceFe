@@ -21,7 +21,6 @@ const switches = [
     defaultChecked: false,
   },
 ];
-// eslint-disable-next-line react/prop-types
 export default function Colors({ colors }) {
   useEffect(() => {
     tippy("[data-tippy-content]");
