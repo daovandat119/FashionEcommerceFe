@@ -11,7 +11,7 @@ import { openModalShopFilter } from "../../utlis/aside";
 import { menuCategories, sortingOptions } from "../../data/products/productCategories";
 import FilterAll from "./filter/FilterAll";
 import axios from 'axios'; 
-// import Swal from "sweetalert2";
+
 
 const itemPerRow = [2, 3, 4];
 
@@ -25,11 +25,9 @@ export default function Shop1() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (products.length > 0) return;
-
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/products');
-        setProducts(response.data.data);
+        setProducts(response.data.data || response.data.data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);
         setError("Không thể tải sản phẩm.");
@@ -39,7 +37,7 @@ export default function Shop1() {
     };
 
     fetchProducts();
-  }, [products]);
+  }, []);
 
   // Loading state
   if (loading) {

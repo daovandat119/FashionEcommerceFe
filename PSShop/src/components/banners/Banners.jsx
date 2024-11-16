@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectFade, Pagination } from "swiper/modules";
 import { slides1 } from "../../data/heroslides";
