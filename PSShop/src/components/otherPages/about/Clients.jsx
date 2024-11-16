@@ -1,4 +1,10 @@
-import { brandImages2 } from "./Services";
+export const brandImages2 = [
+  { src: "/images/stradivarius.png", width: 100, height: 50 },
+  { src: "/images/adidas.png", width: 120, height: 60 },
+  { src: "/images/bershka.png", width: 110, height: 55 },
+  { src: "/images/mango.png", width: 90, height: 45 },
+  { src: "/images/zara.png", width: 130, height: 70 },
+];
 
 export default function Clients() {
   return (

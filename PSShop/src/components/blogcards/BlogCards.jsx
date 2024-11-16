@@ -17,21 +17,19 @@ export default function BlogCards() {
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                <p className="text-uppercase mb-1">Hot List</p>
-                <h3 className="text-uppercase">
-                  <strong>Women</strong> Collection
+                <p className="text-uppercase text-white mb-1">Danh Sách Nổi Bật</p>
+                <h3 className="text-uppercase text-white">
+                  <strong>Bộ Sưu Tập Nữ</strong> 
                 </h3>
                 <Link
-                  to="/shop-1"
-                  className="btn-link default-underline text-uppercase fw-medium"
+                  to="/shop"
+                  className="btn-link default-underline text-uppercase text-white fw-medium"
                 >
-                  Shop Now
+                  Mua Ngay
                 </Link>
               </div>
-              {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
             </div>
           </div>
-          {/* <!-- /.col-md-6 --> */}
 
           <div className="col-lg-6 d-flex flex-column">
             <div className="collection-grid__item position-relative flex-grow-1 mb-lg-4">
@@ -42,18 +40,17 @@ export default function BlogCards() {
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                <p className="text-uppercase mb-1">Hot List</p>
-                <h3 className="text-uppercase">
-                  <strong>Men</strong> Collection
+                <p className="text-uppercase mb-1 text-white">Danh Sách Nổi Bật</p>
+                <h3 className="text-uppercase text-white">
+                  <strong>Bộ Sưu Tập Nam</strong> 
                 </h3>
                 <Link
-                  to="/shop-1"
-                  className="btn-link default-underline text-uppercase fw-medium"
+                  to="/shop"
+                  className="btn-link default-underline text-uppercase text-white fw-medium"
                 >
-                  Shop Now
+                  Mua Ngay
                 </Link>
               </div>
-              {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
             </div>
             <div className="position-relative flex-grow-1 mt-lg-1">
               <div className="row h-md-100">
@@ -62,25 +59,22 @@ export default function BlogCards() {
                     <div
                       className="background-img"
                       style={{
-                        backgroundImage:
-                          "url(/assets/images/3.jpg)",
+                        backgroundImage: "url(/assets/images/3.jpg)",
                       }}
                     ></div>
                     <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                      <p className="text-uppercase mb-1">Hot List</p>
-                      <h3 className="text-uppercase">
-                        <strong>Kids</strong> Collection
+                      <p className="text-uppercase text-white mb-1">Danh Sách Nổi Bật</p>
+                      <h3 className="text-uppercase text-white">
+                        <strong>Bộ Sưu Tập Trẻ Em</strong>
                       </h3>
                       <Link
-                        to="/shop-1"
-                        className="btn-link default-underline text-uppercase fw-medium"
+                        to="/shop"
+                        className="btn-link default-underline text-white text-uppercase fw-medium"
                       >
-                        Shop Now
+                        Mua Ngay
                       </Link>
                     </div>
-                    {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
                   </div>
-                  {/* <!-- /.collection-grid__item --> */}
                 </div>
 
                 <div className="col-md-6 h-md-100">
@@ -91,32 +85,27 @@ export default function BlogCards() {
                     ></div>
                     <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
                       <h3 className="text-uppercase">
-                        <strong>E-Gift</strong> Cards
+                        <strong>Thẻ Quà Tặng</strong> Điện Tử
                       </h3>
                       <p className="mb-1">
-                        Surprise someone with the gift they
+                        Tặng một món quà mà họ thực sự muốn.
                         <br />
-                        really want.
+                        Hãy làm họ bất ngờ ngay!
                       </p>
                       <Link
                         to="/shop-1"
                         className="btn-link default-underline text-uppercase fw-medium"
                       >
-                        Shop Now
+                        Mua Ngay
                       </Link>
                     </div>
-                    {/* <!-- /.content_abs content_bottom content_left content_bottom-md content_left-md --> */}
                   </div>
-                  {/* <!-- /.collection-grid__item --> */}
                 </div>
               </div>
             </div>
           </div>
-          {/* <!-- /.col-md-6 --> */}
         </div>
-        {/* <!-- /.row --> */}
       </div>
-      {/* <!-- /.container --> */}
     </section>
   );
 }

@@ -4,41 +4,41 @@ export default function Nav() {
   return (
     <>
       <li className="navigation__item">
-        <a
-          href="/"
-          className="navigation__link text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors"
+        <Link
+          to="/"
+          className="navigation__link text-lg font-semibold text-gray-800 hover:text-gray-600 transition-colors"
         >
           Trang chủ
-        </a>
+        </Link>
       </li>
       <li className="navigation__item">
-        <a
-          href="/shop"
-          className="navigation__link text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors"
+        <Link
+          to="/shop"
+          className="navigation__link text-lg font-semibold text-gray-800 hover:text-gray-600 transition-colors"
         >
           Sản phẩm
-        </a>
+        </Link>
       </li>
       <li className="navigation__item">
-        <a
-          href="/blogs"
-          className="navigation__link text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors"
+        <Link
+          to="/blogs"
+          className="navigation__link text-lg font-semibold text-gray-800 hover:text-gray-600 transition-colors"
         >
-          Blog
-        </a>
+          Bài viết
+        </Link>
       </li>
       <li className="navigation__item">
         <Link
           to="/about"
-          className="navigation__link text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors"
+          className="navigation__link text-lg font-semibold text-gray-800 hover:text-gray-600 transition-colors"
         >
-          About
+          Giới thiệu
         </Link>
       </li>
       <li className="navigation__item">
         <Link
           to="/contact"
-          className="navigation__link text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors"
+          className="navigation__link text-lg font-semibold text-gray-800 hover:text-gray-600 transition-colors"
         >
           Liên hệ
         </Link>
