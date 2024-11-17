@@ -241,11 +241,7 @@ const ProductDetail = () => {
       <div className="flex ">
         <div className="col-lg-7 flex gap-3">
           <div className="  ">
-            <img
-              src={product.MainImageURL}
-              alt={`Product image `}
-              className="h-[250px] w-[300px] border-2 border-y-stone-950"
-            />
+          
           </div>
           <div className="">
             <img

@@ -27,7 +27,7 @@ export default function Headers() {
     if (isAuthenticated) {
       navigate('/account_dashboard');
     } else {
-      setDropdownOpen(!isDropdownOpen);
+      navigate('/login_register');
     }
   };
 
@@ -125,7 +125,7 @@ export default function Headers() {
                   </button>
                 </div>
                 
-                <div className="py-2">
+                {/* <div className="py-2">
                   <Link
                     to="/login_register"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-all"
@@ -134,7 +134,7 @@ export default function Headers() {
                     <i className="fas fa-sign-in-alt mr-3 text-gray-400"></i>
                     Đăng nhập / Đăng ký
                   </Link>
-                  </div>
+                  </div> */}
               </div>
             )}
           </div>

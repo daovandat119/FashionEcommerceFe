@@ -157,24 +157,6 @@ export default function Checkout() {
     fetchCoupon();
   }, [totalPrice]);
 
-  const handlePayment = async () => {
-    const totalAmount = totalPrice + shippingFee;
-    const userId = orderData.UserID || localStorage.getItem("userId");
-
-    if (!userId) {
-      setError("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/pay/${totalAmount}/${userId}`);
-      window.location.href = response.data.paymentUrl;
-    } catch (error) {
-      setError("Lỗi khi thanh toán. Vui lòng thử lại.");
-      console.error(error);
-    }
-  };
-
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError("");
@@ -191,10 +173,7 @@ export default function Checkout() {
       TotalAmount: total,
     };
 
-    // if (orderData.PaymentMethodID === 2) {
-    //   handlePayment();
-    //   return;
-    // }
+ 
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
@@ -215,6 +194,7 @@ export default function Checkout() {
         navigate("/");
       } else if (response.data.vnpay_url) {
         window.open(response.data.vnpay_url, "_blank");
+
       } else {
         setError("Đặt hàng thất bại. Vui lòng thử lại.");
       }
