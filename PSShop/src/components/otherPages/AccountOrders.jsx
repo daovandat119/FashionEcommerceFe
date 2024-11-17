@@ -6,7 +6,6 @@ export default function AccountOrders() {
   const { orders, loading, error } = useContext(OrderContext);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [orderProducts, setOrderProducts] = useState({});
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
 
@@ -21,6 +20,8 @@ export default function AccountOrders() {
           },
         }
       );
+      console.log(response.data.data);
+      
       setOrderProducts((prev) => ({
         ...prev,
         [orderId]: response.data.data || [],

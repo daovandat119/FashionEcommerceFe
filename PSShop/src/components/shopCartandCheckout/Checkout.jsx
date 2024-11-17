@@ -157,52 +157,47 @@ export default function Checkout() {
     fetchCoupon();
   }, [totalPrice]);
 
+  
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError("");
 
     if (!cartItems.length) {
-      setError("Giỏ hàng trống");
-      return;
+        setError("Giỏ hàng trống");
+        return;
     }
 
     const total = totalPrice + shippingFee;
 
     const orderPayload = {
-      PaymentMethodID: orderData.PaymentMethodID,
-      TotalAmount: total,
+        PaymentMethodID: orderData.PaymentMethodID, 
+        // Đảm bảo rằng PaymentMethodID đã được chọn
+        TotalAmount: total, // Tổng số tiền
     };
 
- 
-
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.data.status === "success") {
-        setCartItems([]);
-        Swal.fire({
-          title: "Thông báo",
-          text: "Đặt hàng thành công",
-          icon: "success",
-          timer: 5000,
+        const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
         });
-        navigate("/");
-      } else if (response.data.vnpay_url) {
-        window.open(response.data.vnpay_url, "_blank");
 
-      } else {
-        setError("Đặt hàng thất bại. Vui lòng thử lại.");
-      }
+        if (response.data.status === "success") {
+            setCartItems([]);
+            navigate(`/shop_order_complete/${response.data.data.OrderID}`);
+        } else if (response.data.vnpay_url) {
+            window.open(response.data.vnpay_url, "_blank");
+
+        } else {
+            setError("Đặt hàng thất bại. Vui lòng thử lại.");
+        }
     } catch (err) {
-      console.error("Chi tiết lỗi:", err);
-      setError("Đặt hàng thất bại. Vui lòng thử lại.");
+        console.error("Chi tiết lỗi:", err);
+        setError("Đặt hàng thất bại. Vui lòng thử lại.");
     }
-  };
+};
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">

@@ -7,7 +7,7 @@ export function CheckoutProvider({ children }) {
   const [orderData, setOrderData] = useState({
     AddressID: null,
     products: [],
-    PaymentMethodID: 1,
+    PaymentMethodID: null,
     orderCode: null,
     OrderID: null,
     UserID: null
