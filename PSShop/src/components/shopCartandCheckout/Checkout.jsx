@@ -191,10 +191,10 @@ export default function Checkout() {
       TotalAmount: total,
     };
 
-    if (orderData.PaymentMethodID === 2) {
-      handlePayment();
-      return;
-    }
+    // if (orderData.PaymentMethodID === 2) {
+    //   handlePayment();
+    //   return;
+    // }
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
@@ -213,6 +213,8 @@ export default function Checkout() {
           timer: 5000,
         });
         navigate("/");
+      } else if (response.data.vnpay_url) {
+        window.open(response.data.vnpay_url, "_blank");
       } else {
         setError("Đặt hàng thất bại. Vui lòng thử lại.");
       }
