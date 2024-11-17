@@ -68,3 +68,14 @@ body {
   font-size: 18px; /* Kích thước biểu tượng đóng */
   cursor: pointer;
 }
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/fonts/my-custom-font.ttf') format('truetype');
+}
+.page-title {
+  font-family: 'Roboto', sans-serif; /* Hoặc font chữ bạn chọn */
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  
+}

@@ -82,7 +82,7 @@ export default function CartDrawer() {
                     <div className="flex items-center justify-between w-32">
                       <div className="flex items-center space-x-2">
                         <button
-                          className="w-6 h-6 flex items-center justify-center border rounded"
+                          className="w-4 h-4 flex items-center justify-center border rounded"
                           onClick={() => {
                             setQuantity(item.CartItemID, item.Quantity - 1);
                           }}
@@ -90,9 +90,9 @@ export default function CartDrawer() {
                         >
                           -
                         </button>
-                        <span className="w-8 text-center">{item.Quantity}</span>
+                        <span className="w-6 text-center">{item.Quantity}</span>
                         <button
-                          className="w-6 h-6 flex items-center justify-center border rounded"
+                          className="w-4 h-4 flex items-center justify-center border rounded"
                           onClick={() => {
                             setQuantity(item.CartItemID, item.Quantity + 1);
                           }}

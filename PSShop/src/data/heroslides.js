@@ -4,10 +4,10 @@ export const slides1 = [
   
       characterImg: "/assets/images/bn3.png",
       characterAlt: "Woman Fashion 1",
-      characterText: "Summer",
+      characterText: "Winter",
       text1: "New Trend",
-      text2: "Summer Sale Stylish",
-      text3: "Womens",
+      text2: "Bộ sưu tập mùa đông",
+      text3: "Nữ",
     },
     {
       id: 2,
@@ -15,9 +15,9 @@ export const slides1 = [
       characterImg: "/assets/images/bn2.png",
       characterAlt: "Woman Fashion 2",
       characterText: "",
-      text1: "Summer 2020",
-      text3: "Hello New Season",
-      text4: "Limited Time Offer - Up to 60% off & Free Shipping",
+      text1: "Winter 2024",
+      text3: "Chào mừng mùa mới",
+      text4: "Khuyến mãi có thời hạn - 60 ngày",
     },
   ];
   export const slides2 = [
