@@ -15,15 +15,38 @@ export const OrderProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchOrders = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/order', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const response = await axios.post('http://127.0.0.1:8000/api/order/views', 
+          {
+            // Có thể thêm các filter nếu cần
+            // OrderStatusID: null,
+            // PaymentMethodID: null,
+            // PaymentStatusID: null,
+            // OrderCode: null
+          }, 
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+          }
+        );
         
-        setOrders({ data: response.data.data || [], totalAmount: 0 });
+        if (response.data.data) {
+          // Tính tổng tiền từ tất cả đơn hàng nếu cần
+          const total = response.data.data.reduce((sum, order) => sum + (order.TotalAmount || 0), 0);
+          setOrders({ 
+            data: response.data.data, 
+            totalAmount: total 
+          });
+        }
       } catch (err) {
+        console.error('Lỗi khi lấy danh sách đơn hàng:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -31,30 +54,35 @@ export const OrderProvider = ({ children }) => {
     };
 
     fetchOrders();
-  }, [token]);
+  }, [token]); // Chỉ gọi lại khi token thay đổi
 
   const cancelOrder = async (orderId) => {
-    const token = localStorage.getItem('token');
-    const orderStatusID = 3; // Giả sử 3 là ID cho trạng thái "Đã hủy"
+    if (!token) return;
 
     try {
-      // Gọi API để cập nhật trạng thái đơn hàng
-      await axios.post(`http://127.0.0.1:8000/api/order/status/${orderId}`, {
-        OrderStatusID: orderStatusID, // Gửi OrderStatusID
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      await axios.post(`http://127.0.0.1:8000/api/order/status/${orderId}`, 
+        {
+          OrderStatusID: 3, // ID trạng thái "Đã hủy"
+        }, 
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        }
+      );
 
-      // Cập nhật trạng thái đơn hàng trong state
+      // Cập nhật lại danh sách đơn hàng sau khi hủy
       setOrders(prevOrders => ({
         ...prevOrders,
         data: prevOrders.data.map(order =>
-          order.OrderID === orderId ? { ...order, OrderStatus: 'Đã hủy' } : order
+          order.OrderID === orderId 
+            ? { ...order, OrderStatus: 'Đã hủy', OrderStatusID: 3 } 
+            : order
         ),
       }));
     } catch (err) {
+      console.error('Lỗi khi hủy đơn hàng:', err);
       setError(err.message);
     }
   };
