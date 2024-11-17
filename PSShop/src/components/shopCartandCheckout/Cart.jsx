@@ -207,7 +207,7 @@ export default function Cart() {
               onClick={(e) => {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
-                  alert("Giỏ hàng trống!");
+                 toast("Giỏ hàng trống!")
                 }
               }}
             >

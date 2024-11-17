@@ -45,34 +45,13 @@ export default function ContextProvider({ children }) {
     );
   };
 
-  // const calculateTotalPrice = (products) => {
-  //   return products.reduce((total, product) => {
-  //     const price = parseFloat(product.Price) || 0;
-  //     const quantity = parseInt(product.Quantity) || 0;
-  //     return total + price * quantity;
-  //   }, 0);
-  // };
+
 
   const formatPrice = (price) => {
     return typeof price === "number" ? price.toFixed(2) : "0.00";
   };
 
-  const cache = {
-    products: new Map(),
-    variants: new Map(),
-  };
 
-  // const fetchWithCache = async (url, cacheMap) => {
-  //   if (cacheMap.has(url)) {
-  //     return cacheMap.get(url);
-  //   }
-  //   const token = localStorage.getItem("token");
-  //   const response = await axios.get(url, {
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   });
-  //   cacheMap.set(url, response.data.data);
-  //   return response.data.data;
-  // };
 
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -117,36 +96,61 @@ export default function ContextProvider({ children }) {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/cart-items",
-        { productID, colorID, sizeID, quantity },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        // Gọi API để thêm sản phẩm vào giỏ hàng
+        const response = await axios.post(
+            "http://127.0.0.1:8000/api/cart-items",
+            {
+                productID,
+                colorID,
+                sizeID,
+                quantity
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
-      setCartProducts((prevProducts) => [
-        ...prevProducts,
-        { 
-          CartItemID: response.data.data.CartItemID,
-          ProductID: productID,
-          ColorID: colorID,
-          SizeID: sizeID,
-          Quantity: quantity,
-          Price: response.data.data.Price
-        }
-      ]);
+        // Sau khi thêm thành công, cập nhật lại toàn bộ giỏ hàng
+        const cartResponse = await axios.get(
+            "http://127.0.0.1:8000/api/cart-items",
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
+        if (cartResponse.data.message === "Success") {
+            const cartData = cartResponse.data.data;
+            // Cập nhật state giỏ hàng
+            setCartProducts(cartData);
+            // Tính toán tổng giá
+            const totalPrice = Number(
+                cartData.reduce((total, item) => 
+                    total + (item.Quantity * item.Price), 0
+                ).toFixed(2)
+            );
+            setTotalPrice(totalPrice);
+        }
+
+      
     } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Thêm không thành công");
+        console.error("Error adding to cart:", error);
+        if (error.response?.status === 400) {
+            toast.error(error.response.data.message || "Không thể thêm sản phẩm");
+        } else if (error.response?.status === 401) {
+            toast.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+        } else {
+            toast.error("Thêm không thành công");
+        }
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
 
   const checkVariantQuantity = async (variantID) => {
     const token = localStorage.getItem("token");
