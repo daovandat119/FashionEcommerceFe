@@ -10,7 +10,7 @@ export default function DashboardSidebar() {
     { id: 3, href: "/account_edit_address", title: "ĐỊA CHỈ" },
     { id: 4, href: "/account_edit", title: "Chi tiết tài khoản" },
     { id: 5, href: "/account_wishlist", title: "SẢN PHẨM YÊU THÍCH" },
-    { id: 6, href: "/login_register", title: "ĐĂNG XUẤT" }, // Changed to "Logout"
+    { id: 6, href: "/login_register", title: "ĐĂNG XUẤT" },
   ];
 
   // Hàm xử lý logout
@@ -24,7 +24,7 @@ export default function DashboardSidebar() {
       <ul className="account-nav">
         {dashboardMenuItems.map((elm) => (  
           <li key={elm.id} className="mb-2">
-            {elm.title === "LOGOUT" ? (
+            {elm.title === "ĐĂNG XUẤT" ? (
               <button
                 onClick={handleLogout}
                 className="menu-link menu-link_us-s text-lg font-semibold text-gray-800 

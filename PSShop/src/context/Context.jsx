@@ -55,40 +55,45 @@ export default function ContextProvider({ children }) {
 
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
+    if (!token) return;
 
-    if (!token) {
-      setCartProducts([]);
-      setTotalPrice(0);
-      return;
-    }
-
-    if (hasFetchedCartItems.current) return;
-
-    hasFetchedCartItems.current = true;
-    setIsFetchingCart(true);
-
-    if (cartProducts.length > 0) return;
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      setLoading(true);
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/cart-items",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data.message === "Success") {
         const cartData = response.data.data;
-        const totalPrice = Number(cartData.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2));
-        setTotalPrice(totalPrice);
         setCartProducts(cartData);
+        // Tính tổng tiền
+        const total = cartData.reduce(
+          (sum, item) => sum + item.Price * item.Quantity,
+          0
+        );
+        setTotalPrice(Number(total.toFixed(2)));
       }
     } catch (error) {
+      console.error("Error fetching cart:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Theo dõi thay đổi token để load giỏ hàng
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchCartItems();
+    } else {
       setCartProducts([]);
       setTotalPrice(0);
-    } finally {
-      setIsFetchingCart(false);
     }
-  }, [cartProducts.length]);
-
-  useEffect(() => {
-    fetchCartItems();
   }, [fetchCartItems]);
 
   const addProductToCart = async (productID, colorID, sizeID, quantity) => {
