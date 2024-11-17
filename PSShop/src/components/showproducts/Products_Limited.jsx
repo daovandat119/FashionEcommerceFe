@@ -48,10 +48,9 @@ export default function Products_Limited() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-
     axios.get('http://127.0.0.1:8000/api/products')
       .then(response => {
-        setProducts(response.data.data); // Điều chỉnh nếu cần
+        setProducts(response.data.data);
         setLoading(false);
       })
       .catch(error => {
@@ -62,12 +61,12 @@ export default function Products_Limited() {
   }, []);
 
   return (
-    <section className="products-carousel container">
-      <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">
+    <section className="container mx-auto">
+      <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
         Phiên Bản <strong>Giới Hạn</strong>
       </h2>
 
-      <div id="product_carousel" className="position-relative">
+      <div id="product_carousel" className="relative">
         {loading ? (
           <p>Đang tải...</p>
         ) : error ? (
@@ -76,14 +75,14 @@ export default function Products_Limited() {
           <Swiper
             style={{ maxWidth: "100vw", overflow: "hidden" }}
             {...swiperOptions}
-            className="swiper-container js-swiper-slider"
+            className="swiper-container"
           >
             {products.map((product, i) => (
-              <SwiperSlide key={i} className="swiper-slide product-card">
-                <div className="product-card mb-3 mb-md-4 mb-xxl-5 border border-light rounded-lg shadow-sm">
-                  <div className="pc__img-wrapper position-relative m-1">
+              <SwiperSlide key={i} className="swiper-slide">
+                <div className="mb-4 border border-light rounded-lg shadow-sm bg-white">
+                  <div className="relative m-1">
                     {product.discount_percentage > 0 && (
-                      <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-danger text-white p-1 rounded">
+                      <span className="absolute top-0 left-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
                         -{product.discount_percentage}%
                       </span>
                     )}
@@ -94,43 +93,34 @@ export default function Products_Limited() {
                         width="330"
                         height="400"
                         alt={product.ProductName}
-                        className="pc__img rounded-top"
+                        className="w-full h-auto rounded-t-lg"
                       />
-                    </Link>
-                    {product.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-dark text-white p-1 rounded">
-                          -{product.discount_percentage}%
-                        </span>
-                      )}
-                    <Link to={`/shop-detail/${product.ProductID}`}>
-                      <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium">
-                        XEM
-                      </button>
                     </Link>
                   </div>
 
                   {/* Thông tin sản phẩm */}
-                  <div className="pc__info position-relative text-start m-2">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <p className="pc__category mb-0">{product.category_name}</p>
-                      <div className="d-flex align-items-center">
+                  <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{product.category_name}</p>
+                      <div className="flex items-center">
                         <Star stars={product.average_rating} />
-                        <span className="reviews-note text-lowercase text-secondary ms-1">
-                          {product.reviews}
-                        </span>
+                        <span className="text-gray-500 ml-1">{product.reviews}</span>
                       </div>
                     </div>
-                    <h6 className="pc__title">
+                    <h6 className="text-lg font-semibold">
                       <Link to={`/shop-detail/${product.ProductID}`}>{product.ProductName}</Link>
                     </h6>
-                    <div className="product-card__price d-flex justify-content-start">
-                      <span className="money price">{product.Price}$</span>
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">{product.SalePrice}₫</span>
+                      {product.Price && (
+                        <span className="text-sm line-through text-gray-500 ml-2">{product.Price}₫</span>
+                      )}
                     </div>
                   </div>
 
                   {/* Nút yêu thích */}
                   <button
-                    className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist"
+                    className="absolute top-0 right-0 bg-transparent border-0"
                     title="Thêm vào danh sách yêu thích"
                   >
                     <svg
@@ -148,7 +138,7 @@ export default function Products_Limited() {
             ))}
           </Swiper>
         )}
-        <div className="cursor-pointer products-carousel__prev position-absolute top-50 d-flex align-items-center justify-content-center">
+        <div className="cursor-pointer products-carousel__prev absolute top-1/2 transform -translate-y-1/2 flex items-center justify-center">
           <svg
             width="25"
             height="25"
@@ -158,7 +148,7 @@ export default function Products_Limited() {
             <use href="#icon_prev_md" />
           </svg>
         </div>
-        <div className="cursor-pointer products-carousel__next position-absolute top-50 d-flex align-items-center justify-content-center">
+        <div className="cursor-pointer products-carousel__next absolute top-1/2 transform -translate-y-1/2 flex items-center justify-center">
           <svg
             width="25"
             height="25"
@@ -168,7 +158,7 @@ export default function Products_Limited() {
             <use href="#icon_next_md" />
           </svg>
         </div>
-        <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center"></div>
+        <div className="products-pagination mt-4 mb-5 flex items-center justify-center"></div>
       </div>
     </section>
   );

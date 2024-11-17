@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import ColorSelection from "../common/ColorSelection";
 import Star from "../common/Star";
 import { Link } from "react-router-dom";
 import { useContextElement } from "../../context/Context";
 import BreadCumb from "./BreadCumb";
 import Pagination1 from "../common/Pagination1";
 import { openModalShopFilter } from "../../utlis/aside";
-import { menuCategories, sortingOptions } from "../../data/products/productCategories";
+import {
+  menuCategories,
+  sortingOptions,
+} from "../../data/products/productCategories";
 import FilterAll from "./filter/FilterAll";
-import axios from 'axios'; 
-
+import axios from "axios";
 
 const itemPerRow = [2, 3, 4];
 
@@ -26,7 +25,7 @@ export default function Shop1() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/products');
+        const response = await axios.get("http://127.0.0.1:8000/api/products");
         setProducts(response.data.data || response.data.data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);
@@ -53,7 +52,7 @@ export default function Shop1() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen">
         <div className="text-xl text-red-600 mb-4">{error}</div>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
         >
@@ -68,7 +67,10 @@ export default function Shop1() {
       <div className="mb-4 pb-lg-3"></div>
       <section className="shop-main container d-flex">
         <div className="shop-sidebar side-sticky bg-body">
-          <div onClick={openModalShopFilter} className="aside-header d-flex d-lg-none align-items-center">
+          <div
+            onClick={openModalShopFilter}
+            className="aside-header d-flex d-lg-none align-items-center"
+          >
             <h3 className="text-uppercase fs-6 mb-0">Filter By</h3>
             <button className="btn-close-lg js-close-aside btn-close-aside ms-auto"></button>
           </div>
@@ -99,7 +101,9 @@ export default function Shop1() {
                   <button
                     key={i}
                     onClick={() => setSelectedColView(elm)}
-                    className={`btn-link fw-medium me-2 js-cols-size ${selectedColView === elm ? "btn-link_active" : ""}`}
+                    className={`btn-link fw-medium me-2 js-cols-size ${
+                      selectedColView === elm ? "btn-link_active" : ""
+                    }`}
                   >
                     {elm}
                   </button>
@@ -107,87 +111,88 @@ export default function Shop1() {
               </div>
             </div>
           </div>
-
-          <div className={`products-grid row row-cols-2 row-cols-md-3 row-cols-lg-${selectedColView}`} id="products-grid">
-            {products.filter(elm => currentCategory === "All" || elm.filterCategory2 === currentCategory).map((elm, i) => (
-              <div key={i} className="product-card-wrapper">
-                <div className="product-card mb-3 mb-md-4 mb-xxl-5">
-                  <div className="pc__img-wrapper">
-                    <Swiper
-                      className="shop-list-swiper swiper-container background-img js-swiper-slider"
-                      slidesPerView={1}
-                      modules={[Navigation]}
-                      navigation={{
-                        prevEl: ".prev" + i,
-                        nextEl: ".next" + i,
-                      }}
-                    >
-                      {[elm.MainImageURL, elm.imgSrc2].map((elm2, j) => (
-                        <SwiperSlide key={j} className="swiper-slide">
-                          <Link to={`/shop-detail/${elm.ProductID}`}>
-                            <img
-                              loading="lazy"
-                              src={elm2}
-                              width="330"
-                              height="400"
-                              alt={elm.ProductName}
-                              className="pc__img"
-                            />
-                          </Link>
-                          {elm.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-dark text-white p-1 rounded">
+          <div
+            className={`products-grid row row-cols-2 row-cols-md-3 row-cols-lg-${selectedColView}`}
+            id="products-grid"
+          >
+            {products
+              .filter(
+                (elm) =>
+                  currentCategory === "All" ||
+                  elm.filterCategory2 === currentCategory
+              )
+              .map((elm, i) => (
+                <div key={i} className="product-card-wrapper">
+                  <div className="product-card mb-3 mb-md-4 mb-xxl-5">
+                    <div className="pc__img-wrapper">
+                    <Link to={`/shop-detail/${elm.ProductID}`}>
+                      <img
+                        loading="lazy"
+                        src={elm.MainImageURL}
+                        width="330"
+                        height="400"
+                        alt={elm.ProductName}
+                        className="pc__img"
+                      />
+                      {elm.discount_percentage > 0 && (
+                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
                           -{elm.discount_percentage}%
                         </span>
                       )}
-                        </SwiperSlide>
-                      ))}
-                      <span className={`cursor-pointer pc__img-prev ${"prev" + i} `}>
-                        <svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_prev_sm" />
-                        </svg>
-                      </span>
-                      <span className={`cursor-pointer pc__img-next ${"next" + i} `}>
-                        <svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
-                          <use href="#icon_next_sm" />
-                        </svg>
-                      </span>
-                    </Swiper>
-                  </div>
+                      </Link>
+                    </div>
 
-                  <div className="pc__info position-relative">
-                  <div className="pc__info position-relative text-start m-2">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <p className="pc__category mb-0">{elm.category_name}</p>
-                      <div className="d-flex align-items-center">
-                        <Star stars={elm.average_rating} />
-                        <span className="reviews-note text-lowercase text-secondary ms-1">
-                          {elm.reviews}
-                        </span>
+                    <div className="p-2 text-left">
+                      <div className="flex justify-between items-center">
+                        <p className="mb-0 text-sm">{elm.category_name}</p>
+                        <div className="flex items-center">
+                          <Star stars={elm.average_rating} />
+                          <span className="text-gray-500 ml-1">
+                            {elm.reviews}
+                          </span>
+                        </div>
                       </div>
+                      <h6 className="text-lg font-semibold">
+                        <Link to={`/shop-detail/${elm.ProductID}`}>
+                          {elm.ProductName}
+                        </Link>
+                      </h6>
+                      <div className="flex justify-start">
+                        <span className="text-lg font-bold text-red-600">
+                          {elm.SalePrice}₫
+                        </span>
+                        {elm.Price && (
+                          <span className="text-sm line-through text-gray-500 ml-2">
+                            {elm.Price}₫
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {elm.ShortDescription}
+                      </p>
                     </div>
-                    <h6 className="pc__title">
-                      <Link to={`/shop-detail/${elm.ProductID}`}>{elm.ProductName}</Link>
-                    </h6>
-                    <div className="product-card__price d-flex justify-content-start">
-                      <span className="money price">{elm.Price}$</span>
-                    </div>
-                  </div>
-                    
+
                     <button
-                      className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${isInWishlist(elm.ProductID) ? "active" : ""}`}
+                      className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
+                        isInWishlist(elm.ProductID) ? "active" : ""
+                      }`}
                       onClick={() => toggleWishlist(elm.ProductID)}
                       title="Add To Wishlist"
                     >
-                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <use href="#icon_heart" />
                       </svg>
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
-
           <Pagination1 />
         </div>
       </section>

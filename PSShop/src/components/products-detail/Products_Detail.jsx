@@ -43,16 +43,7 @@ const ProductDetail = () => {
   }, []);
 
   useEffect(() => {
-    const cachedProduct = localStorage.getItem(`product_${id}`);
-    if (cachedProduct) {
-      setProduct(JSON.parse(cachedProduct));
-      setLoading(false);
-      return;
-    }
-
     const initializeData = async () => {
-      if (hasFetchedData.current) return;
-
       setLoading(true);
       try {
         // Gọi API cho sản phẩm
@@ -77,7 +68,6 @@ const ProductDetail = () => {
         ]);
         setSizes(sizesRes.data.data);
         setColors(colorsRes.data.data);
-        hasFetchedData.current = true;
       } catch (error) {
         console.error("Error:", error);
         toast.error("Không thể tải thông tin sản phẩm");
@@ -87,8 +77,7 @@ const ProductDetail = () => {
     };
 
     initializeData();
-  }, [id, fetchWishlistItems]);
-
+  }, [id, fetchWishlistItems]); // Giữ nguyên dependency array
   useEffect(() => {
     if (product && typeof isInWishlist === "function") {
       const status = isInWishlist(product.ProductID);
@@ -238,11 +227,6 @@ const ProductDetail = () => {
     checkVariant();
   }, [selectedSize, selectedColor, product, checkProductVariant]);
 
-
-
-
-
-
   if (loading || !product) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -256,21 +240,21 @@ const ProductDetail = () => {
       <ToastContainer />
       <div className="flex ">
         <div className="col-lg-7 flex gap-3">
-              <div className="  ">
-                <img
-                  src={product.MainImageURL}
-                  alt={`Product image `}
-                  className="h-[250px] w-[300px] border-2 border-y-stone-950"
-                />
-            </div>
-            <div className="">
-              <img
-                src={product.MainImageURL}
-                alt={product.ProductName}
-                className="h-auto  w-[90%]"
-                width="674"
-                height="674"
-              />
+          <div className="  ">
+            <img
+              src={product.MainImageURL}
+              alt={`Product image `}
+              className="h-[250px] w-[300px] border-2 border-y-stone-950"
+            />
+          </div>
+          <div className="">
+            <img
+              src={product.MainImageURL}
+              alt={product.ProductName}
+              className="h-auto  w-[90%]"
+              width="674"
+              height="674"
+            />
           </div>
         </div>
 

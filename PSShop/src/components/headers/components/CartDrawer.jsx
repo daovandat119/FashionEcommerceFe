@@ -25,7 +25,6 @@ export default function CartDrawer() {
   // Load lại giỏ hàng khi thêm/sửa/xóa sản phẩm
   const handleQuantityChange = async (cartItemId, newQuantity) => {
     await setQuantity(cartItemId, newQuantity);
-    fetchCartItems(); // Refresh giỏ hàng
   };
 
   const closeCart = () => {

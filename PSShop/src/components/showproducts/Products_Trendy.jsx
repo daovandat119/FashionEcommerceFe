@@ -16,7 +16,7 @@ export default function Products_Trendy() {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
+
 
   // Lấy danh sách sản phẩm từ API
   useEffect(() => {
@@ -58,19 +58,6 @@ export default function Products_Trendy() {
     setFiltered(updatedFiltered);
   }, [currentCategory, products]);
 
-  // Xử lý thêm hoặc xoá sản phẩm vào danh sách yêu thích
-  const toggleWishlist = (ProductID) => {
-    if (wishlist.includes(ProductID)) {
-      setWishlist(wishlist.filter((id) => id !== ProductID));
-    } else {
-      setWishlist([...wishlist, ProductID]);
-    }
-  };
-
-  // Kiểm tra sản phẩm có trong wishlist không
-  const isAddedtoWishlist = (ProductID) => {
-    return wishlist.includes(ProductID);
-  };
 
   return (
     <section className="products-grid container">
@@ -120,84 +107,61 @@ export default function Products_Trendy() {
                   className="col-6 col-md-4 col-lg-3"
                 >
                   {/* Card sản phẩm */}
-                  <div className="product-card mb-3 mb-md-4 mb-xxl-5 border border-light rounded-lg shadow-sm">
-                    <div className="pc__img-wrapper position-relative m-1">
-                      <Link to={`/shop-detail/${product.ProductID}`}>
-                        <img
-                          loading="lazy"
-                          src={product.MainImageURL}
-                          width="330"
-                          height="300" // Rút ngắn chiều cao
-                          alt={product.ProductName}
-                          className="pc__img rounded-top"
-                        />
-                        <img
-                          loading="lazy"
-                          src={
-                            product.SecondImageURL || product.MainImageURL
-                          }
-                          width="330"
-                          height="300" // Rút ngắn chiều cao
-                          className="pc__img pc__img-second rounded-top"
-                          alt={`${product.ProductName} secondary`}
-                        />
-                      </Link>
-                      {product.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-dark text-white p-1 rounded">
-                          -{product.discount_percentage}%
-                        </span>
-                      )}
-                      <Link to={`/shop-detail/${product.ProductID}`}>
-                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium">
-                          XEM
-                        </button>
-                      </Link>
-                    </div>
-
-                    {/* Thông tin sản phẩm */}
-                    <div className="pc__info position-relative text-start m-2">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <p className="pc__category mb-0">
-                          {product.category_name}
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <Star stars={product.average_rating} />
-                          <span className="reviews-note text-lowercase text-secondary ms-1">
-                            {product.reviews}
-                          </span>
-                        </div>
-                      </div>
-                      <h6 className="pc__title">
-                        <Link to={`/shop-detail/${product.ProductID}`}>
-                          {product.ProductName}
-                        </Link>
-                      </h6>
-                      <div className="product-card__price d-flex justify-content-start">
-                        <span className="money price">
-                          ${product.Price}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Nút yêu thích */}
-                    <button
-                      className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
-                        isAddedtoWishlist(product.ProductID) ? "active" : ""
-                      }`}
-                      title="Thêm vào danh sách yêu thích"
-                      onClick={() => toggleWishlist(product.ProductID)}
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_heart" />
-                      </svg>
-                    </button>
+                  <div className="mb-4 border border-light rounded-lg shadow-sm bg-white">
+                  <div className="relative m-1">
+                    {product.discount_percentage > 0 && (
+                      <span className="absolute top-0 left-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                        -{product.discount_percentage}%
+                      </span>
+                    )}
+                    <Link to={`/shop-detail/${product.ProductID}`}>
+                      <img
+                        loading="lazy"
+                        src={product.MainImageURL}
+                        width="330"
+                        height="400"
+                        alt={product.ProductName}
+                        className="w-full h-auto rounded-t-lg"
+                      />
+                    </Link>
                   </div>
+
+                  {/* Thông tin sản phẩm */}
+                  <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{product.category_name}</p>
+                      <div className="flex items-center">
+                        <Star stars={product.average_rating} />
+                        <span className="text-gray-500 ml-1">{product.reviews}</span>
+                      </div>
+                    </div>
+                    <h6 className="text-lg font-semibold">
+                      <Link to={`/shop-detail/${product.ProductID}`}>{product.ProductName}</Link>
+                    </h6>
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">{product.SalePrice}₫</span>
+                      {product.Price && (
+                        <span className="text-sm line-through text-gray-500 ml-2">{product.Price}₫</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Nút yêu thích */}
+                  <button
+                    className="absolute top-0 right-0 bg-transparent border-0"
+                    title="Thêm vào danh sách yêu thích"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
                 </div>
               ))}
             </div>
