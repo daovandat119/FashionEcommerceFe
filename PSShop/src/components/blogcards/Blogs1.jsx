@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export default function Blog1() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [filteredBlogs, setFilteredBlogs] = useState(blogs12);
+  
   useEffect(() => {
     if (activeCategory == "ALL") {
       setFilteredBlogs(blogs12);
@@ -22,20 +23,20 @@ export default function Blog1() {
         <div className="title-bg">
           <img
             loading="lazy"
-            src="/assets/images/blog_title_bg.jpg"
+            src="/assets/images/bn4.jpg"
             width="1780"
             height="420"
-            alt="image"
+            alt="hình ảnh"
           />
         </div>
         <div className="container">
-          <h2 className="page-title">The Blog</h2>
+          <h2 className="page-title text-white">Bài viết</h2>
           <div className="blog__filter">
             {categories.map((elm, i) => (
               <a
                 onClick={() => setActiveCategory(elm)}
                 key={i}
-                className={`menu-link menu-link_us-s ${
+                className={`menu-link menu-link_us-s text-white ${
                   activeCategory == elm ? "menu-link_active" : ""
                 }`}
               >
@@ -46,7 +47,7 @@ export default function Blog1() {
         </div>
       </section>
       <section className="blog-page container">
-        <h2 className="d-none">The Blog</h2>
+        <h2 className="d-none">Bài viết</h2>
         <div className="blog-grid row row-cols-1 row-cols-md-2">
           {filteredBlogs.map((elm, i) => (
             <div key={i} className="blog-grid__item">
@@ -57,13 +58,13 @@ export default function Blog1() {
                   src={elm.imgSrc}
                   width="690"
                   height="500"
-                  alt="image"
+                  alt="hình ảnh"
                 />
               </div>
               <div className="blog-grid__item-detail">
                 <div className="blog-grid__item-meta">
                   <span className="blog-grid__item-meta__author">
-                    By {elm.author}
+                    Tác giả: {elm.author}
                   </span>
                   <span className="blog-grid__item-meta__date">{elm.date}</span>
                 </div>
@@ -72,18 +73,18 @@ export default function Blog1() {
                 </div>
                 <div className="blog-grid__item-content">
                   <p>{elm.content}</p>
-                  <p className="readmore-link">  Continue Reading</p>
+                  <p className="readmore-link">Tiếp tục đọc</p>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <p className="mb-5 text-center fw-medium">SHOWING 36 of 497 items</p>
+        <p className="mb-5 text-center fw-medium">HIỂN THỊ 36 trong số 497 bài viết</p>
         <Pagination1 />
 
         <div className="text-center">
           <a className="btn-link btn-link_lg text-uppercase fw-medium" href="#">
-            Show More
+            Hiển thị thêm
           </a>
         </div>
       </section>

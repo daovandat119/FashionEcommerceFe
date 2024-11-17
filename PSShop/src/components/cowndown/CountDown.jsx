@@ -34,68 +34,69 @@ const CountDown = () => {
 
     return (
         <div className="bg-lightGray">
-            <div className="container mx-auto p-4">
-                <div className="flex items-center justify-between">
-                    <div className="text-left">
-                        <p className="text-red-500 uppercase tracking-widest text-bold">
-                            Deal of the week
-                        </p>
-                        <h1 className="text-6xl font-bold mt-2">
-                            Spring Collection
-                        </h1>
-                        <a className="text-lg mt-4 inline-block border-b-2 border-black" href="#">
-                            Shop Now
-                        </a>
-                        <div className="mt-8 flex space-x-4 text-center">
-                            <div>
-                                <p className="text-4xl font-bold">
-                                    {timeLeft.days}
-                                </p>
-                                <p className="text-sm uppercase tracking-widest">
-                                    Days
-                                </p>
-                            </div>
-                            <div className="text-4xl font-bold">
-                                :
-                            </div>
-                            <div>
-                                <p className="text-4xl font-bold">
-                                    {timeLeft.hours}
-                                </p>
-                                <p className="text-sm uppercase tracking-widest">
-                                    Hours
-                                </p>
-                            </div>
-                            <div className="text-4xl font-bold">
-                                :
-                            </div>
-                            <div>
-                                <p className="text-4xl font-bold">
-                                    {timeLeft.minutes}
-                                </p>
-                                <p className="text-sm uppercase tracking-widest">
-                                    Mins
-                                </p>
-                            </div>
-                            <div className="text-4xl font-bold">
-                                :
-                            </div>
-                            <div>
-                                <p className="text-4xl font-bold">
-                                    {timeLeft.seconds}
-                                </p>
-                                <p className="text-sm uppercase tracking-widest">
-                                    Sec
-                                </p>
-                            </div>
+        <div className="container mx-auto p-4">
+            <div className="flex items-center justify-between">
+                <div className="text-left">
+                    <p className="text-red-500 uppercase tracking-widest text-bold">
+                        Ưu đãi trong tuần
+                    </p>
+                    <h1 className="text-6xl font-bold mt-2">
+                        Bộ Sưu Tập Mùa Xuân
+                    </h1>
+                    <a className="text-lg mt-4 inline-block border-b-2 border-black" href="/shop">
+                        Mua Ngay
+                    </a>
+                    <div className="mt-8 flex space-x-4 text-center">
+                        <div>
+                            <p className="text-4xl font-bold">
+                                {timeLeft.days}
+                            </p>
+                            <p className="text-sm uppercase tracking-widest">
+                                Ngày
+                            </p>
+                        </div>
+                        <div className="text-4xl font-bold">
+                            :
+                        </div>
+                        <div>
+                            <p className="text-4xl font-bold">
+                                {timeLeft.hours}
+                            </p>
+                            <p className="text-sm uppercase tracking-widest">
+                                Giờ
+                            </p>
+                        </div>
+                        <div className="text-4xl font-bold">
+                            :
+                        </div>
+                        <div>
+                            <p className="text-4xl font-bold">
+                                {timeLeft.minutes}
+                            </p>
+                            <p className="text-sm uppercase tracking-widest">
+                                Phút
+                            </p>
+                        </div>
+                        <div className="text-4xl font-bold">
+                            :
+                        </div>
+                        <div>
+                            <p className="text-4xl font-bold">
+                                {timeLeft.seconds}
+                            </p>
+                            <p className="text-sm uppercase tracking-widest">
+                                Giây
+                            </p>
                         </div>
                     </div>
-                    <div>
-                        <img alt="Gray overcoat from the spring collection" className="w-96 " src="/assets/images/cd.png" />
-                    </div>
+                </div>
+                <div>
+                    <img alt="Áo khoác xám từ bộ sưu tập mùa xuân" className="w-96 " src="/assets/images/cd.png" />
                 </div>
             </div>
         </div>
+    </div>
+    
     );
 }
 

@@ -4,7 +4,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo2/post1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ export const blogs1 = [
       id: 5,
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       imgSrc: "/assets/images/home/demo4/post-1.jpg",
     },
     {
@@ -55,14 +55,14 @@ export const blogs1 = [
       id: 8,
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       imgSrc: "/assets/images/home/demo4/post-4.jpg",
     },
     {
       id: 9,
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       imgSrc: "/assets/images/home/demo4/post-1.jpg",
     },
     {
@@ -83,7 +83,7 @@ export const blogs1 = [
       id: 12,
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       imgSrc: "/assets/images/home/demo4/post-4.jpg",
     },
   ];
@@ -93,7 +93,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo9/post1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 14,
@@ -114,7 +114,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo9/post1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 17,
@@ -137,7 +137,7 @@ export const blogs1 = [
       id: 19,
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       imgSrc: "/assets/images/home/demo10/post1.jpg",
       width: 450,
       height: 300,
@@ -164,7 +164,7 @@ export const blogs1 = [
       id: 22,
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       imgSrc: "/assets/images/home/demo10/post1.jpg",
       width: 450,
       height: 300,
@@ -195,7 +195,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo12/post-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 26,
@@ -216,14 +216,14 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo12/post-4.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 29,
       imgSrc: "/assets/images/home/demo12/post-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 30,
@@ -244,7 +244,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo12/post-4.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
   ];
   
@@ -254,7 +254,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo14/blog-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 34,
@@ -275,7 +275,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo14/blog-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 37,
@@ -297,7 +297,7 @@ export const blogs1 = [
       id: 39,
       imgSrc: "/assets/images/home/demo15/blog-1.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -306,7 +306,7 @@ export const blogs1 = [
       id: 40,
       imgSrc: "/assets/images/home/demo15/blog-2.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -315,7 +315,7 @@ export const blogs1 = [
       id: 41,
       imgSrc: "/assets/images/home/demo15/blog-3.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -324,7 +324,7 @@ export const blogs1 = [
       id: 42,
       imgSrc: "/assets/images/home/demo15/blog-4.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -333,7 +333,7 @@ export const blogs1 = [
       id: 43,
       imgSrc: "/assets/images/home/demo15/blog-1.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -342,7 +342,7 @@ export const blogs1 = [
       id: 44,
       imgSrc: "/assets/images/home/demo15/blog-2.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -351,7 +351,7 @@ export const blogs1 = [
       id: 45,
       imgSrc: "/assets/images/home/demo15/blog-3.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -360,7 +360,7 @@ export const blogs1 = [
       id: 46,
       imgSrc: "/assets/images/home/demo15/blog-4.jpg",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       author: "Admin",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
@@ -372,42 +372,42 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo16/blog-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 48,
       imgSrc: "/assets/images/home/demo16/blog-2.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 49,
       imgSrc: "/assets/images/home/demo16/blog-3.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 50,
       imgSrc: "/assets/images/home/demo16/blog-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 51,
       imgSrc: "/assets/images/home/demo16/blog-2.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
     {
       id: 52,
       imgSrc: "/assets/images/home/demo16/blog-3.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
     },
   ];
   
@@ -492,7 +492,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo19/blog-1.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
     },
@@ -501,7 +501,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo19/blog-2.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
     },
@@ -510,7 +510,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo19/blog-3.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
     },
@@ -519,7 +519,7 @@ export const blogs1 = [
       imgSrc: "/assets/images/home/demo19/blog-4.jpg",
       author: "Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
         "Est Diam Debitis An, Error Recusabo Id Pro, Quo Eripuit Civibus Ut.",
     },
@@ -603,45 +603,45 @@ export const blogs1 = [
   export const blogs12 = [
     {
       id: 73,
-      imgSrc: "/assets/images/blog/blog-1.jpg",
+      imgSrc: "/assets/images/9.jpg", 
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["FASHION", "STYLE"],
     },
   
     {
       id: 74,
-      imgSrc: "/assets/images/blog/blog-2.jpg",
+      imgSrc: "/assets/images/8.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "5 Tips to Increase Your Online Sales",
+      title: "5 Mẹo Tăng Doanh Số Bán Hàng Trực Tuyến Của Bạn",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["COMPANY", "TRENDS"],
     },
   
     {
       id: 75,
-      imgSrc: "/assets/images/blog/blog-3.jpg",
+      imgSrc: "/assets/images/7.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Tree earth fowl given moveth deep lesser After",
+      title: "Khám phá phong cách của bạn cùng chúng tôi",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["FASHION", "STYLE"],
     },
   
     {
       id: 76,
-      imgSrc: "/assets/images/blog/blog-4.jpg",
+      imgSrc: "/assets/images/6.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Given Set was without from god divide rule Hath",
+      title: "Cùng thời trang, nâng cao phong cách sống",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["COMPANY", "BEAUTY"],
     },
   ];
@@ -652,9 +652,9 @@ export const blogs1 = [
       imgSrc: "/assets/images/blog/blog-5.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["STYLE", "BEAUTY"],
     },
     {
@@ -664,7 +664,7 @@ export const blogs1 = [
       date: "April 05, 2023",
       title: "Heaven upon heaven moveth every have.",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["FASHION", "TRENDS"],
     },
     {
@@ -674,7 +674,7 @@ export const blogs1 = [
       date: "April 05, 2023",
       title: "Tree doesn't good void, waters without created",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["COMPANY", "BEAUTY"],
     },
     {
@@ -682,9 +682,9 @@ export const blogs1 = [
       imgSrc: "/assets/images/blog/blog-8.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Given Set was without from god divide rule Hath",
+      title: "Cùng thời trang, nâng cao phong cách sống",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["FASHION", "TRENDS"],
     },
     {
@@ -692,9 +692,9 @@ export const blogs1 = [
       imgSrc: "/assets/images/blog/blog-9.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Tree earth fowl given moveth deep lesser After",
+      title: "Khám phá phong cách của bạn cùng chúng tôi",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["STYLE", "TRENDS"],
     },
     {
@@ -704,7 +704,7 @@ export const blogs1 = [
       date: "April 05, 2023",
       title: "Us yielding Fish sea night night the said him two",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["COMPANY", "BEAUTY"],
     },
   ];
@@ -717,7 +717,7 @@ export const blogs1 = [
       date: "April 05, 2023",
       title: "Us yielding Fish sea night night the said him two",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["COMPANY", "BEAUTY"],
     },
     {
@@ -725,9 +725,9 @@ export const blogs1 = [
       imgSrc: "/assets/images/blog/blog-12.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Given Set was without from god divide rule Hath",
+      title: "Cùng thời trang, nâng cao phong cách sống",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["FASHION", "TRENDS"],
     },
     {
@@ -735,9 +735,9 @@ export const blogs1 = [
       imgSrc: "/assets/images/blog/blog-13.jpg",
       author: "By Admin",
       date: "April 05, 2023",
-      title: "Woman with good shoes is never be ugly place",
+      title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
-        "Midst one brought greater also morning green saying had good. Open stars day let over gathered, grass face one every light of under.",
+        "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
       category: ["STYLE", "BEAUTY"],
     },
   ];

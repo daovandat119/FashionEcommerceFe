@@ -89,7 +89,7 @@ export default function RelatedSlider() {
                     />
                   </Link>
                   {product.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-indigo-900 text-white p-1 rounded">
+                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-dark text-white p-1 rounded">
                           -{product.discount_percentage}%
                         </span>
                       )}
@@ -98,7 +98,7 @@ export default function RelatedSlider() {
                     title="Add to Cart"
                     // Thêm logic thêm vào giỏ hàng nếu cần
                   >
-                    Add To Cart
+                    Xem
                   </button>
                 </div>
 

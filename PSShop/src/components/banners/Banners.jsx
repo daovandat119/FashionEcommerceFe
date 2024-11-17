@@ -87,7 +87,7 @@ export default function Hero() {
                 to="/shop-1"
                 className="btn-link btn-link_lg default-underline text-uppercase fw-medium animate animate_fade animate_btt animate_delay-7"
               >
-                Discover More
+                Xem thêm
               </Link>
             </div>
           </div>
@@ -118,7 +118,7 @@ export default function Hero() {
         </ul>
         {/* <!-- /.social-links list-unstyled mb-0 text-secondary --> */}
         <span className="slideshow-social-follow__title d-block mt-5 text-uppercase fw-medium text-secondary">
-          Follow Us
+          Theo dõi chúng tôi
         </span>
       </div>
       {/* <!-- /.slideshow-social-follow --> */}
