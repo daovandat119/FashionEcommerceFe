@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
 import { useEffect, useState } from "react";
 
 const steps = [
@@ -26,7 +25,7 @@ const steps = [
   },
 ];
 
-export default function ChectoutSteps() {
+export default function ChectoutSteps({ cartProducts }) { // Nhận giỏ hàng như một prop
   const [activePathIndex, setactivePathIndex] = useState(0);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -46,8 +45,12 @@ export default function ChectoutSteps() {
       return;
     }
 
-    // Chỉ cho phép đi tới checkout nếu đang ở giỏ hàng
-    if (href === "/shop_checkout" && activePathIndex === 0) {
+    // Chỉ cho phép đi tới checkout nếu giỏ hàng không trống
+    if (href === "/shop_checkout") {
+      if (cartProducts.length === 0) {
+        alert("Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
+        return;
+      }
       navigate(href);
       return;
     }

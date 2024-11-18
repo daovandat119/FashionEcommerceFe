@@ -87,11 +87,17 @@ function App() {
 const AppRoutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const cartProducts = [];
   useEffect(() => {
     // Save the current path to localStorage
     localStorage.setItem("currentPath", location.pathname);
   }, [location]);
+
+  useEffect(() => {
+    if (location.pathname === "/shop_checkout" && cartProducts.length === 0) {
+      navigate("/shop_cart"); // Quay lại trang giỏ hàng
+    }
+  }, [location.pathname, cartProducts, navigate]);
 
   useEffect(() => {
     // Restore the path from localStorage on app start
