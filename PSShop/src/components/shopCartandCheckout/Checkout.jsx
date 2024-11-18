@@ -188,7 +188,7 @@ export default function Checkout() {
             setCartItems([]);
             navigate(`/shop_order_complete/${response.data.data.OrderID}`);
         } else if (response.data.vnpay_url) {
-            window.open(response.data.vnpay_url, "_blank");
+          window.location.href = response.data.vnpay_url;
 
         } else {
             setError("Đặt hàng thất bại. Vui lòng thử lại.");
