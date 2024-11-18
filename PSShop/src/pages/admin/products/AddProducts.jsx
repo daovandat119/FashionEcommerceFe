@@ -383,7 +383,7 @@ const AddProducts = () => {
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg flex items-center">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
             <span className="ml-4 text-white text-lg font-semibold">
-              Đang cập nhật sản phẩm, vui lòng chờ...
+              Đang khởi tạo sản phẩm, vui lòng chờ...
             </span>
           </div>
         </div>
