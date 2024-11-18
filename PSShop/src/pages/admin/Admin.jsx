@@ -7,7 +7,8 @@ import Login from "./login/LoginAdmin";
 import UsersManager from "./users/UsersManager";
 import OrderList from "./oder/OderList";
 import VoucherList from "./voucher/VoucherList";
-
+import StatisticalUsers from "./statistical/StatisticalUsers";
+import StatisticalProducts from "./statistical/StatisticalProducts";
 const Admin = () => {
   return (
     <Card>
@@ -18,6 +19,8 @@ const Admin = () => {
       <UsersManager />
       <OrderList />
       <VoucherList />
+      <StatisticalUsers />
+      <StatisticalProducts />
     </Card>
   );
 };

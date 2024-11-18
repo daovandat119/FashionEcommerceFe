@@ -15,22 +15,33 @@ import {
   ChevronRightIcon,
   ShoppingCartIcon,
   TicketIcon,
+  ChartPieIcon,
 } from "@heroicons/react/24/solid";
 
 import logo from "../../../../public/assets/images/logo.png";
 
 export function SidebarWithSearch() {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isStatsDropdownOpen, setIsStatsDropdownOpen] = useState(false);
+  const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const toggleStatsDropdown = () => {
+    setIsStatsDropdownOpen(!isStatsDropdownOpen);
+  };
+
+  const toggleSettingsDropdown = () => {
+    setIsSettingsDropdownOpen(!isSettingsDropdownOpen);
+  };
 
   const handleLogout = () => {
     logout();
     navigate("/admin/login");
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
@@ -65,7 +76,7 @@ export function SidebarWithSearch() {
         </ListItem>
 
         <div
-          className={`ml-6 transition-all duration-800 ease-in-out ${
+          className={`absolute left-0 ml-12 top-60 w-48 mt-2 transition-all duration-800 ease-in-out z-50 ${
             isDropdownOpen
               ? "h-48 opacity-100"
               : "max-h-0 opacity-0 overflow-hidden"
@@ -74,11 +85,7 @@ export function SidebarWithSearch() {
           {isDropdownOpen && (
             <>
               <Link to="/admin/products">
-                <ListItem
-                  className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${
-                    isDropdownOpen ? "opacity-100" : "opacity-0"
-                  }`}
-                >
+                <ListItem className="bg-white duration-800 border-b-2 border-gray-200 rounded-xl transition-opacity duration-300">
                   <ListItemPrefix>
                     <ShoppingBagIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -86,11 +93,7 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/categories">
-                <ListItem
-                  className={`hover:bg-gray-200 duration-800 rounded-xl  transition-opacity duration-300 ${
-                    isDropdownOpen ? "opacity-100" : "opacity-0"
-                  }`}
-                >
+                <ListItem className="bg-white duration-800 rounded-xl border-b-2 border-gray-200 transition-opacity duration-300">
                   <ListItemPrefix>
                     <InboxIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -98,11 +101,7 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/colors">
-                <ListItem
-                  className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${
-                    isDropdownOpen ? "opacity-100" : "opacity-0"
-                  }`}
-                >
+                <ListItem className="bg-white duration-800 rounded-xl border-b-2 border-gray-200 transition-opacity duration-300">
                   <ListItemPrefix>
                     <SwatchIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -110,11 +109,7 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/sizes">
-                <ListItem
-                  className={`hover:bg-gray-200 duration-800 rounded-xl transition-opacity duration-300 ${
-                    isDropdownOpen ? "opacity-100" : "opacity-0"
-                  }`}
-                >
+                <ListItem className="bg-white duration-800 rounded-xl border-b-2 border-gray-200 transition-opacity duration-300">
                   <ListItemPrefix>
                     <ArrowsPointingOutIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -160,23 +155,102 @@ export function SidebarWithSearch() {
             Vouchers
           </ListItem>
         </Link>
-        <ListItem className="hover:bg-gray-200 transition-all duration-800 rounded-xl">
+
+        <ListItem
+          onClick={toggleStatsDropdown}
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl relative"
+        >
+          <ListItemPrefix>
+            <ChartPieIcon className="h-5 w-5" />
+          </ListItemPrefix>
+          Statistics
+          <ChevronRightIcon className="h-5 w-5 ml-10" />
+        </ListItem>
+
+        <div
+          className={`absolute left-0 bottom-2 ml-11 mb-3 w-52 transition-all z-50 duration-800 ease-in-out ${
+            isStatsDropdownOpen
+              ? "opacity-100 "
+              : "max-h-0 opacity-0 overflow-hidden"
+          }`}
+        >
+          {isStatsDropdownOpen && (
+            <div>
+              <Link to="/admin/user-statistics">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                  <ListItemPrefix>
+                    <UserCircleIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  User Statistics
+                </ListItem>
+              </Link>
+              <Link to="/admin/product-statistics">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                  <ListItemPrefix>
+                    <ShoppingBagIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  Product Statistics
+                </ListItem>
+              </Link>
+              <Link to="/admin/order-statistics">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                  <ListItemPrefix>
+                    <ShoppingCartIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  Order Statistics
+                </ListItem>
+              </Link>
+              <Link to="/admin/revenue-statistics">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                  <ListItemPrefix>
+                    <ChartBarIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  Revenue Statistics
+                </ListItem>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <ListItem
+          onClick={toggleSettingsDropdown}
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl relative"
+        >
           <ListItemPrefix>
             <Cog6ToothIcon className="h-5 w-5" />
           </ListItemPrefix>
           Settings
+          <ChevronRightIcon className="h-5 w-5 ml-10" />
         </ListItem>
 
         <div
-          onClick={handleLogout}
-          className="w-[80%] absolute bottom-5 hover:bg-gray-200 rounded-xl"
+          className={`absolute left-0 bottom-12 ml-11 mb-3 w-52  transition-all duration-800 ease-in-out ${
+            isSettingsDropdownOpen
+              ? "opacity-100 "
+              : "max-h-0 opacity-0 overflow-hidden"
+          }`}
         >
-          <ListItem>
-            <ListItemPrefix>
-              <PowerIcon className="h-5 w-5 " />
-            </ListItemPrefix>
-            Logout
-          </ListItem>
+          {isSettingsDropdownOpen && (
+            <div>
+              <Link to="users/profile">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                  <ListItemPrefix>
+                    <UserCircleIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  Profile
+                </ListItem>
+              </Link>
+              <ListItem
+                onClick={handleLogout}
+                className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800 cursor-pointer"
+              >
+                <ListItemPrefix>
+                  <PowerIcon className="h-5 w-5" />
+                </ListItemPrefix>
+                Logout
+              </ListItem>
+            </div>
+          )}
         </div>
       </List>
     </Card>

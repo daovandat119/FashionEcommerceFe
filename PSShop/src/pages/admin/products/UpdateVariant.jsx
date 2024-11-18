@@ -83,9 +83,9 @@ const UpdateVariant = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-md">
+      <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-2xl">
         <h2 className="text-3xl font-bold mb-6 text-center">UPDATE VARIANT</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Color</label>
             <span className="border border-gray-300 rounded p-2 w-full block bg-gray-100">
@@ -121,7 +121,7 @@ const UpdateVariant = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+            className="col-span-2 w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
           >
             UPDATE VARIANT
           </button>

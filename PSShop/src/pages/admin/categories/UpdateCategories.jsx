@@ -13,8 +13,8 @@ const UpdateCategoryComponent = () => {
     const fetchCategory = () => {
       GetCategoryById(CategoryID)
         .then(response => {
-        
-          if (response.data && response.data.CategoryName) {
+          // Kiểm tra cấu trúc phản hồi
+          if (response.data) {
             setCategoryName(response.data.CategoryName);
           } else {
             throw new Error("Dữ liệu danh mục không hợp lệ");
@@ -22,12 +22,12 @@ const UpdateCategoryComponent = () => {
         })
         .catch(err => {
           console.error("Lỗi khi tải danh mục:", err);
-          const errorMessage = err.response?.data?.CategoryName?.[0] || "Không thể tải dữ liệu danh mục. Vui lòng thử lại sau.";
+          const errorMessage = err.response?.data?.message || "Không thể tải dữ liệu danh mục. Vui lòng thử lại sau.";
           setError(errorMessage);
           toast.error(errorMessage);
         });
     };
-
+  
     if (CategoryID) {
       fetchCategory();
     } else {
