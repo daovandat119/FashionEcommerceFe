@@ -122,7 +122,7 @@ export default function Cart() {
                     </td>
                     <td>
                       <span className="shopping-cart__product-price">
-                        ${item.Price}
+                        {item.Price}
                       </span>
                     </td>
                     <td width="10%" className="text-center">

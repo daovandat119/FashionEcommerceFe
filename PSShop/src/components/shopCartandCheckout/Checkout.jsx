@@ -295,7 +295,7 @@ export default function Checkout() {
                       <div className="flex-grow">
                         <h4 className="text-sm font-medium text-gray-900">{item.ProductName}</h4>
                         <div className="text-sm text-gray-500 mt-1">{item.ColorName} • {item.SizeName} • x{item.Quantity}</div>
-                        <div className="text-sm font-medium text-gray-900 mt-1">${(item.Price * item.Quantity).toFixed(2)}</div>
+                        <div className="text-sm font-medium text-gray-900 mt-1">{(item.Price * item.Quantity).toFixed(2)}VND</div>
                       </div>
                     </div>
                   ))}
@@ -303,22 +303,22 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
-                    <span className="font-medium">${Number(totalPrice).toFixed(2)}</span>
+                    <span className="font-medium">{Number(totalPrice).toFixed(2)}VND</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="font-medium">${shippingFee}</span>
+                    <span className="font-medium">{shippingFee}VND</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Giảm giá</span>
-                      <span className="font-medium">-${discount.toFixed(2)}</span>
+                      <span className="font-medium">-{discount.toFixed(2)}VND</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="flex justify-between">
                       <span className="text-base font-medium text-gray-900">Thanh toán</span>
-                      <span className="text-base font-semibold text-gray-600">${(totalPrice + shippingFee - discount).toFixed(2)}</span>
+                      <span className="text-base font-semibold text-gray-600">{(totalPrice + shippingFee - discount).toFixed(2)}VND</span>
                     </div>
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export default function Checkout() {
                   className="w-full bg-gray-600 text-white py-4 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <span>Đặt Hàng</span>
-                  <span className="text-sm">${(totalPrice + 19 - discount).toFixed(2)}</span>
+                  <span className="text-sm">{(totalPrice + 19 - discount).toFixed(2)}VND</span>
                 </button>
               </div>
             </div>

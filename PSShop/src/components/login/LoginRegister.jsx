@@ -256,7 +256,7 @@ export default function LoginRegister() {
                     defaultValue=""
                   />
                   <label className="form-check-label text-secondary">
-                    Ghi nhớ tôi
+                    Ghi nhớ đăng nhập
                   </label>
                 </div>
 

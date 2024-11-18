@@ -3,8 +3,6 @@ import axios from 'axios';
 import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-
 export default function EditAddress() {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,13 +45,10 @@ export default function EditAddress() {
       );
 
       if (response.status === 200) {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Địa chỉ đã được đặt làm mặc định thành công!",
-          icon: "success",
-          showConfirmButton: true,
-          timer: 5000,
-        });
+        toast.success("Địa chỉ đã được đặt làm mặc định thành công!", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 5000,
+    });
         fetchAddresses(); // Cập nhật danh sách địa chỉ
       }
     } catch (error) {
@@ -74,8 +69,7 @@ export default function EditAddress() {
       <div className="page-content my-account__address">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <p className="notice mb-0">
-            The following addresses will be used on the checkout page by default.
-          </p>
+          Các địa chỉ sau đây sẽ được sử dụng trên trang thanh toán theo mặc định.   </p>
           <button 
             className="btn btn-primary"
             onClick={() => setShowAddForm(true)}
@@ -134,7 +128,7 @@ export default function EditAddress() {
               </div>
             ))
           ) : (
-            <p>No addresses found. Please add a new address.</p>
+            <p>Không có địa chỉ. Vui lòng thêm địa chỉ mới</p>
           )}
         </div>
 

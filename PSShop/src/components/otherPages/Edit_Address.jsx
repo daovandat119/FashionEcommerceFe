@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
+
 
 function Edit_Address({ address, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -154,13 +154,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       );
 
       if (response.status === 200) {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Địa chỉ đã được cập nhật thành công!",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 5000,
-        });
+        toast.success('Địa chỉ đã được cập nhật thành công!');
         onSuccess();
       }
     } catch (error) {
@@ -185,13 +179,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
         });
 
         if (response.status === 200) {
-          Swal.fire({
-            title: "Thông báo",
-            text: "Địa chỉ đã được xóa thành công!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 5000,
-          });
+          toast.success('Địa chỉ đã được xóa thành công!');
           onSuccess();
         }
       } catch (error) {

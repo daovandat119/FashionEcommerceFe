@@ -98,7 +98,7 @@ export default function CartDrawer() {
                       Kích thước: {item.SizeName}
                     </p>
                     <p className="cart-drawer-item__option text-secondary">
-                      Đơn giá: ${item.Price}
+                      Đơn giá: {item.Price}VND
                     </p>
                     
                     <div className="flex items-center justify-between mt-2">
@@ -127,21 +127,11 @@ export default function CartDrawer() {
                                 </svg>
                             </button>
                         </div>
-
-                        {/* <button
-                            className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                            onClick={() => removeCartItem(item.CartItemID)}
-                            disabled={loading}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button> */}
                     </div>
 
                     <div className="mt-2 text-right">
                         <span className="text-sm font-medium text-gray-900">
-                            Tổng: ${(item.Price * item.Quantity).toFixed(2)}
+                            Tổng: {(item.Price * item.Quantity).toFixed(2)}VND
                         </span>
                     </div>
                   </div>
@@ -161,7 +151,7 @@ export default function CartDrawer() {
             <div className="d-flex justify-content-between mb-3">
               <h6 className="fs-base fw-medium mb-0">TỔNG TIỀN:</h6>
               <span className="cart-subtotal fw-medium">
-                ${totalPrice}
+                {totalPrice}VND
               </span>
             </div>
           )}
