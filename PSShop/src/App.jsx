@@ -27,7 +27,7 @@ import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
 
 // Admin imports
-import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLayout from "./pages/admin/statistical/AdminLayout";
 import Dashboard from "./pages/admin/dashboard/Dashboards";
 import ProductsList from "./pages/admin/products/ProductsList";
 import CategoriesList from "./pages/admin/categories/CategoriesList";
