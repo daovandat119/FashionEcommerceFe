@@ -3,7 +3,7 @@ import axios from 'axios';
 import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function EditAddress() {
   const [addresses, setAddresses] = useState([]);
@@ -13,6 +13,7 @@ export default function EditAddress() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [expandedAddressId, setExpandedAddressId] = useState(null);
+  const [isSettingDefault, setIsSettingDefault] = useState(false);
 
   const fetchAddresses = useCallback(async () => {
     try {
@@ -34,7 +35,9 @@ export default function EditAddress() {
   }, [fetchAddresses]);
 
   const handleSetDefaultAddress = async (addressId) => {
-    const token = localStorage.getItem('token');
+    if (isSettingDefault) return;
+    setIsSettingDefault(true);
+    
     try {
       const response = await axios.get(
         `http://127.0.0.1:8000/api/address/setDefaultAddress/${addressId}`,
@@ -46,19 +49,31 @@ export default function EditAddress() {
         }
       );
 
-      if (response.status === 200) {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Địa chỉ đã được đặt làm mặc định thành công!",
-          icon: "success",
-          showConfirmButton: true,
-          timer: 5000,
+      if (response.data) {
+        await fetchAddresses();
+        
+        toast.success("Đã đặt làm địa chỉ mặc định", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
         });
-        fetchAddresses(); // Cập nhật danh sách địa chỉ
       }
     } catch (error) {
-      console.error('Lỗi khi đặt địa chỉ mặc định:', error.response?.data);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đặt địa chỉ mặc định.');
+      console.error('Lỗi khi đặt địa chỉ mặc định:', error);
+      
+      toast.error("Không thể đặt địa chỉ mặc định. Vui lòng thử lại sau.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsSettingDefault(false);
     }
   };
 
@@ -74,8 +89,7 @@ export default function EditAddress() {
       <div className="page-content my-account__address">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <p className="notice mb-0">
-            The following addresses will be used on the checkout page by default.
-          </p>
+          Các địa chỉ sau đây sẽ được sử dụng trên trang thanh toán theo mặc định.   </p>
           <button 
             className="btn btn-primary"
             onClick={() => setShowAddForm(true)}
@@ -108,12 +122,17 @@ export default function EditAddress() {
                     >
                       Sửa
                     </button>
-                    <button 
-                      className="btn btn-success btn-sm rounded-lg shadow hover:bg-green-500 transition duration-200"
-                      onClick={() => handleSetDefaultAddress(address.AddressID)}
-                    >
-                      Đặt làm mặc định
-                    </button>
+                    {!address.IsDefault && (
+                      <button 
+                        className={`btn btn-success btn-sm rounded-lg shadow hover:bg-green-500 transition duration-200 ${
+                          isSettingDefault ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                        onClick={() => handleSetDefaultAddress(address.AddressID)}
+                        disabled={isSettingDefault}
+                      >
+                        {isSettingDefault ? 'Đang xử lý...' : 'Đặt làm mặc định'}
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="my-account__address-item__detail mt-2">
@@ -134,7 +153,7 @@ export default function EditAddress() {
               </div>
             ))
           ) : (
-            <p>No addresses found. Please add a new address.</p>
+            <p>Không có địa chỉ. Vui lòng thêm địa chỉ mới</p>
           )}
         </div>
 

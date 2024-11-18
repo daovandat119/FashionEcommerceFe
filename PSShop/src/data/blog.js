@@ -604,8 +604,8 @@ export const blogs1 = [
     {
       id: 73,
       imgSrc: "/assets/images/9.jpg", 
-      author: "By Admin",
-      date: "April 05, 2023",
+      author: "Admin",
+      date: "20/11/2024",
       title: "Tận hưởng việc diện đồ là nghệ thuật đích thực",
       content:
         "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
@@ -615,8 +615,8 @@ export const blogs1 = [
     {
       id: 74,
       imgSrc: "/assets/images/8.jpg",
-      author: "By Admin",
-      date: "April 05, 2023",
+      author: "Admin",
+      date: "20/11/2024",
       title: "5 Mẹo Tăng Doanh Số Bán Hàng Trực Tuyến Của Bạn",
       content:
         "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
@@ -626,8 +626,8 @@ export const blogs1 = [
     {
       id: 75,
       imgSrc: "/assets/images/7.jpg",
-      author: "By Admin",
-      date: "April 05, 2023",
+      author: " Admin",
+      date: "20/11/2024",
       title: "Khám phá phong cách của bạn cùng chúng tôi",
       content:
         "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",
@@ -637,8 +637,8 @@ export const blogs1 = [
     {
       id: 76,
       imgSrc: "/assets/images/6.jpg",
-      author: "By Admin",
-      date: "April 05, 2023",
+      author: " Admin",
+      date: "20/11/2024",
       title: "Cùng thời trang, nâng cao phong cách sống",
       content:
         "Tận hưởng việc diện đồ là nghệ thuật đích thực khi mỗi bộ trang phục phản ánh cá tính và gu thẩm mỹ riêng biệt. Đó là cách biến sự sáng tạo thành phong cách sống, nơi bạn tự do thể hiện bản thân qua từng chi tiết nhỏ.",

@@ -240,9 +240,7 @@ const ProductDetail = () => {
       <ToastContainer />
       <div className="flex ">
         <div className="col-lg-7 flex gap-3">
-          <div className="  ">
-          
-          </div>
+          <div className="  "></div>
           <div className="">
             <img
               src={product.MainImageURL}
@@ -262,7 +260,7 @@ const ProductDetail = () => {
 
           <div className="flex items-center gap-3 mb-4">
             <span className="text-2xl font-semibold text-blue-600">
-              ${(variantPrice || product?.Price || 0).toLocaleString()}
+              {(variantPrice || product?.Price || 0).toLocaleString()}VND
             </span>
 
             {variantPrice && variantPrice !== product?.Price && (
@@ -298,11 +296,6 @@ const ProductDetail = () => {
             <p className="leading-relaxed">
               <span className="font-medium text-gray-900">Mô tả ngắn:</span>{" "}
               {product.ShortDescription}
-            </p>
-
-            <p className="leading-loose">
-              <span className="font-medium text-gray-900">Mô tả:</span>{" "}
-              {product.Description}
             </p>
           </div>
 
@@ -562,7 +555,7 @@ const ProductDetail = () => {
                 details: {
                   title: "Thông tin chi tiết",
                   items: [
-                    `Giá: $${product.Price}`,
+                    `Giá: ${product.Price}VND`,
                     `Danh mục: ${product.category_name || "Chưa cập nhật"}`,
                   ],
                 },

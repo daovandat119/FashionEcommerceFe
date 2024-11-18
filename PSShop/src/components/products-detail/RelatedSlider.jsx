@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-
+import Star from "../../components/common/Star";
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
   autoplay: {
@@ -43,7 +43,6 @@ const swiperOptions = {
   },
 };
 
-
 export default function RelatedSlider() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,12 +50,13 @@ export default function RelatedSlider() {
 
   useEffect(() => {
     // Gọi API PHP từ React
-    axios.get('http://127.0.0.1:8000/api/products')
-      .then(response => {
+    axios
+      .get("http://127.0.0.1:8000/api/products")
+      .then((response) => {
         setProducts(response.data.data || response.data); // Điều chỉnh nếu cần
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Có lỗi xảy ra khi gọi API", error);
         setError("Không thể tải sản phẩm.");
         setLoading(false);
@@ -89,73 +89,82 @@ export default function RelatedSlider() {
                     />
                   </Link>
                   {product.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-dark text-white p-1 rounded">
-                          -{product.discount_percentage}%
+                    <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red text-white p-1 rounded">
+                      -{product.discount_percentage}%
+                    </span>
+                  )}
+                 
+                </div>
+                 {/* Thông tin sản phẩm */}
+                 <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{product.category_name}</p>
+                      <div className="flex items-center">
+                        <Star stars={product.average_rating} />
+                        <span className="text-gray-500 ml-1">
+                          {product.reviews}
+                        </span>
+                      </div>
+                    </div>
+                    <h6 className="text-lg font-semibold">
+                      <Link to={`/shop-detail/${product.ProductID}`}>
+                        {product.ProductName}
+                      </Link>
+                    </h6>
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">
+                        {product.SalePrice}₫
+                      </span>
+                      {product.Price && (
+                        <span className="text-sm line-through text-gray-500 ml-2">
+                          {product.Price}₫
                         </span>
                       )}
-                  <button
-                    className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                    title="Add to Cart"
-                    // Thêm logic thêm vào giỏ hàng nếu cần
-                  >
-                    Xem
-                  </button>
-                </div>
-
-                <div className="pc__info position-relative">
-                  <p className="pc__category">{product.category_name}</p>
-                  <h6 className="pc__title">
-                    <Link to={`/shop-detail/${product.ProductName}`}>{product.ProductName}</Link>
-                  </h6>
-                  <div className="product-card__price d-flex">
-                    <span className="money price">{product.Price}$</span>
-                  </div>
-                  {product.reviews && (
-                    <div className="product-card__review d-flex align-items-center">
-                      <div className="reviews-group d-flex">
-                        {/* Hiển thị đánh giá ở đây */}
-                      </div>
-                      <span className="reviews-note text-lowercase text-secondary ms-1">
-                        {product.reviews}
-                      </span>
                     </div>
-                  )}
-
-                  <button
-                    className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist"
-                    title="Add To Wishlist"
-                    // Thêm logic thêm vào danh sách yêu thích nếu cần
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <use href="#icon_heart" />
-                    </svg>
-                  </button>
-                </div>
+                  </div>
               </SwiperSlide>
             ))}
           </Swiper>
         )}
-        
-        <div className="products-carousel__prev cursor-pointer position-absolute top-50 start-0 translate-middle-y z-1 bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center" 
-             style={{ width: '50px', height: '50px', left: '-25px' }}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6"/>
+
+        <div
+          className="products-carousel__prev cursor-pointer position-absolute top-50 start-0 translate-middle-y z-1 bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+          style={{ width: "50px", height: "50px", left: "-25px" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 18l-6-6 6-6" />
           </svg>
         </div>
-        
-        <div className="products-carousel__next cursor-pointer position-absolute top-50 end-0 translate-middle-y z-1 bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center"
-             style={{ width: '50px', height: '50px', right: '-25px' }}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6"/>
+
+        <div
+          className="products-carousel__next cursor-pointer position-absolute top-50 end-0 translate-middle-y z-1 bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+          style={{ width: "50px", height: "50px", right: "-25px" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 18l6-6-6-6" />
           </svg>
         </div>
-        
+
         <div className="products-pagination mt-4 d-flex align-items-center justify-content-center"></div>
       </div>
     </section>

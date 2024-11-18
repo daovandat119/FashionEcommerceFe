@@ -1,17 +1,16 @@
-import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
+import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function Add_Address({ onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
-    UserName: '',
-    PhoneNumber: '',
-    Address: '',
-    DistrictID: '',
-    WardCode: '',
-    isDefault: false
+    UserName: "",
+    PhoneNumber: "",
+    Address: "",
+    DistrictID: "",
+    WardCode: "",
+    isDefault: false,
   });
 
   const [provinces, setProvinces] = useState([]);
@@ -21,13 +20,13 @@ function Add_Address({ onSuccess, onCancel }) {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/provinces');
-        if (response.data.message === 'Success') {
+        const response = await axios.get("http://127.0.0.1:8000/api/provinces");
+        if (response.data.message === "Success") {
           setProvinces(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching provinces:', error);
-        toast.error('Không thể tải danh sách tỉnh thành.');
+        console.error("Error fetching provinces:", error);
+        toast.error("Không thể tải danh sách tỉnh thành.");
       }
     };
 
@@ -37,53 +36,56 @@ function Add_Address({ onSuccess, onCancel }) {
   const handleChange = async (e) => {
     const { name, value, type, checked } = e.target;
     const fieldMapping = {
-      'fullName': 'UserName',
-      'phoneNumber': 'PhoneNumber',
-      'address': 'Address',
-      'districtID': 'DistrictID',
-      'wardCode': 'WardCode',
-      'isDefault': 'isDefault'
+      fullName: "UserName",
+      phoneNumber: "PhoneNumber",
+      address: "Address",
+      districtID: "DistrictID",
+      wardCode: "WardCode",
+      isDefault: "isDefault",
     };
 
     const stateField = fieldMapping[name] || name;
 
-    if (name === 'provinceID' && value) {
+    if (name === "provinceID" && value) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/districts', {
-          province_id: value
-        });
-        if (response.data.message === 'Success') {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/districts",
+          {
+            province_id: value,
+          }
+        );
+        if (response.data.message === "Success") {
           setDistricts(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching districts:', error);
-        toast.error('Không thể tải danh sách quận huyện.');
+        console.error("Error fetching districts:", error);
+        toast.error("Không thể tải danh sách quận huyện.");
       }
     }
 
-    if (name === 'districtID' && value) {
+    if (name === "districtID" && value) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/wards', {
-          district_id: value
+        const response = await axios.post("http://127.0.0.1:8000/api/wards", {
+          district_id: value,
         });
-        if (response.data.message === 'Success') {
+        if (response.data.message === "Success") {
           setWards(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching wards:', error);
-        toast.error('Không thể tải danh sách xã phường.');
+        console.error("Error fetching wards:", error);
+        toast.error("Không thể tải danh sách xã phường.");
       }
     }
 
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [stateField]: type === 'checkbox' ? checked : value
+      [stateField]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     const dataToSend = {
       UserName: formData.UserName,
@@ -96,33 +98,28 @@ function Add_Address({ onSuccess, onCancel }) {
 
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/api/address',
+        "http://127.0.0.1:8000/api/address",
         dataToSend,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 201) {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Địa chỉ đã được thêm thành công!",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 5000,
-        });
+        toast.success("Địa chỉ đã được thêm thành công!");
         onSuccess();
       }
     } catch (error) {
-      console.error('Lỗi chi tiết:', error.response?.data);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!');
+      console.error("Lỗi chi tiết:", error.response?.data);
+      toast.error(
+        error.response?.data?.message ||
+          "Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!"
+      );
     }
   };
-
-  
 
   return (
     <div className="border p-4 rounded bg-light">
@@ -163,7 +160,7 @@ function Add_Address({ onSuccess, onCancel }) {
             required
           >
             <option value="">Chọn tỉnh thành</option>
-            {provinces.map(province => (
+            {provinces.map((province) => (
               <option key={province.ProvinceID} value={province.ProvinceID}>
                 {province.ProvinceName}
               </option>
@@ -180,7 +177,7 @@ function Add_Address({ onSuccess, onCancel }) {
             required
           >
             <option value="">Chọn quận huyện</option>
-            {districts.map(district => (
+            {districts.map((district) => (
               <option key={district.DistrictID} value={district.DistrictID}>
                 {district.DistrictName}
               </option>
@@ -198,7 +195,7 @@ function Add_Address({ onSuccess, onCancel }) {
             required
           >
             <option value="">Chọn phường xã</option>
-            {wards.map(ward => (
+            {wards.map((ward) => (
               <option key={ward.WardCode} value={ward.WardCode}>
                 {ward.WardName}
               </option>
@@ -222,8 +219,8 @@ function Add_Address({ onSuccess, onCancel }) {
           <button type="submit" className="btn btn-primary">
             Lưu địa chỉ
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-secondary"
             onClick={onCancel}
           >
@@ -237,7 +234,7 @@ function Add_Address({ onSuccess, onCancel }) {
 
 Add_Address.propTypes = {
   onSuccess: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default Add_Address;

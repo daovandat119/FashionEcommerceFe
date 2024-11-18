@@ -1,13 +1,96 @@
 import { useContext, useState } from "react";
 import { OrderContext } from "./OrderContext";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PropTypes from 'prop-types';
 
 export default function AccountOrders() {
-  const { orders, loading, error } = useContext(OrderContext);
+  const navigate = useNavigate();
+  const { orders, loading, error, handleOrderAction } = useContext(OrderContext);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [orderProducts, setOrderProducts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
+
+  const OrderActionButton = ({ order }) => {
+    if (order.OrderStatus === "Đã giao hàng") {
+      return (
+        <div className="flex gap-2">
+          <button 
+            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => {/* Xử lý liên hệ */}}
+          >
+            LIÊN HỆ
+          </button>
+          <button 
+            className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => navigate(`/review/${order.OrderID}`)}
+          >
+            ĐÁNH GIÁ
+          </button>
+        </div>
+      );
+    }
+
+    if (["Đang xử lý", "Đang giao hàng"].includes(order.OrderStatus)) {
+      return (
+        <div className="flex gap-2">
+          <button 
+            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => {/* Xử lý liên hệ */}}
+          >
+            LIÊN HỆ
+          </button>
+          <button 
+            className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => handleOrderAction(order.OrderID, order.OrderStatus, order.PaymentStatus)}
+          >
+            HỦY ĐƠN
+          </button>
+        </div>
+      );
+    }
+
+    if (order.OrderStatus === "Đã hủy") {
+      return (
+        <button 
+          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => {/* Xử lý liên hệ */}}
+        >
+          LIÊN HỆ
+        </button>
+      );
+    }
+
+    return null;
+  };
+
+  OrderActionButton.propTypes = {
+    order: PropTypes.shape({
+      OrderID: PropTypes.number.isRequired,
+      OrderStatus: PropTypes.oneOf([
+        "Đang xử lý",
+        "Đang giao hàng",
+        "Đã giao hàng",
+        "Đã hủy"
+      ]).isRequired,
+      PaymentStatus: PropTypes.oneOf([
+        "Chưa thanh toán",
+        "Đã thanh toán",
+        "Thanh toán thất bại",
+        null
+      ]),
+      TotalQuantity: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+      TotalAmount: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+      PaymentMethod: PropTypes.string,
+      PurchaseDate: PropTypes.string,
+    }).isRequired
+  };
 
   const fetchOrderProducts = async (orderId) => {
     const token = localStorage.getItem("token");
@@ -20,14 +103,12 @@ export default function AccountOrders() {
           },
         }
       );
-      console.log(response.data.data);
-      
       setOrderProducts((prev) => ({
         ...prev,
         [orderId]: response.data.data || [],
       }));
     } catch (err) {
-      console.error("Error fetching order products:", err);
+      console.error("Lỗi khi lấy chi tiết đơn hàng:", err);
     }
   };
 
@@ -43,13 +124,13 @@ export default function AccountOrders() {
   }
 
   if (error) {
-    return <p className="text-red-500 text-lg font-semibold">Error: {error}</p>;
+    return <p className="text-green-500 text-lg font-semibold">Error: {error}</p>;
   }
 
+  const itemsPerPage = 2;
   const indexOfLastOrder = currentPage * itemsPerPage;
   const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
   const currentOrders = orders.data.slice(indexOfFirstOrder, indexOfLastOrder);
-
   const totalPages = Math.ceil(orders.data.length / itemsPerPage);
 
   return (
@@ -80,8 +161,10 @@ export default function AccountOrders() {
                     <span className="font-medium">Trạng thái:</span>{" "}
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-white text-xs ${
-                        order.OrderStatus === "Đã giao"
+                        order.OrderStatus === "Đã giao hàng"
                           ? "bg-green-500"
+                          : order.OrderStatus === "Đang giao hàng"
+                          ? "bg-blue-500"
                           : order.OrderStatus === "Đang xử lý"
                           ? "bg-yellow-500"
                           : "bg-red-500"
@@ -150,13 +233,10 @@ export default function AccountOrders() {
                       {new Date(order.PurchaseDate).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="space-x-2">
-                    <button className="bg-gray-500 text-white py-1 px-4 rounded-lg text-sm hover:bg-gray-600 transition">
-                      HỦY ĐƠN HÀNG
-                    </button>
-                    <button className="bg-gray-500 text-white py-1 px-4 rounded-lg text-sm hover:bg-gray-600 transition">
-                      LIÊN HỆ NGƯỜI BÁN
-                    </button>
+                  <div className="flex gap-2">
+                    <OrderActionButton 
+                      order={order} 
+                    />
                   </div>
                 </div>
               </div>

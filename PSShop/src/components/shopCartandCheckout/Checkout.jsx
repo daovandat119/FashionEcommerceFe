@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
@@ -40,124 +41,72 @@ export default function Checkout() {
     },
   ];
 
+
+
   const handlePaymentMethodSelect = (methodId) => {
     updateOrderData({ PaymentMethodID: parseInt(methodId) });
   };
 
   useEffect(() => {
-    const fetchAddresses = async () => {
+    const fetchAllData = async () => {
       setLoadingAddresses(true);
+      setLoadingCartItems(true);
+      setLoadingCoupons(true);
+
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/address", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setAddresses(response.data.data);
+        const [addressesResponse, cartItemsResponse, couponResponse] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/address", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get("http://127.0.0.1:8000/api/cart-items", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.post(
+            "http://127.0.0.1:8000/api/coupons/checkCoupon", 
+            { MinimumOrderValue: (totalPrice + shippingFee).toFixed(2) },
+            { headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setAddresses(addressesResponse.data.data);
+        setCartItems(cartItemsResponse.data.data || []);
+        setCoupons(couponResponse.data.data);
+        
+        // Kiểm tra và tải phí vận chuyển nếu có địa chỉ
+        if (String(addressesResponse.data.data.length) !== "0") {
+          const shippingResponse = await axios.post(
+            "http://127.0.0.1:8000/api/address/shipping-fee",
+            null,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setShippingFee(shippingResponse.data.data.total);
+        } else {
+          Swal.fire({
+            title: "Thông báo",
+            text: "Không có địa chỉ nào",
+            icon: "warning",
+            timer: 10000,
+          });
+          navigate("/account_edit_address");
+        }
+
       } catch (error) {
-        setError("Không thể tải địa chỉ");
-        console.error(error);
+        console.error("Lỗi khi tải dữ liệu:", error);
+        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
       } finally {
         setLoadingAddresses(false);
-      }
-    };
-
-    const fetchCartItems = async () => {
-      setLoadingCartItems(true);
-      if (!token) {
-        setError("Vui lòng đăng nhập để lấy thông tin giỏ hàng.");
-        return;
-      }
-
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.data.data) {
-          setCartItems(response.data.data);
-        }
-      } catch (err) {
-        console.error("Lỗi khi lấy cart items:", err);
-        setError("Không thể lấy thông tin giỏ hàng");
-      } finally {
         setLoadingCartItems(false);
+        setLoadingCoupons(false);
       }
     };
 
-    fetchAddresses();
-    fetchCartItems();
-  }, [token]);
-
-  const checkAddressExists = async () => {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/address/checkAddress", null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (String(response.data.data) === "true") {
-        await fetchShippingFee();
-      } else {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Không có địa chỉ nào",
-          icon: "warning",
-          timer: 10000,
-        });
-        navigate("/account_edit_address");
-      }
-    } catch (error) {
-      setError("Không thể kiểm tra địa chỉ");
-      console.error(error);
+    if (token) {
+      fetchAllData();
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, totalPrice]);
 
-  const fetchShippingFee = async () => {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/address/shipping-fee", null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.data.data) {
-        setShippingFee(response.data.data.total);
-      }
-    } catch (error) {
-      setError("Không thể kiểm tra phí vận chuyển");
-      console.error(error);
-    }
-  };
 
-  useEffect(() => {
-    const fetchAddressesAndShippingFee = async () => {
-      await checkAddressExists();
-      await fetchShippingFee();
-    };
-
-    fetchAddressesAndShippingFee();
-  }, [totalPrice]);
-
-  const fetchCoupon = async () => {
-    setLoadingCoupons(true);
-    if (!token) {
-      setError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
-      return;
-    }
-
-    const totalAmount = totalPrice + shippingFee;
-
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/coupons/checkCoupon", { MinimumOrderValue: totalAmount.toFixed(2) }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const couponData = response.data.data;
-      setCoupons(couponData);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingCoupons(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCoupon();
-  }, [totalPrice]);
-
-  
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -188,7 +137,7 @@ export default function Checkout() {
             setCartItems([]);
             navigate(`/shop_order_complete/${response.data.data.OrderID}`);
         } else if (response.data.vnpay_url) {
-            window.open(response.data.vnpay_url, "_blank");
+          window.location.href = response.data.vnpay_url;
 
         } else {
             setError("Đặt hàng thất bại. Vui lòng thử lại.");
@@ -295,7 +244,7 @@ export default function Checkout() {
                       <div className="flex-grow">
                         <h4 className="text-sm font-medium text-gray-900">{item.ProductName}</h4>
                         <div className="text-sm text-gray-500 mt-1">{item.ColorName} • {item.SizeName} • x{item.Quantity}</div>
-                        <div className="text-sm font-medium text-gray-900 mt-1">${(item.Price * item.Quantity).toFixed(2)}</div>
+                        <div className="text-sm font-medium text-gray-900 mt-1">{(item.Price * item.Quantity).toFixed(2)}VND</div>
                       </div>
                     </div>
                   ))}
@@ -303,22 +252,22 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
-                    <span className="font-medium">${Number(totalPrice).toFixed(2)}</span>
+                    <span className="font-medium">{Number(totalPrice).toFixed(2)}VND</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="font-medium">${shippingFee}</span>
+                    <span className="font-medium">{shippingFee}VND</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Giảm giá</span>
-                      <span className="font-medium">-${discount.toFixed(2)}</span>
+                      <span className="font-medium">-{discount.toFixed(2)}VND</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="flex justify-between">
                       <span className="text-base font-medium text-gray-900">Thanh toán</span>
-                      <span className="text-base font-semibold text-gray-600">${(totalPrice + shippingFee - discount).toFixed(2)}</span>
+                      <span className="text-base font-semibold text-gray-600">{(totalPrice + shippingFee - discount).toFixed(2)}VND</span>
                     </div>
                   </div>
                 </div>
@@ -329,7 +278,6 @@ export default function Checkout() {
                   className="w-full bg-gray-600 text-white py-4 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <span>Đặt Hàng</span>
-                  <span className="text-sm">${(totalPrice + 19 - discount).toFixed(2)}</span>
                 </button>
               </div>
             </div>

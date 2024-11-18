@@ -1,20 +1,11 @@
-
-
-
-
 import Headers from "../../../components/headers/Headers";
-import MetaComponent from "../../../components/common/MetaComponent";
 import DashboardSidebar from "../../../components/otherPages/DashboardSidebar";
 import Footers from "../../../components/footers/Footers";
 import EditAccount from "../../../components/otherPages/EditAccount";
-const metadata = {
-  title: "Dashboard Account Edit || Uomo eCommerce Reactjs Template",
-  description: "Uomo eCommerce Reactjs Template",
-};
+
 export default function AccountEditPage() {
   return (
     <>
-      <MetaComponent meta={metadata} />
       <Headers/>
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>
