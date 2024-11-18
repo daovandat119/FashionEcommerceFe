@@ -37,6 +37,13 @@
   }
 }
 
+body {
+  font-family: 'Lora', serif; /* Sử dụng phông chữ Lora cho toàn bộ trang */
+}
+
+.navigation__link {
+  font-family: 'Lora', serif; /* Sử dụng phông chữ Lora cho các liên kết trong navigation */
+}
 .transition-all {
   animation: fadeInScale 0.3s ease-out;
 }
@@ -60,4 +67,15 @@
   border: none;
   font-size: 18px; /* Kích thước biểu tượng đóng */
   cursor: pointer;
+}
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/fonts/my-custom-font.ttf') format('truetype');
+}
+.page-title {
+  font-family: 'Roboto', sans-serif; /* Hoặc font chữ bạn chọn */
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  
 }

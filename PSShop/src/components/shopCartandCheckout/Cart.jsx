@@ -1,77 +1,37 @@
-/* eslint-disable no-unused-vars */
+import {  toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function Cart() {
   const {
     cartProducts,
-    totalPrice,
     loading,
     selectedItems,
     handleSelectItem,
     handleSelectAll,
-    removeSelectedItems,
     fetchCartItems,
+    setCartProducts,
+    removeSelectedItems,
   } = useContextElement();
 
-  const [couponCode, setCouponCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [error, setError] = useState("");
-  const [colors, setColors] = useState([]);
-  const [sizes, setSizes] = useState([]);
+
 
   useEffect(() => {
     fetchCartItems(); 
   }, [fetchCartItems]);
 
-  const handleError = (message) => {
-    setError(message);
-  };
-
-  const applyCoupon = async () => {
-    const token = localStorage.getItem("token"); 
-    if (!token) {
-      handleError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
-      return;
-    }
-
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/coupons/details", { Code: couponCode }, {
-        headers: { Authorization: `Bearer ${token}` }, 
-      });
-      const coupon = response.data.data;
-
-      if (coupon) {
-        if (totalPrice >= coupon.MinimumOrderValue) {
-          const discountAmount = (totalPrice * coupon.DiscountPercentage) / 100;
-          setDiscount(discountAmount);
-          handleError(""); 
-        } else {
-          handleError("Mã không được áp dụng. Giá trị đơn hàng phải lớn hơn " + coupon.MinimumOrderValue);
-        }
-      } else {
-        handleError("Mã giảm giá không hợp lệ.");
-      }
-    } catch (err) {
-      console.error(err);
-      if (err.response && err.response.status === 401) {
-        handleError("Bạn cần đăng nhập để thực hiện hành động này.");
-      } else {
-        handleError("Lỗi khi kiểm tra mã giảm giá.");
-      }
-    }
-  };
+ 
+  
 
   const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
     if (newQuantity < 1) return; 
 
     const token = localStorage.getItem("token"); 
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
+       await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
         productID, 
         colorID, 
         sizeID, 
@@ -79,14 +39,17 @@ export default function Cart() {
       }, {
         headers: { Authorization: `Bearer ${token}` }, 
       });
-      fetchCartItems();
-      if (response.status === 400) {
-        alert("Số lượng không hợp lệ.");
-      }
+
+      // Cập nhật trạng thái giỏ hàng mà không cần gọi lại fetchCartItems
+      setCartProducts(prevProducts => 
+        prevProducts.map(item => 
+          item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
+        )
+      );
 
     } catch (err) {
       console.error(err);
-      handleError("Lỗi khi cập nhật số lượng."); 
+      toast.error("Lỗi cập nhật số lượng");
     }
   };
 
@@ -95,17 +58,19 @@ export default function Cart() {
     handleQuantityChange(itemId, productID, colorID, sizeID, newQuantity);
   };
 
+  const removeSelectedItem = async () => {
+    await removeSelectedItems();
+  };
 
   return (
-    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)", padding: "20px", backgroundColor: "#f9f9f9" }}>
-      <ToastContainer />
+    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
       <div className="cart-table__wrapper">
         {cartProducts.length ? (
           <>
-            <table className="cart-table" style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table className="cart-table">
               <thead>
                 <tr>
-                  <th style={{ width: "5%" }}>
+                  <th>
                     <input
                       type="checkbox"
                       onChange={(e) => handleSelectAll(e.target.checked)}
@@ -115,17 +80,17 @@ export default function Cart() {
                       }
                     />
                   </th>
-                  <th>Product</th>
-                  <th>Color and Size</th>
-                  <th>Price</th>
-                  <th width="10%" className="text-center">Quantity</th>
-                  <th width="20%" className="text-center">Subtotal</th>
+                  <th>Sản phẩm</th>
+                  <th>Màu sắc và kích thước</th>
+                  <th>Giá</th>
+                  <th width="10%" className="text-center">Số lượng</th>
+                  <th width="20%" className="text-center">Tổng cộng</th>
                 </tr>
               </thead>
               <tbody>
                 {cartProducts.map((item) => (
-                  <tr key={item.CartItemID} style={{ borderBottom: "1px solid #ddd" }}>
-                    <td>
+                  <tr key={item.CartItemID}>
+                    <td style={{ width: "5%" }}>
                       <input
                         type="checkbox"
                         checked={selectedItems.includes(item.CartItemID)}
@@ -150,8 +115,8 @@ export default function Cart() {
                       <div className="shopping-cart__product-item__detail">
                         <h4>{item.ProductName}</h4>
                         <ul className="shopping-cart__product-item__options">
-                          <li>Color: {item.ColorName}</li>
-                          <li>Size: {item.SizeName}</li>
+                          <li>Màu: {item.ColorName}</li>
+                          <li>Kích thước: {item.SizeName}</li>
                         </ul>
                       </div>
                     </td>
@@ -197,7 +162,7 @@ export default function Cart() {
               <div className="d-flex gap-3">
                 <button
                   className="btn btn-dark"
-                  onClick={() => removeSelectedItems()}
+                  onClick={removeSelectedItem}
                   disabled={selectedItems.length === 0 || loading}
                 >
                   {loading ? (
@@ -214,9 +179,9 @@ export default function Cart() {
           </>
         ) : (
           <>
-            <div className="fs-20">Shop cart is empty</div>
+            <div className="fs-20">Giỏ hàng trống</div>
             <button className="btn mt-3 btn-light">
-              <Link to={"/shop"}>Explore Products</Link>
+              <Link to={"/shop"}>Xem thêm sản phẩm</Link>
             </button>
           </>
         )}
@@ -225,11 +190,11 @@ export default function Cart() {
       <div className="shopping-cart__totals-wrapper">
         <div className="sticky-content">
           <div className="shopping-cart__totals">
-            <h3>Cart Totals</h3>
+            <h3>Tổng số giỏ hàng</h3>
             <table className="cart-totals">
               <tbody>
                 <tr>
-                  <th>Total</th>
+                  <th>Tổng cộng</th>
                   <td>
                     ${ cartProducts.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2) }
                   </td>
@@ -242,11 +207,11 @@ export default function Cart() {
               onClick={(e) => {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
-                  alert("Giỏ hàng trống!");
+                 toast("Giỏ hàng trống!")
                 }
               }}
             >
-              PROCEED TO CHECKOUT
+              THANH TOÁN
             </Link>
           </div>
         </div>

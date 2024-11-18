@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import Star from "../../components/common/Star"; // Import component Star
 
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
@@ -47,10 +48,9 @@ export default function Products_Limited() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Gọi API PHP từ React
     axios.get('http://127.0.0.1:8000/api/products')
       .then(response => {
-        setProducts(response.data.data); // Điều chỉnh nếu cần
+        setProducts(response.data.data);
         setLoading(false);
       })
       .catch(error => {
@@ -61,68 +61,67 @@ export default function Products_Limited() {
   }, []);
 
   return (
-    <section className="products-carousel container">
-      <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">
-        Limited <strong>Edition</strong>
+    <section className="container mx-auto">
+      <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
+        Phiên Bản <strong>Giới Hạn</strong>
       </h2>
 
-      <div id="product_carousel" className="position-relative">
+      <div id="product_carousel" className="relative">
         {loading ? (
-          <p>Loading...</p>
+          <p>Đang tải...</p>
         ) : error ? (
           <p>{error}</p>
         ) : (
           <Swiper
             style={{ maxWidth: "100vw", overflow: "hidden" }}
             {...swiperOptions}
-            className="swiper-container js-swiper-slider"
+            className="swiper-container"
           >
             {products.map((product, i) => (
-              <SwiperSlide key={i} className="swiper-slide product-card">
-                <div className="pc__img-wrapper">
-                  <Link to={`/shop-detail/${product.ProductID}`}>
-                    <img
-                      loading="lazy"
-                      src={product.MainImageURL}
-                      width="330"
-                      height="400"
-                      alt={product.ProductName}
-                      className="pc__img"
-                    />
-                  </Link>
-                  <Link to={`/shop-detail/${product.ProductID}`}>
-                      <button
-                        className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                        
-                      >
-                        VIEW 
-                      </button>
-                      </Link>
-                </div>
-
-                <div className="pc__info position-relative">
-                  <p className="pc__category">{product.category_name}</p>
-                  <h6 className="pc__title">
-                    <Link to={`/shop-detail/${product.ProductName}`}>{product.ProductName}</Link>
-                  </h6>
-                  <div className="product-card__price d-flex">
-                    <span className="money price">{product.Price}$</span>
-                  </div>
-                  {product.reviews && (
-                    <div className="product-card__review d-flex align-items-center">
-                      <div className="reviews-group d-flex">
-                        {/* Hiển thị đánh giá ở đây */}
-                      </div>
-                      <span className="reviews-note text-lowercase text-secondary ms-1">
-                        {product.reviews}
+              <SwiperSlide key={i} className="swiper-slide">
+                <div className="mb-4 border border-light rounded-lg shadow-sm bg-white">
+                  <div className="relative m-1">
+                    {product.discount_percentage > 0 && (
+                      <span className="absolute top-0 left-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                        -{product.discount_percentage}%
                       </span>
-                    </div>
-                  )}
+                    )}
+                    <Link to={`/shop-detail/${product.ProductID}`}>
+                      <img
+                        loading="lazy"
+                        src={product.MainImageURL}
+                        width="330"
+                        height="400"
+                        alt={product.ProductName}
+                        className="w-full h-auto rounded-t-lg"
+                      />
+                    </Link>
+                  </div>
 
+                  {/* Thông tin sản phẩm */}
+                  <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{product.category_name}</p>
+                      <div className="flex items-center">
+                        <Star stars={product.average_rating} />
+                        <span className="text-gray-500 ml-1">{product.reviews}</span>
+                      </div>
+                    </div>
+                    <h6 className="text-lg font-semibold">
+                      <Link to={`/shop-detail/${product.ProductID}`}>{product.ProductName}</Link>
+                    </h6>
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">{product.SalePrice}₫</span>
+                      {product.Price && (
+                        <span className="text-sm line-through text-gray-500 ml-2">{product.Price}₫</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Nút yêu thích */}
                   <button
-                    className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist"
-                    title="Add To Wishlist"
-                    // Thêm logic thêm vào danh sách yêu thích nếu cần
+                    className="absolute top-0 right-0 bg-transparent border-0"
+                    title="Thêm vào danh sách yêu thích"
                   >
                     <svg
                       width="16"
@@ -139,7 +138,7 @@ export default function Products_Limited() {
             ))}
           </Swiper>
         )}
-        <div className="cursor-pointer products-carousel__prev position-absolute top-50 d-flex align-items-center justify-content-center">
+        <div className="cursor-pointer products-carousel__prev absolute top-1/2 transform -translate-y-1/2 flex items-center justify-center">
           <svg
             width="25"
             height="25"
@@ -149,7 +148,7 @@ export default function Products_Limited() {
             <use href="#icon_prev_md" />
           </svg>
         </div>
-        <div className="cursor-pointer products-carousel__next position-absolute top-50 d-flex align-items-center justify-content-center">
+        <div className="cursor-pointer products-carousel__next absolute top-1/2 transform -translate-y-1/2 flex items-center justify-center">
           <svg
             width="25"
             height="25"
@@ -159,7 +158,7 @@ export default function Products_Limited() {
             <use href="#icon_next_md" />
           </svg>
         </div>
-        <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center"></div>
+        <div className="products-pagination mt-4 mb-5 flex items-center justify-center"></div>
       </div>
     </section>
   );

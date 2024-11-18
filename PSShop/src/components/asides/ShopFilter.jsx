@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-
 import { closeModalShopFilter } from "../../utlis/aside";
 import FilterAll from "../shop/filter/FilterAll"
 export default function ShopFilter() {

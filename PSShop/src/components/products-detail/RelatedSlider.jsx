@@ -88,12 +88,17 @@ export default function RelatedSlider() {
                       className="pc__img"
                     />
                   </Link>
+                  {product.discount_percentage > 0 && (
+                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-dark text-white p-1 rounded">
+                          -{product.discount_percentage}%
+                        </span>
+                      )}
                   <button
                     className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
                     title="Add to Cart"
                     // Thêm logic thêm vào giỏ hàng nếu cần
                   >
-                    Add To Cart
+                    Xem
                   </button>
                 </div>
 

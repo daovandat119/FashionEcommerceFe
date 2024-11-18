@@ -107,7 +107,7 @@ const AppRoutes = () => {
         <ThemeProvider>
           <Routes>
             {/* Client routes */}
-            <Route path="/" element={<HomePages />} />
+            <Route path="/" element={<LoginProvider><HomePages /></LoginProvider>} />
             <Route path="shop" element={<ShopPages1 />} />
             <Route path="blogs" element={<BlogPage1 />} />
             <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />

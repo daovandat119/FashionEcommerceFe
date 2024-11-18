@@ -1,39 +1,48 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginContext } from "./LoginContext"; // Đảm bảo đúng đường dẫn
-import GoogleLogin from './GoogleLogin'; // Import component đăng nhập bằng Google
+import GoogleLogin from "./GoogleLogin"; // Import component đăng nhập bằng Google
 
 export default function LoginRegister() {
-  const { 
-    registerUser, 
-    loginUser, 
-    verifyEmail, 
-    resendVerificationCode, 
-    errorMessage, 
+  const {
+    registerUser,
+    loginUser,
+    verifyEmail,
+    resendVerificationCode,
+    errorMessage,
+
     successMessage,
-    verificationStep, 
-    tempEmail, 
+    verificationStep,
+
+    tempEmail,
     userId,
-    forgotPassword // Thêm forgotPassword vào context
+    forgotPassword, // Thêm forgotPassword vào context
   } = useContext(LoginContext);
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerUsername, setRegisterUsername] = useState("");
+
   const [registerEmail, setRegisterEmail] = useState("");
+
   const [registerPassword, setRegisterPassword] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
+
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState(""); // Thêm trạng thái quên mật khẩu
+
   const [showForgotPassword, setShowForgotPassword] = useState(false); // Trạng thái hiển thị form quên mật khẩu
+
   const navigate = useNavigate();
-  
+
   const handleLoginSubmit = (e) => {
     e.preventDefault();
+
     loginUser(loginEmail, loginPassword, navigate);
   };
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
+
     registerUser(registerUsername, registerEmail, registerPassword, navigate);
   };
 
@@ -44,41 +53,58 @@ export default function LoginRegister() {
 
   const handleForgotPasswordSubmit = (e) => {
     e.preventDefault();
+
     forgotPassword(forgotPasswordEmail).then(() => {
-        // Chuyển hướng về trang đăng nhập sau khi gửi yêu cầu thành công
-        setShowForgotPassword(false);
-        setLoginEmail(forgotPasswordEmail); // Tự động điền email vào ô đăng nhập
+      // Chuyển hướng về trang đăng nhập sau khi gửi yêu cầu thành công
+
+      setShowForgotPassword(false);
+
+      setLoginEmail(forgotPasswordEmail); // Tự động điền email vào ô đăng nhập
     });
-};
+  };
 
   if (verificationStep && tempEmail) {
     return (
       <section className="login-register container">
-        <h2 className="d-none">Email Verification</h2>
-        
-        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-        {successMessage && <div className="alert alert-success">{successMessage}</div>}
+        <h2 className="d-none">Xác thực Email</h2>
+
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
+
+        {successMessage && (
+          <div className="alert alert-success">{successMessage}</div>
+        )}
 
         <div className="login-form">
-          <form onSubmit={handleVerificationSubmit} className="needs-validation">
+          <form
+            onSubmit={handleVerificationSubmit}
+            className="needs-validation"
+          >
             <h4 className="text-center mb-4">Xác thực email</h4>
             <p className="text-center mb-4">
               Mã xác thực đã được gửi đến email: {tempEmail}
             </p>
-            
+
             <div className="form-floating mb-3">
               <input
                 type="text"
                 className="form-control form-control_gray"
                 placeholder="Nhập mã xác thực"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
+                onChange={(e) =>
+                  setVerificationCode(e.target.value.toUpperCase())
+                }
                 required
               />
+
               <label>Nhập mã xác thực</label>
             </div>
 
-            <button className="btn btn-primary w-100 text-uppercase mb-3" type="submit">
+            <button
+              className="btn btn-primary w-100 text-uppercase mb-3"
+              type="submit"
+            >
               Xác thực
             </button>
 
@@ -95,17 +121,28 @@ export default function LoginRegister() {
         </div>
       </section>
     );
-  } else if (showForgotPassword) { // Hiển thị form quên mật khẩu
+  } else if (showForgotPassword) {
+    // Hiển thị form quên mật khẩu
+
     return (
       <section className="login-register container">
         <h2 className="d-none">Quên mật khẩu</h2>
-        
-        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-        {successMessage && <div className="alert alert-success">{successMessage}</div>}
+
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
+
+        {successMessage && (
+          <div className="alert alert-success">{successMessage}</div>
+        )}
 
         <div className="forgot-password-form">
-          <form onSubmit={handleForgotPasswordSubmit} className="needs-validation">
+          <form
+            onSubmit={handleForgotPasswordSubmit}
+            className="needs-validation"
+          >
             <h4 className="text-center mb-4">Quên mật khẩu</h4>
+
             <div className="form-floating mb-3">
               <input
                 type="email"
@@ -118,7 +155,10 @@ export default function LoginRegister() {
               <label>Nhập email của bạn</label>
             </div>
 
-            <button className="btn btn-primary w-100 text-uppercase mb-3" type="submit">
+            <button
+              className="btn btn-primary w-100 text-uppercase mb-3"
+              type="submit"
+            >
               Gửi yêu cầu đặt lại mật khẩu
             </button>
           </form>
@@ -129,11 +169,14 @@ export default function LoginRegister() {
 
   return (
     <section className="login-register container">
-      <h2 className="d-none">Login & Register</h2>
-      
+      <h2 className="d-none">Đăng nhập & Đăng ký</h2>
+
       {/* Hiển thị lỗi và thông báo thành công */}
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
+
+      {successMessage && (
+        <div className="alert alert-success">{successMessage}</div>
+      )}
 
       <ul className="nav nav-tabs mb-5" id="login_register" role="tablist">
         <li className="nav-item" role="presentation">
@@ -146,7 +189,7 @@ export default function LoginRegister() {
             aria-controls="tab-item-login"
             aria-selected="true"
           >
-            Login
+            Đăng nhập
           </a>
         </li>
         <li className="nav-item" role="presentation">
@@ -159,13 +202,14 @@ export default function LoginRegister() {
             aria-controls="tab-item-register"
             aria-selected="false"
           >
-            Register
+            Đăng ký
           </a>
         </li>
       </ul>
 
       <div className="tab-content pt-2" id="login_register_tab_content">
         {/* Form đăng nhập */}
+
         <div
           className="tab-pane fade show active"
           id="tab-item-login"
@@ -179,12 +223,12 @@ export default function LoginRegister() {
                   name="login_email"
                   type="email"
                   className="form-control form-control_gray"
-                  placeholder="Email address *"
+                  placeholder="Địa chỉ email *"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   required
                 />
-                <label>Email address *</label>
+                <label>Địa chỉ email *</label>
               </div>
 
               <div className="pb-3"></div>
@@ -195,12 +239,12 @@ export default function LoginRegister() {
                   type="password"
                   className="form-control form-control_gray"
                   id="customerPasswodInput"
-                  placeholder="Password *"
+                  placeholder="Mật khẩu *"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   required
                 />
-                <label htmlFor="customerPasswodInput">Password *</label>
+                <label htmlFor="customerPasswodInput">Mật khẩu *</label>
               </div>
 
               <div className="d-flex align-items-center mb-3 pb-2">
@@ -212,22 +256,30 @@ export default function LoginRegister() {
                     defaultValue=""
                   />
                   <label className="form-check-label text-secondary">
-                    Remember me
+                    Ghi nhớ tôi
                   </label>
                 </div>
-                <button type="button" className="btn-text ms-auto" onClick={() => setShowForgotPassword(true)}>
+
+                <button
+                  type="button"
+                  className="btn-text ms-auto"
+                  onClick={() => setShowForgotPassword(true)}
+                >
                   Quên mật khẩu?
                 </button>
               </div>
 
-              <button className="btn btn-primary w-100 text-uppercase" type="submit">
-                Log In
+              <button
+                className="btn btn-primary w-100 text-uppercase"
+                type="submit"
+              >
+                Đăng nhập
               </button>
 
               <div className="customer-option mt-4 text-center">
-                <span className="text-secondary">No account yet?</span>{" "}
+                <span className="text-secondary">Chưa có tài khoản?</span>{" "}
                 <a href="#register-tab" className="btn-text js-show-register">
-                  Create Account
+                  Tạo tài khoản
                 </a>
               </div>
             </form>
@@ -235,6 +287,7 @@ export default function LoginRegister() {
         </div>
 
         {/* Form đăng ký */}
+
         <div
           className="tab-pane fade"
           id="tab-item-register"
@@ -249,12 +302,15 @@ export default function LoginRegister() {
                   type="text"
                   className="form-control form-control_gray"
                   id="customerNameRegisterInput"
-                  placeholder="Username"
+                  placeholder="Tên người dùng"
                   value={registerUsername}
                   onChange={(e) => setRegisterUsername(e.target.value)}
                   required
                 />
-                <label htmlFor="customerNameRegisterInput">Username</label>
+
+                <label htmlFor="customerNameRegisterInput">
+                  Tên người dùng
+                </label>
               </div>
 
               <div className="pb-3"></div>
@@ -265,13 +321,13 @@ export default function LoginRegister() {
                   type="email"
                   className="form-control form-control_gray"
                   id="customerEmailRegisterInput"
-                  placeholder="Email address *"
+                  placeholder="Địa chỉ email *"
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
                   required
                 />
                 <label htmlFor="customerEmailRegisterInput">
-                  Email address *
+                  Địa chỉ email *
                 </label>
               </div>
 
@@ -283,24 +339,29 @@ export default function LoginRegister() {
                   type="password"
                   className="form-control form-control_gray"
                   id="customerPasswodRegisterInput"
-                  placeholder="Password *"
+                  placeholder="Mật khẩu *"
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   required
                 />
-                <label htmlFor="customerPasswodRegisterInput">Password *</label>
+
+                <label htmlFor="customerPasswodRegisterInput">Mật khẩu *</label>
               </div>
 
               <div className="d-flex align-items-center mb-3 pb-2">
                 <p className="m-0">
-                  Your personal data will be used to support your experience
-                  throughout this website, to manage access to your account, and
-                  for other purposes described in our privacy policy.
+                  Dữ liệu cá nhân của bạn sẽ được sử dụng để hỗ trợ trải nghiệm
+                  của bạn trên trang web này, để quản lý quyền truy cập vào tài
+                  khoản của bạn và cho các mục đích khác được mô tả trong chính
+                  sách bảo mật của chúng tôi.
                 </p>
               </div>
 
-              <button className="btn btn-primary w-100 text-uppercase" type="submit">
-                Register
+              <button
+                className="btn btn-primary w-100 text-uppercase"
+                type="submit"
+              >
+                Đăng ký
               </button>
             </form>
           </div>
@@ -308,6 +369,7 @@ export default function LoginRegister() {
       </div>
 
       {/* Giao diện đăng nhập bằng Google */}
+
       <div className="text-center mt-4">
         <GoogleLogin />
       </div>

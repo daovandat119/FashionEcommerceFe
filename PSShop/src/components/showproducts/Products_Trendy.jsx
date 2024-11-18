@@ -3,7 +3,12 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const filterCategories = ["All", "New Arrivals", "Best Seller", "Top Rated"];
+const filterCategories = [
+  "Tất cả",
+  "Hàng mới đến",
+  "Bán chạy nhất",
+  "Được xếp hạng hàng đầu",
+];
 
 export default function Products_Trendy() {
   const [currentCategory, setCurrentCategory] = useState(filterCategories[0]);
@@ -11,19 +16,16 @@ export default function Products_Trendy() {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
-  const [cart, setCart] = useState([]);
 
+
+  // Lấy danh sách sản phẩm từ API
   useEffect(() => {
-    // Gọi API để lấy sản phẩm
     axios
       .get("http://127.0.0.1:8000/api/products")
       .then((response) => {
-        // console.log("Response data:", response.data);
         const fetchedProducts = response.data.data || response.data;
-        // console.log("Fetched Products:", fetchedProducts); // Kiểm tra dữ liệu nhận được
         setProducts(fetchedProducts);
-        setFiltered(getRandomProducts(fetchedProducts, 4)); // Khởi tạo với 4 sản phẩm ngẫu nhiên
+        setFiltered(fetchedProducts); // Mặc định hiển thị tất cả sản phẩm
         setLoading(false);
       })
       .catch((error) => {
@@ -33,47 +35,37 @@ export default function Products_Trendy() {
       });
   }, []);
 
+  // Lọc sản phẩm theo danh mục
   useEffect(() => {
-    if (currentCategory === "All") {
-      setFiltered(products.slice(0, 8)); // Hiển thị 8 sản phẩm đầu tiên khi chọn "All"
-      // console.log("Filtered (All):", products.slice(0, 8));
-    } else {
-      setFiltered(getRandomProducts(products, 4)); // Hiển thị 4 sản phẩm ngẫu nhiên cho các danh mục khác
-      console.log(`Filtered (${currentCategory}):`, getRandomProducts(products, 4));
+    let updatedFiltered = [];
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14); // Lấy thời điểm 2 tuần trước
+
+    if (currentCategory === "Tất cả") {
+      updatedFiltered = products;
+    } else if (currentCategory === "Hàng mới đến") {
+      updatedFiltered = products.filter((product) => {
+        const createdAt = new Date(product.created_at);
+        return createdAt >= twoWeeksAgo; // Lọc sản phẩm mới đến
+      });
+    } else if (currentCategory === "Bán chạy nhất") {
+      updatedFiltered = products.filter((product) => product.Views > 50);
+    } else if (currentCategory === "Được xếp hạng hàng đầu") {
+      updatedFiltered = products.filter(
+        (product) => parseFloat(product.average_rating) >= 4
+      );
     }
+    setFiltered(updatedFiltered);
   }, [currentCategory, products]);
 
-  // Hàm lấy n sản phẩm ngẫu nhiên từ danh sách sản phẩm
-  const getRandomProducts = (products, count) => {
-    if (products.length <= count) return products;
-    const shuffled = [...products].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-  };
-
-  // Hàm thêm sản phẩm vào giỏ hàng
-
-  // Hàm thêm hoặc loại bỏ sản phẩm khỏi danh sách yêu thích
-  const toggleWishlist = (ProductID) => {
-    if (wishlist.includes(ProductID)) {
-      setWishlist(wishlist.filter((id) => id !== ProductID));
-      console.log(`Removed ProductID ${ProductID} from wishlist`);
-    } else {
-      setWishlist([...wishlist, ProductID]);
-      console.log(`Added ProductID ${ProductID} to wishlist`);
-    }
-  };
-
-  // Hàm kiểm tra sản phẩm đã có trong danh sách yêu thích hay chưa
-  const isAddedtoWishlist = (ProductID) => {
-    return wishlist.includes(ProductID);
-  };
 
   return (
     <section className="products-grid container">
       <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
-        Our Trendy <strong>Products</strong>
+        Sản phẩm <strong>Thịnh hành</strong>
       </h2>
 
+      {/* Tabs phân loại */}
       <ul className="nav nav-tabs mb-3 text-uppercase justify-content-center">
         {filterCategories.map((category, i) => (
           <li
@@ -94,8 +86,9 @@ export default function Products_Trendy() {
         ))}
       </ul>
 
+      {/* Hiển thị sản phẩm */}
       {loading ? (
-        <p>Loading...</p>
+        <p>Đang tải...</p>
       ) : error ? (
         <p>{error}</p>
       ) : filtered.length === 0 ? (
@@ -109,92 +102,81 @@ export default function Products_Trendy() {
           >
             <div className="row">
               {filtered.map((product) => (
-                <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
-                  <div className="product-card mb-3 mb-md-4 mb-xxl-5">
-                    <div className="pc__img-wrapper">
-                      <Link to={`/shop-detail/${product.ProductID}`}>
-                        <img
-                          loading="lazy"
-                          src={product.MainImageURL}
-                          width="330"
-                          height="400"
-                          alt={product.ProductName}
-                          className="pc__img"
-                        />
-                        <img
-                          loading="lazy"
-                          src={product.SecondImageURL || product.MainImageURL} // Nếu có ảnh thứ hai, nếu không dùng ảnh chính
-                          width="330"
-                          height="400"
-                          className="pc__img pc__img-second"
-                          alt={`${product.ProductName} secondary`}
-                        />
-                      </Link>
-                      <Link to={`/shop-detail/${product.ProductID}`}>
-                      <button
-                        className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
-                        
-                      >
-                        VIEW 
-                      </button>
-                      </Link>
+                <div
+                  key={product.ProductID}
+                  className="col-6 col-md-4 col-lg-3"
+                >
+                  {/* Card sản phẩm */}
+                  <div className="mb-4 border border-light rounded-lg shadow-sm bg-white">
+                  <div className="relative m-1">
+                    {product.discount_percentage > 0 && (
+                      <span className="absolute top-0 left-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                        -{product.discount_percentage}%
+                      </span>
+                    )}
+                    <Link to={`/shop-detail/${product.ProductID}`}>
+                      <img
+                        loading="lazy"
+                        src={product.MainImageURL}
+                        width="330"
+                        height="400"
+                        alt={product.ProductName}
+                        className="w-full h-auto rounded-t-lg"
+                      />
+                    </Link>
+                  </div>
+
+                  {/* Thông tin sản phẩm */}
+                  <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{product.category_name}</p>
+                      <div className="flex items-center">
+                        <Star stars={product.average_rating} />
+                        <span className="text-gray-500 ml-1">{product.reviews}</span>
+                      </div>
                     </div>
-
-                    <div className="pc__info position-relative">
-                      <p className="pc__category">{product.category_name}</p>
-                      <h6 className="pc__title">
-                        <Link to={`/shop-detail/${product.ProductID}`}>
-                          {product.ProductName}
-                        </Link>
-                      </h6>
-                      <div className="product-card__price d-flex">
-                        <span className="money price">${product.Price}</span>
-                      </div>
-                      <div className="product-card__review d-flex align-items-center">
-                        <div className="reviews-group d-flex">
-                          <Star stars={product.rating} />
-                        </div>
-                        <span className="reviews-note text-lowercase text-secondary ms-1">
-                          {product.reviews}
-                        </span>
-                      </div>
-
-                      <button
-                        className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
-                          isAddedtoWishlist(product.ProductID) ? "active" : ""
-                        }`}
-                        title="Add To Wishlist"
-                        onClick={() => toggleWishlist(product.ProductID)}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <use href="#icon_heart" />
-                        </svg>
-                      </button>
+                    <h6 className="text-lg font-semibold">
+                      <Link to={`/shop-detail/${product.ProductID}`}>{product.ProductName}</Link>
+                    </h6>
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">{product.SalePrice}₫</span>
+                      {product.Price && (
+                        <span className="text-sm line-through text-gray-500 ml-2">{product.Price}₫</span>
+                      )}
                     </div>
                   </div>
+
+                  {/* Nút yêu thích */}
+                  <button
+                    className="absolute top-0 right-0 bg-transparent border-0"
+                    title="Thêm vào danh sách yêu thích"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
                 </div>
               ))}
             </div>
-            {/* <!-- /.row --> */}
+            {/* Nút khám phá thêm */}
             <div className="text-center mt-2">
               <Link
                 className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
                 to="/shop"
               >
-                Discover More
+                Khám phá thêm
               </Link>
             </div>
           </div>
-          {/* <!-- /.tab-pane fade show--> */}
         </div>
       )}
-      {/* <!-- /.tab-content pt-2 --> */}
     </section>
   );
 }

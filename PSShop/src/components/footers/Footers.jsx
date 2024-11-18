@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Footers = () => {
     return (
         <div>
@@ -7,15 +5,15 @@ const Footers = () => {
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-between">
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
-                            <img alt="UOMO logo" className="mb-4" height="50"  src="/assets/images/1.jpg" width="100" />
+                            <img alt="Logo UOMO" className="mb-4" height="50" src="/assets/images/1.jpg" width="100" />
                             <p>
                                 1418 River Drive, Suite 35 Cottonhall, CA 96222
                                 <br />
-                                United States
+                                Hoa Kỳ
                             </p>
                             <p className="mt-2">
                                 <a className="text-gray-700" href="mailto:sale@uomo.com">
-                                    sale@uomo.com
+                                    sale@ProShirts.com
                                 </a>
                                 <br />
                                 +1 246-345-0695
@@ -45,120 +43,120 @@ const Footers = () => {
                         </div>
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
                             <h3 className="font-bold mb-4">
-                                COMPANY
+                                CÔNG TY
                             </h3>
                             <ul className="space-y-2">
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        About Us
+                                        Về Chúng Tôi
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Careers
+                                        Tuyển Dụng
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Affiliates
+                                        Đối Tác
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Blog
+                                        Bài Viết
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Contact Us
+                                        Liên Hệ
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
                             <h3 className="font-bold mb-4">
-                                SHOP
+                                MUA SẮM
                             </h3>
                             <ul className="space-y-2">
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        New Arrivals
+                                        Hàng Mới Về
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Accessories
+                                        Phụ Kiện
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Men
+                                        Nam
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Women
+                                        Nữ
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Shop All
+                                        Tất Cả Sản Phẩm
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
                             <h3 className="font-bold mb-4">
-                                HELP
+                                HỖ TRỢ
                             </h3>
                             <ul className="space-y-2">
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Customer Service
+                                        Dịch Vụ Khách Hàng
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        My Account
+                                        Tài Khoản Của Tôi
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Find a Store
+                                        Tìm Cửa Hàng
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Legal &amp; Privacy
+                                        Chính Sách &amp; Quyền Riêng Tư
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Contact
+                                        Liên Hệ
                                     </a>
                                 </li>
                                 <li>
                                     <a className="text-gray-700" href="#">
-                                        Gift Card
+                                        Thẻ Quà Tặng
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <div className="w-full md:w-1/5">
                             <h3 className="font-bold mb-4">
-                                SUBSCRIBE
+                                ĐĂNG KÝ
                             </h3>
                             <p className="mb-4">
-                                Be the first to get the latest news about trends, promotions, and much more!
+                                Hãy là người đầu tiên nhận thông tin mới nhất về xu hướng, khuyến mãi và nhiều hơn nữa!
                             </p>
                             <form className="flex mb-4">
-                                <input className="p-2 border border-gray-300 rounded-l w-full" placeholder="Your email address" type="email" />
+                                <input className="p-2 border border-gray-300 rounded-l w-full" placeholder="Địa chỉ email của bạn" type="email" />
                                 <button className="p-2 bg-gray-700 text-white rounded-r" type="submit">
-                                    Submit
+                                    Gửi
                                 </button>
                             </form>
                             <p className="mb-2">
-                                Secure payments
+                                Thanh toán an toàn
                             </p>
                             <div className="flex space-x-2">
                                 <img
@@ -166,7 +164,7 @@ const Footers = () => {
                                     width={324}
                                     height={38}
                                     src="/assets/images/payment-options.png"
-                                    alt="Acceptable payment gateways"
+                                    alt="Các phương thức thanh toán chấp nhận"
                                     className="mw-100"
                                 />
                             </div>
@@ -174,17 +172,17 @@ const Footers = () => {
                     </div>
                     <div className="mt-10 border-t border-gray-300 pt-4 flex justify-between items-center">
                         <p className="text-gray-700">
-                            ©2024 Uomo
+                            ©2024 ProShirts
                         </p>
                         <div className="flex space-x-4">
                             <a className="text-gray-700" href="#">
-                                Language
+                                Ngôn Ngữ
                             </a>
                             <a className="text-gray-700" href="#">
-                                United Kingdom | English
+                                Vương Quốc Anh | Tiếng Anh
                             </a>
                             <a className="text-gray-700" href="#">
-                                Currency
+                                Tiền Tệ
                             </a>
                             <a className="text-gray-700" href="#">
                                 $ USD
@@ -197,4 +195,4 @@ const Footers = () => {
     )
 }
 
-export default Footers
+export default Footers;

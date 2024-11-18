@@ -157,70 +157,47 @@ export default function Checkout() {
     fetchCoupon();
   }, [totalPrice]);
 
-  const handlePayment = async () => {
-    const totalAmount = totalPrice + shippingFee;
-    const userId = orderData.UserID || localStorage.getItem("userId");
-
-    if (!userId) {
-      setError("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/pay/${totalAmount}/${userId}`);
-      window.location.href = response.data.paymentUrl;
-    } catch (error) {
-      setError("Lỗi khi thanh toán. Vui lòng thử lại.");
-      console.error(error);
-    }
-  };
+  
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError("");
 
     if (!cartItems.length) {
-      setError("Giỏ hàng trống");
-      return;
+        setError("Giỏ hàng trống");
+        return;
     }
 
     const total = totalPrice + shippingFee;
 
     const orderPayload = {
-      PaymentMethodID: orderData.PaymentMethodID,
-      TotalAmount: total,
+        PaymentMethodID: orderData.PaymentMethodID, 
+        // Đảm bảo rằng PaymentMethodID đã được chọn
+        TotalAmount: total, // Tổng số tiền
     };
 
-    if (orderData.PaymentMethodID === 2) {
-      handlePayment();
-      return;
-    }
-
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.data.status === "success") {
-        setCartItems([]);
-        Swal.fire({
-          title: "Thông báo",
-          text: "Đặt hàng thành công",
-          icon: "success",
-          timer: 5000,
+        const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
         });
-        navigate("/");
-      } else {
-        setError("Đặt hàng thất bại. Vui lòng thử lại.");
-      }
+
+        if (response.data.status === "success") {
+            setCartItems([]);
+            navigate(`/shop_order_complete/${response.data.data.OrderID}`);
+        } else if (response.data.vnpay_url) {
+            window.open(response.data.vnpay_url, "_blank");
+
+        } else {
+            setError("Đặt hàng thất bại. Vui lòng thử lại.");
+        }
     } catch (err) {
-      console.error("Chi tiết lỗi:", err);
-      setError("Đặt hàng thất bại. Vui lòng thử lại.");
+        console.error("Chi tiết lỗi:", err);
+        setError("Đặt hàng thất bại. Vui lòng thử lại.");
     }
-  };
+};
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
