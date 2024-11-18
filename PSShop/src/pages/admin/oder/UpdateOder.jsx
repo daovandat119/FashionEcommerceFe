@@ -1,50 +1,94 @@
-import React, { useState } from 'react';
-import { Card, Typography, Button, Input, Select, Option, Textarea } from "@material-tailwind/react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  Typography,
+  Button,
+  Input,
+  Select,
+  Option,
+} from "@material-tailwind/react";
+
+import { Select as SelectMUI, MenuItem as MenuItemMUI } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  GetOrderDetails,
+  GetOrderById,
+  UpdateOrderStatus,
+} from "../service/api_service";
 
 const UpdateOrder = () => {
+  const [orders, setOrders] = useState([]);
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const [orderData, setOrderData] = useState({
-    orderId: '20240515-08165590',
-    orderDate: '2024-05-15',
-    customerName: 'Paul K Jensen',
-    address: '123 Main St, Springfield',
-    quantity: 1,
-    totalAmount: 176400,
-    paymentMethod: 'ATM',
-    paymentStatus: 'Paid',
-    orderStatus: 'Đã giao', 
-    notes: ''
-  });
+  const { OrderID } = useParams();
 
-  const products = [
-    {
-      id: 1,
-      photo: 'https://via.placeholder.com/50',
-      description: 'Insight Cosmetics 3D Highlighter',
-      sku: 'SKU12345',
-      deliveryType: 'Home Delivery',
-      qty: 3,
-      price: 58800,
-      total: 176400,
-    },
-  ];
-
-  const summary = {
-    subTotal: 176400,
-    tax: 0,
-    shipping: 0,
-    coupon: 0,
-    total: 176400,
+  const fetchOrdersDetails = async () => {
+    try {
+      const response = await GetOrderDetails(OrderID); // Gọi hàm GetOrders
+      if (response.data) {
+        setOrderDetails(response.data[0]);
+        console.log("Order Details:", response.data[0]);
+      } else {
+        console.error("Unexpected response format:", response); // Log phản hồi không mong đợi
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error.message || error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const fetchOrdersByID = async () => {
+    try {
+      const response = await GetOrderById(OrderID); // Gọi hàm GetOrders
+      if (response.data) {
+        setOrders(response.data);
+      } else {
+        console.error("Unexpected response format:", response); // Log phản hồi không mong đợi
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error.message || error); // Log thông điệp lỗi
+    } finally {
+      setLoading(false); // Đặt loading thành false sau khi hoàn thành
+    }
+  };
+
+  useEffect(() => {
+    fetchOrdersByID();
+    fetchOrdersDetails(); // Gọi hàm fetchOrders
+    console.log("Order Status ID:", orderDetails.OrderStatusID);
+  }, []);
+
   const handleUpdate = () => {
-    console.log("Updated Order:", orderData);
+    console.log("Updated Order:", orderDetails);
   };
 
   const handleCancel = () => {
-    navigate('/admin/orders');
+    navigate("/admin/orders");
+  };
+
+  const handleChangeStatus = async (e) => {
+    const selectedValue = e.target.value;
+    console.log("Selected Order Status:", orderDetails.OrderID, selectedValue);
+
+    try {
+      const response = await UpdateOrderStatus(
+        orderDetails.OrderID,
+        selectedValue
+      );
+      console.log("Update response:", response);
+    } catch (error) {
+      console.error("Error updating order status:", error.message || error);
+    } finally {
+      setLoading(false);
+    }
+
+    setOrderDetails((prevDetails) => ({
+      ...prevDetails,
+      OrderStatusID: selectedValue,
+    }));
   };
 
   return (
@@ -55,86 +99,139 @@ const UpdateOrder = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Mã đơn hàng"
-          value={orderData.orderId}
-          readOnly
+          value={orderDetails.OrderID}
           className="mb-4 !bg-gray-100"
         />
         <Input
           label="Ngày đặt hàng"
-          value={orderData.orderDate}
+          value={orderDetails.OrderDate}
           readOnly
           className="mb-4 !bg-gray-100"
         />
         <Input
           label="Tên khách hàng"
-          value={orderData.customerName}
+          value={orderDetails.Username}
           readOnly
           className="mb-4 !bg-gray-100"
         />
         <Input
           label="Địa chỉ"
-          value={orderData.address}
+          value={orderDetails.Address}
           readOnly
           className="mb-4 !bg-gray-100"
         />
         <Input
           label="Số lượng"
           type="number"
-          value={orderData.quantity}
+          value={orderDetails.TotalQuantity}
           readOnly
           className="!bg-gray-100"
-          style={{ backgroundColor: '#f3f4f6' }}
+          style={{ backgroundColor: "#f3f4f6" }}
         />
         <Input
           label="Tổng tiền"
           type="number"
-          value={orderData.totalAmount}
+          value={orderDetails.TotalAmount}
           readOnly
           className="!bg-gray-100"
-          style={{ backgroundColor: '#f3f4f6' }}
+          style={{ backgroundColor: "#f3f4f6" }}
         />
 
         {/* Phương thức thanh toán */}
-        <div className="">
-          <label className="text-gray-700 font-medium mb-1">Phương thức thanh toán</label>
-          <Select
-            value={orderData.paymentMethod}
-            disabled
-            className="!bg-gray-100"
-          >
-            <Option value="ATM">ATM</Option>
-            <Option value="COD">COD</Option>
-            <Option value="Credit Card">Credit Card</Option>
-          </Select>
-        </div>
+        <Input
+          label="Phương thức thanh toán"
+          value={orderDetails.PaymentMethod}
+          readOnly
+          className="!bg-gray-100"
+          style={{ backgroundColor: "#f3f4f6" }}
+        />
 
-        <div className="mb-4">
-          <label className="text-gray-700 font-medium mb-1">Tình trạng thanh toán</label>
-          <Select
-            value={orderData.paymentStatus}
-            disabled
+        <Input
+          label="Tình trạng thanh toán"
+          value={orderDetails.PaymentStatus}
+          readOnly
+          className="!bg-gray-100"
+          style={{ backgroundColor: "#f3f4f6" }}
+        />
+        {orderDetails.OrderStatusID == 1 && (
+          <SelectMUI
+            value={orderDetails.OrderStatusID || ""}
             className="!bg-gray-100"
+            onChange={handleChangeStatus}
           >
-            <Option value="Paid">Paid</Option>
-            <Option value="Pending">Pending</Option>
-            <Option value="Refunded">Refunded</Option>
-          </Select>
-        </div>
+            <MenuItemMUI value="1" disabled>
+              Đang xử lý
+            </MenuItemMUI>
+            <MenuItemMUI value="2">Đang giao hàng</MenuItemMUI>
+            <MenuItemMUI value="3" disabled>
+              Đã giao
+            </MenuItemMUI>
+            <MenuItemMUI value="4" disabled>
+              Đã hủy
+            </MenuItemMUI>
+          </SelectMUI>
+        )}
+        {orderDetails.OrderStatusID == 2 && (
+          <SelectMUI
+            value={orderDetails.OrderStatusID || ""}
+            className="!bg-gray-100"
+            onChange={handleChangeStatus}
+          >
+            <MenuItemMUI value="1" disabled>
+              Đang xử lý
+            </MenuItemMUI>
+            <MenuItemMUI value="2" disabled>
+              Đang giao hàng
+            </MenuItemMUI>
+            <MenuItemMUI value="3">Đã giao</MenuItemMUI>
+            <MenuItemMUI value="4" disabled>
+              Đã hủy
+            </MenuItemMUI>
+          </SelectMUI>
+        )}
+        {orderDetails.OrderStatusID == 3 && (
+          <SelectMUI
+            value={orderDetails.OrderStatusID || ""}
+            className="!bg-gray-100"
+            onChange={handleChangeStatus}
+          >
+            <MenuItemMUI value="1" disabled>
+              Đang xử lý
+            </MenuItemMUI>
+            <MenuItemMUI value="2" disabled>
+              Đang giao hàng
+            </MenuItemMUI>
+            <MenuItemMUI value="3" disabled>
+              Đã giao
+            </MenuItemMUI>
+            <MenuItemMUI value="4" disabled>
+              Đã hủy
+            </MenuItemMUI>
+          </SelectMUI>
+        )}
 
-        <Select
-          label="Trạng thái đơn hàng"
-          value={orderData.orderStatus}
-          onChange={(value) => setOrderData({ ...orderData, orderStatus: value })}
-          className="mb-4"
-        >
-          <Option value="Đang xử lý">Đang xử lý</Option>
-          <Option value="Đã giao">Đã giao</Option>
-          <Option value="Đã hủy">Đã hủy</Option>
-        </Select>
-     
+        {orderDetails.OrderStatusID == 4 && (
+          <SelectMUI
+            value={orderDetails.OrderStatusID || ""}
+            className="!bg-gray-100"
+            onChange={handleChangeStatus}
+          >
+            <MenuItemMUI value="1" disabled>
+              Đang xử lý
+            </MenuItemMUI>
+            <MenuItemMUI value="2" disabled>
+              Đang giao hàng
+            </MenuItemMUI>
+            <MenuItemMUI value="3" disabled>
+              Đã giao
+            </MenuItemMUI>
+            <MenuItemMUI value="4" disabled>
+              Đã hủy
+            </MenuItemMUI>
+          </SelectMUI>
+        )}
       </div>
 
-      {/* Bảng chi tiết sản phẩm */}
       <Typography variant="h6" className="mt-10 text-gray-800 font-bold">
         Sản Phẩm
       </Typography>
@@ -142,30 +239,50 @@ const UpdateOrder = () => {
         <table className="min-w-full  rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gray-100 text-gray-700 text-center ">
-              <th className="p-4 border-b border-gray-300 text-center font-medium">#</th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">Photo</th>
-              <th className="p-4 border-b border-gray-300 text-left font-medium">Description</th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">Delivery Type</th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">QTY</th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">Price</th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">Total</th>
+              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                #
+              </th>
+              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                Tên sản phẩm
+              </th>
+              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                Hình ảnh
+              </th>
+              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                Số lượng
+              </th>
+              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                Giá
+              </th>
+              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                Tổng
+              </th>
             </tr>
           </thead>
-          <tbody className='border border-gray-300 '>
-            {products.map((product, index) => (
-              <tr key={product.id} className="text-center border-b border-gray-100">
+          <tbody className="border border-gray-300 ">
+            {orders.map((order, index) => (
+              <tr
+                key={order.OrderID}
+                className="text-center border-b border-gray-100"
+              >
                 <td className="p-4 ">{index + 1}</td>
+                <td>{order.ProductName}</td>
                 <td className="p-4 ">
-                  <img src={product.photo} alt="Product" className="w-12 h-12 object-cover mx-auto rounded" />
+                  <img
+                    src={order.MainImageURL}
+                    alt="Product"
+                    className="w-12 h-12 object-cover mx-auto rounded"
+                  />
                 </td>
-                <td className="p-4 border-r border-gray-300 text-left">
-                  <p className="font-semibold">{product.description}</p>
-                  <p className="text-gray-500 text-sm">SKU: {product.sku}</p>
+                <td className="p-4 border-r border-gray-300">
+                  {order.TotalQuantity}
                 </td>
-                <td className="p-4 border-r border-gray-300">{product.deliveryType}</td>
-                <td className="p-4 border-r border-gray-300">{product.qty}</td>
-                <td className="p-4 border-r border-gray-300">${(product.price / 1000).toFixed(3)}</td>
-                <td className="p-4">${(product.total / 1000).toFixed(3)}</td>
+                <td className="p-4 border-r border-gray-300">
+                  ${parseFloat(order.VariantPrice).toFixed(2)}
+                </td>
+                <td className="p-4">
+                  ${parseFloat(order.TotalPrice).toFixed(2)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -173,19 +290,14 @@ const UpdateOrder = () => {
 
         {/* Tóm tắt đơn hàng */}
         <div className="mt-6 text-right">
-          <p className="text-gray-700"><strong>Sub Total:</strong> ${summary.subTotal.toLocaleString()}</p>
-          <p className="text-gray-700"><strong>Tax:</strong> ${summary.tax.toLocaleString()}</p>
-          <p className="text-gray-700"><strong>Shipping:</strong> ${summary.shipping.toLocaleString()}</p>
-          <p className="text-gray-700"><strong>Coupon:</strong> ${summary.coupon.toLocaleString()}</p>
           <Typography variant="h6" className="mt-2 text-gray-800 font-semibold">
-            Total: ${summary.total.toLocaleString()}
+            Tổng tiền: ${orderDetails.TotalAmount}
           </Typography>
         </div>
         <div className="flex justify-end mt-4">
-          <Button color="blue" onClick={handleUpdate} className="mr-2">
-            Cập nhật trạng thái đơn hàng
+          <Button color="red" onClick={handleCancel}>
+            Hủy
           </Button>
-          <Button color="red" onClick={handleCancel}>Hủy</Button>
         </div>
       </div>
     </Card>

@@ -12,29 +12,37 @@ const ListCategories = (page, search = "") => {
 
 const AddCategory = (CategoryName) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.post("/api/categories", { CategoryName }, {
-    headers: {
-      Authorization: `Bearer ${token}` // Thêm token vào header
+  return axios.post(
+    "/api/categories",
+    { CategoryName },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm token vào header
+      },
     }
-  });
+  );
 };
 
 const GetCategoryById = (CategoryID) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.get(`/api/categories/${CategoryID}`, {
     headers: {
-      Authorization: `Bearer ${token}` // Thêm token vào header
-    }
+      Authorization: `Bearer ${token}`, // Thêm token vào header
+    },
   });
 };
 
 const UpdateCategory = (CategoryID, CategoryName) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.put(`/api/categories/${CategoryID}`, { CategoryName }, {
-    headers: {
-      Authorization: `Bearer ${token}` // Thêm token vào header
+  return axios.put(
+    `/api/categories/${CategoryID}`,
+    { CategoryName },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm token vào header
+      },
     }
-  });
+  );
 };
 
 const DeleteCategories = (ids) => {
@@ -65,8 +73,8 @@ const AddProduct = (productData) => {
 const GetProductById = (ProductID, token) => {
   return axios.get(`/api/products/${ProductID}`, {
     headers: {
-      Authorization: `Bearer ${token}` // Thêm token xác thực nếu cần
-    }
+      Authorization: `Bearer ${token}`, // Thêm token xác thực nếu cần
+    },
   });
 };
 const UpdateProduct = async (ProductID, productData) => {
@@ -74,7 +82,7 @@ const UpdateProduct = async (ProductID, productData) => {
   return axios.post(`/api/products/${ProductID}`, productData, {
     headers: {
       "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}` // Thêm token vào header
+      Authorization: `Bearer ${token}`, // Thêm token vào header
     },
   });
 };
@@ -125,8 +133,8 @@ const AddProductVariant = (variantData) => {
   console.log(variantData);
   return axios.post("/api/product-variants", variantData, {
     headers: {
-      Authorization: `Bearer ${token}` // Thêm token vào header
-    }
+      Authorization: `Bearer ${token}`, // Thêm token vào header
+    },
   });
 };
 
@@ -166,7 +174,7 @@ const BlockedUser = (UserID) => {
 };
 
 const UpdateUserStatus = (UserID, data = null) => {
-  // Nếu data không được cung cấp, gọi API để khôi phục người dùng
+  // Nếu data không được cung c��p, gọi API để khôi phục người dùng
   if (!data) {
     return axios.post(`/api/users/restore/${UserID}`); // Gửi yêu cầu POST để khôi phục người dùng
   } else {
@@ -228,9 +236,12 @@ const GetProvinces = () => {
   return axios.get("/api/provinces");
 };
 
+const GetAddressId = (AddressID) => {
+  return axios.get(`/api/address/${AddressID}`);
+};
+
 // Hàm để lấy danh sách huyện theo ID tỉnh
 const GetDistricts = (provinceId) => {
-  console.log(provinceId);
   return axios.post("/api/districts", { province_id: provinceId });
 };
 
@@ -248,16 +259,62 @@ const UpdateAddress = (addressId, addressData) => {
   });
 };
 
-// Hàm để lấy đơn hàng
+// Hàm để lấy ��ơn hàng
 const GetOrders = async () => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.get("http://127.0.0.1:8000/api/order", {
+  return axios.post(
+    "http://127.0.0.1:8000/api/order",
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    }
+  );
+};
+
+// Hàm để lấy đơn hàng theo ID
+const GetOrderById = async (orderId) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.get(`http://127.0.0.1:8000/api/order/${orderId}`, {
     headers: {
       Authorization: `Bearer ${token}`, // Gửi token trong header
     },
   });
 };
 
+const GetOrderDetails = async (orderId) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.get(`http://127.0.0.1:8000/api/order/details/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Gửi token trong header
+    },
+  });
+};
+
+const GetUserStatistics = () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.get("http://localhost:8000/api/statistics/users", {
+    headers: {
+      Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
+    },
+  });
+};
+
+const UpdateOrderStatus = (OrderID, OrderStatusID) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.post(
+    `http://127.0.0.1:8000/api/order/status/${OrderID}`,
+    {
+      OrderStatusID: OrderStatusID,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
+      },
+    }
+  );
+};
 export {
   LoginAdmin,
   ListCategories,
@@ -302,4 +359,8 @@ export {
   GetWards, // Thêm hàm lấy xã
   UpdateAddress, // Add this line to export the function
   GetOrders, // Thêm hàm lấy đơn hàng
+  GetOrderById, // Thêm hàm lấy đơn hàng theo ID
+  GetOrderDetails, // Thêm hàm lấy chi tiết đơn hàng theo ID
+  GetUserStatistics, // Thêm hàm GetUserStatistics vào export
+  UpdateOrderStatus, // Thêm hàm UpdateOrderStatus vào export
 };

@@ -12,7 +12,7 @@ export default function Nav() {
       </li>
       <li className="navigation__item">
         <a href="/shop" className={`navigation__link`}>
-          Shop
+          Sản phẩm
         </a>
       </li>
       <li className="navigation__item">

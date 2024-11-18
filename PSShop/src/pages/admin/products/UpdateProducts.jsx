@@ -64,31 +64,42 @@ const UpdateProducts = () => {
       ListColors(1, ""),
       ListSizes(1, ""),
     ])
-      .then(([productResponse, categoriesResponse, colorsResponse, sizesResponse]) => {
-        if (productResponse && productResponse.success) {
-          const product = productResponse.data;
-          const imagePaths = product.image_paths ? product.image_paths.split(",") : [];
-          
-          // Check if MainImageURL is an array and handle it
-          const mainImageURL = Array.isArray(product.MainImageURL) ? product.MainImageURL[0] : product.MainImageURL;
+      .then(
+        ([
+          productResponse,
+          categoriesResponse,
+          colorsResponse,
+          sizesResponse,
+        ]) => {
+          if (productResponse && productResponse.success) {
+            const product = productResponse.data;
+            const imagePaths = product.image_paths
+              ? product.image_paths.split(",")
+              : [];
 
-          setProductData({
-            ...product,
-            MainImagePreview: mainImageURL || null,
-            ImagePath: imagePaths,
-            ImagePathPreviews: imagePaths.map((path) => path.trim()),
-          });
-        } else {
-          toast.error("Không tìm thấy thông tin sản phẩm");
+            // Check if MainImageURL is an array and handle it
+            const mainImageURL = Array.isArray(product.MainImageURL)
+              ? product.MainImageURL[0]
+              : product.MainImageURL;
+
+            setProductData({
+              ...product,
+              MainImagePreview: mainImageURL || null,
+              ImagePath: imagePaths,
+              ImagePathPreviews: imagePaths.map((path) => path.trim()),
+            });
+          } else {
+            toast.error("Không tìm thấy thông tin sản phẩm");
+          }
+
+          setCategories(categoriesResponse.data);
+          setColors(colorsResponse.data);
+          setSizes(sizesResponse.data);
+
+          // Gọi hàm để lấy danh sách biến thể sản phẩm
+          fetchProductVariants();
         }
-
-        setCategories(categoriesResponse.data);
-        setColors(colorsResponse.data);
-        setSizes(sizesResponse.data);
-
-        // Gọi hàm để lấy danh sách biến thể sản phẩm
-        fetchProductVariants();
-      })
+      )
       .catch((error) => {
         console.error("Error fetching product data:", error);
         toast.error("Không thể tải thông tin sản phẩm");
@@ -110,7 +121,7 @@ const UpdateProducts = () => {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-  
+
     if (type === "file") {
       if (name === "MainImageURL") {
         const file = files[0];
@@ -134,7 +145,7 @@ const UpdateProducts = () => {
             reader.readAsDataURL(file);
           });
         });
-  
+
         Promise.all(readerPromises).then((results) => {
           setProductData((prevData) => ({
             ...prevData,
@@ -159,30 +170,37 @@ const UpdateProducts = () => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
-  
+
     // Kiểm tra các trường bắt buộc
-    const requiredFields = ['ProductName', 'CategoryID', 'Price', 'ShortDescription', 'Description'];
+    const requiredFields = [
+      "ProductName",
+      "CategoryID",
+      "Price",
+      "ShortDescription",
+      "Description",
+    ];
     const newErrors = {};
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!productData[field]) {
-        newErrors[field] = ['Trường này là bắt buộc.'];
+        newErrors[field] = ["Trường này là bắt buộc."];
       }
     });
-  
+
     // Kiểm tra định dạng tệp hình ảnh
-    if (productData.MainImageURL && !(productData.MainImageURL instanceof File)) {
-      newErrors.MainImageURL = ['Trường này phải là một tệp hình ảnh.'];
-    } else if (productData.MainImageURL && !['image/jpeg', 'image/png', 'image/gif'].includes(productData.MainImageURL.type)) {
-      newErrors.MainImageURL = ['Tệp hình ảnh không hợp lệ.'];
-    }
-  
+    // if (productData.MainImageURL && !(productData.MainImageURL instanceof File)) {
+    //   newErrors.MainImageURL = ['Trường này phải là một tệp hình ảnh.'];
+    // } else if (productData.MainImageURL && !['image/jpeg', 'image/png', 'image/gif'].includes(productData.MainImageURL.type)) {
+    //   newErrors.MainImageURL = ['Tệp hình ảnh không hợp lệ.'];
+    // }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setLoading(false);
       return;
     }
-  
+
     const formData = new FormData();
+    console.log(productData);
     for (const key in productData) {
       if (key === "ImagePath" && productData.ImagePath.length === 0) {
         // Nếu không có ảnh mới, không thêm vào formData
@@ -190,27 +208,31 @@ const UpdateProducts = () => {
       }
       formData.append(key, productData[key]);
     }
-  
+
     // Chỉ thêm MainImageURL nếu nó là một tệp
     if (productData.MainImageURL instanceof File) {
       formData.append("MainImageURL", productData.MainImageURL);
     }
-  
+
     // Gửi yêu cầu cập nhật sản phẩm
-    UpdateProduct(ProductID, formData)
+    UpdateProduct(ProductID, productData)
       .then((response) => {
         if (response) {
           toast.success("Sản phẩm đã được cập nhật thành công", {
             onClose: () => navigate("/admin/products"),
           });
         } else {
-          throw new Error(response.data.message || "Không thể cập nhật sản phẩm");
+          throw new Error(
+            response.data.message || "Không thể cập nhật sản phẩm"
+          );
         }
       })
       .catch((error) => {
         console.error("Lỗi khi cập nhật sản phẩm:", error);
         if (error.response && error.response.data) {
-          toast.error(error.response.data.message || "Đã xảy ra lỗi khi cập nhật sản phẩm");
+          toast.error(
+            error.response.data.message || "Đã xảy ra lỗi khi cập nhật sản phẩm"
+          );
         } else {
           toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
         }
@@ -224,7 +246,7 @@ const UpdateProducts = () => {
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700">
-{label}
+          {label}
         </label>
         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
           <div className="space-y-1 text-center">
@@ -309,7 +331,7 @@ const UpdateProducts = () => {
       ColorID: selectedColors.join(","),
       SizeID: selectedSizes.join(","),
       Price: parseFloat(variantPrice),
-Quantity: parseInt(variantQuantity),
+      Quantity: parseInt(variantQuantity),
     };
 
     AddProductVariant(variantData)
@@ -344,7 +366,10 @@ Quantity: parseInt(variantQuantity),
       })
       .catch((error) => {
         console.error("Lỗi khi xóa biến thể:", error);
-        toast.error("Không thể xóa biến thể: " + (error.response?.data?.message || error.message));
+        toast.error(
+          "Không thể xóa biến thể: " +
+            (error.response?.data?.message || error.message)
+        );
       });
   };
 
@@ -370,7 +395,9 @@ Quantity: parseInt(variantQuantity),
                 required
               />
               {errors.ProductName && (
-                <p className="text-red-500 text-xs mt-1">{errors.ProductName[0]}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.ProductName[0]}
+                </p>
               )}
             </div>
             <div className="mb-4 relative">
@@ -380,18 +407,22 @@ Quantity: parseInt(variantQuantity),
                 onClick={() => setIsOpen(!isOpen)}
               >
                 {productData.CategoryID
-                  ? categories.find(cat => cat.CategoryID === productData.CategoryID)?.CategoryName
+                  ? categories.find(
+                      (cat) => cat.CategoryID === productData.CategoryID
+                    )?.CategoryName
                   : "Chọn Category"}
                 <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
               </button>
               {isOpen && (
                 <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
                   <ul className="py-1 overflow-auto text-base max-h-60">
-                    {categories.map(category => (
-<li
+                    {categories.map((category) => (
+                      <li
                         key={category.CategoryID}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleCategorySelect(category.CategoryID)}
+                        onClick={() =>
+                          handleCategorySelect(category.CategoryID)
+                        }
                       >
                         {category.CategoryName}
                       </li>
@@ -400,7 +431,9 @@ Quantity: parseInt(variantQuantity),
                 </div>
               )}
               {errors.CategoryID && (
-                <p className="text-red-500 text-xs mt-1">{errors.CategoryID[0]}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.CategoryID[0]}
+                </p>
               )}
             </div>
             <div className="mb-4">
@@ -425,7 +458,9 @@ Quantity: parseInt(variantQuantity),
                 onChange={handleChange}
               />
               {errors.SalePrice && (
-                <p className="text-red-500 text-xs mt-1">{errors.SalePrice[0]}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.SalePrice[0]}
+                </p>
               )}
             </div>
             {renderImageUpload("Main Image", "MainImageURL")}
@@ -439,7 +474,9 @@ Quantity: parseInt(variantQuantity),
                 rows={2}
               />
               {errors.ShortDescription && (
-                <p className="text-red-500 text-xs mt-1">{errors.ShortDescription[0]}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.ShortDescription[0]}
+                </p>
               )}
             </div>
             <div className="mb-4">
@@ -451,11 +488,18 @@ Quantity: parseInt(variantQuantity),
                 rows={4}
               />
               {errors.Description && (
-                <p className="text-red-500 text-xs mt-1">{errors.Description[0]}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.Description[0]}
+                </p>
               )}
             </div>
             <div className="flex justify-between items-center">
-              <Button type="button" color="blue" onClick={handleBackToList} className="mr-2">
+              <Button
+                type="button"
+                color="blue"
+                onClick={handleBackToList}
+                className="mr-2"
+              >
                 Product List
               </Button>
               <Button type="submit" color="green" disabled={loading}>
@@ -468,7 +512,7 @@ Quantity: parseInt(variantQuantity),
         {/* Phần bên phải - Colors, Sizes, và Add Product Variant */}
         <div className="w-[60%] bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
-<div className="flex space-x-4 mb-4">
+          <div className="flex space-x-4 mb-4">
             <input
               type="number"
               placeholder="Price"
@@ -496,7 +540,10 @@ Quantity: parseInt(variantQuantity),
                     checked={selectedColors.includes(color.ColorID)}
                     onChange={() => handleColorChange(color.ColorID)}
                   />
-                  <label htmlFor={`color-${color.ColorID}`} className="ml-2 text-sm">
+                  <label
+                    htmlFor={`color-${color.ColorID}`}
+                    className="ml-2 text-sm"
+                  >
                     {color.ColorName}
                   </label>
                 </div>
@@ -515,7 +562,10 @@ Quantity: parseInt(variantQuantity),
                     checked={selectedSizes.includes(size.SizeID)}
                     onChange={() => handleSizeChange(size.SizeID)}
                   />
-                  <label htmlFor={`size-${size.SizeID}`} className="ml-2 text-sm">
+                  <label
+                    htmlFor={`size-${size.SizeID}`}
+                    className="ml-2 text-sm"
+                  >
                     {size.SizeName}
                   </label>
                 </div>
@@ -532,16 +582,24 @@ Quantity: parseInt(variantQuantity),
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <h2 className="text-xl font-bold mb-4">Product Variants</h2>
             {productVariants.length > 0 ? (
-              <div className="overflow-y-auto" style={{ maxHeight: '730px' }}>
+              <div className="overflow-y-auto" style={{ maxHeight: "730px" }}>
                 <table className="min-w-full border-collapse border border-gray-300">
                   <thead>
                     <tr className="bg-gray-100 text-center">
                       <th className="border border-gray-300  py-2">Select</th>
-                      <th className="border border-gray-300 px-4 py-2">Color</th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Color
+                      </th>
                       <th className="border border-gray-300 px-4 py-2">Size</th>
-<th className="border border-gray-300 px-4 py-2">Price</th>
-                      <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                      <th className="border border-gray-300 px-4 py-2">Actions</th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Price
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Quantity
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -550,8 +608,12 @@ Quantity: parseInt(variantQuantity),
                         <td className="border py-2">
                           <Checkbox className="border-2 border-gray-400" />
                         </td>
-                        <td className="border px-4 py-2">{variant.ColorName || "N/A"}</td>
-                        <td className="border px-4 py-2">{variant.SizeName || "N/A"}</td>
+                        <td className="border px-4 py-2">
+                          {variant.ColorName || "N/A"}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {variant.SizeName || "N/A"}
+                        </td>
                         <td className="border px-4 py-2">{variant.Price}</td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
                         <td className="border-b px-4 py-4 flex">
@@ -563,7 +625,9 @@ Quantity: parseInt(variantQuantity),
                           </button>
                           <button
                             className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
-                            onClick={() => handleDeleteVariant(variant.VariantID)}
+                            onClick={() =>
+                              handleDeleteVariant(variant.VariantID)
+                            }
                           >
                             <TrashIcon className="h-4 w-4" />
                           </button>

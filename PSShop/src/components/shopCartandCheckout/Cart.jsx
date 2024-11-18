@@ -1,42 +1,111 @@
 /* eslint-disable no-unused-vars */
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Cart() {
   const {
     cartProducts,
     totalPrice,
     loading,
-    checkboxes,
     selectedItems,
     handleSelectItem,
     handleSelectAll,
     removeSelectedItems,
-    formatPrice,
-    setQuantity,
-    handleCheckboxChange,
-    removeCartItem,
     fetchCartItems,
   } = useContextElement();
 
-  useEffect(() => {
-    fetchCartItems(); // Fetch dữ liệu khi component mount
-  }, [fetchCartItems]);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [error, setError] = useState("");
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
 
   useEffect(() => {
-    fetchCartItems(); // Fetch dữ liệu khi component mount
+    fetchCartItems(); 
   }, [fetchCartItems]);
+
+  const handleError = (message) => {
+    setError(message);
+  };
+
+  const applyCoupon = async () => {
+    const token = localStorage.getItem("token"); 
+    if (!token) {
+      handleError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/coupons/details", { Code: couponCode }, {
+        headers: { Authorization: `Bearer ${token}` }, 
+      });
+      const coupon = response.data.data;
+
+      if (coupon) {
+        if (totalPrice >= coupon.MinimumOrderValue) {
+          const discountAmount = (totalPrice * coupon.DiscountPercentage) / 100;
+          setDiscount(discountAmount);
+          handleError(""); 
+        } else {
+          handleError("Mã không được áp dụng. Giá trị đơn hàng phải lớn hơn " + coupon.MinimumOrderValue);
+        }
+      } else {
+        handleError("Mã giảm giá không hợp lệ.");
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleError("Bạn cần đăng nhập để thực hiện hành động này.");
+      } else {
+        handleError("Lỗi khi kiểm tra mã giảm giá.");
+      }
+    }
+  };
+
+  const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
+    if (newQuantity < 1) return; 
+
+    const token = localStorage.getItem("token"); 
+    try {
+      const response = await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
+        productID, 
+        colorID, 
+        sizeID, 
+        quantity: newQuantity,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }, 
+      });
+      fetchCartItems();
+      if (response.status === 400) {
+        alert("Số lượng không hợp lệ.");
+      }
+
+    } catch (err) {
+      console.error(err);
+      handleError("Lỗi khi cập nhật số lượng."); 
+    }
+  };
+
+  const handleQuantityChangeDebounced = (itemId, productID, colorID, sizeID, newQuantity) => {
+    if (newQuantity < 1) return; 
+    handleQuantityChange(itemId, productID, colorID, sizeID, newQuantity);
+  };
+
 
   return (
-    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
+    <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)", padding: "20px", backgroundColor: "#f9f9f9" }}>
+      <ToastContainer />
       <div className="cart-table__wrapper">
         {cartProducts.length ? (
           <>
-            <table className="cart-table">
+            <table className="cart-table" style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  <th>
+                  <th style={{ width: "5%" }}>
                     <input
                       type="checkbox"
                       onChange={(e) => handleSelectAll(e.target.checked)}
@@ -49,13 +118,13 @@ export default function Cart() {
                   <th>Product</th>
                   <th>Color and Size</th>
                   <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Subtotal</th>
+                  <th width="10%" className="text-center">Quantity</th>
+                  <th width="20%" className="text-center">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
                 {cartProducts.map((item) => (
-                  <tr key={item.CartItemID}>
+                  <tr key={item.CartItemID} style={{ borderBottom: "1px solid #ddd" }}>
                     <td>
                       <input
                         type="checkbox"
@@ -65,13 +134,13 @@ export default function Cart() {
                     </td>
                     <td>
                       <div className="shopping-cart__product-item">
-                        {item.MainImageURL && (
+                        {item.ImageUrl && (
                           <img
                             loading="lazy"
-                            src={item.MainImageURL}
+                            src={item.ImageUrl}
                             width="120"
                             height="120"
-                            alt={item.product_name}
+                            alt={item.ProductName}
                             className="object-fit-cover"
                           />
                         )}
@@ -79,54 +148,45 @@ export default function Cart() {
                     </td>
                     <td>
                       <div className="shopping-cart__product-item__detail">
-                        <h4>{item.product_name}</h4>
+                        <h4>{item.ProductName}</h4>
                         <ul className="shopping-cart__product-item__options">
-                          <li>Color: {item.color}</li>
-                          <li>Size: {item.size}</li>
+                          <li>Color: {item.ColorName}</li>
+                          <li>Size: {item.SizeName}</li>
                         </ul>
                       </div>
                     </td>
                     <td>
                       <span className="shopping-cart__product-price">
-                        ${formatPrice(item.Price)}
+                        ${item.Price}
                       </span>
                     </td>
-                    <td>
+                    <td width="10%" className="text-center">
                       <div className="qty-control position-relative">
                         <input
                           type="number"
                           name="quantity"
                           value={item.Quantity}
                           min={1}
-                          onChange={(e) =>
-                            setQuantity(
-                              item.CartItemID,
-                              parseInt(e.target.value)
-                            )
-                          }
+                          onChange={(e) => handleQuantityChangeDebounced(item.CartItemID, item.ProductID, item.ColorID, item.SizeID, parseInt(e.target.value))}
                           className="qty-control__number text-center"
                         />
                         <div
-                          onClick={() =>
-                            setQuantity(item.CartItemID, item.Quantity - 1)
-                          }
+                          onClick={() => handleQuantityChangeDebounced(item.CartItemID, item.ProductID, item.ColorID, item.SizeID, item.Quantity - 1)}
                           className="qty-control__reduce"
                         >
                           -
                         </div>
                         <div
-                          onClick={() =>
-                            setQuantity(item.CartItemID, item.Quantity + 1)
-                          }
+                          onClick={() => handleQuantityChangeDebounced(item.CartItemID, item.ProductID, item.ColorID, item.SizeID, item.Quantity + 1)}
                           className="qty-control__increase"
                         >
                           +
                         </div>
                       </div>
                     </td>
-                    <td>
+                    <td width="20%" className="text-center">
                       <span className="shopping-cart__subtotal">
-                        ${formatPrice(item.total_price)}
+                        ${ (item.Quantity * item.Price).toFixed(2) }
                       </span>
                     </td>
                   </tr>
@@ -136,7 +196,7 @@ export default function Cart() {
             <div className="cart-table-footer d-flex justify-content-between align-items-center mt-4">
               <div className="d-flex gap-3">
                 <button
-                  className="btn btn-danger"
+                  className="btn btn-dark"
                   onClick={() => removeSelectedItems()}
                   disabled={selectedItems.length === 0 || loading}
                 >
@@ -147,7 +207,7 @@ export default function Cart() {
                       aria-hidden="true"
                     ></span>
                   ) : null}
-  Xóa sản phẩm đã chọn ({selectedItems.length})
+                  Xóa sản phẩm đã chọn ({selectedItems.length})
                 </button>
               </div>
             </div>
@@ -156,99 +216,41 @@ export default function Cart() {
           <>
             <div className="fs-20">Shop cart is empty</div>
             <button className="btn mt-3 btn-light">
-              <Link to={"/shop-1"}>Explore Products</Link>
+              <Link to={"/shop"}>Explore Products</Link>
             </button>
           </>
         )}
       </div>
       {/* Phần Cart Totals */}
-      {cartProducts.length > 0 && (
-        <div className="shopping-cart__totals-wrapper">
-          <div className="sticky-content">
-            <div className="shopping-cart__totals">
-              <h3>Cart Totals</h3>
-              <table className="cart-totals">
-                <tbody>
-                  <tr>
-                    <th>Subtotal</th>
-                    <td>${formatPrice(totalPrice)}</td>
-                  </tr>
-                  <tr>
-                    <th>Shipping</th>
-                    <td>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="free_shipping"
-                          checked={checkboxes.free_shipping}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="free_shipping"
-                        >
-                          Free shipping
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="flat_rate"
-                          checked={checkboxes.flat_rate}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label className="form-check-label" htmlFor="flat_rate">
-                          Flat rate: $49
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          id="local_pickup"
-                          checked={checkboxes.local_pickup}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="local_pickup"
-                        >
-                          Local pickup: $8
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Total</th>
-                    <td>
-                      $
-                      {formatPrice(
-                        parseFloat(totalPrice) +
-                          (checkboxes.flat_rate ? 49 : 0) +
-                          (checkboxes.local_pickup ? 8 : 0)
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <Link
-                to="/shop_checkout"
-                className="btn btn-primary w-100 mt-3"
-                onClick={(e) => {
-                  if (cartProducts.length === 0) {
-                    e.preventDefault();
-                    alert("Giỏ hàng trống!");
-                  }
-                }}
-              >
-                PROCEED TO CHECKOUT
-              </Link>
-            </div>
+      <div className="shopping-cart__totals-wrapper">
+        <div className="sticky-content">
+          <div className="shopping-cart__totals">
+            <h3>Cart Totals</h3>
+            <table className="cart-totals">
+              <tbody>
+                <tr>
+                  <th>Total</th>
+                  <td>
+                    ${ cartProducts.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2) }
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <Link
+              to="/shop_checkout"
+              className="btn btn-primary w-100 mt-3 mb-3"
+              onClick={(e) => {
+                if (cartProducts.length === 0) {
+                  e.preventDefault();
+                  alert("Giỏ hàng trống!");
+                }
+              }}
+            >
+              PROCEED TO CHECKOUT
+            </Link>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

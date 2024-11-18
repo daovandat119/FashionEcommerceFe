@@ -2,25 +2,32 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 function Edit_Address({ address, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
-    UserName: '',
+    Username: '',
     PhoneNumber: '',
     Address: '',
     DistrictID: '',
     WardCode: '',
+    ProvinceID: '',
     isDefault: false
   });
+
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
 
   useEffect(() => {
     if (address) {
       setFormData({
-        UserName: address.UserName,
+        UserName: address.Username,
         PhoneNumber: address.PhoneNumber,
         Address: address.Address,
         DistrictID: address.DistrictID,
         WardCode: address.WardCode,
+        ProvinceID: address.ProvinceID,
         isDefault: address.IsDefault === 1
       });
     } else {
@@ -30,10 +37,67 @@ function Edit_Address({ address, onSuccess, onCancel }) {
         Address: '',
         DistrictID: '',
         WardCode: '',
+        ProvinceID: '',
         isDefault: false
       });
     }
   }, [address]);
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/provinces');
+        if (response.data.message === 'Success') {
+          setProvinces(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+        toast.error('Không thể tải danh sách tỉnh thành.');
+      }
+    };
+
+    fetchProvinces();
+  }, []);
+
+  useEffect(() => {
+    const fetchDistricts = async (provinceID) => {
+      try {
+        const response = await axios.post(`http://127.0.0.1:8000/api/districts`, {
+          province_id: provinceID
+        });
+        if (response.data.message === 'Success') {
+          setDistricts(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching districts:', error);
+        toast.error('Không thể tải danh sách quận huyện.');
+      }
+    };
+
+    if (formData.ProvinceID) {
+      fetchDistricts(formData.ProvinceID);
+    }
+  }, [formData.ProvinceID]);
+
+  useEffect(() => {
+    const fetchWards = async (districtID) => {
+      try {
+        const response = await axios.post(`http://127.0.0.1:8000/api/wards`, {
+          district_id: districtID
+        });
+        if (response.data.message === 'Success') {
+          setWards(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching wards:', error);
+        toast.error('Không thể tải danh sách phường xã.');
+      }
+    };
+
+    if (formData.DistrictID) {
+      fetchWards(formData.DistrictID);
+    }
+  }, [formData.DistrictID]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -43,7 +107,8 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       'address': 'Address',
       'districtID': 'DistrictID',
       'wardCode': 'WardCode',
-      'isDefault': 'isDefault'
+      'isDefault': 'isDefault',
+      'provinceID': 'ProvinceID'
     };
 
     const stateField = fieldMapping[name] || name;
@@ -68,6 +133,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       UserName: formData.UserName,
       PhoneNumber: formData.PhoneNumber,
       Address: formData.Address,
+      ProvinceID: formData.ProvinceID,
       DistrictID: formData.DistrictID,
       WardCode: formData.WardCode,
       IsDefault: formData.isDefault ? 1 : 0
@@ -88,7 +154,13 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       );
 
       if (response.status === 200) {
-        toast.success('Cập nhật địa chỉ thành công!');
+        Swal.fire({
+          title: "Thông báo",
+          text: "Địa chỉ đã được cập nhật thành công!",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 5000,
+        });
         onSuccess();
       }
     } catch (error) {
@@ -113,7 +185,13 @@ function Edit_Address({ address, onSuccess, onCancel }) {
         });
 
         if (response.status === 200) {
-          toast.success('Địa chỉ đã được xóa thành công!');
+          Swal.fire({
+            title: "Thông báo",
+            text: "Địa chỉ đã được xóa thành công!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 5000,
+          });
           onSuccess();
         }
       } catch (error) {
@@ -124,8 +202,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   };
 
   return (
-    <div className="border p-4 rounded bg-light">
-      <h4 className="mb-4">Sửa Địa Chỉ</h4>
+    <div className="border p-4 rounded bg-light mt-5">
       <form onSubmit={handleSubmit}>
         <div className="row">
           <div className="col-md-6 mb-3">
@@ -153,36 +230,67 @@ function Edit_Address({ address, onSuccess, onCancel }) {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Địa chỉ</label>
-          <input
-            type="text"
+          <label className="form-label">Chọn tỉnh thành</label>
+          <select
             className="form-control"
-            name="address"
-            value={formData.Address}
+            name="provinceID"
+            value={formData.ProvinceID}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Chọn tỉnh thành</option>
+            {provinces.map(province => (
+              <option key={province.ProvinceID} value={province.ProvinceID}>
+                {province.ProvinceName}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Mã quận</label>
-          <input
-            type="text"
+          <label className="form-label">Chọn huyện</label>
+          <select
             className="form-control"
             name="districtID"
             value={formData.DistrictID}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Chọn huyện</option>
+            {districts.map(district => (
+              <option key={district.DistrictID} value={district.DistrictID}>
+                {district.DistrictName}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Mã phường</label>
-          <input
-            type="text"
+          <label className="form-label">Chọn xã</label>
+          <select
             className="form-control"
             name="wardCode"
             value={formData.WardCode}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Chọn xã</option>
+            {wards.map(ward => (
+              <option key={ward.WardCode} value={ward.WardCode}>
+                {ward.WardName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        
+        <div className="mb-3">
+          <label className="form-label">Địa chỉ cụ thể</label>
+          <input
+            type="text"
+            className="form-control"
+            name="address"
+            value={formData.Address}
             onChange={handleChange}
             required
           />
@@ -195,7 +303,9 @@ function Edit_Address({ address, onSuccess, onCancel }) {
           <button 
             type="button" 
             className="btn btn-secondary"
-            onClick={onCancel}
+            onClick={() => {
+              onClose();
+            }}
           >
             Hủy
           </button>

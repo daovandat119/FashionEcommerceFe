@@ -76,71 +76,84 @@ const UpdateVoucher = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container  px-4 py-8 w-full">
       <ToastContainer />
-      <Typography variant="h5" className="text-2xl font-bold mb-6 text-center">
+      <Typography variant="h5" className="text-2xl font-bold mb-6 text-left">
         Update Voucher
       </Typography>
-      <Card className="p-6 w-full max-w-md mx-auto">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <Card className="p-6  mx-auto">
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           {error && <div className="text-red-500">{error}</div>}
-          <Input
-            label="Voucher Name"
-            name="Name"
-            value={voucherData.Name}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Voucher Code"
-            name="Code"
-            value={voucherData.Code}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Discount Percentage"
-            name="DiscountPercentage"
-            type="number"
-            value={voucherData.DiscountPercentage}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Minimum Order Value"
-            name="MinimumOrderValue"
-            type="number"
-            value={voucherData.MinimumOrderValue}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Usage Limit"
-            name="UsageLimit"
-            type="number"
-            value={voucherData.UsageLimit}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Expiration Date and Time"
-            name="ExpiresAt"
-            type="datetime-local"
-            value={voucherData.ExpiresAt.substring(0, 16)}
-            onChange={handleChange}
-            required
-          />
-          <Button type="submit" color="green" className="w-full">
-            Update Voucher
-          </Button>
-          <Button
-            type="button"
-            color="blue"
-            className="w-full mt-4"
-            onClick={handleBackToList}
-          >
-            List Voucher
-          </Button>
+          <div className="mb-4 col-span-2">
+            <Input
+              label="Voucher Name"
+              name="Name"
+              value={voucherData.Name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-4 col-span-2">
+            <Input
+              label="Voucher Code"
+              name="Code"
+              value={voucherData.Code}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <Input
+              label="Discount Percentage"
+              name="DiscountPercentage"
+              type="number"
+              value={voucherData.DiscountPercentage}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <Input
+              label="Minimum Order Value"
+              name="MinimumOrderValue"
+              type="number"
+              value={voucherData.MinimumOrderValue}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <Input
+              label="Usage Limit"
+              name="UsageLimit"
+              type="number"
+              value={voucherData.UsageLimit}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <Input
+              label="Expiration Date and Time"
+              name="ExpiresAt"
+              type="datetime-local"
+              value={voucherData.ExpiresAt.substring(0, 16)}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-4 w-full col-span-2">
+            <button type="submit" className="w-[15%] bg-green-500 text-white py-3 px-4 rounded-xl shadow-md hover:bg-green-600 transition transform hover:scale-105">
+              Update Voucher
+            </button>
+            <button
+              type="button"
+              className="w-[15%] bg-blue-500 text-white py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 transition transform hover:scale-105"
+              onClick={handleBackToList}
+            >
+              List Voucher
+            </button>
+          </div>
         </form>
       </Card>
     </div>

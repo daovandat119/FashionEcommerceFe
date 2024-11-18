@@ -3,15 +3,30 @@ import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
 import { useContextElement } from "../../context/Context";
+import Swal from "sweetalert2";
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
   const { setTotalPrice, totalPrice } = useContextElement();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [loadingCartItems, setLoadingCartItems] = useState(true);
+  const [loadingCoupons, setLoadingCoupons] = useState(true);
   const token = localStorage.getItem("token");
   const [addresses, setAddresses] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [discount, setDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [coupons, setCoupons] = useState([]);
+  const [shippingFee, setShippingFee] = useState(0);
+
+  useEffect(() => {
+    if (!orderData.PaymentMethodID) {
+      updateOrderData({ PaymentMethodID: 2 });
+    }
+  }, [orderData.PaymentMethodID, updateOrderData]);
+
   const paymentMethods = [
     {
       id: 1,
@@ -25,13 +40,13 @@ export default function Checkout() {
     },
   ];
 
-  // Xử lý chọn phương thức thanh toán
   const handlePaymentMethodSelect = (methodId) => {
     updateOrderData({ PaymentMethodID: parseInt(methodId) });
   };
 
   useEffect(() => {
     const fetchAddresses = async () => {
+      setLoadingAddresses(true);
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/address", {
           headers: { Authorization: `Bearer ${token}` },
@@ -40,60 +55,120 @@ export default function Checkout() {
       } catch (error) {
         setError("Không thể tải địa chỉ");
         console.error(error);
+      } finally {
+        setLoadingAddresses(false);
       }
     };
-    fetchAddresses();
-  }, [token]);
 
-  useEffect(() => {
     const fetchCartItems = async () => {
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/cart-items",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+      setLoadingCartItems(true);
+      if (!token) {
+        setError("Vui lòng đăng nhập để lấy thông tin giỏ hàng.");
+        return;
+      }
 
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.data.data) {
           setCartItems(response.data.data);
         }
-
-        console.log("Cart Items:", response.data.data);
       } catch (err) {
         console.error("Lỗi khi lấy cart items:", err);
         setError("Không thể lấy thông tin giỏ hàng");
+      } finally {
+        setLoadingCartItems(false);
       }
     };
 
-    if (token) {
-      fetchCartItems();
-    }
+    fetchAddresses();
+    fetchCartItems();
   }, [token]);
 
-  const handleAddressSelect = (addressId) => {
-    updateOrderData({ AddressID: addressId });
+  const checkAddressExists = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/address/checkAddress", null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (String(response.data.data) === "true") {
+        await fetchShippingFee();
+      } else {
+        Swal.fire({
+          title: "Thông báo",
+          text: "Không có địa chỉ nào",
+          icon: "warning",
+          timer: 10000,
+        });
+        navigate("/account_edit_address");
+      }
+    } catch (error) {
+      setError("Không thể kiểm tra địa chỉ");
+      console.error(error);
+    }
   };
 
-  const handlePayment = async () => {
-    const totalAmount = totalPrice + 19; // Tính tổng tiền
-    const userId = orderData.UserID || localStorage.getItem("userId"); // Lấy UserID từ orderData hoặc local storage
+  const fetchShippingFee = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/address/shipping-fee", null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data.data) {
+        setShippingFee(response.data.data.total);
+      }
+    } catch (error) {
+      setError("Không thể kiểm tra phí vận chuyển");
+      console.error(error);
+    }
+  };
 
-    // Kiểm tra xem userId có hợp lệ không
+  useEffect(() => {
+    const fetchAddressesAndShippingFee = async () => {
+      await checkAddressExists();
+      await fetchShippingFee();
+    };
+
+    fetchAddressesAndShippingFee();
+  }, [totalPrice]);
+
+  const fetchCoupon = async () => {
+    setLoadingCoupons(true);
+    if (!token) {
+      setError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
+      return;
+    }
+
+    const totalAmount = totalPrice + shippingFee;
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/coupons/checkCoupon", { MinimumOrderValue: totalAmount.toFixed(2) }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const couponData = response.data.data;
+      setCoupons(couponData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingCoupons(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoupon();
+  }, [totalPrice]);
+
+  const handlePayment = async () => {
+    const totalAmount = totalPrice + shippingFee;
+    const userId = orderData.UserID || localStorage.getItem("userId");
+
     if (!userId) {
       setError("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.");
-      navigate('/login'); // Điều hướng đến trang đăng nhập
       return;
     }
 
     try {
-      // Gọi API thanh toán với tổng tiền và userId
-      const response = await axios.get(`http://127.0.0.1:8000/pay/${totalAmount}/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      // Chuyển hướng đến URL thanh toán VNPAY
-      window.location.href = response.data.paymentUrl; // Giả sử API trả về paymentUrl
+      const response = await axios.get(`http://127.0.0.1:8000/api/pay/${totalAmount}/${userId}`);
+      window.location.href = response.data.paymentUrl;
     } catch (error) {
       setError("Lỗi khi thanh toán. Vui lòng thử lại.");
       console.error(error);
@@ -104,91 +179,46 @@ export default function Checkout() {
     e.preventDefault();
     setError("");
 
-    if (!orderData.AddressID) {
-      setError("Vui lòng chọn địa chỉ giao hàng");
-      return;
-    }
-
     if (!cartItems.length) {
       setError("Giỏ hàng trống");
       return;
     }
 
-    // Tính tổng tiền (bao gồm cả VAT)
-    const total = totalPrice + 19;
+    const total = totalPrice + shippingFee;
 
     const orderPayload = {
-      AddressID: parseInt(orderData.AddressID),
-      PaymentMethodID: orderData.PaymentMethodID, // Sử dụng phương thức thanh toán đã chọn
+      PaymentMethodID: orderData.PaymentMethodID,
       TotalAmount: total,
-      products: cartItems.map((item) => ({
-        ProductID: item.ProductID,
-        VariantID: item.VariantID,
-        Quantity: item.Quantity,
-      })),
     };
 
-    // Nếu phương thức thanh toán là VNPAY, gọi hàm handlePayment
     if (orderData.PaymentMethodID === 2) {
       handlePayment();
-      return; // Ngừng thực hiện các bước tiếp theo
+      return;
     }
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/order",
-        orderPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (
-        response.data.message ===
-        "Order created successfully, waiting for delivery."
-      ) {
-        // Reset state local
+      const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.data.status === "success") {
         setCartItems([]);
-        if (typeof setTotalPrice === "function") {
-          setTotalPrice(0);
-        }
-
-        // Lấy danh sách đơn hàng để get order mới nhất
-        const ordersResponse = await axios.get(
-          "http://127.0.0.1:8000/api/order",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (ordersResponse.data.data && ordersResponse.data.data.length > 0) {
-          // Lấy order mới nhất (phần tử cuối cùng trong mảng)
-          const latestOrder =
-            ordersResponse.data.data[ordersResponse.data.data.length - 1];
-          updateOrderData({
-            OrderID: latestOrder.OrderID,
-            orderCode: latestOrder.OrderCode,
-          });
-
-          // Chuyển hướng đến trang chi tiết đơn hàng
-          navigate(`/shop_order_complete/${latestOrder.OrderID}`);
-        } else {
-          setError("Không thể lấy thông tin đơn hàng");
-        }
+        Swal.fire({
+          title: "Thông báo",
+          text: "Đặt hàng thành công",
+          icon: "success",
+          timer: 5000,
+        });
+        navigate("/");
+      } else {
+        setError("Đặt hàng thất bại. Vui lòng thử lại.");
       }
     } catch (err) {
-      console.error("Chi tiết payload:", orderPayload);
       console.error("Chi tiết lỗi:", err);
-      if (err.response?.data?.errors) {
-        console.error("Validation errors:", err.response.data.errors);
-      }
-      setError(
-        err.response?.data?.message || "Đặt hàng thất bại. Vui lòng thử lại."
-      );
+      setError("Đặt hàng thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -196,63 +226,38 @@ export default function Checkout() {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-2xl font-bold text-gray-900 mb-8">Checkout</div>
-        
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600">{error}</p>
           </div>
         )}
-  
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cột bên trái - Thông tin giao hàng và thanh toán */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Phần địa chỉ giao hàng */}
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Địa Chỉ Giao Hàng
-              </h3>
-              <select
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 
-                           focus:ring-blue-500 focus:border-blue-500"
-                value={orderData.AddressID || ""}
-                onChange={(e) => handleAddressSelect(e.target.value)}
-              >
-                <option value="">-- Chọn địa chỉ giao hàng --</option>
-                {addresses.filter(address => address.IsDefault).map((address) => (
-                  <option key={address.AddressID} value={address.AddressID}>
-                    {address.UserName} | {address.PhoneNumber} | {address.Address}
-                  </option>
-                ))}
-              </select>
-              {orderData.AddressID && (
-                <div className="mt-4">
-                  <button
-                    onClick={() => navigate('/account_edit_address')}
-                    className="text-gray-600 hover:text-blue-800  transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Thay đổi địa chỉ
-                  </button>
+              <h1 className="text-lg font-semibold text-gray-900 mb-4">Địa Chỉ Giao Hàng</h1>
+              {loadingAddresses ? (
+                <p>Đang tải địa chỉ...</p>
+              ) : addresses.find(address => address.IsDefault === 1) ? (
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <h1 className="text-gray-900">{addresses.find(address => address.IsDefault === 1).Address}</h1>
+                  <div className="mt-4">
+                    <button
+                      onClick={() => navigate('/account_edit_address')}
+                      className="text-gray-600 hover:text-blue-800 transition duration-300 ease-in-out transform hover:scale-105"
+                    >
+                      Thay đổi địa chỉ
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                <p>Không có địa chỉ nào.</p>
               )}
             </div>
-  
-            {/* Phần phương thức thanh toán */}
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Phương Thức Thanh Toán
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Phương Thức Thanh Toán</h3>
               <div className="space-y-4">
                 {paymentMethods.map((method) => (
-                  <label
-                    key={method.id}
-                    className={`
-                      block p-4 border rounded-lg cursor-pointer transition-all
-                      ${orderData.PaymentMethodID === method.id 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-200 hover:border-blue-300'
-                      }
-                    `}
-                  >
+                  <label key={method.id} className={`block p-4 border rounded-lg cursor-pointer transition-all ${orderData.PaymentMethodID === method.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
                     <div className="flex items-center">
                       <input
                         type="radio"
@@ -264,93 +269,91 @@ export default function Checkout() {
                       />
                       <div className="ml-3">
                         <div className="font-medium text-gray-900">{method.name}</div>
-                        <div className="text-sm text-gray-500 mt-1">
-                          {method.description}
-                        </div>
+                        <div className="text-sm text-gray-500 mt-1">{method.description}</div>
                       </div>
                     </div>
                   </label>
                 ))}
               </div>
             </div>
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Mã Giảm Giá</h3>
+              {loadingCoupons ? (
+                <p>Đang tải mã giảm giá...</p>
+              ) : (
+                <select
+                  value={appliedCoupon}
+                  onChange={(e) => {
+                    const selectedCoupon = coupons.find(coupon => coupon.Code === e.target.value);
+                    setAppliedCoupon(e.target.value);
+                    if (selectedCoupon) {
+                      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
+                      setDiscount(discountAmount);
+                    } else {
+                      setDiscount(0);
+                    }
+                  }}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                >
+                  <option value="">Chọn mã giảm giá</option>
+                  {coupons.map((coupon) => (
+                    <option key={coupon.Code} value={coupon.Code}>
+                      {coupon.Name} - {coupon.DiscountPercentage}%
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
           </div>
-  
-          {/* Cột bên phải - Tổng quan đơn hàng */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm">
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Tổng Quan Đơn Hàng
-                </h3>
-  
-                {/* Danh sách sản phẩm */}
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Tổng Quan Đơn Hàng</h3>
                 <div className="space-y-4 mb-6">
-                  {cartItems.map((item, index) => (
+                  {loadingCartItems ? (
+                    <p>Đang tải giỏ hàng...</p>
+                  ) : cartItems.map((item, index) => (
                     <div key={index} className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                      <img src={item.ImageUrl} alt={item.ProductName} className="w-16 h-16 object-cover rounded" />
                       <div className="flex-grow">
-                        <h4 className="text-sm font-medium text-gray-900">
-                          {item.ProductName}
-                        </h4>
-                        <div className="text-sm text-gray-500 mt-1">
-                          {item.ColorName} • {item.SizeName} • x{item.Quantity}
-                        </div>
-                        <div className="text-sm font-medium text-gray-900 mt-1">
-                          ${(item.Price * item.Quantity).toFixed(2)}
-                        </div>
+                        <h4 className="text-sm font-medium text-gray-900">{item.ProductName}</h4>
+                        <div className="text-sm text-gray-500 mt-1">{item.ColorName} • {item.SizeName} • x{item.Quantity}</div>
+                        <div className="text-sm font-medium text-gray-900 mt-1">${(item.Price * item.Quantity).toFixed(2)}</div>
                       </div>
                     </div>
                   ))}
                 </div>
-  
-                {/* Chi tiết thanh toán */}
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Tạm tính</span>
-                    <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                    <span className="text-gray-600">Tổng Tiền</span>
+                    <span className="font-medium">${Number(totalPrice).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="font-medium">$19.00</span>
+                    <span className="font-medium">${shippingFee}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">VAT (10%)</span>
-                    <span className="font-medium">
-                      ${(totalPrice * 0.1).toFixed(2)}
-                    </span>
-                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Giảm giá</span>
+                      <span className="font-medium">-${discount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="flex justify-between">
-                      <span className="text-base font-medium text-gray-900">
-                        Tổng cộng
-                      </span>
-                      <span className="text-base font-semibold text-gray-600">
-                        ${(totalPrice + 19 + totalPrice * 0.1).toFixed(2)}
-                      </span>
+                      <span className="text-base font-medium text-gray-900">Thanh toán</span>
+                      <span className="text-base font-semibold text-gray-600">${(totalPrice + shippingFee - discount).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
               </div>
-  
-              {/* Nút đặt hàng */}
               <div className="p-6 bg-gray-50 border-t border-gray-200">
                 <button
                   onClick={handlePlaceOrder}
-                  disabled={!orderData.AddressID || cartItems.length === 0}
-                  className="w-full bg-gray-600 text-white py-4 px-6 rounded-lg font-medium
-                             hover:bg-gray-700 transition-colors duration-200
-                             disabled:opacity-50 disabled:cursor-not-allowed
-                             flex items-center justify-center gap-2"
+                  className="w-full bg-gray-600 text-white py-4 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <span>Đặt Hàng</span>
-                  <span className="text-sm">
-                    (${(totalPrice + 19 + totalPrice * 0.1).toFixed(2)})
-                  </span>
+                  <span className="text-sm">${(totalPrice + 19 - discount).toFixed(2)}</span>
                 </button>
-                {!orderData.AddressID && (
-                  <p className="text-sm text-red-500 mt-2">
-                    Vui lòng chọn địa chỉ giao hàng
-                  </p>
-                )}
               </div>
             </div>
           </div>
