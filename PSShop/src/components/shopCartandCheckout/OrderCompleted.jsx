@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import axios from "axios";
 import {
   FaCheckCircle,
   FaMapMarkerAlt,
   FaUser,
   FaPhone,
-  FaMoneyBill,
-  FaCreditCard,
 } from "react-icons/fa";
 
 export default function OrderCompleted() {
@@ -16,9 +14,8 @@ export default function OrderCompleted() {
   const [loading, setLoading] = useState(true);
   const { orderId } = useParams();
   const token = localStorage.getItem("token");
-
-  const location = useLocation();
-  const paymentMethod = location.state?.paymentMethod; // Lấy paymentMethod từ state
+  const [shippingFee, setShippingFee] = useState(0); // Thêm biến để lưu phí vận chuyển
+  const [discount, setDiscount] = useState(0); // Thêm biến để lưu giảm giá
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,6 +38,18 @@ export default function OrderCompleted() {
           addressResponse.data.data.find((addr) => addr.IsDefault === 1) ||
           addressResponse.data.data[0];
         setAddressInfo(defaultAddress);
+
+        // Lấy phí vận chuyển
+        const shippingResponse = await axios.post("http://127.0.0.1:8000/api/address/shipping-fee", null, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setShippingFee(shippingResponse.data.data.total);
+
+        // Lấy thông tin giảm giá nếu có
+        const discountResponse = await axios.post("http://127.0.0.1:8000/api/coupons/checkCoupon", { MinimumOrderValue: calculateTotal() + shippingFee }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setDiscount(discountResponse.data.data.DiscountAmount || 0);
       } catch (error) {
         console.error("Lỗi khi tải thông tin:", error);
       } finally {
@@ -49,6 +58,7 @@ export default function OrderCompleted() {
     };
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId, token]);
 
   const calculateTotal = () => {
@@ -77,27 +87,6 @@ export default function OrderCompleted() {
           Trạng thái: {orderDetails[0]?.OrderStatus}
         </p>
       </div>
-
-      {/* Phương thức thanh toán */}
-      {/* <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
-          <FaMoneyBill className="mr-2 text-gray-600" />
-          Phương thức thanh toán
-        </h2>
-        <div className="space-y-2 text-gray-600">
-          <p className="flex items-center">
-            <FaCreditCard className="mr-2" />
-            {paymentMethod === 2
-              ? "Thanh toán khi nhận hàng (COD)"
-: "Thanh toán qua VNPAY"}
-          </p>
-          <p className="ml-6 text-sm text-gray-500">
-            {paymentMethod === 1
-              ? `Vui lòng chuẩn bị số tiền mặt ${(calculateTotal() + 19).toFixed(2)}$ khi nhận hàng`
-              : "Vui lòng chuyển khoản theo thông tin tài khoản được cung cấp"}
-          </p>
-        </div>
-      </div> */}
 
       {/* Thông tin giao hàng */}
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -158,7 +147,7 @@ export default function OrderCompleted() {
                 </tr>
               ))}
             </tbody>
-</table>
+          </table>
         </div>
 
         {/* Tổng cộng */}
@@ -170,19 +159,21 @@ export default function OrderCompleted() {
             </span>
           </div>
           <div className="flex justify-end text-gray-600 space-x-20">
-            <span>Phí vận chuyển & VAT:</span>
-            <span className="w-32 text-right">19.00 VND</span>
+            <span>Phí vận chuyển:</span>
+            <span className="w-32 text-right">{shippingFee.toFixed(2)} VND</span>
+          </div>
+          <div className="flex justify-end text-gray-600 space-x-20">
+            <span>Giảm giá:</span>
+            <span className="w-32 text-right">-{discount.toFixed(2)} VND</span>
           </div>
           <div className="flex justify-end text-xl font-bold pt-4 border-t space-x-20">
             <span>Tổng cộng:</span>
-            <span className="w-32 text-right">
-              {(calculateTotal() + 19).toFixed(2)} VND
+            <span className="w-32 text-right flex">
+              {(calculateTotal() + shippingFee - discount).toFixed(2)} VND
             </span>
           </div>
         </div>
       </div>
-
-      {/* Nút tiếp tục mua sắm */}
       <div className="text-center mt-8">
         <a
           href="/"
