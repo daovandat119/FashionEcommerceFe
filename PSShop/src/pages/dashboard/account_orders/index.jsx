@@ -7,7 +7,6 @@ import { OrderProvider } from '../../../components/otherPages/OrderContext';
 export default function AccountOrderPage() {
   return (
     <>
-
       <Headers />
       <main className="page-wrapper">
         <div className="mb-4 pb-4"></div>

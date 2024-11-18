@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
@@ -40,124 +41,72 @@ export default function Checkout() {
     },
   ];
 
+
+
   const handlePaymentMethodSelect = (methodId) => {
     updateOrderData({ PaymentMethodID: parseInt(methodId) });
   };
 
   useEffect(() => {
-    const fetchAddresses = async () => {
+    const fetchAllData = async () => {
       setLoadingAddresses(true);
+      setLoadingCartItems(true);
+      setLoadingCoupons(true);
+
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/address", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setAddresses(response.data.data);
+        const [addressesResponse, cartItemsResponse, couponResponse] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/address", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get("http://127.0.0.1:8000/api/cart-items", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.post(
+            "http://127.0.0.1:8000/api/coupons/checkCoupon", 
+            { MinimumOrderValue: (totalPrice + shippingFee).toFixed(2) },
+            { headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setAddresses(addressesResponse.data.data);
+        setCartItems(cartItemsResponse.data.data || []);
+        setCoupons(couponResponse.data.data);
+        
+        // Kiểm tra và tải phí vận chuyển nếu có địa chỉ
+        if (String(addressesResponse.data.data.length) !== "0") {
+          const shippingResponse = await axios.post(
+            "http://127.0.0.1:8000/api/address/shipping-fee",
+            null,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setShippingFee(shippingResponse.data.data.total);
+        } else {
+          Swal.fire({
+            title: "Thông báo",
+            text: "Không có địa chỉ nào",
+            icon: "warning",
+            timer: 10000,
+          });
+          navigate("/account_edit_address");
+        }
+
       } catch (error) {
-        setError("Không thể tải địa chỉ");
-        console.error(error);
+        console.error("Lỗi khi tải dữ liệu:", error);
+        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
       } finally {
         setLoadingAddresses(false);
-      }
-    };
-
-    const fetchCartItems = async () => {
-      setLoadingCartItems(true);
-      if (!token) {
-        setError("Vui lòng đăng nhập để lấy thông tin giỏ hàng.");
-        return;
-      }
-
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.data.data) {
-          setCartItems(response.data.data);
-        }
-      } catch (err) {
-        console.error("Lỗi khi lấy cart items:", err);
-        setError("Không thể lấy thông tin giỏ hàng");
-      } finally {
         setLoadingCartItems(false);
+        setLoadingCoupons(false);
       }
     };
 
-    fetchAddresses();
-    fetchCartItems();
-  }, [token]);
-
-  const checkAddressExists = async () => {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/address/checkAddress", null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (String(response.data.data) === "true") {
-        await fetchShippingFee();
-      } else {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Không có địa chỉ nào",
-          icon: "warning",
-          timer: 10000,
-        });
-        navigate("/account_edit_address");
-      }
-    } catch (error) {
-      setError("Không thể kiểm tra địa chỉ");
-      console.error(error);
+    if (token) {
+      fetchAllData();
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, totalPrice]);
 
-  const fetchShippingFee = async () => {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/address/shipping-fee", null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.data.data) {
-        setShippingFee(response.data.data.total);
-      }
-    } catch (error) {
-      setError("Không thể kiểm tra phí vận chuyển");
-      console.error(error);
-    }
-  };
 
-  useEffect(() => {
-    const fetchAddressesAndShippingFee = async () => {
-      await checkAddressExists();
-      await fetchShippingFee();
-    };
-
-    fetchAddressesAndShippingFee();
-  }, [totalPrice]);
-
-  const fetchCoupon = async () => {
-    setLoadingCoupons(true);
-    if (!token) {
-      setError("Vui lòng đăng nhập để áp dụng mã giảm giá.");
-      return;
-    }
-
-    const totalAmount = totalPrice + shippingFee;
-
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/coupons/checkCoupon", { MinimumOrderValue: totalAmount.toFixed(2) }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const couponData = response.data.data;
-      setCoupons(couponData);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingCoupons(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCoupon();
-  }, [totalPrice]);
-
-  
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -329,7 +278,6 @@ export default function Checkout() {
                   className="w-full bg-gray-600 text-white py-4 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <span>Đặt Hàng</span>
-                  <span className="text-sm">{(totalPrice + 19 - discount).toFixed(2)}VND</span>
                 </button>
               </div>
             </div>
