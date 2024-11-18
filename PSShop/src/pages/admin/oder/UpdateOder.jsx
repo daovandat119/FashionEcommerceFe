@@ -26,12 +26,12 @@ const UpdateOrder = () => {
 
   const fetchOrdersDetails = async () => {
     try {
-      const response = await GetOrderDetails(OrderID); // Gọi hàm GetOrders
+      const response = await GetOrderDetails(OrderID);
       if (response.data) {
         setOrderDetails(response.data[0]);
         console.log("Order Details:", response.data[0]);
       } else {
-        console.error("Unexpected response format:", response); // Log phản hồi không mong đợi
+        console.error("Unexpected response format:", response);
       }
     } catch (error) {
       console.error("Error fetching orders:", error.message || error);
@@ -42,22 +42,22 @@ const UpdateOrder = () => {
 
   const fetchOrdersByID = async () => {
     try {
-      const response = await GetOrderById(OrderID); // Gọi hàm GetOrders
+      const response = await GetOrderById(OrderID);
       if (response.data) {
         setOrders(response.data);
       } else {
-        console.error("Unexpected response format:", response); // Log phản hồi không mong đợi
+        console.error("Unexpected response format:", response);
       }
     } catch (error) {
-      console.error("Error fetching orders:", error.message || error); // Log thông điệp lỗi
+      console.error("Error fetching orders:", error.message || error);
     } finally {
-      setLoading(false); // Đặt loading thành false sau khi hoàn thành
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchOrdersByID();
-    fetchOrdersDetails(); // Gọi hàm fetchOrders
+    fetchOrdersDetails();
     console.log("Order Status ID:", orderDetails.OrderStatusID);
   }, []);
 
@@ -99,7 +99,7 @@ const UpdateOrder = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Mã đơn hàng"
-          value={orderDetails.OrderID}
+          value={orderDetails.OrderCode}
           className="mb-4 !bg-gray-100"
         />
         <Input
@@ -137,7 +137,6 @@ const UpdateOrder = () => {
           style={{ backgroundColor: "#f3f4f6" }}
         />
 
-        {/* Phương thức thanh toán */}
         <Input
           label="Phương thức thanh toán"
           value={orderDetails.PaymentMethod}
@@ -239,23 +238,26 @@ const UpdateOrder = () => {
         <table className="min-w-full  rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gray-100 text-gray-700 text-center ">
-              <th className="p-4 border-b border-gray-300 text-center font-medium">
-                #
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
+                STT
               </th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">
-                Tên sản phẩm
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
+                Sản Phẩm
               </th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">
-                Hình ảnh
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
+                Hình Ảnh
               </th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">
+                <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
+                Màu sắc
+              </th>
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
+                Kích cỡ
+              </th>
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
                 Số lượng
               </th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
                 Giá
-              </th>
-              <th className="p-4 border-b border-gray-300 text-center font-medium">
-                Tổng
               </th>
             </tr>
           </thead>
@@ -265,30 +267,28 @@ const UpdateOrder = () => {
                 key={order.OrderID}
                 className="text-center border-b border-gray-100"
               >
-                <td className="p-4 ">{index + 1}</td>
-                <td>{order.ProductName}</td>
-                <td className="p-4 ">
+                <td className="p-4 border-r border-gray-300">{index + 1}</td>
+                <td className="border-r border-gray-300">{order.ProductName}</td>
+                <td className="p-4 border-r border-gray-300">
                   <img
                     src={order.MainImageURL}
                     alt="Product"
                     className="w-12 h-12 object-cover mx-auto rounded"
                   />
                 </td>
+                <td className="p-4 border-r border-gray-300">{order.VariantColor}</td>
+                <td className="p-4 border-r border-gray-300">{order.VariantSize}</td>
                 <td className="p-4 border-r border-gray-300">
                   {order.TotalQuantity}
                 </td>
                 <td className="p-4 border-r border-gray-300">
                   ${parseFloat(order.VariantPrice).toFixed(2)}
                 </td>
-                <td className="p-4">
-                  ${parseFloat(order.TotalPrice).toFixed(2)}
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* Tóm tắt đơn hàng */}
         <div className="mt-6 text-right">
           <Typography variant="h6" className="mt-2 text-gray-800 font-semibold">
             Tổng tiền: ${orderDetails.TotalAmount}
