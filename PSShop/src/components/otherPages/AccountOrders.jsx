@@ -1,19 +1,56 @@
 import { useContext, useState } from "react";
 import { OrderContext } from "./OrderContext";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PropTypes from 'prop-types';
 
-
-
 export default function AccountOrders() {
+  const navigate = useNavigate();
   const { orders, loading, error, handleOrderAction } = useContext(OrderContext);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [orderProducts, setOrderProducts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
 
   const OrderActionButton = ({ order }) => {
-    if (["Đã giao hàng", "Đã hủy", "Đang giao hàng"].includes(order.OrderStatus)) {
+    if (order.OrderStatus === "Đã giao hàng") {
+      return (
+        <div className="flex gap-2">
+          <button 
+            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => {/* Xử lý liên hệ */}}
+          >
+            LIÊN HỆ
+          </button>
+          <button 
+            className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => navigate(`/review/${order.OrderID}`)}
+          >
+            ĐÁNH GIÁ
+          </button>
+        </div>
+      );
+    }
+
+    if (["Đang xử lý", "Đang giao hàng"].includes(order.OrderStatus)) {
+      return (
+        <div className="flex gap-2">
+          <button 
+            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => {/* Xử lý liên hệ */}}
+          >
+            LIÊN HỆ
+          </button>
+          <button 
+            className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg text-sm transition"
+            onClick={() => handleOrderAction(order.OrderID, order.OrderStatus, order.PaymentStatus)}
+          >
+            HỦY ĐƠN
+          </button>
+        </div>
+      );
+    }
+
+    if (order.OrderStatus === "Đã hủy") {
       return (
         <button 
           className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
@@ -24,18 +61,7 @@ export default function AccountOrders() {
       );
     }
 
-    const isConfirmable = order.OrderStatus === "Đang xử lý" && order.PaymentStatus === "Đã thanh toán";
-    
-    return (
-      <button 
-        onClick={() => handleOrderAction(order.OrderID, order.OrderStatus, order.PaymentStatus)}
-        className={`py-1 px-4 rounded-lg text-sm text-white transition ${
-          isConfirmable ? "bg-green-500 hover:bg-green-600" : "bg-gray-500 hover:bg-gray-600"
-        }`}
-      >
-        {isConfirmable ? "XÁC NHẬN ĐƠN" : "HỦY ĐƠN HÀNG"}
-      </button>
-    );
+    return null;
   };
 
   OrderActionButton.propTypes = {
@@ -101,6 +127,7 @@ export default function AccountOrders() {
     return <p className="text-green-500 text-lg font-semibold">Error: {error}</p>;
   }
 
+  const itemsPerPage = 2;
   const indexOfLastOrder = currentPage * itemsPerPage;
   const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
   const currentOrders = orders.data.slice(indexOfFirstOrder, indexOfLastOrder);
