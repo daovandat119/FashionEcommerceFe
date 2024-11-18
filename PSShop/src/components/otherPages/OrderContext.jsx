@@ -9,25 +9,36 @@ export function OrderProvider({ children = null }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (filters = {}) => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/order",
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/order/views",
+        {
+          OrderCode: filters.OrderCode || null,
+          OrderStatusID: filters.OrderStatusID || null,
+          PaymentMethodID: filters.PaymentMethodID || null,
+          PaymentStatusID: filters.PaymentStatusID || null
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
       
-      const sortedOrders = response.data.data.sort((a, b) => 
-        new Date(b.OrderDate) - new Date(a.OrderDate)
-      );
-      
-      setOrders({ ...response.data, data: sortedOrders });
-      setError(null);
+      if (response.data.message === 'Success') {
+        const sortedOrders = response.data.data.sort((a, b) => 
+          new Date(b.OrderDate) - new Date(a.OrderDate)
+        );
+        
+        setOrders(sortedOrders);
+        setError(null);
+      } else {
+        setError("Không thể tải danh sách đơn hàng");
+      }
     } catch (err) {
       console.error("Lỗi khi lấy danh sách đơn hàng:", err);
       setError("Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.");
