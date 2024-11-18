@@ -23,8 +23,9 @@ const OrderChart = () => {
         responsive: true,
         scales: {
             y: {
-                min: 1.0,
-                max: 2.0,
+                height: 10,
+                min: 1.0, // Giá trị tối thiểu
+                max: 2.0, // Giá trị tối đa
                 ticks: {
                     callback: function(value) {
                         if (value === 1.0 || value === 1.2 || value === 1.4 || value === 1.6 || value === 1.8 || value === 2.0) {
@@ -46,10 +47,11 @@ const OrderChart = () => {
     };
 
     return (
-        <div style={{ height: '300px' }}>
-            <Line data={data} options={options} />
-        </div>
-    );
+        <>
+        <div className='text-lg font-semibold border-t-2 border-gray-300 py-3'>Đơn hàng : 4</div>
+        
+        <Line data={data} options={options} />;</>
+    )
 };
 
 export default OrderChart;
