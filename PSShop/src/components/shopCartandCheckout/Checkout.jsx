@@ -41,11 +41,17 @@ export default function Checkout() {
     },
   ];
 
-
-
   const handlePaymentMethodSelect = (methodId) => {
     updateOrderData({ PaymentMethodID: parseInt(methodId) });
   };
+
+  useEffect(() => {
+    // Kiểm tra nếu giỏ hàng rỗng
+    if (cartItems.length === 0) {
+      navigate("/shop_cart"); // Điều hướng về trang giỏ hàng
+      return; // Dừng render component
+    }
+  }, [cartItems, navigate]);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -64,8 +70,8 @@ export default function Checkout() {
           axios.post(
             "http://127.0.0.1:8000/api/coupons/checkCoupon", 
             { MinimumOrderValue: (totalPrice + shippingFee).toFixed(2) },
-            { headers: { Authorization: `Bearer ${token}` },
-          }),
+            { headers: { Authorization: `Bearer ${token}` } }
+          ),
         ]);
 
         setAddresses(addressesResponse.data.data);
@@ -106,8 +112,6 @@ export default function Checkout() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, totalPrice]);
 
-
-
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError("");
@@ -121,7 +125,6 @@ export default function Checkout() {
 
     const orderPayload = {
         PaymentMethodID: orderData.PaymentMethodID, 
-        // Đảm bảo rằng PaymentMethodID đã được chọn
         TotalAmount: total, // Tổng số tiền
     };
 
