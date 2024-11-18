@@ -262,7 +262,7 @@ const UpdateAddress = (addressId, addressData) => {
 // Hàm để lấy ��ơn hàng
 const GetOrders = async () => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.get(
+  return axios.post(
     "http://127.0.0.1:8000/api/order",
     {},
     {

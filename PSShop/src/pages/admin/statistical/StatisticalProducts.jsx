@@ -38,8 +38,11 @@ function StatisticalProducts() {
                  <div className="w-[49%]">
                         <label className="block mb-1">Loại đơn hàng</label>
                         <select className="border rounded-md p-2 w-full">
-                            <option>Tất cả đơn hàng</option>
-                            {/* Thêm các tùy chọn khác nếu cần */}
+                            <option value="all">Tất cả đơn hàng</option>
+                            <option value="new">Đơn hàng mới</option>
+                            <option value="in_transit">Đang vận chuyển</option>
+                            <option value="delivered">Đã Giao</option>
+                            <option value="canceled">Đơn hàng bị hủy</option>
                         </select>
                     </div>
                     
