@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Typography } from "@material-tailwind/react";
-import { FaDollarSign, FaUsers, FaUserPlus, FaUser, FaEye, FaSignOutAlt } from 'react-icons/fa';
+import { FaDollarSign, FaUsers, FaUserPlus, FaUser, FaEye, FaSignOutAlt, FaBox } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +41,7 @@ const Dashboard = () => {
       <div className="px-4 bg-gray-100">
         <div className="flex justify-between items-center mb-6">
           <Typography variant="h4" color="blue-gray" className="font-bold ml-5">
-            Dashboard
+            Tổng quan
           </Typography>
           <div className="relative flex items-center gap-2 z-10">
             <div className='bg-black p-2 rounded-full cursor-pointer' onClick={toggleMenu}>
@@ -72,23 +72,45 @@ const Dashboard = () => {
         </div>
 
         <div className="flex justify-between h-[150px] ">
-          {/* Card Today's Money */}
-          <div className="shadow-lg transition-transform transform hover:scale-105 w-[24%] bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
+            {/* Card Sales */}
+            <div className="shadow-lg transition-transform transform hover:scale-105 w-[24%] bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
             <div className='flex items-center justify-between pb-3 border-b-2'>
               <div className="flex p-3 justify-center bg-black rounded-xl">
                 <div className="text-white text-2xl">
-                  <FaDollarSign />
+                  <FaBox />
                 </div>
               </div>
               <div className='flex flex-col items-end'>
-                <p className="text-gray-600 font-medium">Today's Money</p>
+                <p className="text-gray-600 font-medium">Đơn hàng hôm nay</p>
                 <div className="text-2xl font-bold ">
-                  $53k
+                  10
                 </div>
               </div>
             </div>
             <div className="text-green-500 font-medium flex pt-3 gap-2">
-              +55% <p className='text-black'>than last week</p>
+              +5% <p className='text-black'>so với tuần trước</p>
+            </div>
+         
+
+        </div>
+          {/* Card Today's Money */}
+          
+          <div className="shadow-lg transition-transform transform hover:scale-105 w-[24%] bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
+            <div className='flex items-center justify-between pb-3 border-b-2'>
+              <div className="flex p-3 justify-center bg-black rounded-xl">
+                <div className="text-white text-2xl">
+                  <FaBox />
+                </div>
+              </div>
+              <div className='flex flex-col items-end'>
+                <p className="text-gray-600 font-medium">Doanh thu hôm nay</p>
+                <div className="text-2xl font-bold ">
+                  500.000 vnđ
+                </div>
+              </div>
+            </div>
+            <div className="text-green-500 font-medium flex pt-3 gap-2">
+              +55% <p className='text-black'>so với tuần trước</p>
             </div>
           </div>
 
@@ -101,14 +123,14 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className='flex flex-col items-end'>
-                <p className="text-gray-600 font-medium">Today's Users</p>
+                <p className="text-gray-600 font-medium">Người dùng đang online</p>
                 <div className="text-2xl font-bold ">
-                  2,300
+                  300
                 </div>
               </div>
             </div>
             <div className="text-green-500 font-medium flex pt-3 gap-2">
-              +3% <p className='text-black'>than last month</p>
+              +3% <p className='text-black'>so với tuần trước</p>
             </div>
           </div>
 
@@ -121,37 +143,18 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className='flex flex-col items-end'>
-                <p className="text-gray-600 font-medium">New Clients</p>
+                <p className="text-gray-600 font-medium">Người dùng mới</p>
                 <div className="text-2xl font-bold ">
-                  3,462
+                  50
                 </div>
               </div>
             </div>
             <div className="text-red-500 font-medium flex pt-3 gap-2">
-              -2% <p className='text-black'>than yesterday</p>
+              -2% <p className='text-black'>so với tuần trước</p>
             </div>
           </div>
 
-          {/* Card Sales */}
-          <div className="shadow-lg transition-transform transform hover:scale-105 w-[24%] bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
-            <div className='flex items-center justify-between pb-3 border-b-2'>
-              <div className="flex p-3 justify-center bg-black rounded-xl">
-                <div className="text-white text-2xl">
-                  <FaDollarSign />
-                </div>
-              </div>
-              <div className='flex flex-col items-end'>
-                <p className="text-gray-600 font-medium">Sales</p>
-                <div className="text-2xl font-bold ">
-                  $103,430
-                </div>
-              </div>
-            </div>
-            <div className="text-green-500 font-medium flex pt-3 gap-2">
-              +5% <p className='text-black'>than yesterday</p>
-            </div>
           </div>
-        </div>
 
         {/* Biểu đồ */}
         <div className='flex justify-between gap-3 mt-4'>

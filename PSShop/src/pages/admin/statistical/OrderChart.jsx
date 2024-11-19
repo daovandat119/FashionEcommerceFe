@@ -50,8 +50,8 @@ const OrderChart = () => {
         <>
         <div className='text-lg font-semibold border-t-2 border-gray-300 py-3'>Đơn hàng : 4</div>
         
-        <Line data={data} options={options} />;</>
+        <Line data={data} options={options} /></>
     )
 };
 
-export default OrderChart;
+export default OrderChart

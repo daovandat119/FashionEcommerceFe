@@ -113,8 +113,8 @@ export default function OrderCompleted() {
       </div>
 
       {/* Chi tiết đơn hàng */}
-      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-        <h2 className="text-xl font-semibold mb-4">Chi tiết đơn hàng</h2>
+      <div className="bg-white p-6 rounded-lg shadow-md ">
+        <h2 className="text-xl font-semibold">Chi tiết đơn hàng</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

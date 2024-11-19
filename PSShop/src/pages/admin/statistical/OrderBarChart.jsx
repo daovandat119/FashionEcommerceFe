@@ -23,6 +23,7 @@ const data = [
 const OrderBarChart = () => {
   return (
     <ResponsiveContainer width="100%" height={400}>
+        <p className='text-lg font-semibold border-t-2 border-gray-300 py-3'>Đơn hàng : 4</p>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />

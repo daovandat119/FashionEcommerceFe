@@ -189,7 +189,7 @@ export function SidebarWithSearch() {
                   <ListItemPrefix>
                     <ShoppingBagIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Product Statistics
+                  Sản phẩm
                 </ListItem>
               </Link>
               <Link to="/admin/order-statistics">
@@ -197,7 +197,7 @@ export function SidebarWithSearch() {
                   <ListItemPrefix>
                     <ShoppingCartIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Order Statistics
+                  Đơn hàng
                 </ListItem>
               </Link>
               <Link to="/admin/revenue-statistics">
@@ -205,7 +205,7 @@ export function SidebarWithSearch() {
                   <ListItemPrefix>
                     <ChartBarIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Revenue Statistics
+                  Khác
                 </ListItem>
               </Link>
             </div>
@@ -237,7 +237,7 @@ export function SidebarWithSearch() {
                   <ListItemPrefix>
                     <UserCircleIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Profile
+                  Thông tin Admin
                 </ListItem>
               </Link>
               <ListItem

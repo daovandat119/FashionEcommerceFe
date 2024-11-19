@@ -150,12 +150,12 @@ const CategoriesList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">Categories Management</h1>
+      <h1 className="text-2xl font-bold mb-6">Quản lý danh mục</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            label="Search categories"
+            label="Tìm kiếm danh mục"
             value={searchTerm}
             onChange={handleSearchChange}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
@@ -188,9 +188,9 @@ const CategoriesList = () => {
             <thead className="bg-white">
               <tr className="text-center">
                 <th className="border-b p-4 w-1/6 ">Select</th>
-                <th className="border-b p-4 ">Name</th>
-                <th className="border-b p-4 ">Active</th>
-                <th className="border-b p-4 ">Actions</th>
+                <th className="border-b p-4 ">Danh mục</th>
+                <th className="border-b p-4 ">Trạng thái</th>
+                <th className="border-b p-4 ">Chức năng</th>
               </tr>
             </thead>
             <tbody>

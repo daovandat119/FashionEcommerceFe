@@ -263,7 +263,7 @@ const UpdateAddress = (addressId, addressData) => {
 const GetOrders = async () => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(
-    "http://127.0.0.1:8000/api/order/views",
+    "/api/order/views",
     {},
     {
       headers: {
@@ -276,7 +276,7 @@ const GetOrders = async () => {
 // Hàm để lấy đơn hàng theo ID
 const GetOrderById = async (orderId) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.get(`http://127.0.0.1:8000/api/order/${orderId}`, {
+  return axios.get(`/api/order/${orderId}`, {
     headers: {
       Authorization: `Bearer ${token}`, // Gửi token trong header
     },
@@ -285,7 +285,7 @@ const GetOrderById = async (orderId) => {
 
 const GetOrderDetails = async (orderId) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.get(`http://127.0.0.1:8000/api/order/details/${orderId}`, {
+  return axios.get(`/api/order/details/${orderId}`, {
     headers: {
       Authorization: `Bearer ${token}`, // Gửi token trong header
     },
@@ -294,7 +294,7 @@ const GetOrderDetails = async (orderId) => {
 
 const GetUserStatistics = () => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.get("http://localhost:8000/api/statistics/users", {
+  return axios.get("/api/statistics/users", {
     headers: {
       Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
     },
@@ -304,7 +304,7 @@ const GetUserStatistics = () => {
 const UpdateOrderStatus = (OrderID, OrderStatusID) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(
-    `http://127.0.0.1:8000/api/order/status/${OrderID}`,
+    `/api/order/status/${OrderID}`,
     {
       OrderStatusID: OrderStatusID,
     },

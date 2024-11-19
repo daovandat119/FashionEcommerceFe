@@ -127,12 +127,12 @@ const ProductsList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">Products Management</h1>
+      <h1 className="text-2xl font-bold mb-6">Quản lý sản phẩm</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2 bg-white rounded-lg shadow">
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            label="Search products"
+            label="Tìm kiếm sản phẩm"
             value={searchTerm}
             onChange={handleSearchChange}
             onKeyPress={handleKeyPress}
@@ -158,12 +158,12 @@ const ProductsList = () => {
             <thead className="bg-white">
               <tr>
                 <th className="border-b p-4 w-1 text-left">Select</th>
-                <th className="border-b p-4 text-left">Name</th>
-                <th className="border-b p-4 text-left">Category</th>
-                <th className="border-b p-4 text-left">Price</th>
-                <th className="border-b p-4 text-left">Sale Price</th>
-                <th className="border-b p-4 text-left">Active</th>
-                <th className="border-b p-4 text-left">Actions</th>
+                <th className="border-b p-4 text-left">Tên sản phẩm</th>
+                <th className="border-b p-4 text-left">Danh mục</th>
+                <th className="border-b p-4 text-left">Giá</th>
+                <th className="border-b p-4 text-left">Giá Sale</th>
+                <th className="border-b p-4 text-left">Trạng thái</th>
+                <th className="border-b p-4 text-left">Chức năng</th>
               </tr>
             </thead>
             <tbody>
