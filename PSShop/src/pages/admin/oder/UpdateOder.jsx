@@ -84,7 +84,6 @@ const UpdateOrder = () => {
     } finally {
       setLoading(false);
     }
-
     setOrderDetails((prevDetails) => ({
       ...prevDetails,
       OrderStatusID: selectedValue,
@@ -295,8 +294,8 @@ const UpdateOrder = () => {
           </Typography>
         </div>
         <div className="flex justify-end mt-4">
-          <Button color="red" onClick={handleCancel}>
-            Hủy
+          <Button color="blue" onClick={handleCancel}>
+            Thoát
           </Button>
         </div>
       </div>
@@ -305,3 +304,4 @@ const UpdateOrder = () => {
 };
 
 export default UpdateOrder;
+

@@ -27,7 +27,7 @@ import ProductDetailsPage2 from "./components/products-detail/detail";
 import ContactPage from "./pages/contact";
 
 // Admin imports
-import AdminLayout from "./pages/admin/statistical/AdminLayout";
+import AdminLayout from "./pages/admin/AdminLayout";
 import Dashboard from "./pages/admin/dashboard/Dashboards";
 import ProductsList from "./pages/admin/products/ProductsList";
 import CategoriesList from "./pages/admin/categories/CategoriesList";
@@ -107,7 +107,14 @@ const AppRoutes = () => {
         <ThemeProvider>
           <Routes>
             {/* Client routes */}
-            <Route path="/" element={<LoginProvider><HomePages /></LoginProvider>} />
+            <Route
+              path="/"
+              element={
+                <LoginProvider>
+                  <HomePages />
+                </LoginProvider>
+              }
+            />
             <Route path="shop" element={<ShopPages1 />} />
             <Route path="blogs" element={<BlogPage1 />} />
             <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
@@ -188,11 +195,17 @@ const AppRoutes = () => {
               <Route path="orders/edit/:OrderID" element={<UpdateOrder />} />
               <Route path="vouchers" element={<VoucherList />} />
               <Route path="vouchers/add" element={<AddVoucher />} />
-              <Route path="vouchers/edit/:VoucherID" element={<UpdateVoucher />} />
+              <Route
+                path="vouchers/edit/:VoucherID"
+                element={<UpdateVoucher />}
+              />
               <Route path="user-statistics" element={<StatisticalUsers />} />
               <Route path="profile" element={<ProfileAdmin />} />
               <Route path="profile/edit" element={<UpdateProfileAdmin />} />
-              <Route path="product-statistics" element={<StatisticalProducts />} />
+              <Route
+                path="product-statistics"
+                element={<StatisticalProducts />}
+              />
             </Route>
 
             {/* Error route - Phải đặt ở cuối cùng */}

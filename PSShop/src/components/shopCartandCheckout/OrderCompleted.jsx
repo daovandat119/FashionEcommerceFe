@@ -67,7 +67,7 @@ export default function OrderCompleted() {
           Tiếp tục mua sắm
         </a>
         <a
-          href="/account_orders"
+          href="/orders"
           className="inline-block bg-gray-800 text-white px-8 py-3 rounded-md hover:bg-gray-900 transition-colors"
         >
           Xem đơn hàng

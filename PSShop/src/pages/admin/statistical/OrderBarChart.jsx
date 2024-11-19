@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -10,19 +10,33 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Dữ liệu mẫu cho thống kê đơn hàng
-const data = [
-  { name: 'Đơn hàng tháng 1', sốLượng: 4000 },
-  { name: 'Đơn hàng tháng 2', sốLượng: 3000 },
-  { name: 'Đơn hàng tháng 3', sốLượng: 2000 },
-  { name: 'Đơn hàng tháng 4', sốLượng: 2780 },
-  { name: 'Đơn hàng tháng 5', sốLượng: 1890 },
-  { name: 'Đơn hàng tháng 6', sốLượng: 2390 },
-];
+import { GetOrderStatusStatistics } from '../service/api_service';
 
 const OrderBarChart = () => {
+  const [data, setData] = useState([]);
+  const GetOrderStatus = async () => {
+    try {
+        const response = await GetOrderStatusStatistics();
+        if (response.data && Array.isArray(response.data)) {
+            setData(response.data.map(item => ({
+               name: item.StatusName,
+               sốLượng: item.TotalOrders
+            })));
+        } else {
+            console.error("No product data found or data is not in expected format.");
+        }
+    } catch (error) {
+        console.error("Error fetching order statuses:", error);
+    }
+}
+
+  useEffect(() => {
+    GetOrderStatus();
+  }, []);
+
   return (
     <ResponsiveContainer width="100%" height={400}>
+        <p className='text-lg font-semibold border-t-2 border-gray-300 py-3'>Đơn hàng : 4</p>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />

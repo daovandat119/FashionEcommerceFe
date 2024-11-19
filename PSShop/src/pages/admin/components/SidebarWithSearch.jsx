@@ -76,7 +76,7 @@ export function SidebarWithSearch() {
         </ListItem>
 
         <div
-          className={`absolute left-0 ml-12 top-60 w-48 mt-2 transition-all duration-800 ease-in-out z-50 ${
+          className={`absolute left-0 ml-12 top-60 w-48 mt-1 transition-all duration-300 ease-in-out z-50 ${
             isDropdownOpen
               ? "h-48 opacity-100"
               : "max-h-0 opacity-0 overflow-hidden"
@@ -85,7 +85,7 @@ export function SidebarWithSearch() {
           {isDropdownOpen && (
             <>
               <Link to="/admin/products">
-                <ListItem className="bg-white duration-800 border-b-2 border-gray-200 rounded-xl transition-opacity duration-300">
+                <ListItem className="bg-white duration-300 border-b-2 border-gray-200 rounded-xl transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <ShoppingBagIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -93,7 +93,7 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/categories">
-                <ListItem className="bg-white duration-800 rounded-xl border-b-2 border-gray-200 transition-opacity duration-300">
+                <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <InboxIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -101,7 +101,7 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/colors">
-                <ListItem className="bg-white duration-800 rounded-xl border-b-2 border-gray-200 transition-opacity duration-300">
+                <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <SwatchIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -109,7 +109,7 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/sizes">
-                <ListItem className="bg-white duration-800 rounded-xl border-b-2 border-gray-200 transition-opacity duration-300">
+                <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <ArrowsPointingOutIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -168,7 +168,7 @@ export function SidebarWithSearch() {
         </ListItem>
 
         <div
-          className={`absolute left-0 bottom-2 ml-11 mb-3 w-52 transition-all z-50 duration-800 ease-in-out ${
+          className={`absolute left-0 bottom-2 ml-11 mb-1 w-52 transition-all z-50 duration-300 ease-in-out ${
             isStatsDropdownOpen
               ? "opacity-100 "
               : "max-h-0 opacity-0 overflow-hidden"
@@ -177,7 +177,7 @@ export function SidebarWithSearch() {
           {isStatsDropdownOpen && (
             <div>
               <Link to="/admin/user-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
                   <ListItemPrefix>
                     <UserCircleIcon className="h-5 w-5" />
                   </ListItemPrefix>
@@ -185,27 +185,27 @@ export function SidebarWithSearch() {
                 </ListItem>
               </Link>
               <Link to="/admin/product-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
                   <ListItemPrefix>
                     <ShoppingBagIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Product Statistics
+                  Sản phẩm
                 </ListItem>
               </Link>
               <Link to="/admin/order-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
                   <ListItemPrefix>
                     <ShoppingCartIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Order Statistics
+                  Đơn hàng
                 </ListItem>
               </Link>
               <Link to="/admin/revenue-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
                   <ListItemPrefix>
                     <ChartBarIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Revenue Statistics
+                  Khác
                 </ListItem>
               </Link>
             </div>
@@ -219,35 +219,35 @@ export function SidebarWithSearch() {
           <ListItemPrefix>
             <Cog6ToothIcon className="h-5 w-5" />
           </ListItemPrefix>
-          Settings
+          Cài đặt
           <ChevronRightIcon className="h-5 w-5 ml-10" />
         </ListItem>
 
         <div
-          className={`absolute left-0 bottom-12 ml-11 mb-3 w-52  transition-all duration-800 ease-in-out ${
+          className={`absolute left-0 bottom-12 ml-11 mb-1 w-52 transition-all duration-300 ease-in-out ${
             isSettingsDropdownOpen
-              ? "opacity-100 "
+              ? "opacity-100"
               : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
           {isSettingsDropdownOpen && (
             <div>
               <Link to="users/profile">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800">
+                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
                   <ListItemPrefix>
                     <UserCircleIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  Profile
+                  Thông tin Admin
                 </ListItem>
               </Link>
               <ListItem
                 onClick={handleLogout}
-                className="bg-white border-b-2 rounded-xl hover:bg-gray-200 duration-800 cursor-pointer"
+                className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300 cursor-pointer"
               >
                 <ListItemPrefix>
                   <PowerIcon className="h-5 w-5" />
                 </ListItemPrefix>
-                Logout
+                Đăng xuất
               </ListItem>
             </div>
           )}

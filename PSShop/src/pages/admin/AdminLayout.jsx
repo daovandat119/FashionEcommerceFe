@@ -1,9 +1,9 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import { SidebarWithSearch } from '../components/SidebarWithSearch';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { SidebarWithSearch } from "./components/SidebarWithSearch";
 
 const AdminLayout = () => {
-  return (      
+  return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-[20%] max-w-[300px]">
         <SidebarWithSearch />
@@ -16,4 +16,3 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
-
