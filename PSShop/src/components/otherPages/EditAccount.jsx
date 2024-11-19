@@ -7,33 +7,7 @@ export default function EditAccount() {
             onSubmit={(e) => e.preventDefault()}
             className="needs-validation"
           >
-            <div className="row">
-              <div className="col-md-6">
-                <div className="form-floating my-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="account_first_name"
-                    placeholder="Họ"
-                    required
-                  />
-                  <label htmlFor="account_first_name">Họ</label>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="form-floating my-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="account_last_name"
-                    placeholder="Tên"
-                    required
-                  />
-
-                  <label htmlFor="account_last_name">Tên</label>
-                </div>
-              </div>
+            <div className="row">          
               <div className="col-md-12">
                 <div className="form-floating my-3">
                   <input

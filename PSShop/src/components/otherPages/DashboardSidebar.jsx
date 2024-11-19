@@ -5,7 +5,7 @@ export default function DashboardSidebar() {
   const navigate = useNavigate();
 
   const dashboardMenuItems = [
-    { id: 1, href: "/account_dashboard", title: "BẢNG ĐIỀU KHIỂN" },
+    // { id: 1, href: "/account_dashboard", title: "BẢNG ĐIỀU KHIỂN" },
     { id: 2, href: "/account_orders", title: "ĐƠN HÀNG " },
     { id: 3, href: "/account_edit_address", title: "ĐỊA CHỈ" },
     { id: 4, href: "/account_edit", title: "Chi tiết tài khoản" },

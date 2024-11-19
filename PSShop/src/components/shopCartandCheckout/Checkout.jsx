@@ -5,6 +5,8 @@ import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
 import { useContextElement } from "../../context/Context";
 import Swal from "sweetalert2";
+import shipcodlogo from '../../assets/shipcodlogo.png';
+import logovnpay from '../../assets/logovnpay.png';
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
@@ -21,6 +23,23 @@ export default function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [coupons, setCoupons] = useState([]);
   const [shippingFee, setShippingFee] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [selectedCouponId, setSelectedCouponId] = useState(null);
+  const [canceledOrderCount, setCanceledOrderCount] = useState(0);
+  const [paymentMethods, setPaymentMethods] = useState([
+    {
+      id: 1,
+      name: "Thanh toán khi nhận hàng (COD)",
+      description: "Thanh toán tiền mặt khi nhận hàng",
+      image: shipcodlogo
+    },
+    {
+      id: 2,
+      name: "Thanh toán qua VNPAY",
+      description: "Thanh toán trực tuyến qua VNPAY",
+      image: logovnpay
+    }
+  ]);
 
   useEffect(() => {
     if (!orderData.PaymentMethodID) {
@@ -28,18 +47,38 @@ export default function Checkout() {
     }
   }, [orderData.PaymentMethodID, updateOrderData]);
 
-  const paymentMethods = [
-    {
-      id: 1,
-      name: "Thanh toán khi nhận hàng (COD)",
-      description: "Thanh toán tiền mặt khi nhận hàng",
-    },
-    {
-      id: 2,
-      name: "Thanh toán qua VNPAY",
-      description: "Thanh toán trực tuyến qua VNPAY",
-    },
-  ];
+  useEffect(() => {
+    const checkCanceledOrders = async () => {
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/order/views",
+          { OrderStatusID: 4 }, // 4 là trạng thái đã hủy
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        
+        // Đếm số đơn hàng đã hủy trong tháng hiện tại
+        const canceledOrders = response.data.data.filter(order => {
+          const orderDate = new Date(order.OrderDate);
+          const oneMonthAgo = new Date();
+          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+          return orderDate >= oneMonthAgo;
+        });
+        
+        setCanceledOrderCount(canceledOrders.length);
+        
+        // Nếu đã hủy quá 3 đơn, vô hiệu hóa COD
+        if (canceledOrders.length > 3) {
+          updateOrderData({ PaymentMethodID: 2 }); // Tự động chọn VNPAY
+        }
+      } catch (error) {
+        console.error("Lỗi khi kiểm tra đơn hàng đã hủy:", error);
+      }
+    };
+
+    checkCanceledOrders();
+  }, [token]);
 
   const handlePaymentMethodSelect = (methodId) => {
     updateOrderData({ PaymentMethodID: parseInt(methodId) });
@@ -112,44 +151,189 @@ export default function Checkout() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, totalPrice]);
 
+  const handleCouponSelect = async (couponCode) => {
+    try {
+      if (!couponCode) {
+        setAppliedCoupon("");
+        setDiscount(0);
+        setSelectedCouponId(null);
+        return;
+      }
+
+      const selectedCoupon = coupons.find(coupon => coupon.Code === couponCode);
+      
+      // Kiểm tra số lượt sử dụng còn lại
+      if (selectedCoupon.UsedCount >= selectedCoupon.UsageLimit) {
+        setCouponError("Mã giảm giá đã hết lượt sử dụng");
+        setAppliedCoupon("");
+        setDiscount(0);
+        setSelectedCouponId(null);
+        return;
+      }
+
+      // Kiểm tra giá trị đơn hàng tối thiểu
+      if (totalPrice < selectedCoupon.MinimumOrderValue) {
+        setCouponError(`Đơn hàng cần tối thiểu ${selectedCoupon.MinimumOrderValue}VND để sử dụng mã này`);
+        setAppliedCoupon("");
+        setDiscount(0);
+        setSelectedCouponId(null);
+        return;
+      }
+
+      setAppliedCoupon(couponCode);
+      setSelectedCouponId(selectedCoupon.CouponID);
+      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
+      setDiscount(discountAmount);
+      setCouponError("");
+
+    } catch (error) {
+      console.error("Lỗi khi áp dụng mã giảm giá:", error);
+      setAppliedCoupon("");
+      setDiscount(0);
+      setSelectedCouponId(null);
+      setCouponError("Không thể áp dụng mã giảm giá");
+    }
+  };
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!cartItems.length) {
+    try {
+      if (canceledOrderCount > 3 && orderData.PaymentMethodID === 1) {
+        setError("Bạn đã hủy quá 3 đơn hàng trong tháng này. Vui lòng sử dụng thanh toán VNPAY.");
+        return;
+      }
+
+      // 1. Kiểm tra giỏ hàng
+      if (!cartItems.length) {
         setError("Giỏ hàng trống");
         return;
-    }
+      }
 
-    const total = totalPrice + shippingFee;
+      // 2. Kiểm tra địa chỉ
+      const defaultAddress = addresses.find(addr => addr.IsDefault === 1);
+      if (!defaultAddress) {
+        setError("Vui lòng chọn địa chỉ giao hàng");
+        return;
+      }
 
-    const orderPayload = {
-        PaymentMethodID: orderData.PaymentMethodID, 
-        TotalAmount: total, // Tổng số tiền
-    };
+      // 3. Kiểm tra giá trị đơn hàng
+      const total = totalPrice + shippingFee - discount;
+      if (total <= 0) {
+        setError("Giá trị đơn hàng không hợp lệ");
+        return;
+      }
 
-    try {
-        const response = await axios.post("http://127.0.0.1:8000/api/order", orderPayload, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
+      // 4. Kiểm tra phương thức thanh toán
+      if (!orderData.PaymentMethodID) {
+        setError("Vui lòng chọn phương thức thanh toán");
+        return;
+      }
 
-        if (response.data.status === "success") {
-            setCartItems([]);
-            navigate(`/shop_order_complete/${response.data.data.OrderID}`);
-        } else if (response.data.vnpay_url) {
-          window.location.href = response.data.vnpay_url;
+      // 5. Tạo payload sau khi đã kiểm tra
+      const orderPayload = {
+        PaymentMethodID: parseInt(orderData.PaymentMethodID),
+        TotalAmount: parseFloat(total),
+        ShippingFee: parseFloat(shippingFee),
+        AddressID: parseInt(defaultAddress.AddressID),
+        ...(selectedCouponId && { CouponID: parseInt(selectedCouponId) })
+      };
 
-        } else {
-            setError("Đặt hàng thất bại. Vui lòng thử lại.");
+      // 6. Kiểm tra lại payload trước khi gửi
+      if (!orderPayload.PaymentMethodID || !orderPayload.AddressID || !orderPayload.TotalAmount) {
+        setError("Thông tin đơn hàng không đầy đủ");
+        return;
+      }
+
+      console.log("Order Payload:", orderPayload);
+
+      const orderResponse = await axios.post(
+        "http://127.0.0.1:8000/api/order",
+        orderPayload,
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
         }
+      );
+
+      // 7. Kiểm tra response trước khi xử lý
+      if (!orderResponse.data) {
+        setError("Không nhận được phản hồi từ server");
+        return;
+      }
+
+      if (orderResponse.data.status === "success") {
+        setCartItems([]);
+        if (orderData.PaymentMethodID === 2) {
+          window.location.href = orderResponse.data.data;
+        } else {
+          navigate(`/order_completed/${orderResponse.data.data}`);
+        }
+      } else {
+        setError(orderResponse.data.message || "Đặt hàng thất bại. Vui lòng thử lại.");
+        return; // Dừng xử lý nếu có lỗi
+      }
     } catch (err) {
-        console.error("Chi tiết lỗi:", err);
-        setError("Đặt hàng thất bại. Vui lòng thử lại.");
+      console.error("Chi tiết lỗi:", err);
+      if (err.response?.data?.message) {
+        setError(`Đặt hàng thất bại: ${err.response.data.message}`);
+      } else {
+        setError("Đặt hàng thất bại. Vui lòng thử lại sau.");
+      }
+      return; // Dừng xử lý khi có lỗi
     }
-};
+  };
+
+  const renderPaymentMethods = () => {
+    return (
+      <div className="space-y-4">
+        {paymentMethods.map((method) => {
+          const isDisabled = method.id === 1 && canceledOrderCount > 3;
+          
+          return (
+            <div key={method.id} className={`relative ${isDisabled ? 'opacity-50' : ''}`}>
+              <input
+                type="radio"
+                name="payment-method"
+                id={`payment-${method.id}`}
+                value={method.id}
+                checked={orderData.PaymentMethodID === method.id}
+                onChange={() => handlePaymentMethodSelect(method.id)}
+                disabled={isDisabled}
+                className="hidden"
+              />
+              <label
+                htmlFor={`payment-${method.id}`}
+                className={`block p-4 border rounded-lg 
+                  ${orderData.PaymentMethodID === method.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}
+                  ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-blue-300'}`}
+              >
+                <div className="flex items-center gap-4">
+                  <img 
+                    src={method.image} 
+                    alt={method.name}
+                    className="w-12 h-12 object-contain"
+                  />
+                  <div>
+                    <div className="font-medium text-gray-900">{method.name}</div>
+                    <div className="text-sm text-gray-500 mt-1">{method.description}</div>
+                    {isDisabled && (
+                      <div className="text-sm text-red-500 mt-1">
+                        Không khả dụng do bạn đã hủy quá 3 đơn hàng trong tháng này
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </label>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
@@ -184,53 +368,43 @@ export default function Checkout() {
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Phương Thức Thanh Toán</h3>
-              <div className="space-y-4">
-                {paymentMethods.map((method) => (
-                  <label key={method.id} className={`block p-4 border rounded-lg cursor-pointer transition-all ${orderData.PaymentMethodID === method.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name="payment"
-                        value={method.id}
-                        checked={orderData.PaymentMethodID === method.id}
-                        onChange={() => handlePaymentMethodSelect(method.id)}
-                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                      />
-                      <div className="ml-3">
-                        <div className="font-medium text-gray-900">{method.name}</div>
-                        <div className="text-sm text-gray-500 mt-1">{method.description}</div>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
+              {renderPaymentMethods()}
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Mã Giảm Giá</h3>
               {loadingCoupons ? (
                 <p>Đang tải mã giảm giá...</p>
               ) : (
-                <select
-                  value={appliedCoupon}
-                  onChange={(e) => {
-                    const selectedCoupon = coupons.find(coupon => coupon.Code === e.target.value);
-                    setAppliedCoupon(e.target.value);
-                    if (selectedCoupon) {
-                      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
-                      setDiscount(discountAmount);
-                    } else {
-                      setDiscount(0);
-                    }
-                  }}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                >
-                  <option value="">Chọn mã giảm giá</option>
-                  {coupons.map((coupon) => (
-                    <option key={coupon.Code} value={coupon.Code}>
-                      {coupon.Name} - {coupon.DiscountPercentage}%
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <select
+                    value={appliedCoupon}
+                    onChange={(e) => handleCouponSelect(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                  >
+                    <option value="">Chọn mã giảm giá</option>
+                    {coupons.map((coupon) => (
+                      <option 
+                        key={coupon.CouponID} 
+                        value={coupon.Code}
+                        disabled={coupon.UsedCount >= coupon.UsageLimit}
+                      >
+                        {coupon.Name} - {coupon.DiscountPercentage}% 
+                        {coupon.UsedCount >= coupon.UsageLimit 
+                          ? " (Đã hết lượt sử dụng)"
+                          : ` (Còn ${coupon.UsageLimit - coupon.UsedCount} lượt sử dụng)`
+                        }
+                      </option>
+                    ))}
+                  </select>
+                  {couponError && (
+                    <p className="text-red-500 text-sm mt-2">{couponError}</p>
+                  )}
+                  {appliedCoupon && !couponError && (
+                    <p className="text-green-500 text-sm mt-2">
+                      Đã áp dụng mã giảm giá thành công!
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </div>
