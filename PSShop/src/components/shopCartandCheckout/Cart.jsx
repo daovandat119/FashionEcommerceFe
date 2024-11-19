@@ -1,8 +1,9 @@
-import { toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
+
 
 export default function Cart() {
   const {
@@ -16,16 +17,21 @@ export default function Cart() {
     removeSelectedItems,
   } = useContextElement();
 
+
+
   useEffect(() => {
     fetchCartItems(); 
   }, [fetchCartItems]);
+
+ 
+  
 
   const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
     if (newQuantity < 1) return; 
 
     const token = localStorage.getItem("token"); 
     try {
-      await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
+       await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
         productID, 
         colorID, 
         sizeID, 
@@ -34,6 +40,7 @@ export default function Cart() {
         headers: { Authorization: `Bearer ${token}` }, 
       });
 
+      // Cập nhật trạng thái giỏ hàng mà không cần gọi lại fetchCartItems
       setCartProducts(prevProducts => 
         prevProducts.map(item => 
           item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
@@ -200,7 +207,7 @@ export default function Cart() {
               onClick={(e) => {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
-                  toast("Giỏ hàng trống!");
+                 toast("Giỏ hàng trống!")
                 }
               }}
             >

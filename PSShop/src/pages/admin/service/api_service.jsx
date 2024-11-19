@@ -174,7 +174,7 @@ const BlockedUser = (UserID) => {
 };
 
 const UpdateUserStatus = (UserID, data = null) => {
-  // Nếu data không được cung c��p, gọi API để khôi phục người dùng
+  // Nếu data không được cung cp, gọi API để khôi phục người dùng
   if (!data) {
     return axios.post(`/api/users/restore/${UserID}`); // Gửi yêu cầu POST để khôi phục người dùng
   } else {
@@ -259,7 +259,7 @@ const UpdateAddress = (addressId, addressData) => {
   });
 };
 
-// Hàm để lấy ��ơn hàng
+// Hàm để lấy ơn hàng
 const GetOrders = async () => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(
@@ -315,6 +315,47 @@ const UpdateOrderStatus = (OrderID, OrderStatusID) => {
     }
   );
 };
+
+const GetProductStatistics = async () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return await axios.post(
+    `http://127.0.0.1:8000/api/statistics/products`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
+      },
+    }
+  );
+};
+
+const GetProductVariantsStatistics = async (ProductID) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return await axios.get(`http://127.0.0.1:8000/api/statistics/product-variants/${ProductID}`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
+    },
+  });
+};
+
+const GetOrdersStatistics = async () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return await axios.get("http://127.0.0.1:8000/api/statistics/orders", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+const GetOrderStatusStatistics = async () => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return await axios.get("http://127.0.0.1:8000/api/statistics/order-statuses", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export {
   LoginAdmin,
   ListCategories,
@@ -363,4 +404,8 @@ export {
   GetOrderDetails, // Thêm hàm lấy chi tiết đơn hàng theo ID
   GetUserStatistics, // Thêm hàm GetUserStatistics vào export
   UpdateOrderStatus, // Thêm hàm UpdateOrderStatus vào export
+  GetProductStatistics,
+  GetProductVariantsStatistics,
+  GetOrdersStatistics,
+  GetOrderStatusStatistics,
 };

@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const steps = [
   {
@@ -25,7 +27,7 @@ const steps = [
   },
 ];
 
-export default function ChectoutSteps({ cartProducts }) { // Nhận giỏ hàng như một prop
+export default function ChectoutSteps() {
   const [activePathIndex, setactivePathIndex] = useState(0);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -45,13 +47,10 @@ export default function ChectoutSteps({ cartProducts }) { // Nhận giỏ hàng 
       return;
     }
 
-    // Chỉ cho phép đi tới checkout nếu giỏ hàng không trống
-    if (href === "/shop_checkout") {
-      if (cartProducts.length === 0) {
-        alert("Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
-        return;
-      }
-      navigate(href);
+    // Chỉ cho phép đi tới checkout nếu đang ở giỏ hàng
+    if (href === "/shop_checkout" && activePathIndex === 0) {
+      toast.warning("Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
+      navigate("/shop");
       return;
     }
 

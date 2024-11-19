@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import OrderChart from './OrderChart';
 import OrderBarChart from './OrderBarChart';
 import RevenueChart from './RevenueChart';
 import ProductSalesTable from './ProductSalesChart';
@@ -23,11 +22,7 @@ function StatisticalProducts() {
                 <h3 className="text-lg">Bộ lọc</h3>
                 <div className="flex justify-between">
                     <div className="w-[20%]">
-                        <label className="block mb-1">Chọn loại biểu đồ</label>
-                        <select className="border rounded-md p-2 w-full" onChange={handleChartTypeChange}>
-                            <option value="line">Biểu đồ đường</option>
-                            <option value="bar">Biểu đồ cột</option>
-                        </select>
+                       
                     </div>
                     <div className="flex justify-end gap-2 w-[100%]">
                         <div className="w-[35%]">
@@ -69,7 +64,7 @@ function StatisticalProducts() {
                         <label className="block mb-1">Mã Đơn hàng</label>
                         <input
                             type="text"
-                            placeholder="Nhập tài khoản nhân viên"
+                            placeholder="Nhập mã đơn hàng"
                             className="border rounded-md p-2 w-full"
                         />
                     </div>
@@ -77,7 +72,10 @@ function StatisticalProducts() {
             </div>
 
             <div className="w-[95%] mx-auto">
-                {chartType === 'line' ? <OrderChart /> : <OrderBarChart />}
+
+                
+                {<OrderBarChart />}
+
             </div>
 
             <div className="w-[95%] mx-auto mt-5">
