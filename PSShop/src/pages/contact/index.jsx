@@ -1,5 +1,4 @@
 import Contact from "../../components/contact/Contact";
-import LocationMap from "../../components/contact/LocationMap";
 import Footers from "../../components/footers/Footers";
 import Headers from "../../components/headers/Headers";
 
@@ -18,9 +17,6 @@ export default function ContactPage() {
 
         <section className="google-map mb-5">
           <h2 className="d-none">Contact US</h2>
-          <div id="map" className="google-map__wrapper">
-            <LocationMap />
-          </div>
         </section>
         <Contact />
       </main>

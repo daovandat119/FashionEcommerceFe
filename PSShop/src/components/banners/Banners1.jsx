@@ -1,6 +1,6 @@
 //import { Link } from "react-router-dom";
 
-import BannerLinks from "../shop/BannerLinks";
+// import BannerLinks from "../shop/BannerLinks";
 
 export default function Banner1() {
   return (
@@ -28,9 +28,9 @@ export default function Banner1() {
             <h2 className="stroke-text h1 smooth-16 text-uppercase fw-bold mb-3 mb-xl-4 mb-xl-5">
               Áo khoác & Áo choàng
             </h2>
-            <ul className="d-flex flex-wrap list-unstyled text-uppercase h6">
+            {/* <ul className="d-flex flex-wrap list-unstyled text-uppercase h6">
               <BannerLinks />
-            </ul>
+            </ul> */}
           </div>
           {/* <!-- /.shop-banner__content --> */}
         </div>

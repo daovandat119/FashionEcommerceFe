@@ -1,9 +1,21 @@
 import { products51 } from "../../data/products/fashion";
-import { menuCategories } from "../../data/products/productCategories";
+
 
 import { useEffect, useState } from "react";
 
 export default function BannerLinks() {
+const  menuCategories = [
+    "All",
+    "StayHome",
+    "Jackets",
+    "Hoodies",
+    "Men",
+    "Women",
+    "Accessories",
+    "Shoes",
+  ];
+  
+
   const [currentCategory, setCurrentCategory] = useState(menuCategories[0]);
   // eslint-disable-next-line no-unused-vars
   const [filtered, setFiltered] = useState(products51);

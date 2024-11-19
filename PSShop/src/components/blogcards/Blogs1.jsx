@@ -1,21 +1,7 @@
 import Pagination1 from "../common/Pagination1";
-import { blogs12 } from "../../data/blog";
-import { categories } from "../../data/blog";
-import { useEffect, useState } from "react";
 
 export default function Blog1() {
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
-  const [filteredBlogs, setFilteredBlogs] = useState(blogs12);
-  
-  useEffect(() => {
-    if (activeCategory == "ALL") {
-      setFilteredBlogs(blogs12);
-    } else {
-      setFilteredBlogs([
-        ...blogs12.filter((elm) => elm.category.includes(activeCategory)),
-      ]);
-    }
-  }, [activeCategory]);
+
 
   return (
     <>
@@ -29,57 +15,12 @@ export default function Blog1() {
             alt="hình ảnh"
           />
         </div>
-        <div className="container">
-          <h2 className="page-title text-white">Bài viết</h2>
-          <div className="blog__filter">
-            {categories.map((elm, i) => (
-              <a
-                onClick={() => setActiveCategory(elm)}
-                key={i}
-                className={`menu-link menu-link_us-s text-white ${
-                  activeCategory == elm ? "menu-link_active" : ""
-                }`}
-              >
-                {elm}
-              </a>
-            ))}
-          </div>
-        </div>
       </section>
       <section className="blog-page container">
         <h2 className="d-none">Bài viết</h2>
-        <div className="blog-grid row row-cols-1 row-cols-md-2">
-          {filteredBlogs.map((elm, i) => (
-            <div key={i} className="blog-grid__item">
-              <div className="blog-grid__item-image">
-                <img
-                  loading="lazy"
-                  className="h-auto"
-                  src={elm.imgSrc}
-                  width="690"
-                  height="500"
-                  alt="hình ảnh"
-                />
-              </div>
-              <div className="blog-grid__item-detail">
-                <div className="blog-grid__item-meta">
-                  <span className="blog-grid__item-meta__author">
-                    Tác giả: {elm.author}
-                  </span>
-                  <span className="blog-grid__item-meta__date">{elm.date}</span>
-                </div>
-                <div className="blog-grid__item-title">
-                  <div to={`/blog_single/${elm.id}`}>{elm.title}</div>
-                </div>
-                <div className="blog-grid__item-content">
-                  <p>{elm.content}</p>
-                  <p className="readmore-link">Tiếp tục đọc</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="mb-5 text-center fw-medium">HIỂN THỊ 36 trong số 497 bài viết</p>
+        <p className="mb-5 text-center fw-medium">
+          HIỂN THỊ 36 trong số 497 bài viết
+        </p>
         <Pagination1 />
 
         <div className="text-center">

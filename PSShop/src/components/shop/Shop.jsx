@@ -5,16 +5,34 @@ import { useContextElement } from "../../context/Context";
 import BreadCumb from "./BreadCumb";
 import Pagination1 from "../common/Pagination1";
 import { openModalShopFilter } from "../../utlis/aside";
-import {
-  menuCategories,
-  sortingOptions,
-} from "../../data/products/productCategories";
 import FilterAll from "./filter/FilterAll";
 import axios from "axios";
 
 const itemPerRow = [2, 3, 4];
 
 export default function Shop1() {
+  const menuCategories = [
+    "All",
+    "StayHome",
+    "Jackets",
+    "Hoodies",
+    "Men",
+    "Women",
+    "Accessories",
+    "Shoes",
+  ];
+  const sortingOptions = [
+    { label: "Default Sorting", value: "", selected: true },
+    { label: "Featured", value: "1" },
+    { label: "Best selling", value: "2" },
+    { label: "Alphabetically, A-Z", value: "3" },
+    { label: "Alphabetically, Z-A", value: "4" },
+    { label: "Price, low to high", value: "5" },
+    { label: "Price, high to low", value: "6" },
+    { label: "Date, old to new", value: "7" },
+    { label: "Date, new to old", value: "8" },
+  ];
+
   const { toggleWishlist, isInWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(3);
   const [currentCategory] = useState(menuCategories[0]);
@@ -125,20 +143,20 @@ export default function Shop1() {
                 <div key={i} className="product-card-wrapper">
                   <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                     <div className="pc__img-wrapper">
-                    <Link to={`/shop-detail/${elm.ProductID}`}>
-                      <img
-                        loading="lazy"
-                        src={elm.MainImageURL}
-                        width="330"
-                        height="400"
-                        alt={elm.ProductName}
-                        className="pc__img"
-                      />
-                      {elm.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
-                          -{elm.discount_percentage}%
-                        </span>
-                      )}
+                      <Link to={`/shop-detail/${elm.ProductID}`}>
+                        <img
+                          loading="lazy"
+                          src={elm.MainImageURL}
+                          width="330"
+                          height="400"
+                          alt={elm.ProductName}
+                          className="pc__img"
+                        />
+                        {elm.discount_percentage > 0 && (
+                          <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                            -{elm.discount_percentage}%
+                          </span>
+                        )}
                       </Link>
                     </div>
 
