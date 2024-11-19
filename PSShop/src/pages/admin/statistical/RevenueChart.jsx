@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -10,38 +10,48 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Dữ liệu mẫu cho thống kê doanh thu
-const data = [
-  { date: '21/02/2020', revenue: 5000000 },
-  { date: '22/02/2020', revenue: 6000000 },
-  { date: '23/02/2020', revenue: 7000000 },
-  { date: '24/02/2020', revenue: 8000000 },
-  { date: '25/02/2020', revenue: 9000000 },
-  { date: '26/02/2020', revenue: 10000000 },
-  { date: '27/02/2020', revenue: 11000000 },
-  { date: '28/02/2020', revenue: 12000000 },
-  { date: '01/03/2020', revenue: 13000000 },
-  { date: '02/03/2020', revenue: 14000000 },
-  { date: '03/03/2020', revenue: 15000000 },
-  { date: '04/03/2020', revenue: 16000000 },
-  { date: '05/03/2020', revenue: 17000000 },
-];
+import { GetOrdersStatistics } from '../service/api_service';
 
 const RevenueChart = () => {
-  const totalRevenue = data.reduce((acc, item) => acc + item.revenue, 0);
+  const [data, setData] = useState([]);
+
+  const GetRevenueStatistics = async () => {
+    const response = await GetOrdersStatistics();
+
+      if (response.data && Array.isArray(response.data)) {
+        const formattedData = response.data
+          .map(item => ({
+            Date: `Tháng ${item.Month}`,
+            TotalRevenue: parseFloat(item.TotalRevenue),     
+            TotalOrder: item.TotalTransactions
+          }));
+        setData(formattedData);
+      } else {
+          console.error("No product data found or data is not in expected format.");
+      }
+  }
+
+
+  useEffect(() => {
+    GetRevenueStatistics();
+  }, []);
+  const totalRevenue = data.reduce((acc, item) => acc + item.TotalRevenue, 0);
+  const totalTransactions = data.reduce((acc, item) => acc + item.TotalOrder, 0);
 
   return (
     <div>
-      <h3 className="text-lg border-t-2 border-gray-300 py-3 font-semibold ">Doanh thu</h3>
+      <h1 className="text-lg border-t-2 border-gray-300 py-3 font-semibold ">Doanh thu</h1>
       <h4 className="text-xl font-bold mt-2 mb-5">{totalRevenue.toLocaleString()}đ</h4>
+      <h4 className="text-xl font-bold mt-2 mb-5">Tổng Đơn hàng: {totalTransactions.toLocaleString()}</h4>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
+          <XAxis dataKey="Date" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="revenue" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="TotalRevenue" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="TotalOrder" stroke="#ff7300" />
         </LineChart>
       </ResponsiveContainer>
     </div>
