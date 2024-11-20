@@ -84,7 +84,7 @@ const SearchBar = () => {
                 >
                   {/* Hiển thị hình ảnh sản phẩm */}
                   <img
-                    src={product.ProductImage}
+                    src={product.MainImageURL}
                     alt={product.ProductName}
                     className="w-16 h-16 object-cover mr-4 rounded-md"
                   />
