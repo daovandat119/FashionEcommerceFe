@@ -13,9 +13,7 @@ export default function Checkout() {
   const { setTotalPrice, totalPrice } = useContextElement();
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const [loadingAddresses, setLoadingAddresses] = useState(true);
-  const [loadingCartItems, setLoadingCartItems] = useState(true);
-  const [loadingCoupons, setLoadingCoupons] = useState(true);
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
   const [addresses, setAddresses] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -59,9 +57,7 @@ export default function Checkout() {
 
   useEffect(() => {
     const fetchAllData = async () => {
-      setLoadingAddresses(true);
-      setLoadingCartItems(true);
-      setLoadingCoupons(true);
+      setLoading(true);
 
       try {
         const [addressesResponse, cartItemsResponse, couponResponse] =
@@ -74,14 +70,14 @@ export default function Checkout() {
             }),
             axios.post(
               "http://127.0.0.1:8000/api/coupons/checkCoupon",
-              { MinimumOrderValue: (totalPrice + shippingFee).toFixed(2) },
+              { MinimumOrderValue: totalPrice.toFixed(2) },
               { headers: { Authorization: `Bearer ${token}` } }
             ),
           ]);
 
         setAddresses(addressesResponse.data.data);
         setCartItems(cartItemsResponse.data.data || []);
-        setCoupons(couponResponse.data.data);
+        setCoupons(couponResponse.data.data || []);
 
         if (String(addressesResponse.data.data.length) !== "0") {
           const shippingResponse = await axios.post(
@@ -103,16 +99,13 @@ export default function Checkout() {
         console.error("Lỗi khi tải dữ liệu:", error);
         setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
       } finally {
-        setLoadingAddresses(false);
-        setLoadingCartItems(false);
-        setLoadingCoupons(false);
+        setLoading(false);
       }
     };
 
     if (token) {
       fetchAllData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, totalPrice]);
 
   const handlePlaceOrder = async (e) => {
@@ -168,6 +161,14 @@ export default function Checkout() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -183,15 +184,10 @@ export default function Checkout() {
               <h1 className="text-lg font-semibold text-gray-900 mb-4">
                 Địa Chỉ Giao Hàng
               </h1>
-              {loadingAddresses ? (
-                <p>Đang tải địa chỉ...</p>
-              ) : addresses.find((address) => address.IsDefault === 1) ? (
+              {addresses.find((address) => address.IsDefault === 1) ? (
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h1 className="text-gray-900">
-                    {
-                      addresses.find((address) => address.IsDefault === 1)
-                        .Address
-                    }
+                    {addresses.find((address) => address.IsDefault === 1).Address}
                   </h1>
                   <div className="mt-4">
                     <button
@@ -264,19 +260,17 @@ export default function Checkout() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Mã Giảm Giá
               </h3>
-              {loadingCoupons ? (
-                <p>Đang tải mã giảm giá...</p>
-              ) : (
+              {coupons && coupons.length > 0 ? (
                 <select
                   value={appliedCoupon}
                   onChange={(e) => {
                     const selectedCoupon = coupons.find(
-                      (coupon) => coupon.Code === e.target.value
+                      (coupon) => coupon.CouponID === parseInt(e.target.value)
                     );
+                    // console.log('Selected coupon:', selectedCoupon);
                     setAppliedCoupon(e.target.value);
                     if (selectedCoupon) {
-                      const discountAmount =
-                        (totalPrice * selectedCoupon.DiscountPercentage) / 100;
+                      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
                       setDiscount(discountAmount);
                     } else {
                       setDiscount(0);
@@ -287,10 +281,13 @@ export default function Checkout() {
                   <option value="">Chọn mã giảm giá</option>
                   {coupons.map((coupon) => (
                     <option key={coupon.CouponID} value={coupon.CouponID}>
-                      {coupon.Name}
+                      {coupon.Name} - Giảm {coupon.DiscountPercentage}%
+                      {coupon.MinimumOrderValue ? ` (Đơn tối thiểu ${Number(coupon.MinimumOrderValue).toLocaleString()}VND)` : ''}
                     </option>
                   ))}
                 </select>
+              ) : (
+                <p>Không có mã giảm giá nào khả dụng.</p>
               )}
             </div>
           </div>
@@ -301,52 +298,46 @@ export default function Checkout() {
                   Tổng Quan Đơn Hàng
                 </h3>
                 <div className="space-y-4 mb-6">
-                  {loadingCartItems ? (
-                    <p>Đang tải giỏ hàng...</p>
-                  ) : (
-                    cartItems.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-4 pb-4 border-b border-gray-100"
-                      >
-                        <img
-                          src={item.ImageUrl}
-                          alt={item.ProductName}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                        <div className="flex-grow">
-                          <h4 className="text-sm font-medium text-gray-900">
-                            {item.ProductName}
-                          </h4>
-                          <div className="text-sm text-gray-500 mt-1">
-                            {item.ColorName} • {item.SizeName} • x
-                            {item.Quantity}
-                          </div>
-                          <div className="text-sm font-medium text-gray-900 mt-1">
-                            {(item.Price * item.Quantity).toFixed(2)}VND
-                          </div>
+                  {cartItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-4 pb-4 border-b border-gray-100"
+                    >
+                      <img
+                        src={item.ImageUrl}
+                        alt={item.ProductName}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-grow">
+                        <h4 className="text-sm font-medium text-gray-900">
+                          {item.ProductName}
+                        </h4>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {item.ColorName} • {item.SizeName} • x
+                          {item.Quantity}
+                        </div>
+                        <div className="text-sm font-medium text-gray-900 mt-1">
+                          {(item.Price * item.Quantity).toFixed(2)}VND
                         </div>
                       </div>
-                    ))
-                  )}
+                    </div>
+                  ))}
                 </div>
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
                     <span className="font-medium">
-                      {Number(totalPrice).toFixed(2)}VND
+                      {Number(totalPrice).toLocaleString()}VND
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="font-medium">{shippingFee}VND</span>
+                    <span className="font-medium">{Number(shippingFee).toLocaleString()}VND</span>
                   </div>
                   {discount > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Giảm giá</span>
-                      <span className="font-medium">
-                        -{discount.toFixed(2)}VND
-                      </span>
+                    <div className="flex justify-between text-sm text-red-600">
+                      <span>Giảm giá</span>
+                      <span>-{Number(discount).toLocaleString()}VND</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 pt-4 mt-4">
@@ -354,8 +345,8 @@ export default function Checkout() {
                       <span className="text-base font-medium text-gray-900">
                         Thanh toán
                       </span>
-                      <span className="text-base font-semibold text-gray-600">
-                        {(totalPrice + shippingFee - discount).toFixed(2)}VND
+                      <span className="text-base font-semibold text-gray-900">
+                        {Number(totalPrice + shippingFee - discount).toLocaleString()}VND
                       </span>
                     </div>
                   </div>
