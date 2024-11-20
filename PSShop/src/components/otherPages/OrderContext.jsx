@@ -30,7 +30,9 @@ export function OrderProvider({ children = null }) {
       );
       
       if (response.data.message === 'Success') {
-        const sortedOrders = response.data.data.sort((a, b) => 
+        const sortedOrders = response.data.data.map(order => ({
+          ...order,
+        })).sort((a, b) => 
           new Date(b.OrderDate) - new Date(a.OrderDate)
         );
         

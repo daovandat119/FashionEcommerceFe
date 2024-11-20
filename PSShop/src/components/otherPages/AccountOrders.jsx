@@ -163,7 +163,7 @@ export default function AccountOrders() {
   };
 
   const OrderActionButton = ({ order }) => {
-    if (order.OrderStatus === "Đang giao hàng") {
+    if (order.OrderStatus === "Đang giao hàng" && order.PaymentStatus === "Đã hủy") {
       return (
         <button 
           className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
@@ -418,7 +418,13 @@ export default function AccountOrders() {
                         </p>
                         <p className="text-sm text-gray-500">
                           Ngày mua:{" "}
-                          {new Date(order.PurchaseDate).toLocaleDateString()}
+                          {order.OrderDate ? new Date(order.OrderDate).toLocaleDateString('vi-VN', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : 'Không có dữ liệu'}
                         </p>
                       </div>
                       <div className="flex gap-2">
