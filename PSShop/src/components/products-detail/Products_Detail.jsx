@@ -239,15 +239,42 @@ const ProductDetail = () => {
     <section className="product-single container">
       <ToastContainer />
       <div className="flex ">
-        <div className="col-lg-7 flex gap-3">
-          <div className="  "></div>
-          <div className="">
+        <div className="product-single__media vertical-thumbnail product-media-initialized">
+          <div className="swiper-container swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events">
+            <>
+              <img
+                loading="lazy"
+                className="h-[674px] w-[674px]"
+                src={product.MainImageURL}
+                alt="image"
+              />
+            </>
+            <div className="cursor-pointer swiper-button-next ssnbn1"></div>
+          </div>
+          <div className="product-single__thumbnail">
             <img
+              loading="lazy"
+              className="h-auto mb-1"
               src={product.MainImageURL}
-              alt={product.ProductName}
-              className="h-auto  w-[90%]"
-              width="674"
-              height="674"
+              width="104"
+              height="104"
+              alt="image"
+            />
+            <img
+              loading="lazy"
+              className="h-auto mb-1"
+              src={product.MainImageURL}
+              width="104"
+              height="104"
+              alt="image"
+            />
+            <img
+              loading="lazy"
+              className="h-auto mb-1"
+              src={product.MainImageURL}
+              width="104"
+              height="104"
+              alt="image"
             />
           </div>
         </div>
@@ -510,7 +537,7 @@ const ProductDetail = () => {
               Mô tả
             </a>
           </li>
-          <li className="nav-item" role="presentation">
+          {/* <li className="nav-item" role="presentation">
             <a
               className="nav-link nav-link_underscore"
               id="tab-additional-info-tab"
@@ -522,7 +549,7 @@ const ProductDetail = () => {
             >
               Thông tin bổ sung
             </a>
-          </li>
+          </li> */}
           <li className="nav-item" role="presentation">
             <a
               className="nav-link nav-link_underscore"
