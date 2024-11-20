@@ -66,6 +66,8 @@ export function OrderProvider({ children = null }) {
         }
       );
       
+      // console.log("API Response:", response.data);
+
       setLoading(false);
       return response.data.message === 'Success';
     } catch (err) {
@@ -76,28 +78,12 @@ export function OrderProvider({ children = null }) {
     }
   };
 
-  const getNewStatusId = (currentStatus, paymentStatus) => {
-    switch (currentStatus) {
-      case "Đang xử lý":
-        return 4; // Hủy đơn
-      case "Đang giao hàng":
-        if (paymentStatus === "Đã thanh toán") {
-          return 3; // Đã giao hàng
-        }
-        return 2; // Đang giao hàng
-      case "Đã giao hàng":
-        return 3; // Giữ nguyên trạng thái đã giao hàng
-      default:
-        return 1; // Mặc định là đang xử lý
-    }
-  };
-
-  const handleOrderAction = async (orderId, currentStatus, paymentStatus, cancellationReason = null) => {
+  const handleOrderAction = async (orderId, orderStatusId, paymentStatus, cancellationReason = null) => {
     try {
-      const newStatusId = getNewStatusId(currentStatus, paymentStatus);
-      
+      // console.log("Order Status ID:", orderStatusId); // Kiểm tra giá trị
+
       // Cập nhật trạng thái đơn hàng kèm lý do hủy
-      const success = await updateOrderStatus(orderId, newStatusId, cancellationReason);
+      const success = await updateOrderStatus(orderId, orderStatusId, cancellationReason);
       
       if (success) {
         setOrders(prevOrders => 
@@ -105,9 +91,8 @@ export function OrderProvider({ children = null }) {
             order.OrderID === orderId 
               ? {
                   ...order,
-                  OrderStatus: currentStatus,
+                  OrderStatusID: orderStatusId,
                   PaymentStatus: paymentStatus,
-                  OrderStatusID: newStatusId,
                   CancellationReason: cancellationReason
                 }
               : order

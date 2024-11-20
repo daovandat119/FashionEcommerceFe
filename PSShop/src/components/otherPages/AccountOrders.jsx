@@ -80,7 +80,7 @@ export default function AccountOrders() {
       );
 
       // Gọi API cập nhật kèm lý do hủy
-      await handleOrderAction(currentOrderId, "Đã hủy", "Chưa thanh toán", reason);
+      await handleOrderAction(currentOrderId, 4, "Chưa thanh toán", reason);
       
       setShowFeedbackModal(false);
       setSelectedReason('');
@@ -106,13 +106,13 @@ export default function AccountOrders() {
       setOrders(prevOrders => 
         prevOrders.map(order => 
           order.OrderID === orderId 
-            ? { ...order, OrderStatus: "Đã giao hàng", PaymentStatus: "Đã thanh toán", IsConfirmed: true }
+            ? { ...order, OrderStatus: "Đã hoàn thành", PaymentStatus: "Đã thanh toán", IsConfirmed: true }
             : order
         )
       );
 
-      // Gọi API cập nhật
-      await handleOrderAction(orderId, "Đã giao hàng", "Đã thanh toán");
+      // Gọi API cập nhật với OrderStatusID là 5
+      await handleOrderAction(orderId, 5, "Đã thanh toán");
       
       // Mở modal đánh giá
       setSelectedOrderForReview(orderId);
@@ -163,16 +163,39 @@ export default function AccountOrders() {
   };
 
   const OrderActionButton = ({ order }) => {
-    // Nếu đơn hàng đã hủy, không hiển thị nút nào
-    if (order.OrderStatus === "Đã hủy") {
-      return null;
+    // Nếu đã hoàn thành, hiển thị nút đánh giá màu tím
+    if (order.OrderStatus === "Đã hoàn thành") {
+      return (
+        <button 
+          className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => {
+            setSelectedOrderForReview(order.OrderID);
+            setShowReviewModal(true);
+          }}
+        >
+          ĐÁNH GIÁ
+        </button>
+      );
     }
 
-    // Nếu đang giao hàng và thanh toán đã hủy
-    if (order.OrderStatus === "Đang giao hàng" && order.PaymentStatus === "Đã hủy") {
+    // Nếu đã hủy, hiển thị nút liên hệ
+    if (order.OrderStatus === "Đã hủy") {
       return (
         <button 
           className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => {/* Thêm logic xử lý liên hệ */}}
+        >
+          LIÊN HỆ NGƯỜI BÁN
+        </button>
+      );
+    }
+
+    // Nếu đang giao hàng, hiển thị nút liên hệ
+    if (order.OrderStatus === "Đang giao hàng") {
+      return (
+        <button 
+          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => {/* Thêm logic xử lý liên hệ */}}
         >
           LIÊN HỆ NGƯỜI BÁN
         </button>
@@ -187,21 +210,6 @@ export default function AccountOrders() {
           onClick={() => handleReceiveOrder(order.OrderID)}
         >
           XÁC NHẬN NHẬN HÀNG
-        </button>
-      );
-    }
-
-    // Nếu đã giao hàng và đã xác nhận
-    if (order.OrderStatus === "Đã giao hàng" && order.IsConfirmed) {
-      return (
-        <button 
-          className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-4 rounded-lg text-sm transition"
-          onClick={() => {
-            setSelectedOrderForReview(order.OrderID);
-            setShowReviewModal(true);
-          }}
-        >
-          ĐÁNH GIÁ
         </button>
       );
     }
@@ -226,27 +234,13 @@ export default function AccountOrders() {
       OrderID: PropTypes.number.isRequired,
       OrderStatus: PropTypes.oneOf([
         "Đang xử lý",
-        "Đang giao hàng",
+        "Đang giao hàng", 
         "Đã giao hàng",
-        "Đã hủy"
+        "Đã hủy",
+        "Đã hoàn thành"
       ]).isRequired,
-      PaymentStatus: PropTypes.oneOf([
-        "Chưa thanh toán",
-        "Đã thanh toán",
-        "Thanh toán thất bại",
-        null
-      ]),
-      IsConfirmed: PropTypes.bool,
-      TotalQuantity: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-      ]),
-      TotalAmount: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-      ]),
-      PaymentMethod: PropTypes.string,
-      PurchaseDate: PropTypes.string,
+      PaymentStatus: PropTypes.string.isRequired,
+      IsConfirmed: PropTypes.bool
     }).isRequired
   };
 
@@ -321,6 +315,7 @@ export default function AccountOrders() {
                 <option value="2">Đang giao hàng</option>
                 <option value="3">Đã giao hàng</option>
                 <option value="4">Đã hủy</option>
+                <option value="5">Đã hoàn thành</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -358,7 +353,9 @@ export default function AccountOrders() {
                         <span className="font-medium">Trạng thái:</span>{" "}
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-white text-xs ${
-                            order.OrderStatus === "Đã giao hàng"
+                            order.OrderStatus === "Đã hoàn thành"
+                              ? "bg-green-500"
+                              : order.OrderStatus === "Đã giao hàng"
                               ? "bg-green-500"
                               : order.OrderStatus === "Đang giao hàng"
                               ? "bg-blue-500"
