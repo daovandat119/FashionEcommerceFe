@@ -267,9 +267,8 @@ export default function Checkout() {
                     const selectedCoupon = coupons.find(
                       (coupon) => coupon.CouponID === parseInt(e.target.value)
                     );
-                    // console.log('Selected coupon:', selectedCoupon);
                     setAppliedCoupon(e.target.value);
-                    if (selectedCoupon) {
+                    if (selectedCoupon && selectedCoupon.usable) {
                       const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
                       setDiscount(discountAmount);
                     } else {
@@ -280,9 +279,18 @@ export default function Checkout() {
                 >
                   <option value="">Chọn mã giảm giá</option>
                   {coupons.map((coupon) => (
-                    <option key={coupon.CouponID} value={coupon.CouponID}>
+                    <option 
+                      key={coupon.CouponID} 
+                      value={coupon.CouponID}
+                      disabled={!coupon.usable}
+                      className={!coupon.usable ? 'text-gray-400' : ''}
+                    >
                       {coupon.Name} - Giảm {coupon.DiscountPercentage}%
-                      {coupon.MinimumOrderValue ? ` (Đơn tối thiểu ${Number(coupon.MinimumOrderValue).toLocaleString()}VND)` : ''}
+                      {coupon.MinimumOrderValue ? 
+                        ` (Đơn tối thiểu ${Number(coupon.MinimumOrderValue).toLocaleString()}VND)` 
+                        : ''
+                      }
+                      {!coupon.usable ? ' - Chưa đủ điều kiện' : ''}
                     </option>
                   ))}
                 </select>
@@ -334,7 +342,7 @@ export default function Checkout() {
                     <span className="text-gray-600">Phí vận chuyển</span>
                     <span className="font-medium">{Number(shippingFee).toLocaleString()}VND</span>
                   </div>
-                  {discount > 0 && (
+                  {discount > 0 && appliedCoupon && (
                     <div className="flex justify-between text-sm text-red-600">
                       <span>Giảm giá</span>
                       <span>-{Number(discount).toLocaleString()}VND</span>
