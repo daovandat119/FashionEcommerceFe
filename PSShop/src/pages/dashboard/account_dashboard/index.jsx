@@ -9,7 +9,7 @@ export default function AccountPage() {
     
       <Headers />
       <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
+        
         <section className="my-account container">
           <h2 className="page-title">Tài khoản của tôi</h2>
           <div className="row">

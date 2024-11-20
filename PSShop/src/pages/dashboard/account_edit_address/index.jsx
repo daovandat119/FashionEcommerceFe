@@ -8,7 +8,7 @@ export default function AccountEditAddressPage() {
     <>
       <Headers />
       <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
+        
         <section className="my-account container">
           <h2 className="page-title">Địa chỉ</h2>
           <div className="row">

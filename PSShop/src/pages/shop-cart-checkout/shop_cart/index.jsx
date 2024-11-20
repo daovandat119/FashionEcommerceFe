@@ -10,7 +10,7 @@ export default function ShopCartPage() {
       
       <Headers/>
       <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
+        
         <section className="shop-checkout container">
           <h2 className="page-title">Giỏ hàng</h2>
           <ChectoutSteps />

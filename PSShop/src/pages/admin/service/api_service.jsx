@@ -183,13 +183,13 @@ const UpdateUserStatus = (UserID, data = null) => {
 };
 
 const GetCoupons = () => {
-  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
   return axios.post(
     "/api/coupons/checkCoupon",
     {},
     {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     }
   );
