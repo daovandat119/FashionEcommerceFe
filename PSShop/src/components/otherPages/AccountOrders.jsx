@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 
 export default function AccountOrders() {
 
-  const { orders, loading, error, handleOrderAction, setOrders } = useContext(OrderContext);
+  const { orders, loading, error, handleOrderAction, setOrders, fetchOrders } = useContext(OrderContext);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [orderProducts, setOrderProducts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +22,7 @@ export default function AccountOrders() {
   const [selectedOrderForReview, setSelectedOrderForReview] = useState(null);
   const [rating, setRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
   const cancelReasons = [
     "Muốn thay đổi địa chỉ giao hàng",
@@ -30,6 +31,25 @@ export default function AccountOrders() {
     "Thay đổi ý định mua hàng",
     "Khác"
   ];
+
+  const handleStatusChange = async (e) => {
+    const statusId = e.target.value;
+    setSelectedStatus(statusId);
+    setCurrentPage(1);
+    
+    try {
+      if (statusId === 'all') {
+        await fetchOrders();
+      } else {
+        await fetchOrders({ 
+          OrderStatusID: Number(statusId)
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi khi lọc đơn hàng:", error);
+      toast.error("Có lỗi xảy ra khi lọc đơn hàng");
+    }
+  };
 
   const handleCancelOrder = (orderId) => {
     setCurrentOrderId(orderId);
@@ -276,7 +296,30 @@ export default function AccountOrders() {
       <div className="col-lg-9">
       <div className="page-content my-account__orders-list bg-gray-50 py-8 px-6 rounded-lg shadow-md font-sans text-gray-800">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-8">Đơn hàng của tôi</h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-semibold text-gray-800">Đơn hàng của tôi</h2>
+            
+            <div className="relative">
+              <select
+                value={selectedStatus}
+                onChange={handleStatusChange}
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 
+                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                         focus:border-blue-500 text-gray-700 cursor-pointer"
+              >
+                <option value="all">Tất cả đơn hàng</option>
+                <option value="1">Đang xử lý</option>
+                <option value="2">Đang giao hàng</option>
+                <option value="3">Đã giao hàng</option>
+                <option value="4">Đã hủy</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
           {loading ? (
             <p className="text-center text-lg">Đang tải...</p>
           ) : error ? (
