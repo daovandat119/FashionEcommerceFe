@@ -12,7 +12,6 @@ export default function Headers() {
   const { isAuthenticated } = useContext(LoginContext);
   const navigate = useNavigate();
 
-
   useEffect(() => {}, [isAuthenticated]);
 
   const toggleSearch = () => {
@@ -20,7 +19,8 @@ export default function Headers() {
   };
 
   const handleUserClick = () => {
-    if (isAuthenticated) {
+    const token = localStorage.getItem('token');
+    if (token) {
       navigate("/account_dashboard");
     } else {
       navigate("/login_register");

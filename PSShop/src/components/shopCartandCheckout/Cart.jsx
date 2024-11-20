@@ -27,35 +27,58 @@ export default function Cart() {
   
 
   const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
-    if (newQuantity < 1) return; 
-
-    const token = localStorage.getItem("token"); 
-    try {
-       await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
-        productID, 
-        colorID, 
-        sizeID, 
-        quantity: newQuantity,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }, 
-      });
-
-      // Cập nhật trạng thái giỏ hàng mà không cần gọi lại fetchCartItems
+    if (newQuantity < 1 || newQuantity > 99) {
+      toast.warning("Số lượng phải từ 1 đến 99");
       setCartProducts(prevProducts => 
         prevProducts.map(item => 
-          item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
+          item.CartItemID === itemId ? { ...item } : item
         )
       );
+      return;
+    }
 
+    setCartProducts(prevProducts => 
+      prevProducts.map(item => 
+        item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
+      )
+    );
+
+    const token = localStorage.getItem("token");
+    try {
+      await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
+        productID,
+        colorID,
+        sizeID,
+        quantity: newQuantity,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
     } catch (err) {
       console.error(err);
       toast.error("Lỗi cập nhật số lượng");
+      
+      setCartProducts(prevProducts => 
+        prevProducts.map(item => 
+          item.CartItemID === itemId 
+            ? { ...item, Quantity: item.Quantity } 
+            : item
+        )
+      );
     }
   };
 
-  const handleQuantityChangeDebounced = (itemId, productID, colorID, sizeID, newQuantity) => {
-    if (newQuantity < 1) return; 
-    handleQuantityChange(itemId, productID, colorID, sizeID, newQuantity);
+  const handleInputChange = (e, item) => {
+    const value = e.target.value;
+    if (!/^\d*$/.test(value)) return;
+    
+    const newQuantity = value === '' ? 1 : parseInt(value);
+    handleQuantityChange(
+      item.CartItemID, 
+      item.ProductID, 
+      item.ColorID, 
+      item.SizeID, 
+      newQuantity
+    );
   };
 
   const removeSelectedItem = async () => {
@@ -128,21 +151,45 @@ export default function Cart() {
                     <td width="10%" className="text-center">
                       <div className="qty-control position-relative">
                         <input
-                          type="number"
+                          type="text"
                           name="quantity"
                           value={item.Quantity}
-                          min={1}
-                          onChange={(e) => handleQuantityChangeDebounced(item.CartItemID, item.ProductID, item.ColorID, item.SizeID, parseInt(e.target.value))}
+                          onChange={(e) => handleInputChange(e, item)}
+                          onBlur={(e) => {
+                            if (e.target.value === '') {
+                              handleQuantityChange(
+                                item.CartItemID,
+                                item.ProductID,
+                                item.ColorID,
+                                item.SizeID,
+                                1
+                              );
+                            }
+                          }}
                           className="qty-control__number text-center"
+                          min="1"
+                          max="99"
                         />
                         <div
-                          onClick={() => handleQuantityChangeDebounced(item.CartItemID, item.ProductID, item.ColorID, item.SizeID, item.Quantity - 1)}
+                          onClick={() => handleQuantityChange(
+                            item.CartItemID,
+                            item.ProductID,
+                            item.ColorID,
+                            item.SizeID,
+                            item.Quantity - 1
+                          )}
                           className="qty-control__reduce"
                         >
                           -
                         </div>
                         <div
-                          onClick={() => handleQuantityChangeDebounced(item.CartItemID, item.ProductID, item.ColorID, item.SizeID, item.Quantity + 1)}
+                          onClick={() => handleQuantityChange(
+                            item.CartItemID,
+                            item.ProductID,
+                            item.ColorID,
+                            item.SizeID,
+                            item.Quantity + 1
+                          )}
                           className="qty-control__increase"
                         >
                           +
