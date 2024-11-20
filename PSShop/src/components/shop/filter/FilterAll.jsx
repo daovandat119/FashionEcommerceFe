@@ -8,15 +8,11 @@ export default function FilterAll({ onFilterChange }) {
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 100000]);
-
   // State cho các filter đã chọn
   const [selectedFilters, setSelectedFilters] = useState({
     categoryId: null,
     colorId: null,
     sizeId: null,
-    minPrice: 0,
-    maxPrice: 100000,
   });
 
   const hasFetchedData = useRef(false); // Thêm useRef để theo dõi việc đã gọi API
@@ -24,15 +20,15 @@ export default function FilterAll({ onFilterChange }) {
   useEffect(() => {
     const fetchData = async () => {
       if (hasFetchedData.current) return; // Ngăn không gọi lại nếu đã gọi
-  
+
       setLoading(true);
       try {
         const [categoriesRes, colorsRes, sizesRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/categories"),
-          axios.get("http://127.0.0.1:8000/api/colors"),
-          axios.get("http://127.0.0.1:8000/api/sizes"),
+          axios.get("http://127.0.0.1:8000/api/categories"), // API cho danh mục
+          axios.get("http://127.0.0.1:8000/api/colors"), // API cho màu sắc
+          axios.get("http://127.0.0.1:8000/api/sizes"), // API cho kích thước
         ]);
-  
+
         setCategories(categoriesRes.data.data);
         setColors(colorsRes.data.data);
         setSizes(sizesRes.data.data);
@@ -42,9 +38,9 @@ export default function FilterAll({ onFilterChange }) {
       }
       setLoading(false);
     };
-  
+
     fetchData();
-  }, []); 
+  }, []);
 
   // Xử lý khi filter thay đổi
   const handleFilterChange = (type, value) => {
@@ -56,19 +52,15 @@ export default function FilterAll({ onFilterChange }) {
     onFilterChange(newFilters); // Gửi filters lên component cha
   };
 
-  // Xử lý thay đổi giá
-  const handlePriceChange = (value) => {
-    setPriceRange(value);
-    handleFilterChange("minPrice", value[0]);
-    handleFilterChange("maxPrice", value[1]);
-  };
-
   return (
     <>
       {/* Categories */}
       <div className="accordion" id="categories-list">
         <div className="accordion-item mb-4">
-          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900" id="accordion-heading-11">
+          <h5
+            className="accordion-header text-lg font-semibold font-sans text-gray-900"
+            id="accordion-heading-11"
+          >
             Danh mục sản phẩm
           </h5>
           <div className="accordion-body px-0 pb-0">
@@ -78,7 +70,9 @@ export default function FilterAll({ onFilterChange }) {
                   <a
                     href="#"
                     className={`menu-link py-1 text-base font-medium font-sans text-gray-700 hover:text-blue-600 ${
-                      selectedFilters.categoryId === category.CategoryID ? "font-bold" : ""
+                      selectedFilters.categoryId === category.CategoryID
+                        ? "font-bold"
+                        : ""
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
@@ -96,7 +90,7 @@ export default function FilterAll({ onFilterChange }) {
 
       {/* Colors */}
       <div className="accordion" id="color-filters">
-        <h5 className="accordion-header font-semibold text-lg font-sans text-gray-900 mb-3" id="accordion-heading-1">
+        <h5 className="accordion-header font-semibold text-lg font-sans text-gray-900 mb-3">
           Lựa chọn màu sắc
         </h5>
         <div className="accordion-body px-0 pb-0">
@@ -105,9 +99,14 @@ export default function FilterAll({ onFilterChange }) {
               <div key={color.ColorID} className="color-item position-relative">
                 <a
                   className={`swatch-color d-inline-block rounded-circle shadow-sm font-sans ${
-                    selectedFilters.colorId === color.ColorID ? "scale-110 border-2 border-gray-500" : "border-2 border-transparent"
+                    selectedFilters.colorId === color.ColorID
+                      ? "scale-110 border-2 border-gray-500"
+                      : "border-2 border-transparent"
                   }`}
-                  onClick={() => handleFilterChange("colorId", color.ColorID)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleFilterChange("colorId", color.ColorID);
+                  }}
                   style={{
                     backgroundColor: color.ColorName.toLowerCase(),
                     width: "30px",
@@ -116,47 +115,16 @@ export default function FilterAll({ onFilterChange }) {
                     transition: "transform 0.2s",
                   }}
                   title={color.ColorName}
-                >
-                  {color.ColorName.toLowerCase() === "black" && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: "60%",
-                        height: "60%",
-                        backgroundColor: "white",
-                        borderRadius: "50%",
-                        opacity: 0.2,
-                      }}
-                    />
-                  )}
-                </a>
-                {selectedFilters.colorId === color.ColorID && (
-                  <span
-                    className="position-absolute"
-                    style={{
-                      top: "-5px",
-                      right: "-5px",
-                      width: "15px",
-                      height: "15px",
-                      backgroundColor: "#28a745",
-                      borderRadius: "50%",
-                      border: "2px solid white",
-                    }}
-                  />
-                )}
+                />
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      {/* Sizes */}
-      <div className="accordion" id="size-filters">
+  {/* Sizes */}
+  <div className="accordion" id="size-filters">
         <div className="accordion-item mb-4">
-          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900" id="accordion-heading-size">
+          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900">
             Kích thước
           </h5>
           <div className="accordion-body px-0 pb-0">
@@ -167,38 +135,13 @@ export default function FilterAll({ onFilterChange }) {
                   className={`swatch-size btn btn-sm btn-outline-light mb-3 me-3 text-base font-medium font-sans text-gray-700 hover:text-blue-600 ${
                     selectedFilters.sizeId === size.SizeID ? "font-bold" : ""
                   }`}
-                  onClick={() => handleFilterChange("sizeId", size.SizeID)}
+                  onClick={() => {
+                    handleFilterChange("sizeId", size.SizeID);
+                  }}
                 >
                   {size.SizeName}
                 </a>
               ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Price Range */}
-      <div className="accordion" id="price-filters">
-        <div className="accordion-item mb-4">
-          <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900 mb-2" id="accordion-heading-price">
-            Giá
-          </h5>
-          <Slider
-            range
-            min={0}
-            max={100000}
-            value={priceRange}
-            onChange={handlePriceChange}
-            className="mb-3"
-          />
-          <div className="price-range__info d-flex align-items-center mt-2 text-sm text-gray-700 font-sans">
-            <div className="me-auto">
-              <span className="text-secondary">Min Price: </span>
-              <span className="price-range__min">${priceRange[0]}</span>
-            </div>
-            <div>
-              <span className="text-secondary">Max Price: </span>
-              <span className="price-range__max">${priceRange[1]}</span>
             </div>
           </div>
         </div>
