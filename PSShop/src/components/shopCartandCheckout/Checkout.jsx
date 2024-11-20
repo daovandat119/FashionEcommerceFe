@@ -286,7 +286,11 @@ export default function Checkout() {
                 >
                   <option value="">Chọn mã giảm giá</option>
                   {coupons.map((coupon) => (
-                    <option key={coupon.CouponID} value={coupon.CouponID}>
+                    <option 
+                    key={coupon.CouponID} 
+                    value={coupon.CouponID}
+                    disabled={coupon.usable === false}
+                    >
                       {coupon.Name}
                     </option>
                   ))}
