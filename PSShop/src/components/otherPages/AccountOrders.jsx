@@ -163,6 +163,12 @@ export default function AccountOrders() {
   };
 
   const OrderActionButton = ({ order }) => {
+    // Nếu đơn hàng đã hủy, không hiển thị nút nào
+    if (order.OrderStatus === "Đã hủy") {
+      return null;
+    }
+
+    // Nếu đang giao hàng và thanh toán đã hủy
     if (order.OrderStatus === "Đang giao hàng" && order.PaymentStatus === "Đã hủy") {
       return (
         <button 
@@ -173,6 +179,7 @@ export default function AccountOrders() {
       );
     }
 
+    // Nếu đã giao hàng nhưng chưa xác nhận
     if (order.OrderStatus === "Đã giao hàng" && !order.IsConfirmed) {
       return (
         <button 
@@ -184,6 +191,7 @@ export default function AccountOrders() {
       );
     }
 
+    // Nếu đã giao hàng và đã xác nhận
     if (order.OrderStatus === "Đã giao hàng" && order.IsConfirmed) {
       return (
         <button 
@@ -198,6 +206,7 @@ export default function AccountOrders() {
       );
     }
 
+    // Nếu đang xử lý
     if (order.OrderStatus === "Đang xử lý") {
       return (
         <button 
