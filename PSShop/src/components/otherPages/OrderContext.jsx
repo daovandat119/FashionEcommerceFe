@@ -47,14 +47,15 @@ export function OrderProvider({ children = null }) {
     }
   };
 
-  const updateOrderStatus = async (orderId, newStatusId) => {
+  const updateOrderStatus = async (orderId, newStatusId, cancellationReason = null) => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      await axios.post(
+      const response = await axios.post(
         `http://127.0.0.1:8000/api/order/status/${orderId}`,
         {
-          OrderStatusID: newStatusId
+          OrderStatusID: newStatusId,
+          CancellationReason: cancellationReason
         },
         {
           headers: {
@@ -63,27 +64,60 @@ export function OrderProvider({ children = null }) {
         }
       );
       
-      await fetchOrders();
-      return true;
+      setLoading(false);
+      return response.data.message === 'Success';
     } catch (err) {
       console.error("Lỗi khi cập nhật trạng thái đơn hàng:", err);
       setError("Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.");
-      return false;
-    } finally {
       setLoading(false);
+      return false;
     }
   };
 
   const getNewStatusId = (currentStatus, paymentStatus) => {
-    if (currentStatus === "Đang xử lý" && paymentStatus === "Đã thanh toán") {
-      return 2;
+    switch (currentStatus) {
+      case "Đang xử lý":
+        return 4; // Hủy đơn
+      case "Đang giao hàng":
+        if (paymentStatus === "Đã thanh toán") {
+          return 3; // Đã giao hàng
+        }
+        return 2; // Đang giao hàng
+      case "Đã giao hàng":
+        return 3; // Giữ nguyên trạng thái đã giao hàng
+      default:
+        return 1; // Mặc định là đang xử lý
     }
-    return 4;
   };
 
-  const handleOrderAction = async (orderId, currentStatus, paymentStatus) => {
-    const newStatusId = getNewStatusId(currentStatus, paymentStatus);
-    return await updateOrderStatus(orderId, newStatusId);
+  const handleOrderAction = async (orderId, currentStatus, paymentStatus, cancellationReason = null) => {
+    try {
+      const newStatusId = getNewStatusId(currentStatus, paymentStatus);
+      
+      // Cập nhật trạng thái đơn hàng kèm lý do hủy
+      const success = await updateOrderStatus(orderId, newStatusId, cancellationReason);
+      
+      if (success) {
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order.OrderID === orderId 
+              ? {
+                  ...order,
+                  OrderStatus: currentStatus,
+                  PaymentStatus: paymentStatus,
+                  OrderStatusID: newStatusId,
+                  CancellationReason: cancellationReason
+                }
+              : order
+          )
+        );
+      }
+      
+      return success;
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -99,7 +133,8 @@ export function OrderProvider({ children = null }) {
     error,
     fetchOrders,
     handleOrderAction,
-    updateOrderStatus
+    updateOrderStatus,
+    setOrders
   };
 
   return (

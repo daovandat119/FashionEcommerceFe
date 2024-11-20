@@ -2,14 +2,14 @@ import { useContext, useState } from "react";
 import { OrderContext } from "./OrderContext";
 import axios from "axios";
 import PropTypes from 'prop-types';
-import { useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
+import { toast } from "react-hot-toast";
 
 
 
 export default function AccountOrders() {
-  const navigate = useNavigate();
-  const { orders, loading, error,handleOrderAction } = useContext(OrderContext);
+
+  const { orders, loading, error, handleOrderAction, setOrders } = useContext(OrderContext);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [orderProducts, setOrderProducts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +18,10 @@ export default function AccountOrders() {
   const [selectedReason, setSelectedReason] = useState('');
   const [otherReason, setOtherReason] = useState('');
   const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedOrderForReview, setSelectedOrderForReview] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
 
   const cancelReasons = [
     "Muốn thay đổi địa chỉ giao hàng",
@@ -36,66 +40,151 @@ export default function AccountOrders() {
     const reason = selectedReason === "Khác" ? otherReason : selectedReason;
     
     if (!reason) {
-      alert("Vui lòng chọn lý do hủy đơn hàng");
+      toast.warning("Vui lòng chọn lý do hủy đơn hàng");
       return;
     }
 
     try {
-      await handleOrderAction(currentOrderId, "Đang xử lý", "Chưa thanh toán", reason);
+      // Cập nhật UI trước
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.OrderID === currentOrderId 
+            ? { 
+                ...order, 
+                OrderStatus: "Đã hủy", 
+                PaymentStatus: "Chưa thanh toán",
+                CancellationReason: reason // Thêm lý do hủy vào state
+              }
+            : order
+        )
+      );
+
+      // Gọi API cập nhật kèm lý do hủy
+      await handleOrderAction(currentOrderId, "Đã hủy", "Chưa thanh toán", reason);
+      
       setShowFeedbackModal(false);
       setSelectedReason('');
       setOtherReason('');
+      toast.success("Hủy đơn hàng thành công");
     } catch (error) {
+      // Nếu có lỗi, rollback lại trạng thái cũ
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.OrderID === currentOrderId 
+            ? { ...order, OrderStatus: "Đang xử lý", CancellationReason: null }
+            : order
+        )
+      );
       console.error("Lỗi khi hủy đơn hàng:", error);
+      toast.error("Có lỗi xảy ra khi hủy đơn hàng");
+    }
+  };
+
+  const handleReceiveOrder = async (orderId) => {
+    try {
+      // Cập nhật UI trước
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.OrderID === orderId 
+            ? { ...order, OrderStatus: "Đã giao hàng", PaymentStatus: "Đã thanh toán", IsConfirmed: true }
+            : order
+        )
+      );
+
+      // Gọi API cập nhật
+      await handleOrderAction(orderId, "Đã giao hàng", "Đã thanh toán");
+      
+      // Mở modal đánh giá
+      setSelectedOrderForReview(orderId);
+      setShowReviewModal(true);
+    } catch (error) {
+      // Nếu có lỗi, rollback lại trạng thái cũ
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.OrderID === orderId 
+            ? { ...order, OrderStatus: "Đang giao hàng", IsConfirmed: false }
+            : order
+        )
+      );
+      console.error("Lỗi khi xác nhận nhận hàng:", error);
+      toast.error("Có lỗi xảy ra khi xác nhận nhận hàng");
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewComment.trim()) {
+      toast.warning("Vui lòng nhập nội dung đánh giá");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `http://127.0.0.1:8000/api/reviews`,
+        {
+          orderId: selectedOrderForReview,
+          rating,
+          comment: reviewComment
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success("Đánh giá thành công!");
+      setShowReviewModal(false);
+      setRating(5);
+      setReviewComment('');
+      setSelectedOrderForReview(null);
+    } catch (error) {
+      console.error("Lỗi khi gửi đánh giá:", error);
+      toast.error("Có lỗi xảy ra khi gửi đánh giá");
     }
   };
 
   const OrderActionButton = ({ order }) => {
-    if (order.OrderStatus === "Đã giao hàng") {
-      return (
-        <div className="flex gap-2">
-          <button 
-            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
-            onClick={() => {/* Xử lý liên hệ */}}
-          >
-            LIÊN HỆ
-          </button>
-          <button 
-            className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-4 rounded-lg text-sm transition"
-            onClick={() => navigate(`/review/${order.OrderID}`)}
-          >
-            ĐÁNH GIÁ
-          </button>
-        </div>
-      );
-    }
-
-    if (["Đang xử lý", "Đang giao hàng"].includes(order.OrderStatus)) {
-      return (
-        <div className="flex gap-2">
-          <button 
-            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
-            onClick={() => {/* Xử lý liên hệ */}}
-          >
-            LIÊN HỆ
-          </button>
-          <button 
-            className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg text-sm transition"
-            onClick={() => handleCancelOrder(order.OrderID)}
-          >
-            HỦY ĐƠN
-          </button>
-        </div>
-      );
-    }
-
-    if (order.OrderStatus === "Đã hủy") {
+    if (order.OrderStatus === "Đang giao hàng") {
       return (
         <button 
           className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
-          onClick={() => {/* Xử lý liên hệ */}}
         >
-          LIÊN HỆ
+          LIÊN HỆ NGƯỜI BÁN
+        </button>
+      );
+    }
+
+    if (order.OrderStatus === "Đã giao hàng" && !order.IsConfirmed) {
+      return (
+        <button 
+          className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => handleReceiveOrder(order.OrderID)}
+        >
+          XÁC NHẬN NHẬN HÀNG
+        </button>
+      );
+    }
+
+    if (order.OrderStatus === "Đã giao hàng" && order.IsConfirmed) {
+      return (
+        <button 
+          className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => {
+            setSelectedOrderForReview(order.OrderID);
+            setShowReviewModal(true);
+          }}
+        >
+          ĐÁNH GIÁ
+        </button>
+      );
+    }
+
+    if (order.OrderStatus === "Đang xử lý") {
+      return (
+        <button 
+          className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          onClick={() => handleCancelOrder(order.OrderID)}
+        >
+          HỦY ĐƠN
         </button>
       );
     }
@@ -118,6 +207,7 @@ export default function AccountOrders() {
         "Thanh toán thất bại",
         null
       ]),
+      IsConfirmed: PropTypes.bool,
       TotalQuantity: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
@@ -170,6 +260,17 @@ export default function AccountOrders() {
 
   const currentOrders = getCurrentPageOrders();
 
+  // Tách riêng hàm đóng modal đánh giá
+  
+
+  // Tách riêng hàm đóng modal hủy đơn
+  const handleCloseCancelModal = () => {
+    setShowFeedbackModal(false);
+    setSelectedReason('');
+    setOtherReason('');
+    setCurrentOrderId(null);
+  };
+
   return (
     <>
       <div className="col-lg-9">
@@ -190,7 +291,7 @@ export default function AccountOrders() {
                   >
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-xl font-bold text-gray-700">
-                        Đơn hàng <span className="text-blue-500">#{order.OrderID}</span>
+                        Đơn hàng <span className="text-blue-500">#{order.OrderCode}</span>
                       </h3>
                       <button
                         onClick={() => handleToggleOrder(order.OrderID)}
@@ -313,14 +414,90 @@ export default function AccountOrders() {
       </div>
       </div>
 
-      {/* Feedback Modal */}
+      {/* Modal đánh giá */}
+      {showReviewModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Đánh giá đơn hàng</h3>
+              <button 
+                onClick={() => {
+                  setShowReviewModal(false);
+                  setRating(5);
+                  setReviewComment('');
+                  setSelectedOrderForReview(null);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <IoClose size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Star Rating */}
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700">Đánh giá:</span>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`text-2xl ${
+                        star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Review Comment */}
+              <div>
+                <label className="block text-gray-700 mb-2">
+                  Nhận xét của bạn:
+                </label>
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Chia sẻ trải nghiệm của bạn..."
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                  rows="4"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                onClick={() => {
+                  setShowReviewModal(false);
+                  setRating(5);
+                  setReviewComment('');
+                  setSelectedOrderForReview(null);
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+              >
+                Đóng
+              </button>
+              <button
+                onClick={handleSubmitReview}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              >
+                Gửi đánh giá
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal hủy đơn */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Lý do hủy đơn hàng</h3>
               <button 
-                onClick={() => setShowFeedbackModal(false)}
+                onClick={handleCloseCancelModal}  
                 className="text-gray-500 hover:text-gray-700"
               >
                 <IoClose size={24} />
@@ -358,10 +535,10 @@ export default function AccountOrders() {
 
             <div className="flex justify-end gap-4 mt-6">
               <button
-                onClick={() => setShowFeedbackModal(false)}
+                onClick={handleCloseCancelModal}  
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
               >
-                Hủy
+                Đóng
               </button>
               <button
                 onClick={handleSubmitCancelOrder}
