@@ -32,8 +32,10 @@ const SearchBar = () => {
   const handleSearch = async () => {
     if (query) {
       try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/products?search=${query}`
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/products/index`, {
+            Search: query
+          }
         );
         const filteredResults = response.data.data.filter((product) =>
           containsQuery(product.ProductName, query)

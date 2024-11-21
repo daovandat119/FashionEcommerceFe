@@ -53,9 +53,11 @@ export default function Products_Limited() {
   const { isInWishlist, addToWishlist, removeFromWishlist } = useContextElement(); // Di chuyển vào trong hàm
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/products")
-      .then((response) => {
+    axios.post('http://127.0.0.1:8000/api/products/index', {
+     
+    })
+      .then(response => {
+
         setProducts(response.data.data);
         setLoading(false);
       })

@@ -13,7 +13,7 @@ export default function AboutPage() {
     <>
       <Headers />
       <main className="page-wrapper">
-        <div className="mb-4 pb-4"></div>
+     
         <About />
 
         <Support/>
