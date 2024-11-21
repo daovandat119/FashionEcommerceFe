@@ -24,16 +24,6 @@ export const LoginProvider = ({ children }) => {
     setErrorMessage("");
     setSuccessMessage("");
 
-    // Kiểm tra email và mật khẩu hợp lệ
-    if (!isValidEmail(Email)) {
-      setErrorMessage("Email không hợp lệ.");
-      return;
-    }
-    if (!isValidPassword(Password)) {
-      setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
-      return;
-    }
-
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login", {
         method: "POST",
@@ -45,31 +35,26 @@ export const LoginProvider = ({ children }) => {
       });
 
       const data = await response.json();
+      // console.log("Login response:", data);
 
       if (response.ok) {
-        // Xử lý thành công
+        const roleId = data.user.RoleID;
+        // console.log("Role ID:", roleId);
+        if (roleId == 1) {
+          setErrorMessage("Tài khoản này không thể đăng nhập. Vui lòng thử lại.");
+          return;
+        }
+
         setUser(data.user);
         setIsAuthenticated(true);
         setSuccessMessage("Đăng nhập thành công!");
-
-        // Lưu token vào localStorage
-        localStorage.setItem("token", data.token); // Thêm dòng này để lưu token
-
+        localStorage.setItem("token", data.token);
         navigate("/");
-      } else if (response.status === 403) {
-        // Trường hợp cần xác thực
-        setErrorMessage(data.message);
-        setVerificationStep(true);
-        setTempEmail(Email);
-        if (data.UserID) {
-          setUserId(data.UserID); // Lưu UserID để sử dụng trong xác thực
-        }
-        setTempLoginInfo({ Email, Password });
       } else {
-        // Lỗi khác
         setErrorMessage(data.message || "Email hoặc mật khẩu không đúng");
       }
     } catch (error) {
+      console.error("Login error:", error);
       setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");
     }
   };

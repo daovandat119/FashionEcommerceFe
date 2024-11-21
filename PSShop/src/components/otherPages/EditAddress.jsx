@@ -4,6 +4,7 @@ import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 export default function EditAddress() {
   const [addresses, setAddresses] = useState([]);
@@ -78,7 +79,82 @@ export default function EditAddress() {
   };
 
   const toggleExpandAddress = (addressId) => {
-    setExpandedAddressId(expandedAddressId === addressId ? null : addressId);
+    setExpandedAddressId(addressId === expandedAddressId ? null : addressId);
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Xác nhận xóa',
+        text: 'Bạn có chắc chắn muốn xóa địa chỉ này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+      });
+
+      if (result.isConfirmed) {
+        const response = await axios.delete(
+          `http://127.0.0.1:8000/api/address/${addressId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          await fetchAddresses();
+          setExpandedAddressId(null);
+          
+          toast.success('Xóa địa chỉ thành công', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi xóa địa chỉ:', error);
+      
+      if (error.response?.status === 400) {
+        toast.error('Không thể xóa địa chỉ đang được sử dụng trong đơn hàng', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else if (error.response?.status === 404) {
+        toast.error('Không tìm thấy địa chỉ', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        toast.error('Có lỗi xảy ra. Vui lòng thử lại sau.', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setExpandedAddressId(null);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -185,6 +261,7 @@ export default function EditAddress() {
                         toggleExpandAddress(null);
                         fetchAddresses();
                       }}
+                      onCancel={handleCancel}
                     />
                   </div>
                 )}
@@ -204,7 +281,7 @@ export default function EditAddress() {
               setEditingAddress(null);
               fetchAddresses();
             }}
-            onCancel={() => setEditingAddress(null)}
+            onCancel={handleCancel}
           />
         )}
       </div>

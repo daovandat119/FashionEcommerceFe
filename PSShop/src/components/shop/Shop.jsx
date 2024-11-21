@@ -39,6 +39,7 @@ export default function Shop1() {
   };
 
   const [selectedColView, setSelectedColView] = useState(3);
+  // eslint-disable-next-line no-unused-vars
   const [currentCategory] = useState(menuCategories[0]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);

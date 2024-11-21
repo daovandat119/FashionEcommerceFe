@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import { useContextElement } from "../../context/Context";
 import Swal from "sweetalert2";
 import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
+import CouponStore from './CouponStore';
+import { toast } from 'react-hot-toast';
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
@@ -21,6 +23,10 @@ export default function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [coupons, setCoupons] = useState([]);
   const [shippingFee, setShippingFee] = useState(0);
+  const [isCouponStoreOpen, setIsCouponStoreOpen] = useState(false);
+  const [cachedCoupons, setCachedCoupons] = useState([]);
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
+  const [lastFetchedPrice, setLastFetchedPrice] = useState(0);
 
   useEffect(() => {
     if (!orderData.PaymentMethodID) {
@@ -161,6 +167,44 @@ export default function Checkout() {
     }
   };
 
+  const handleApplyCoupon = (coupon) => {
+    if (coupon.usable) {
+      setAppliedCoupon(coupon.CouponID);
+      const discountAmount = (totalPrice * coupon.DiscountPercentage) / 100;
+      setDiscount(discountAmount);
+      setIsCouponStoreOpen(false);
+      toast.success('Áp dụng mã giảm giá thành công!');
+    }
+  };
+
+  const fetchCoupons = useCallback(async () => {
+    if (isCouponLoading) return; // Tránh gọi API nhiều lần
+    
+    try {
+      setIsCouponLoading(true);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/coupons/checkCoupon",
+        { MinimumOrderValue: totalPrice.toFixed(2) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCachedCoupons(response.data.data || []);
+    } catch (error) {
+      console.error("Lỗi khi tải mã giảm giá:", error);
+    } finally {
+      setIsCouponLoading(false);
+    }
+  }, [token, totalPrice]);
+
+  useEffect(() => {
+    fetchCoupons();
+  }, [fetchCoupons]);
+
+  useEffect(() => {
+    if (Math.abs(totalPrice - lastFetchedPrice) > 1000) { // Chỉ fetch lại khi giá thay đổi đáng kể
+      fetchCoupons();
+    }
+  }, [totalPrice, fetchCoupons]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -260,42 +304,38 @@ export default function Checkout() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Mã Giảm Giá
               </h3>
-              {coupons && coupons.length > 0 ? (
-                <select
-                  value={appliedCoupon}
-                  onChange={(e) => {
-                    const selectedCoupon = coupons.find(
-                      (coupon) => coupon.CouponID === parseInt(e.target.value)
-                    );
-                    setAppliedCoupon(e.target.value);
-                    if (selectedCoupon && selectedCoupon.usable) {
-                      const discountAmount = (totalPrice * selectedCoupon.DiscountPercentage) / 100;
-                      setDiscount(discountAmount);
-                    } else {
+              <button
+                onClick={() => setIsCouponStoreOpen(true)}
+                className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+              >
+                Xem kho mã giảm giá
+              </button>
+              
+              <CouponStore 
+                onApplyCoupon={handleApplyCoupon}
+                totalPrice={totalPrice}
+                isOpen={isCouponStoreOpen}
+                onClose={() => setIsCouponStoreOpen(false)}
+                coupons={cachedCoupons}
+                isLoading={isCouponLoading}
+              />
+              
+              {appliedCoupon && (
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-600">
+                    Đã áp dụng mã giảm giá: 
+                    {coupons.find(c => c.CouponID === parseInt(appliedCoupon))?.Name}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setAppliedCoupon('');
                       setDiscount(0);
-                    }
-                  }}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                >
-                  <option value="">Chọn mã giảm giá</option>
-                  {coupons.map((coupon) => (
-                    <option 
-                      key={coupon.CouponID} 
-                      value={coupon.CouponID}
-                      disabled={coupon.usable === false}
-                      className={coupon.usable === false ? 'text-gray-400' : ''}
-                    >
-                      {coupon.Name} - Giảm {coupon.DiscountPercentage}%
-                      {coupon.MinimumOrderValue ? 
-                        ` (Đơn tối thiểu ${Number(coupon.MinimumOrderValue).toLocaleString()}VND)` 
-                        : ''
-                      }
-                      {!coupon.usable ? ' - Chưa đủ điều kiện' : ''}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <p>Không có mã giảm giá nào khả dụng.</p>
+                    }}
+                    className="text-sm text-red-600 hover:text-red-700 mt-1"
+                  >
+                    Hủy áp dụng
+                  </button>
+                </div>
               )}
             </div>
           </div>

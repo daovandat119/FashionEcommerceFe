@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 
 function Edit_Address({ address, onSuccess, onCancel }) {
@@ -22,7 +23,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   useEffect(() => {
     if (address) {
       setFormData({
-        UserName: address.Username,
+        UserName: address.Username || '',
         PhoneNumber: address.PhoneNumber,
         Address: address.Address,
         DistrictID: address.DistrictID,
@@ -124,7 +125,14 @@ function Edit_Address({ address, onSuccess, onCancel }) {
     const token = localStorage.getItem('token');
 
     if (!formData.UserName || !formData.PhoneNumber || !formData.Address || !formData.DistrictID || !formData.WardCode) {
-      alert('Vui lòng điền đầy đủ thông tin!');
+      toast.error('Vui lòng điền đầy đủ thông tin!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
 
@@ -139,8 +147,6 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       IsDefault: formData.isDefault ? 1 : 0
     };
 
-    // console.log("Data to send:", dataToSend);
-
     try {
       const response = await axios.put(
         `http://127.0.0.1:8000/api/address/${address.AddressID}`,
@@ -154,38 +160,80 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       );
 
       if (response.status === 200) {
-        toast.success('Địa chỉ đã được cập nhật thành công!');
+        toast.success('Cập nhật địa chỉ thành công!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        onCancel();
         onSuccess();
       }
     } catch (error) {
       console.error('Lỗi chi tiết:', error.response?.data);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại!');
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
   const handleDeleteAddress = async (addressId) => {
-    const token = localStorage.getItem('token');
-    if (formData.isDefault) {
-      alert('Vui lòng chuyển địa chỉ mặc định sang địa chỉ khác trước khi xóa!');
-      return;
-    }
-    if (window.confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
-      try {
-        const response = await axios.delete(`http://127.0.0.1:8000/api/address/${addressId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    try {
+      const result = await Swal.fire({
+        title: 'Xác nhận xóa',
+        text: 'Bạn có chắc chắn muốn xóa địa chỉ này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+      });
+
+      if (result.isConfirmed) {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(
+          `http://127.0.0.1:8000/api/address/${addressId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
           }
-        });
+        );
 
         if (response.status === 200) {
-          toast.success('Địa chỉ đã được xóa thành công!');
+          toast.success('Xóa địa chỉ thành công!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          
           onSuccess();
+          onCancel();
         }
-      } catch (error) {
-        console.error('Lỗi khi xóa địa chỉ:', error.response?.data);
-        toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa địa chỉ.');
       }
+    } catch (error) {
+      console.error('Lỗi khi xóa địa chỉ:', error);
+      
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa địa chỉ!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -291,9 +339,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
           <button 
             type="button" 
             className="btn btn-secondary"
-            onClick={() => {
-              onClose();
-            }}
+            onClick={onCancel}
           >
             Hủy
           </button>
@@ -314,9 +360,10 @@ Edit_Address.propTypes = {
   address: PropTypes.shape({
     AddressID: PropTypes.number.isRequired,
     UserID: PropTypes.number.isRequired,
-    UserName: PropTypes.string.isRequired,
+    Username: PropTypes.string,
     PhoneNumber: PropTypes.string.isRequired,
     Address: PropTypes.string.isRequired,
+    ProvinceID: PropTypes.string.isRequired,
     DistrictID: PropTypes.string.isRequired,
     WardCode: PropTypes.string.isRequired,
     IsDefault: PropTypes.number.isRequired
