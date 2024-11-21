@@ -38,13 +38,14 @@ export default function Shop1() {
     setFilters(newFilters); // Cập nhật bộ lọc
   };
 
-
-  const { toggleWishlist, isInWishlist } = useContextElement();
   const [selectedColView, setSelectedColView] = useState(3);
   const [currentCategory] = useState(menuCategories[0]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [wishlistStatus, setWishlistStatus] = useState({});
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContextElement(); // Di chuyển vào trong hàm
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -61,7 +62,15 @@ export default function Shop1() {
 
     fetchProducts();
   }, []);
-
+  const toggleWishlist = async (productId) => {
+    if (isInWishlist(productId)) {
+      await removeFromWishlist(productId); // Đảm bảo gọi hàm xóa
+      setWishlistStatus((prev) => ({ ...prev, [productId]: false })); // Cập nhật trạng thái khi xóa
+    } else {
+      await addToWishlist(productId); // Đảm bảo gọi hàm thêm
+      setWishlistStatus((prev) => ({ ...prev, [productId]: true })); // Cập nhật trạng thái khi thêm
+    }
+  };
   // Loading state
   if (loading) {
     return (
@@ -86,16 +95,14 @@ export default function Shop1() {
     );
   }
 
-  
   // Lọc sản phẩm dựa trên bộ lọc đã chọn
   const filteredProducts = products.filter((product) => {
     console.log("Current filters:", filters);
     const matchesCategory =
       !filters.categoryId || product.CategoryID === filters.categoryId;
     const matchesColor =
-      !filters.colorId || product.ColorID === filters.colorId; 
-    const matchesSize =
-      !filters.sizeId || product.SizeID === filters.sizeId;
+      !filters.colorId || product.ColorID === filters.colorId;
+    const matchesSize = !filters.sizeId || product.SizeID === filters.sizeId;
 
     return matchesCategory && matchesColor && matchesSize;
   });
@@ -157,73 +164,85 @@ export default function Shop1() {
               <div key={i} className="product-card-wrapper">
                 <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                   <div className="pc__img-wrapper">
-                      <Link to={`/shop-detail/${elm.ProductID}`}>
-                        <img
-                          loading="lazy"
-                          src={elm.MainImageURL}
-                          width="330"
-                          height="400"
-                          alt={elm.ProductName}
-                          className="pc__img"
-                        />
-                        {elm.discount_percentage > 0 && (
-                          <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
-                            -{elm.discount_percentage}%
-                          </span>
-                        )}
-                      </Link>
-                    </div>
+                    <Link to={`/shop-detail/${elm.ProductID}`}>
+                      <img
+                        loading="lazy"
+                        src={elm.MainImageURL}
+                        width="330"
+                        height="400"
+                        alt={elm.ProductName}
+                        className="pc__img"
+                      />
+                      {elm.discount_percentage > 0 && (
+                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                          -{elm.discount_percentage}%
+                        </span>
+                      )}
+                    </Link>
+                  </div>
 
-                    <div className="p-2 text-left">
-                      <div className="flex justify-between items-center">
-                        <p className="mb-0 text-sm">{elm.category_name}</p>
-                        <div className="flex items-center">
-                          <Star stars={elm.average_rating} />
-                          <span className="text-gray-500 ml-1">
-                            {elm.reviews}
-                          </span>
-                        </div>
+                  <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{elm.category_name}</p>
+                      <div className="flex items-center">
+                        <Star stars={elm.average_rating} />
+                        <span className="text-gray-500 ml-1">
+                          {elm.reviews}
+                        </span>
                       </div>
-                      <h6 className="text-lg font-semibold">
-                        <Link to={`/shop-detail/${elm.ProductID}`}>
-                          {elm.ProductName}
-                        </Link>
-                      </h6>
+                    </div>
+                     <div className="flex justify-between">
+                    <h6 className="text-lg font-semibold">
+                      <Link to={`/shop-detail/${elm.ProductID}`}>
+                        {elm.ProductName}
+                      </Link>
+                    </h6>
+                    <button
+                        title="Add To Wishlist"
+                        className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
+                          isInWishlist(elm.ProductID) ||
+                          wishlistStatus[elm.ProductID]
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => toggleWishlist(elm.ProductID)} // Gọi hàm toggleWishlist
+                      >
+                        <svg
+                          width="25px"
+                          height="25px"
+                          className=""
+                          viewBox="0 0 64 64"
+                          xmlns="http://www.w3.org/2000/svg"
+                          stroke="#000000"
+                          fill={
+                            isInWishlist(elm.ProductID) ||
+                            wishlistStatus[elm.ProductID]
+                              ? "red"
+                              : "none"
+                          } // Thay đổi màu sắc
+                        >
+                          <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
+                        </svg>
+                      </button>
+                    </div>
                       <div className="flex justify-start">
                         <span className="text-lg font-bold text-red-600">
                           {elm.SalePrice}₫
                         </span>
                         {elm.Price && (
-                          <span className="text-sm line-through text-gray-500 ml-2">
+                          <span className="text-sm mt-1 line-through text-gray-500 ml-2">
                             {elm.Price}₫
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">
-                        {elm.ShortDescription}
-                      </p>
-                    </div>
-
-                    <button
-                      className={`pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist ${
-                        isInWishlist(elm.ProductID) ? "active" : ""
-                      }`}
-                      onClick={() => toggleWishlist(elm.ProductID)}
-                      title="Add To Wishlist"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="#icon_heart" />
-                      </svg>
-                    </button>
+                      
+                    <p className="text-sm text-gray-600">
+                      {elm.ShortDescription}
+                    </p>
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
           <Pagination1 />
         </div>

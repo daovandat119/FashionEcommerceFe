@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Star from "../../components/common/Star"; // Import component Star
+import { useContextElement } from "../../context/Context";
 
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
@@ -42,10 +43,14 @@ const swiperOptions = {
   },
 };
 
+
+
 export default function Products_Limited() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [wishlistStatus, setWishlistStatus] = useState({}); // Di chuyển vào trong hàm
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useContextElement(); // Di chuyển vào trong hàm
 
   useEffect(() => {
     axios
@@ -60,7 +65,16 @@ export default function Products_Limited() {
         setLoading(false);
       });
   }, []);
-
+  
+const toggleWishlist = async (productId) => {
+  if (isInWishlist(productId)) {
+    await removeFromWishlist(productId); // Đảm bảo gọi hàm xóa
+    setWishlistStatus((prev) => ({ ...prev, [productId]: false })); // Cập nhật trạng thái khi xóa
+  } else {
+    await addToWishlist(productId); // Đảm bảo gọi hàm thêm
+    setWishlistStatus((prev) => ({ ...prev, [productId]: true })); // Cập nhật trạng thái khi thêm
+  }
+};
   return (
     <section className="container mx-auto">
       <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
@@ -133,24 +147,35 @@ export default function Products_Limited() {
                           </span>
                         )}
                       </div>
-                    
-                    <div className="mr-4">
-                      <button
-                        title="Add To Wishlist"
-                        className="transition-transform duration-200 hover:scale-110 active:scale-95" // Thêm hiệu ứng khi hover và nhấn
-                      >
-                        <svg
-                          width="25px"
-                          height="25px"
-                          className=""
-                          viewBox="0 0 64 64"
-                          xmlns="http://www.w3.org/2000/svg"
-                          stroke="#000000"
-                          fill="none"
+
+                      <div className="mr-4">
+                        <button
+                          title="Add To Wishlist"
+                          className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
+                            isInWishlist(product.ProductID) ||
+                            wishlistStatus[product.ProductID]
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() => toggleWishlist(product.ProductID)} // Gọi hàm toggleWishlist
                         >
-                          <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
-                        </svg>
-                      </button>
+                          <svg
+                            width="25px"
+                            height="25px"
+                            className=""
+                            viewBox="0 0 64 64"
+                            xmlns="http://www.w3.org/2000/svg"
+                            stroke="#000000"
+                            fill={
+                              isInWishlist(product.ProductID) ||
+                              wishlistStatus[product.ProductID]
+                                ? "red"
+                                : "none"
+                            } // Thay đổi màu sắc
+                          >
+                            <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   </div>

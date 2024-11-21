@@ -94,7 +94,7 @@ export default function FilterAll({ onFilterChange }) {
           Lựa chọn màu sắc
         </h5>
         <div className="accordion-body px-0 pb-0">
-          <div className="d-flex flex-wrap gap-2">
+          <div className="d-flex ml-1 flex-wrap gap-2">
             {colors.map((color) => (
               <div key={color.ColorID} className="color-item position-relative">
                 <a
