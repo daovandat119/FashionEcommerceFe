@@ -66,10 +66,10 @@ import UpdateVoucher from "./pages/admin/voucher/UpdateVoucher";
 import AddVoucher from "./pages/admin/voucher/AddVoucher";
 import ProfileAdmin from "./pages/admin/profile_admin/ProfileAdmin";
 import UpdateProfileAdmin from "./pages/admin/profile_admin/UpdateProfileAdmin";
-import StatisticalProducts from "./pages/admin/statistical/StatisticalProducts";
-
+import StatisticalOrders from "./pages/admin/statistical/orders/StatisticalOrders";
+import ProductStatistics from "./pages/admin/statistical/products/ProductStatistics";
 import ErrorPage from "./pages/error/ErrorPage";
-import StatisticalUsers from "./pages/admin/statistical/StatisticalUsers";
+import StatisticalUsers from "./pages/admin/statistical/users/StatisticalUsers";
 
 function App() {
   return (
@@ -202,10 +202,8 @@ const AppRoutes = () => {
               <Route path="user-statistics" element={<StatisticalUsers />} />
               <Route path="profile" element={<ProfileAdmin />} />
               <Route path="profile/edit" element={<UpdateProfileAdmin />} />
-              <Route
-                path="product-statistics"
-                element={<StatisticalProducts />}
-              />
+              <Route path="order-statistics" element={<StatisticalOrders />} />
+              <Route path="product-statistics" element={<ProductStatistics />} />
             </Route>
 
             {/* Error route - Phải đặt ở cuối cùng */}

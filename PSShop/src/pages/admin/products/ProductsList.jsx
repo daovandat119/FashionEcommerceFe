@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Input, Checkbox } from "@material-tailwind/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import ToggleSwitch from "../components/ToggleSwitch";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -169,14 +169,14 @@ const ProductsList = () => {
             <tbody>
               {listProducts.map((item) => (
                 <tr key={item.ProductID} className="hover:bg-gray-50">
-                  <td className="border-b p-1 text-center">
+                  <td className=" p-1 text-center">
                     <Checkbox
                       checked={selectedProducts.includes(item.ProductID)}
                       onChange={() => handleSelectProduct(item.ProductID)}
                       className="border-2 border-gray-400"
                     />
                   </td>
-                  <td className="border-b p-4 flex items-center">
+                  <td className=" p-4 flex items-center">
                     {item.MainImageURL ? (
                       <img
                         src={item.MainImageURL}
@@ -194,25 +194,31 @@ const ProductsList = () => {
                     )}
                     <span>{item.ProductName}</span>
                   </td>
-                  <td className="border-b p-4">{item.category_name}</td>
-                  <td className="border-b p-4">{item.Price}</td>
-                  <td className="border-b p-4">{item.SalePrice}</td>
-                  <td className="border-b p-4">
+                  <td className=" p-4">{item.category_name}</td>
+                  <td className=" p-4">{item.Price}</td>
+                  <td className=" p-4">{item.SalePrice}</td>
+                  <td className=" p-4">
                     <ToggleSwitch
                       isOn={item.Status === "ACTIVE"}
                       handleToggle={() => handleToggleActive(item)}
                     />
                   </td>
-                  <td className="border-b p-4">
+                  <td className=" p-4 flex items-center mb-7">
+                    <Link
+                      to={`/shop-detail/${item.ProductID}`}
+                      className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors"
+                    >
+                      <EyeIcon className="h-4 w-4" />
+                    </Link>
                     <Link
                       to={`/admin/products/edit/${item.ProductID}`}
-                      className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
+                      className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors"
                     >
                       <PencilIcon className="h-4 w-4" />
                     </Link>
                     <button
                       onClick={() => handleDeleteProduct(item.ProductID)}
-                      className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
+                      className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
                     >
                       <TrashIcon className="h-4 w-4" />
                     </button>

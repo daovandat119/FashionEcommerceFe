@@ -8,6 +8,7 @@ import {
 } from "../service/api_service";
 import { Link } from "react-router-dom";
 import UpdateProfileAdmin from "./UpdateProfileAdmin";
+import { FaSpinner } from "react-icons/fa";
 
 const ProfileAdmin = () => {
   const [address, setAddress] = useState(null);
@@ -21,38 +22,30 @@ const ProfileAdmin = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    const fetchAddress = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await GetAddressByUserId();
-        setAddress(response.data[0]);
-        setSelectedProvince(response.data[0].ProvinceID);
-        setSelectedDistrict(response.data[0].DistrictID);
-        setSelectedWard(response.data[0].WardCode);
-      } catch (error) {
-        console.error("Error fetching address:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        const addressResponse = await GetAddressByUserId();
+        const provincesResponse = await GetProvinces();
 
-    fetchAddress();
-  }, []);
+        setAddress(addressResponse.data[0]);
+        setProvinces(provincesResponse.data);
 
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      try {
-        const response = await GetProvinces();
-        if (response.message === "Success") {
-          setProvinces(response.data);
-        } else {
-          console.error("Failed to fetch provinces:", response.message);
+        if (addressResponse.data[0]) {
+          setSelectedProvince(addressResponse.data[0].ProvinceID);
+          setSelectedDistrict(addressResponse.data[0].DistrictID);
+          setSelectedWard(addressResponse.data[0].WardCode);
         }
       } catch (error) {
-        console.error("Error fetching provinces:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
-    fetchProvinces();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -111,7 +104,8 @@ const ProfileAdmin = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading...
+        <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+        <span className="ml-4 text-lg">Đang tải thông tin địa chỉ, vui lòng chờ...</span>
       </div>
     );
   }
@@ -128,7 +122,7 @@ const ProfileAdmin = () => {
 
   return (
     <div className="flex justify-center items-center h-screen w-[95%] mx-auto bg-gray-100">
-      <div className="w-full  mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <div className="w-full mx-auto p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl md:text-3xl font-bold text-left text-gray-800 mb-6">
           Profile Admin
         </h1>
@@ -217,7 +211,7 @@ const ProfileAdmin = () => {
               <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-blue-500 text-white font-bold  rounded-2xl hover:bg-blue-600 w-[15%] py-3"
+                  className="bg-blue-500 text-white font-bold rounded-2xl hover:bg-blue-600 w-[15%] py-3"
                 >
                   Chỉnh sửa
                 </button>

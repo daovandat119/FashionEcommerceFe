@@ -45,8 +45,8 @@ export function SidebarWithSearch() {
   };
 
   return (
-    <Card className="h-[100vh] w-full max-w-[20rem] p-4 relative">
-      <div className="flex items-center justify-center py-7 mr-5">
+    <Card className="h-[100vh] w-full max-w-[20rem] p-4 relative overflow-hidden">
+      <div className="flex items-center justify-center py-3 mr-5">
         <img className="w-20" src={logo} alt="Logo" />
         <p className="text-2xl font-bold">ADMIN</p>
       </div>
@@ -72,14 +72,12 @@ export function SidebarWithSearch() {
             <CogIcon className="h-5 w-5" />
           </ListItemPrefix>
           Quản lý
-          <ChevronRightIcon className="h-5 w-5 ml-10" />
+          <ChevronRightIcon className="h-5 w-5 ml-20" />
         </ListItem>
 
         <div
-          className={`absolute left-0 ml-12 top-60 w-48 mt-1 transition-all duration-300 ease-in-out z-50 ${
-            isDropdownOpen
-              ? "h-48 opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
+          className={`mt-1 transition-all duration-300 ease-in-out z-50 ${
+            isDropdownOpen ? " opacity-100 ml-5" : "h-0 opacity-0 overflow-hidden"
           }`}
         >
           {isDropdownOpen && (
@@ -143,7 +141,7 @@ export function SidebarWithSearch() {
             Đặt hàng
           </ListItem>
         </Link>
-        
+
         <Link
           to="/admin/vouchers"
           className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
@@ -158,57 +156,55 @@ export function SidebarWithSearch() {
 
         <ListItem
           onClick={toggleStatsDropdown}
-          className="hover:bg-gray-200 transition-all duration-800 rounded-xl relative"
+          className="hover:bg-gray-200 transition-all duration-800 rounded-xl"
         >
           <ListItemPrefix>
             <ChartPieIcon className="h-5 w-5" />
           </ListItemPrefix>
           Thống kê
-          <ChevronRightIcon className="h-5 w-5 ml-10" />
+          <ChevronRightIcon className="h-5 w-5 ml-16" />
         </ListItem>
 
         <div
-          className={`absolute left-0 bottom-2 ml-11 mb-1 w-52 transition-all z-50 duration-300 ease-in-out ${
-            isStatsDropdownOpen
-              ? "opacity-100 "
-              : "max-h-0 opacity-0 overflow-hidden"
+          className={`mt-1 transition-all duration-300 ease-in-out z-50 ${
+            isStatsDropdownOpen ? "ml-5 opacity-100" : "h-0 opacity-0 overflow-hidden"
           }`}
         >
           {isStatsDropdownOpen && (
-            <div>
+            <>
               <Link to="/admin/user-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
+                <ListItem className="bg-white duration-300 border-b-2 border-gray-200 rounded-xl transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <UserCircleIcon className="h-5 w-5" />
                   </ListItemPrefix>
                   Người dùng
                 </ListItem>
               </Link>
-              <Link to="/admin/product-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
-                  <ListItemPrefix>
-                    <ShoppingBagIcon className="h-5 w-5" />
-                  </ListItemPrefix>
-                  Sản phẩm
-                </ListItem>
-              </Link>
               <Link to="/admin/order-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
+                <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <ShoppingCartIcon className="h-5 w-5" />
                   </ListItemPrefix>
                   Đơn hàng
                 </ListItem>
               </Link>
+              <Link to="/admin/product-statistics">
+                <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
+                  <ListItemPrefix>
+                    <ShoppingBagIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  Sản phẩm
+                </ListItem>
+              </Link>
               <Link to="/admin/revenue-statistics">
-                <ListItem className="bg-white border-b-2 rounded-xl hover:bg-gray-100 duration-300">
+                <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
                   <ListItemPrefix>
                     <ChartBarIcon className="h-5 w-5" />
                   </ListItemPrefix>
                   Khác
                 </ListItem>
               </Link>
-            </div>
+            </>
           )}
         </div>
 
@@ -220,14 +216,12 @@ export function SidebarWithSearch() {
             <Cog6ToothIcon className="h-5 w-5" />
           </ListItemPrefix>
           Cài đặt
-          <ChevronRightIcon className="h-5 w-5 ml-10" />
+          
         </ListItem>
 
         <div
-          className={`absolute left-0 bottom-12 ml-11 mb-1 w-52 transition-all duration-300 ease-in-out ${
-            isSettingsDropdownOpen
-              ? "opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
+          className={`mt-1 transition-all duration-300 ease-in-out ${
+            isSettingsDropdownOpen ? "opacity-100" : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
           {isSettingsDropdownOpen && (
