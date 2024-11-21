@@ -176,11 +176,18 @@ export default function Shop1() {
                         alt={elm.ProductName}
                         className="pc__img"
                       />
-                      {elm.discount_percentage > 0 && (
-                        <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                      {elm.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
+                        <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
                           -{elm.discount_percentage}%
                         </span>
                       )}
+                      {new Date(elm.created_at) >
+                        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
+                        elm.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
+                          <div className="absolute top-12 left-0  product-label bg-white text-dark">
+                            NEW
+                          </div>
+                        )}
                     </Link>
                   </div>
 
