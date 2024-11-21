@@ -255,7 +255,7 @@ const ProductDetail = () => {
             <img
               loading="lazy"
               className="h-auto mb-1"
-              src={product.MainImageURL}
+              src={product.image_paths}
               width="104"
               height="104"
               alt="image"

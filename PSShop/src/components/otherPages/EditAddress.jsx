@@ -88,8 +88,8 @@ export default function EditAddress() {
     <div className="col-lg-9">
       <div className="page-content my-account__address">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <p className="notice mb-0">
-          Các địa chỉ sau đây sẽ được sử dụng trên trang thanh toán theo mặc định.   </p>
+          <p className="text-xl font-bold mb-0">
+         Địa chỉ của tôi  </p>
           <button 
             className="btn btn-primary"
             onClick={() => setShowAddForm(true)}
@@ -108,52 +108,92 @@ export default function EditAddress() {
             />
           </div>
         )}
-
-        <div className="my-account__address-list flex flex-col">
+  <div className="my-account__address-list flex flex-col gap-4">
           {addresses.length > 0 ? (
             addresses.map((address) => (
-              <div key={address.AddressID} className={`my-account__address-item p-4 rounded-lg shadow-md transition-transform duration-200 ${address.IsDefault == 1 ? 'border-2 border-gray-600 bg-blue-50' : 'border border-gray-200'}`}>
-                <div className="my-account__address-item__title flex justify-between items-center">
-                  <h5 className={`text-lg font-semibold ${address.IsDefault ? 'text-gray-600' : 'text-gray-800'}`}>{address.UserName}</h5>
-                  <div className="flex gap-2">
-                    <button 
-                      className="btn btn-warning btn-sm rounded-lg shadow hover:bg-yellow-500 transition duration-200"
-                      onClick={() => toggleExpandAddress(address.AddressID)}
-                    >
-                      Sửa
-                    </button>
+              <div
+                key={address.AddressID}
+                className={`relative p-4 rounded-lg shadow-md bg-gray transition-transform duration-200 ${
+                  address.IsDefault ? "border-2  " : "border"
+                }`}
+              >
+                {/* Nội dung địa chỉ và nút hành động */}
+                <div className="flex items-center justify-between">
+                  {/* Phần chi tiết ở giữa dòng */}
+                  <div className="text-left flex-1">
+                    <p className="text-sm text-gray-700 font-medium">
+                      {address.Username} | {address.PhoneNumber}
+                    </p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      {address.Address}
+                    </p>
+
+                    {address.IsDefault === 1 && (
+                      <span className="inline-block mt-2 text-xs font-bold text-white bg-gray-800 rounded-full px-3 py-1">
+                        Địa chỉ mặc định
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Nút chỉnh sửa và đặt làm mặc định */}
+                  <div className="flex flex-col items-end gap-2">
+                    {/* Nút sửa và nút xóa */}
+                    <div className="flex items-center gap-2">
+                      {/* Nút sửa */}
+                      <button
+                        className="px-4 py-2 text-sm text-gray-100 bg-gray-500 rounded-lg shadow hover:bg-gray-800 transition duration-200"
+                        onClick={() => toggleExpandAddress(address.AddressID)}
+                      >
+                        Sửa
+                      </button>
+                      {/* Nút xóa */}
+                      <button
+                        className="px-4 py-2 text-sm text-gray-100 bg-gray-500 rounded-lg shadow hover:bg-gray-800 transition duration-200"
+                        onClick={() => handleDeleteAddress(address.AddressID)}
+                      >
+                        Xóa
+                      </button>
+                    </div>
+
+                    {/* Nút đặt làm mặc định */}
                     {!address.IsDefault && (
-                      <button 
-                        className={`btn btn-success btn-sm rounded-lg shadow hover:bg-green-500 transition duration-200 ${
-                          isSettingDefault ? 'opacity-50 cursor-not-allowed' : ''
+                      <button
+                        className={`px-4 py-2 text-sm text-gray-100 bg-gray-500 rounded-lg shadow hover:bg-gray-800 transition duration-200 ${
+                          isSettingDefault
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
                         }`}
-                        onClick={() => handleSetDefaultAddress(address.AddressID)}
+                        onClick={() =>
+                          handleSetDefaultAddress(address.AddressID)
+                        }
                         disabled={isSettingDefault}
                       >
-                        {isSettingDefault ? 'Đang xử lý...' : 'Đặt làm mặc định'}
+                        {isSettingDefault
+                          ? "Đang xử lý..."
+                          : "Đặt làm mặc định"}
                       </button>
                     )}
                   </div>
                 </div>
-                <div className="my-account__address-item__detail mt-2">
-                  <p className="text-gray-700">{address.Address}</p>
-                  <p className="text-gray-600">Phone: {address.PhoneNumber}</p>
-                  {address.IsDefault == 1 && (
-                    <span className="inline-block bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-full mt-2">Địa chỉ mặc định</span>
-                  )}
-                </div>
+
+                {/* Nội dung mở rộng (chỉnh sửa địa chỉ) */}
                 {expandedAddressId === address.AddressID && (
-                  <div className="expanded-content mt-2">
-                    <Edit_Address address={address} onSuccess={() => {
-                      toggleExpandAddress(null);
-                      fetchAddresses();
-                    }} />
+                  <div className="expanded-content mt-4 p-4 border-t border-gray-300">
+                    <Edit_Address
+                      address={address}
+                      onSuccess={() => {
+                        toggleExpandAddress(null);
+                        fetchAddresses();
+                      }}
+                    />
                   </div>
                 )}
               </div>
             ))
           ) : (
-            <p>Không có địa chỉ. Vui lòng thêm địa chỉ mới</p>
+            <p className="text-center text-gray-500">
+              Không có địa chỉ. Vui lòng thêm địa chỉ mới.
+            </p>
           )}
         </div>
 

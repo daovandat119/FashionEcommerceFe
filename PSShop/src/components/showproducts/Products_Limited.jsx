@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -52,10 +52,11 @@ export default function Products_Limited() {
      
     })
       .then(response => {
+
         setProducts(response.data.data);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Có lỗi xảy ra khi gọi API", error);
         setError("Không thể tải sản phẩm.");
         setLoading(false);
@@ -80,14 +81,21 @@ export default function Products_Limited() {
             className="swiper-container"
           >
             {products.map((product, i) => (
-              <SwiperSlide key={i} className="swiper-slide">
-                <div className="mb-4 border border-light rounded-lg shadow-sm bg-white">
+              <SwiperSlide key={i} className="swiper-slide product-card">
+                <div className="mb-4 bg-white">
                   <div className="relative m-1">
-                    {product.discount_percentage > 0 && (
-                      <span className="absolute top-0 left-0 m-1 border border-light bg-red-600 text-white p-1 rounded">
+                    {product.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
+                      <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
                         -{product.discount_percentage}%
                       </span>
                     )}
+                    {new Date(product.created_at) >
+                      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
+                      product.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
+                        <div className="absolute top-12 left-0  product-label bg-white text-dark">
+                          NEW
+                        </div>
+                      )}
                     <Link to={`/shop-detail/${product.ProductID}`}>
                       <img
                         loading="lazy"
@@ -95,7 +103,7 @@ export default function Products_Limited() {
                         width="330"
                         height="400"
                         alt={product.ProductName}
-                        className="w-full h-auto rounded-t-lg"
+                        className="w-[330px] h-[400px] "
                       />
                     </Link>
                   </div>
@@ -106,35 +114,48 @@ export default function Products_Limited() {
                       <p className="mb-0 text-sm">{product.category_name}</p>
                       <div className="flex items-center">
                         <Star stars={product.average_rating} />
-                        <span className="text-gray-500 ml-1">{product.reviews}</span>
+                        <span className="text-gray-500 ml-1">
+                          {product.reviews}
+                        </span>
                       </div>
                     </div>
                     <h6 className="text-lg font-semibold">
-                      <Link to={`/shop-detail/${product.ProductID}`}>{product.ProductName}</Link>
+                      <Link to={`/shop-detail/${product.ProductID}`}>
+                        {product.ProductName}
+                      </Link>
                     </h6>
-                    <div className="flex justify-start">
-                      <span className="text-lg font-bold text-red-600">{product.SalePrice}₫</span>
-                      {product.Price && (
-                        <span className="text-sm line-through text-gray-500 ml-2">{product.Price}₫</span>
-                      )}
+                    <div className="flex justify-between ">
+                      <div className="flex justify-start">
+                        <span className="text-lg font-bold text-red-600">
+                          {product.SalePrice}₫
+                        </span>
+                        {product.Price && (
+                          <span className="text-sm line-through text-gray-500 ml-2">
+                            {product.Price}₫
+                          </span>
+                        )}
+                      </div>
+                    
+                    <div className="mr-4">
+                      <button
+                        title="Add To Wishlist"
+                        className="transition-transform duration-200 hover:scale-110 active:scale-95" // Thêm hiệu ứng khi hover và nhấn
+                      >
+                        <svg
+                          width="25px"
+                          height="25px"
+                          className=""
+                          viewBox="0 0 64 64"
+                          xmlns="http://www.w3.org/2000/svg"
+                          stroke="#000000"
+                          fill="none"
+                        >
+                          <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
+                        </svg>
+                      </button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Nút yêu thích */}
-                  <button
-                    className="absolute top-0 right-0 bg-transparent border-0"
-                    title="Thêm vào danh sách yêu thích"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <use href="#icon_heart" />
-                    </svg>
-                  </button>
                 </div>
               </SwiperSlide>
             ))}
