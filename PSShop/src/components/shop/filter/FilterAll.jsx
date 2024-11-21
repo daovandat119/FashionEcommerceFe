@@ -34,7 +34,7 @@ export default function FilterAll({ onFilterChange }) {
         ]);
   
         setCategories(categoriesRes.data.data);
-        setColors(colorsRes.data.data);
+        setColors(colorsRes.data.data); 
         setSizes(sizesRes.data.data);
         hasFetchedData.current = true; // Đánh dấu là đã gọi API
       } catch (error) {
@@ -52,6 +52,8 @@ export default function FilterAll({ onFilterChange }) {
       ...selectedFilters,
       [type]: value,
     };
+
+    console.log(newFilters);
     setSelectedFilters(newFilters);
     onFilterChange(newFilters); // Gửi filters lên component cha
   };

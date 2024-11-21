@@ -51,7 +51,9 @@ export default function RelatedSlider() {
   useEffect(() => {
     // Gọi API PHP từ React
     axios
-      .get("http://127.0.0.1:8000/api/products")
+      .post("http://127.0.0.1:8000/api/products/index", {
+        
+      })
       .then((response) => {
         setProducts(response.data.data || response.data); // Điều chỉnh nếu cần
         setLoading(false);

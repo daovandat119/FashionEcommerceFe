@@ -43,7 +43,9 @@ export default function Shop1() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/products");
+        const response = await axios.post("http://127.0.0.1:8000/api/products/index", {
+         
+        });
         setProducts(response.data.data || response.data.data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);

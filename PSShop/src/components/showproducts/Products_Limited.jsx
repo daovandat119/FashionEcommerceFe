@@ -48,7 +48,9 @@ export default function Products_Limited() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/products')
+    axios.post('http://127.0.0.1:8000/api/products/index', {
+     
+    })
       .then(response => {
         setProducts(response.data.data);
         setLoading(false);

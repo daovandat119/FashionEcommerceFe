@@ -21,7 +21,9 @@ export default function Products_Trendy() {
   // Lấy danh sách sản phẩm từ API
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/products")
+      .post("http://127.0.0.1:8000/api/products/index", {
+        
+      })
       .then((response) => {
         const fetchedProducts = response.data.data || response.data;
         setProducts(fetchedProducts);

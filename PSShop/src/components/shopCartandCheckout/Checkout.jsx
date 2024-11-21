@@ -282,8 +282,8 @@ export default function Checkout() {
                     <option 
                       key={coupon.CouponID} 
                       value={coupon.CouponID}
-                      disabled={!coupon.usable}
-                      className={!coupon.usable ? 'text-gray-400' : ''}
+                      disabled={coupon.usable === false}
+                      className={coupon.usable === false ? 'text-gray-400' : ''}
                     >
                       {coupon.Name} - Giảm {coupon.DiscountPercentage}%
                       {coupon.MinimumOrderValue ? 
