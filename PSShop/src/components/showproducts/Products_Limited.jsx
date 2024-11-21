@@ -67,7 +67,7 @@ export default function Products_Limited() {
         setLoading(false);
       });
   }, []);
-  
+
 const toggleWishlist = async (productId) => {
   if (isInWishlist(productId)) {
     await removeFromWishlist(productId); // Đảm bảo gọi hàm xóa

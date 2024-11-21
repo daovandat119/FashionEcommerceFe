@@ -250,11 +250,11 @@ const ProductDetail = () => {
       />
       
     </div>
-    <div className="product-single__thumbnail flex space-x-2  overflow-x-auto">
+    <div className="product-single__thumbnail flex space-x-2 ml-2  overflow-x-auto">
         <img
 
           loading="lazy"
-          className="h-[180px] w-[170px] cursor-pointer border border-gray-300 rounded"
+          className="h-[180px] w-[200px] cursor-pointer border border-gray-300 rounded"
           src={product.image_paths}
           width="104"
           height="104"
