@@ -3,6 +3,7 @@ import ProductLineChart from "./ProductsLineChart";
 import ProductBarChart from "./ProductsBarChart";
 import ProductSalesTable from "./ProductSalesChart";
 
+
 const ProductStatistics = () => {
   const [productName, setProductName] = useState("");
   const [timePeriod, setTimePeriod] = useState("");
@@ -89,9 +90,10 @@ const ProductStatistics = () => {
         </div>
 
         <div className=" w-[48%]">
-        <ProductSalesTable />
+        <ProductBarChart  data={barChartData}/>
         </div>
       </div>
+      <div className="my-4 w-[96%] mx-auto"><ProductSalesTable/></div>
       
     </div>
   );

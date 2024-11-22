@@ -17,7 +17,6 @@ const Login = () => {
   const { login, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Nếu đã đăng nhập, điều hướng đến trang dashboard
     if (isAuthenticated) {
       navigate("/admin/dashboard");
     }
@@ -46,17 +45,15 @@ const Login = () => {
       try {
         const res = await LoginAdmin(Email, Password);
         if (res && res.token) {
-          // Lưu token khi đăng nhập thành công
-          login(res.token); // Gọi hàm login với token
+          login(res.token);
+          localStorage.setItem("UserID", res.userId);
           toast.success("Đăng nhập thành công!");
           navigate("/admin/dashboard");
         } else {
-          // Nếu API trả về thông báo lỗi
           setLoi(res.message || "Tài khoản hoặc mật khẩu không chính xác");
           toast.error(res.message || "Tài khoản hoặc mật khẩu không chính xác");
         }
       } catch (err) {
-        // Hiển thị thông báo lỗi từ API
         setLoi(err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
         toast.error(err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
         console.error("Lỗi đăng nhập:", err);

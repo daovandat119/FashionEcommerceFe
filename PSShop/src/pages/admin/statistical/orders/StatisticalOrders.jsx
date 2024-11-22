@@ -58,7 +58,7 @@ function StatisticalOrders() {
                 </div>
             </div>
 
-            <div className="flex w-[100%] gap-4 justify-center ">
+            <div className="flex w-[100%] gap-4 mb-5 justify-center ">
                 <div className="w-[47%] ">
                     <OrderBarChart />
                 </div>

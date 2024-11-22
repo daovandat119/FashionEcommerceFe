@@ -53,9 +53,9 @@ const ProductSalesTable = () => {
       <h2 className="text-xl font-bold mb-4">Thống kê sản phẩm bán ra</h2>
 
       <div className="flex items-center justify-between">
-      <label className="mr-2 text-base font-bold">Bộ lọc</label>
-       <div>
-       <label className="mr-2">Hiển thị:</label>
+        <label className="mr-2 text-base font-bold">Bộ lọc</label>
+        <div>
+          <label className="mr-2">Hiển thị:</label>
           <select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(e.target.value)}
@@ -65,12 +65,10 @@ const ProductSalesTable = () => {
             <option value={20}>20</option>
             <option value={30}>30</option>
           </select>
-       </div>
         </div>
+      </div>
       <div className="flex justify-between mb-4">
-        
         <div className="flex items-center gap-2">
-         
           <input
             type="text"
             placeholder="Nhập tên sản phẩm"
@@ -78,8 +76,7 @@ const ProductSalesTable = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border border-gray-300 p-2 rounded"
           />
-
-<input
+          <input
             type="text"
             placeholder="Nhập mã sản phẩm"
             value={searchTerm}
@@ -87,7 +84,6 @@ const ProductSalesTable = () => {
             className="border border-gray-300 p-2 rounded"
           />
         </div>
-   
       </div>
 
       {loading ? (
@@ -134,34 +130,22 @@ const ProductSalesTable = () => {
                 {expandedProduct === product && (
                   <tr>
                     <td colSpan="5" className="border border-gray-300 p-2">
-                      <div>
+                      <div className="max-h-60 overflow-y-auto">
                         <p>
                           <strong>Tên sản phẩm:</strong> {product.name}
                         </p>
                         <table className="min-w-full border border-gray-300 text-center">
                           <thead>
                             <tr className="bg-gray-100">
-                              <th className="border border-gray-300 p-2">
-                                Size
-                              </th>
-                              <th className="border border-gray-300 p-2">
-                                Color
-                              </th>
-                              <th className="border border-gray-300 p-2">
-                               Tồn kho
-                              </th>
-                              <th className="border border-gray-300 p-2">
-                                Đã bán
-                              </th>
-                              <th className="border border-gray-300 p-2">
-                                Giá
-                              </th>
-                              <th className="border border-gray-300 p-2">
-                                Tổng doanh thu
-                              </th>
+                              <th className="border border-gray-300 p-2">Size</th>
+                              <th className="border border-gray-300 p-2">Color</th>
+                              <th className="border border-gray-300 p-2">Tồn kho</th>
+                              <th className="border border-gray-300 p-2">Đã bán</th>
+                              <th className="border border-gray-300 p-2">Giá</th>
+                              <th className="border border-gray-300 p-2">Tổng doanh thu</th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody className="overflow-hidden">
                             {productVariants.map((variant, index) => (
                               <tr key={index} className="hover:bg-gray-50">
                                 <td className="border border-gray-300 p-2">
@@ -177,18 +161,15 @@ const ProductSalesTable = () => {
                                   {variant.TotalSold}
                                 </td>
                                 <td className="border border-gray-300 p-2">
-                                  {parseFloat(variant.Price).toLocaleString()}{" "}
-                                  VNĐ
+                                  {parseFloat(variant.Price).toLocaleString()} VNĐ
                                 </td>
                                 <td className="border border-gray-300 p-2">
-                                  {parseFloat(
-                                    variant.TotalRevenue
-                                  ).toLocaleString()}{" "}
-                                  VNĐ
+                                  {parseFloat(variant.TotalRevenue).toLocaleString()} VNĐ
                                 </td>
                               </tr>
                             ))}
                           </tbody>
+                          
                         </table>
                       </div>
                     </td>

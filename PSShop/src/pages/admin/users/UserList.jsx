@@ -91,7 +91,7 @@ const UserList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer /> {/* Thêm ToastContainer để hiển thị thông báo */}
-      <h1 className="text-2xl font-bold mb-6">User Management</h1>
+      <h1 className="text-2xl font-bold mb-6">Quản lý người dùng</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
           <Input

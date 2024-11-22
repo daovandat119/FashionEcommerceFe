@@ -5,10 +5,12 @@ import {
   GetDistricts,
   GetWards,
   UpdateAddress,
+  GetUserById,
 } from "../service/api_service";
 import { Link } from "react-router-dom";
 import UpdateProfileAdmin from "./UpdateProfileAdmin";
 import { FaSpinner } from "react-icons/fa";
+import UpdateUser from "../users/UpdateUsers";
 
 const ProfileAdmin = () => {
   const [address, setAddress] = useState(null);
@@ -20,6 +22,7 @@ const ProfileAdmin = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,15 +40,36 @@ const ProfileAdmin = () => {
           setSelectedWard(addressResponse.data[0].WardCode);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching address or provinces:", error);
       } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        setLoading(false);
       }
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userId = localStorage.getItem("UserId");
+      console.log("UserId:", userId);
+      if (userId) {
+        try {
+          const response = await GetUserById(userId);
+          setUserData(response.data);
+        } catch (error) {
+          if (error.response) {
+            console.error("Error fetching user data:", error.response.data);
+          } else {
+            console.error("Error fetching user data:", error.message);
+          }
+        }
+      } else {
+        console.error("UserId is not found in localStorage");
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -121,8 +145,8 @@ const ProfileAdmin = () => {
     "Không xác định";
 
   return (
-    <div className="flex justify-center items-center h-screen w-[95%] mx-auto bg-gray-100">
-      <div className="w-full mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="flex justify-center items-start h-screen w-[95%] mx-auto bg-gray-100">
+      <div className="w-[50%] mx-auto p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl md:text-3xl font-bold text-left text-gray-800 mb-6">
           Profile Admin
         </h1>
@@ -229,6 +253,11 @@ const ProfileAdmin = () => {
             Không có thông tin địa chỉ.
           </p>
         )}
+      </div>
+
+      {/* Cột bên phải hiển thị UpdateUser */}
+      <div className="w-[50%] p-6">
+        <UpdateUser userData={userData} />
       </div>
     </div>
   );

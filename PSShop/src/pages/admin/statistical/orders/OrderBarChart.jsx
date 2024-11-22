@@ -39,9 +39,9 @@ const OrderBarChart = () => {
   }, []);
 
   return (
-   <div className="bg-white rounded-lg border-2 border-gray-300  h-[570px]">
-     <ResponsiveContainer  height={500}>
-      <p className="text-lg font-semibold py-3 px-4">
+   <div className="bg-white rounded-lg border-2 border-gray-300 py-5 ">
+     <ResponsiveContainer  height={400}>
+      <p className="text-lg font-semibold  px-4 relative bottom-5">
         Đơn hàng : 4
       </p>
       <BarChart data={data}>

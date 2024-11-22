@@ -40,23 +40,23 @@ const RevenueChart = () => {
   );
 
   return (
-    <div className="bg-white rounded-lg border-2 border-gray-300 h-[570px]">
+    <div className="bg-white rounded-lg border-2 border-gray-300 ">
      <div className="flex items-center gap-2 px-4">
-     <h1 className="text-lg  py-3 font-semibold ">
+     <h1 className="text-lg py-2 font-semibold ">
         Doanh thu :
       </h1>
       <h4 className="text-xl font-bold ">
         {totalRevenue.toLocaleString()}đ
       </h4>
      </div>
-      <h4 className="text-xl font-bold mt-2 mb-5 px-4">
+      <h4 className="text-xl font-bold  py-2 px-4">
         Tổng Đơn hàng: {totalTransactions.toLocaleString()}
       </h4>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={405}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="Date" />
-          <YAxis />
+          <YAxis />        
           <Tooltip />
           <Legend />
           <Line type="monotone" dataKey="TotalRevenue" stroke="#82ca9d" />

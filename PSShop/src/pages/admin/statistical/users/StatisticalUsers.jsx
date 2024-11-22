@@ -22,8 +22,8 @@ const StatisticalUsers = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold ml-5 pt-5">Thống Kê Người Dùng</h1>
-      <p className="text-black ml-5 py-4 font-medium text-xl"> Bộ lọc</p>
+      <h1 className="text-2xl font-semibold ml-5 pt-5 mb-5">Thống Kê Người Dùng</h1>
+    
       {/* Search Options */}
       <div className="flex  items-center w-[96%] mx-auto gap-2">
         
@@ -58,25 +58,10 @@ const StatisticalUsers = () => {
         </div>
       </div>
 
-      <div className="flex justify-center gap-3 mt-4 w-[96%] mx-auto">
-        <div className="w-[33%] shadow-lg transition-transform transform hover:scale-105 bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-3 border-b-2 ">
-            <div className="flex p-3 justify-center bg-black rounded-xl">
-              <div className="text-white text-2xl">
-                <FaUsers />
-              </div>
-            </div>
-            <div className="flex flex-col items-end">
-              <p className="text-gray-600 font-medium">Tổng số người dùng</p>
-              <div className="text-2xl font-bold">300</div>
-            </div>
-          </div>
-          <div className="text-green-500 font-medium flex pt-3 gap-2">
-            +3% <p className="text-black">so với tuần trước</p>
-          </div>
-        </div>
+      <div className="flex justify-center gap-3 mt-4 w-[97%] mx-auto">
+     
 
-        <div className="w-[33%] shadow-lg transition-transform transform hover:scale-105 bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
+        <div className="w-[50%] shadow-lg transition-transform transform hover:scale-105 bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b-2">
             <div className="flex p-3 justify-center bg-black rounded-xl">
               <div className="text-white text-2xl">
@@ -93,7 +78,7 @@ const StatisticalUsers = () => {
           </div>
         </div>
 
-        <div className="w-[33%] shadow-lg transition-transform transform hover:scale-105 bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
+        <div className="w-[50%] shadow-lg transition-transform transform hover:scale-105 bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b-2">
             <div className="flex p-3 justify-center bg-black rounded-xl">
               <div className="text-white text-2xl">

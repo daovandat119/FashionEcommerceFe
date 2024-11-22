@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
+import { LineChart, XAxis, YAxis, Tooltip, CartesianGrid, Legend, Line } from 'recharts';
 
 // Sample data for active users over a week
 const data = [
@@ -9,21 +9,21 @@ const data = [
   { day: 'Thứ 5', activeUsers: 40 },
   { day: 'Thứ 6', activeUsers: 60 },
   { day: 'Thứ 7', activeUsers: 70 },
-  { day: 'Chủ Nhật', activeUsers: 55 },
+  { day: 'CN', activeUsers: 55 },
 ];
 
 const ActiveUsersChart = () => {
   return (
     <div className="w-full border border-gray-200 rounded-lg bg-white">
       <h2 className="text-lg font-semibold mb-4  p-3">Thống Kê Người Dùng Hoạt Động Trong Tuần</h2>
-      <BarChart width={600} height={300} data={data}>
+      <LineChart width={600} height={300} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="day" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="activeUsers" fill="#82ca9d" />
-      </BarChart>
+        <Line type="monotone" dataKey="activeUsers" stroke="#82ca9d" />
+      </LineChart>
     </div>
   );
 };

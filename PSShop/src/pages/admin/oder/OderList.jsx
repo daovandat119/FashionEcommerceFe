@@ -10,6 +10,7 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]); // State để lưu danh sách đơn hàng
   const [loading, setLoading] = useState(true); // State để quản lý trạng thái loading
   const [searchTerm, setSearchTerm] = useState(""); // State để lưu giá trị tìm kiếm
+  const [statusFilter, setStatusFilter] = useState(""); // State để lưu trạng thái lọc
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -30,22 +31,38 @@ const OrderList = () => {
     fetchOrders(); // Gọi hàm fetchOrders
   }, []);
 
-  // Lọc danh sách đơn hàng dựa trên giá trị tìm kiếm
-  const filteredOrders = orders.filter(order =>
-    order.OrderCode.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Lọc danh sách đơn hàng dựa trên giá trị tìm kiếm và trạng thái
+  const filteredOrders = orders.filter(order => {
+    const matchesSearchTerm = order.OrderCode.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter ? order.OrderStatus === statusFilter : true;
+    return matchesSearchTerm && matchesStatus;
+  });
 
   return (
     <>
       <div className="text-2xl font-bold p-4">LIST ORDER</div>
-      <div className="flex justify-between items-center mb-4 w-[30%] bg-white ml-3 rounded-lg">
+  <div className="flex  items-center mb-4 ">
+  <div className="flex justify-between items-center w-[30%] bg-white ml-3 rounded-lg">
         <Input
           icon={<MagnifyingGlassIcon className="h-5 w-5" />}
           label="Search Order..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        
       </div>
+      <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="ml-2 p-2 border rounded-lg"
+        >
+          <option value="">Tất cả trạng thái</option>
+          <option value="Đang xử lý">Đang xử lý</option>
+          <option value="Đang giao hàng">Đang giao hàng</option>
+          <option value="Đã giao">Đã giao</option>
+          <option value="Đã hủy">Đã hủy</option>
+        </select>
+  </div>
       <Card className="w-[98%] mx-auto p-2 shadow-lg rounded-lg">
         <div className="overflow-x-auto border border-gray-300 rounded-lg">
           {loading ? (
