@@ -33,10 +33,10 @@ export default function Shop1() {
     { label: "Date, new to old", value: "8" },
   ];
 
-  const [filters, setFilters] = useState({}); // State cho bộ lọc
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters); // Cập nhật bộ lọc
-  };
+  // const [filters, setFilters] = useState({}); // State cho bộ lọc
+  // const handleFilterChange = (newFilters) => {
+  //   setFilters(newFilters); // Cập nhật bộ lọc
+  // };
 
   const [selectedColView, setSelectedColView] = useState(3);
   // eslint-disable-next-line no-unused-vars
@@ -99,17 +99,17 @@ export default function Shop1() {
     );
   }
 
-  // Lọc sản phẩm dựa trên bộ lọc đã chọn
-  const filteredProducts = products.filter((product) => {
-    console.log("Current filters:", filters);
-    const matchesCategory =
-      !filters.categoryId || product.CategoryID === filters.categoryId;
-    const matchesColor =
-      !filters.colorId || product.ColorID === filters.colorId;
-    const matchesSize = !filters.sizeId || product.SizeID === filters.sizeId;
+  // // Lọc sản phẩm dựa trên bộ lọc đã chọn
+  // const filteredProducts = products.filter((product) => {
+  //   console.log("Current filters:", filters);
+  //   const matchesCategory =
+  //     !filters.categoryId || product.CategoryID === filters.categoryId;
+  //   const matchesColor =
+  //     !filters.colorId || product.ColorID === filters.colorId;
+  //   const matchesSize = !filters.sizeId || product.SizeID === filters.sizeId;
 
-    return matchesCategory && matchesColor && matchesSize;
-  });
+  //   return matchesCategory && matchesColor && matchesSize;
+  // });
 
   return (
     <>
@@ -123,7 +123,7 @@ export default function Shop1() {
             <h3 className="text-uppercase fs-6 mb-0">Filter By</h3>
             <button className="btn-close-lg js-close-aside btn-close-aside ms-auto"></button>
           </div>
-          <FilterAll onFilterChange={handleFilterChange} />
+          <FilterAll />
         </div>
 
         <div className="shop-list flex-grow-1">
@@ -164,10 +164,16 @@ export default function Shop1() {
             className={`products-grid row row-cols-2 row-cols-md-3 row-cols-lg-${selectedColView}`}
             id="products-grid"
           >
-            {filteredProducts.map((elm, i) => (
-              <div key={i} className="product-card-wrapper">
-                <div className="product-card mb-3 mb-md-4 mb-xxl-5">
-                  <div className="pc__img-wrapper">
+            {products
+              .filter(
+                (elm) =>
+                  currentCategory === "All" ||
+                  elm.filterCategory2 === currentCategory
+              )
+              .map((elm, i) => (
+                <div key={i} className="product-card-wrapper">
+                  <div className="product-card mb-3 mb-md-4 mb-xxl-5">
+                    <div className="pc__img-wrapper">
                     <Link to={`/shop-detail/${elm.ProductID}`}>
                       <img
                         loading="lazy"

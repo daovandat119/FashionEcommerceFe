@@ -4,6 +4,7 @@ import axios from "axios";
 import PropTypes from 'prop-types';
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 
 
@@ -23,6 +24,7 @@ export default function AccountOrders() {
   const [rating, setRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [reviewedOrders, setReviewedOrders] = useState(new Set());
 
   const cancelReasons = [
     "Muốn thay đổi địa chỉ giao hàng",
@@ -140,16 +142,21 @@ export default function AccountOrders() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `http://127.0.0.1:8000/api/reviews`,
+        `http://127.0.0.1:8000/api/order/review`,
         {
-          orderId: selectedOrderForReview,
-          rating,
-          comment: reviewComment
+          OrderID: selectedOrderForReview,
+          RatingLevelID: rating,
+          Review: reviewComment,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      // Cập nhật state để ẩn nút đánh giá
+      const newReviewedOrders = new Set(reviewedOrders);
+      newReviewedOrders.add(selectedOrderForReview);
+      setReviewedOrders(newReviewedOrders);
 
       toast.success("Đánh giá thành công!");
       setShowReviewModal(false);
@@ -162,67 +169,194 @@ export default function AccountOrders() {
     }
   };
 
+  const handleRepurchase = async (orderId) => {
+    try {
+      const products = orderProducts[orderId];
+      if (!products) {
+        await fetchOrderProducts(orderId);
+      }
+      
+      // Thêm từng sản phẩm vào giỏ hàng
+      const token = localStorage.getItem("token");
+      for (const product of orderProducts[orderId]) {
+        await axios.post(
+          'http://127.0.0.1:8000/api/cart/add',
+          {
+            productId: product.ProductID,
+            quantity: product.TotalQuantity,
+            color: product.VariantColor,
+            size: product.VariantSize
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+      }
+      
+      toast.success("Đã thêm sản phẩm vào giỏ hàng");
+      // Chuyển hướng đến trang giỏ hàng
+      window.location.href = '/cart';
+    } catch (error) {
+      console.error("Lỗi khi mua lại:", error);
+      toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
+    }
+  };
+
   const OrderActionButton = ({ order }) => {
-    // Nếu đã hoàn thành, hiển thị nút đánh giá màu tím
     if (order.OrderStatus === "Đã hoàn thành") {
       return (
-        <button 
-          className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-4 rounded-lg text-sm transition"
-          onClick={() => {
-            setSelectedOrderForReview(order.OrderID);
-            setShowReviewModal(true);
-          }}
-        >
-          ĐÁNH GIÁ
-        </button>
+        <div className="flex gap-2">
+          {!reviewedOrders.has(order.OrderID) && (
+            <button 
+              className="bg-purple-500 hover:bg-purple-600 text-white py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
+              onClick={() => {
+                setSelectedOrderForReview(order.OrderID);
+                setShowReviewModal(true);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+              ĐÁNH GIÁ
+            </button>
+          )}
+          <button 
+            className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
+            onClick={() => handleRepurchase(order.OrderID)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            MUA LẠI
+          </button>
+        </div>
       );
     }
 
-    // Nếu đã hủy, hiển thị nút liên hệ
-    if (order.OrderStatus === "Đã hủy") {
+    if (order.OrderStatus === "Đã hủy" || order.OrderStatus === "Đang giao hàng") {
       return (
-        <button 
-          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
+        <Link to="/contact">
+          <button 
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
           onClick={() => {/* Thêm logic xử lý liên hệ */}}
         >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
           LIÊN HỆ NGƯỜI BÁN
         </button>
+        </Link>
       );
     }
 
-    // Nếu đang giao hàng, hiển thị nút liên hệ
-    if (order.OrderStatus === "Đang giao hàng") {
-      return (
-        <button 
-          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg text-sm transition"
-          onClick={() => {/* Thêm logic xử lý liên hệ */}}
-        >
-          LIÊN HỆ NGƯỜI BÁN
-        </button>
-      );
-    }
-
-    // Nếu đã giao hàng nhưng chưa xác nhận
     if (order.OrderStatus === "Đã giao hàng" && !order.IsConfirmed) {
       return (
         <button 
-          className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded-lg text-sm transition"
+          className="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
           onClick={() => handleReceiveOrder(order.OrderID)}
         >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
           XÁC NHẬN NHẬN HÀNG
         </button>
       );
     }
 
-    // Nếu đang xử lý
     if (order.OrderStatus === "Đang xử lý") {
       return (
-        <button 
-          className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg text-sm transition"
-          onClick={() => handleCancelOrder(order.OrderID)}
-        >
-          HỦY ĐƠN
-        </button>
+        <div className="relative inline-block">
+          <button 
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
+            onClick={() => handleCancelOrder(order.OrderID)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            HỦY ĐƠN
+          </button>
+
+          {showFeedbackModal && currentOrderId === order.OrderID && (
+            <div className="absolute left-0 top-full mt-3 w-96 bg-white rounded-xl shadow-xl border border-gray-100 z-50 transform transition-all duration-200">
+              <div className="p-6">
+                {/* Header với icon */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-red-100 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Xác nhận hủy đơn hàng</h3>
+                    <p className="text-sm text-gray-500">Vui lòng cho chúng tôi biết lý do bạn muốn hủy</p>
+                  </div>
+                </div>
+
+                {/* Danh sách lý do */}
+                <div className="space-y-3 mb-6">
+                  {cancelReasons.map((reason) => (
+                    <div 
+                      key={reason}
+                      className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all duration-200 cursor-pointer
+                        ${selectedReason === reason 
+                          ? 'border-red-500 bg-red-50' 
+                          : 'border-gray-200 hover:border-red-200 hover:bg-red-50'
+                        }`}
+                      onClick={() => setSelectedReason(reason)}
+                    >
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
+                        ${selectedReason === reason ? 'border-red-500' : 'border-gray-400'}`}
+                      >
+                        {selectedReason === reason && (
+                          <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                        )}
+                      </div>
+                      <label className="flex-1 text-sm text-gray-700 cursor-pointer">
+                        {reason}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Lý do khác */}
+                {selectedReason === "Khác" && (
+                  <div className="mb-6">
+                    <textarea
+                      value={otherReason}
+                      onChange={(e) => setOtherReason(e.target.value)}
+                      placeholder="Vui lòng chia sẻ lý do của bạn..."
+                      className="w-full p-4 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+                      rows="3"
+                    />
+                  </div>
+                )}
+
+                {/* Footer Buttons */}
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                  <button
+                    onClick={() => {
+                      setShowFeedbackModal(false);
+                      setSelectedReason('');
+                      setOtherReason('');
+                    }}
+                    className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
+                  >
+                    Đóng
+                  </button>
+                  <button
+                    onClick={handleSubmitCancelOrder}
+                    className="px-5 py-2.5 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span>Xác nhận hủy</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       );
     }
 
@@ -239,7 +373,7 @@ export default function AccountOrders() {
         "Đã hủy",
         "Đã hoàn thành"
       ]).isRequired,
-      PaymentStatus: PropTypes.string.isRequired,
+      PaymentStatus: PropTypes.string,
       IsConfirmed: PropTypes.bool
     }).isRequired
   };
@@ -283,10 +417,6 @@ export default function AccountOrders() {
 
   const currentOrders = getCurrentPageOrders();
 
-  // Tách riêng hàm đóng modal đánh giá
-  
-
-  // Tách riêng hàm đóng modal hủy đơn
   const handleCloseCancelModal = () => {
     setShowFeedbackModal(false);
     setSelectedReason('');
@@ -428,8 +558,8 @@ export default function AccountOrders() {
                             year: 'numeric',
                             month: '2-digit',
                             day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit'
+                            // hour: '2-digit',
+                            // minute: '2-digit'
                           }) : 'Không có dữ liệu'}
                         </p>
                       </div>
@@ -472,9 +602,10 @@ export default function AccountOrders() {
       {/* Modal đánh giá */}
       {showReviewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Đánh giá đơn hàng</h3>
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg mx-4 relative">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6 border-b pb-4">
+              <h3 className="text-2xl font-bold text-gray-800">Đánh giá đơn hàng</h3>
               <button 
                 onClick={() => {
                   setShowReviewModal(false);
@@ -482,24 +613,27 @@ export default function AccountOrders() {
                   setReviewComment('');
                   setSelectedOrderForReview(null);
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <IoClose size={24} />
+                <IoClose size={28} />
               </button>
             </div>
 
-            <div className="space-y-4">
+            {/* Content */}
+            <div className="space-y-6">
               {/* Star Rating */}
-              <div className="flex items-center gap-2">
-                <span className="text-gray-700">Đánh giá:</span>
-                <div className="flex gap-1">
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-medium text-gray-700">
+                  Mức độ hài lòng của bạn
+                </label>
+                <div className="flex gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() => setRating(star)}
-                      className={`text-2xl ${
+                      className={`text-3xl transition-colors ${
                         star <= rating ? 'text-yellow-400' : 'text-gray-300'
-                      }`}
+                      } hover:scale-110`}
                     >
                       ★
                     </button>
@@ -508,21 +642,22 @@ export default function AccountOrders() {
               </div>
 
               {/* Review Comment */}
-              <div>
-                <label className="block text-gray-700 mb-2">
-                  Nhận xét của bạn:
+              <div className="space-y-2">
+                <label className="text-lg font-medium text-gray-700 block">
+                  Nhận xét của bạn
                 </label>
                 <textarea
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Chia sẻ trải nghiệm của bạn..."
-                  className="w-full p-2 border border-gray-300 rounded-lg"
+                  placeholder="Chia sẻ trải nghiệm mua hàng của bạn..."
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[120px] text-gray-700 resize-none"
                   rows="4"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 mt-6">
+            {/* Footer */}
+            <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
               <button
                 onClick={() => {
                   setShowReviewModal(false);
@@ -530,13 +665,13 @@ export default function AccountOrders() {
                   setReviewComment('');
                   setSelectedOrderForReview(null);
                 }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+                className="px-6 py-2.5 text-gray-700 hover:text-gray-900 font-medium rounded-lg transition-colors"
               >
-                Đóng
+                Hủy
               </button>
               <button
                 onClick={handleSubmitReview}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
               >
                 Gửi đánh giá
               </button>
