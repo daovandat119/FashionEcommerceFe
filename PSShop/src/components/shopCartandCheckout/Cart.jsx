@@ -1,9 +1,46 @@
 import {  toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import axios from "axios";
+import debounce from 'lodash/debounce';
 
+// Đặt bên ngoài component
+const debouncedUpdateQuantity = debounce(async (
+  itemId, 
+  productID, 
+  colorID, 
+  sizeID, 
+  newQuantity, 
+  setCartProducts
+) => {
+  const token = localStorage.getItem("token");
+  try {
+    await axios.patch(
+      `http://127.0.0.1:8000/api/cart-items/${itemId}`,
+      {
+        productID,
+        colorID,
+        sizeID,
+        quantity: newQuantity,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    toast.error("Lỗi cập nhật số lượng");
+    
+    setCartProducts(prevProducts => 
+      prevProducts.map(item => 
+        item.CartItemID === itemId 
+          ? { ...item, Quantity: item.Quantity } 
+          : item
+      )
+    );
+  }
+}, 3000);
 
 export default function Cart() {
   const {
@@ -23,8 +60,9 @@ export default function Cart() {
     fetchCartItems(); 
   }, [fetchCartItems]);
 
- 
-  
+  const updateQuantityAPI = useCallback((itemId, productID, colorID, sizeID, newQuantity) => {
+    debouncedUpdateQuantity(itemId, productID, colorID, sizeID, newQuantity, setCartProducts);
+  }, [setCartProducts]);
 
   const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
     if (newQuantity < 1 || newQuantity > 99) {
@@ -43,28 +81,7 @@ export default function Cart() {
       )
     );
 
-    const token = localStorage.getItem("token");
-    try {
-      await axios.patch(`http://127.0.0.1:8000/api/cart-items/${itemId}`, {
-        productID,
-        colorID,
-        sizeID,
-        quantity: newQuantity,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error("Lỗi cập nhật số lượng");
-      
-      setCartProducts(prevProducts => 
-        prevProducts.map(item => 
-          item.CartItemID === itemId 
-            ? { ...item, Quantity: item.Quantity } 
-            : item
-        )
-      );
-    }
+    updateQuantityAPI(itemId, productID, colorID, sizeID, newQuantity);
   };
 
   const handleInputChange = (e, item) => {
@@ -84,6 +101,13 @@ export default function Cart() {
   const removeSelectedItem = async () => {
     await removeSelectedItems();
   };
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      debouncedUpdateQuantity.cancel();
+    };
+  }, []);
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
