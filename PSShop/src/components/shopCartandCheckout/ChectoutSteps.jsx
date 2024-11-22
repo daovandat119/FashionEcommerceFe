@@ -8,22 +8,22 @@ const steps = [
     id: 1,
     href: "/shop_cart",
     number: "01",
-    title: "Shopping Bag",
-    description: "Manage Your Items List",
+    title: "Giỏ hàng",
+    description: "Quản lý danh mục",
   },
   {
     id: 2,
     href: "/shop_checkout",
     number: "02",
-    title: "Shipping and Checkout",
-    description: "Checkout Your Items List",
+    title: "Vận chuyển và thanh toán",
+    description: "Kiểm tra danh sách các đơn hàng ",
   },
   {
     id: 3,
     href: "/shop_order_complete",
     number: "03",
-    title: "Confirmation",
-    description: "Review And Submit Your Order",
+    title: "Xác nhận",
+    description: "Kiểm tra và gửi đơn hàng ",
   },
 ];
 

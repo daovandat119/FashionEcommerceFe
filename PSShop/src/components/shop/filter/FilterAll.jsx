@@ -24,19 +24,18 @@ export default function FilterAll({ onFilterChange }) {
       setLoading(true);
       try {
         const [categoriesRes, colorsRes, sizesRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/categories"), // API cho danh mục
-          axios.get("http://127.0.0.1:8000/api/colors"), // API cho màu sắc
-          axios.get("http://127.0.0.1:8000/api/sizes"), // API cho kích thước
+          axios.get("http://127.0.0.1:8000/api/categories"),
+          axios.get("http://127.0.0.1:8000/api/colors"),
+          axios.get("http://127.0.0.1:8000/api/sizes"),
         ]);
 
         setCategories(categoriesRes.data.data);
-        setColors(colorsRes.data.data); 
+        setColors(colorsRes.data.data);
         setSizes(sizesRes.data.data);
-        hasFetchedData.current = true; // Đánh dấu là đã gọi API
+        // hasFetchedData.current = true; // Đánh dấu là đã gọi API
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-      setLoading(false);
     };
 
     fetchData();
@@ -92,7 +91,11 @@ export default function FilterAll({ onFilterChange }) {
 
       {/* Colors */}
       <div className="accordion" id="color-filters">
-        <h5 className="accordion-header font-semibold text-lg font-sans text-gray-900 mb-3">
+        <h5
+          className="accordion-header font-semibold text-lg font-sans text-gray-900 mb-3"
+          id="accordion-heading-1"
+        >
+          {" "}
           Lựa chọn màu sắc
         </h5>
         <div className="accordion-body px-0 pb-0">
@@ -123,8 +126,8 @@ export default function FilterAll({ onFilterChange }) {
           </div>
         </div>
       </div>
-  {/* Sizes */}
-  <div className="accordion" id="size-filters">
+      {/* Sizes */}
+      <div className="accordion" id="size-filters">
         <div className="accordion-item mb-4">
           <h5 className="accordion-header text-lg font-semibold font-sans text-gray-900">
             Kích thước
