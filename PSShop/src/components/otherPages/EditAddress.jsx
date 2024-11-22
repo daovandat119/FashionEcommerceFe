@@ -212,29 +212,27 @@ export default function EditAddress() {
                   </div>
 
                   {/* Nút chỉnh sửa và đặt làm mặc định */}
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex gap-2">
                     {/* Nút sửa và nút xóa */}
                     <div className="flex items-center gap-2">
                       {/* Nút sửa */}
                       <button
-                        className="px-4 py-2 text-sm text-gray-100 bg-gray-500 rounded-lg shadow hover:bg-gray-800 transition duration-200"
+                        className="px-4 py-2 text-sm text-gray-100 bg-dark "
                         onClick={() => toggleExpandAddress(address.AddressID)}
                       >
                         Sửa
                       </button>
                       {/* Nút xóa */}
                       <button
-                        className="px-4 py-2 text-sm text-gray-100 bg-gray-500 rounded-lg shadow hover:bg-gray-800 transition duration-200"
+                        className="px-4 py-2 text-sm text-gray-100 bg-dark "
                         onClick={() => handleDeleteAddress(address.AddressID)}
                       >
                         Xóa
                       </button>
                     </div>
-
-                    {/* Nút đặt làm mặc định */}
                     {!address.IsDefault && (
                       <button
-                        className={`px-4 py-2 text-sm text-gray-100 bg-gray-500 rounded-lg shadow hover:bg-gray-800 transition duration-200 ${
+                        className={`px-[19px] py-2 text-sm text-gray-100 bg-dark ${
                           isSettingDefault
                             ? "opacity-50 cursor-not-allowed"
                             : ""

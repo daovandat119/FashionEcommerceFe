@@ -104,7 +104,13 @@ export default function AccountWishlist() {
                       </svg>
                     </button>
                   </div>
-                  <div className="text-left">
+                  <div className="text-left mt-2">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{item.CategoryName}</p>
+                      <div className="flex items-center">
+                        <Star stars={item.average_rating} />
+                      </div>
+                    </div>
                     <h6 className="text-xl font-semibold">
                       <Link to={`/shop-detail/${item.ProductID}`}>
                         {item.ProductName}
@@ -132,14 +138,7 @@ export default function AccountWishlist() {
                           </span>
                         )}
                     </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <Star stars={item.average_rating} />
-                        <span className="text-gray-500 ml-1">
-                          {item.reviews}
-                        </span>
-                      </div>
-                    </div>
+                    <div className="flex justify-between items-center"></div>
                   </div>
                 </div>
               </div>
