@@ -51,9 +51,10 @@ export default function Shop1() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.post("http://127.0.0.1:8000/api/products/index", {
-         
-        });
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/products/index",
+          {}
+        );
         setProducts(response.data.data || response.data.data);
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API", error);
@@ -176,6 +177,11 @@ export default function Shop1() {
                         alt={elm.ProductName}
                         className="pc__img"
                       />
+                      <Link to={`/shop-detail/${elm.ProductID}`}>
+                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                          Xem chi tiết
+                        </button>
+                      </Link>
                       {elm.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
                         <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
                           -{elm.discount_percentage}%
@@ -201,13 +207,13 @@ export default function Shop1() {
                         </span>
                       </div>
                     </div>
-                     <div className="flex justify-between">
-                    <h6 className="text-lg font-semibold">
-                      <Link to={`/shop-detail/${elm.ProductID}`}>
-                        {elm.ProductName}
-                      </Link>
-                    </h6>
-                    <button
+                    <div className="flex justify-between">
+                      <h6 className="text-lg font-semibold">
+                        <Link to={`/shop-detail/${elm.ProductID}`}>
+                          {elm.ProductName}
+                        </Link>
+                      </h6>
+                      <button
                         title="Add To Wishlist"
                         className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
                           isInWishlist(elm.ProductID) ||
@@ -235,19 +241,19 @@ export default function Shop1() {
                         </svg>
                       </button>
                     </div>
-                      <div className="flex justify-start">
-                        <span className="text-lg font-bold text-red-600">
-                          {elm.SalePrice}₫
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">
+                        {elm.SalePrice}₫
+                      </span>
+                      {elm.Price && (
+                        <span className="text-sm mt-1 line-through text-gray-500 ml-2">
+                          {elm.Price}₫
                         </span>
-                        {elm.Price && (
-                          <span className="text-sm mt-1 line-through text-gray-500 ml-2">
-                            {elm.Price}₫
-                          </span>
-                        )}
-                      </div>
-                      
+                      )}
+                    </div>
+
                     <p className="text-sm text-gray-600">
-                      {elm.ShortDescription}
+                      Đã bán: {elm.total_sold}
                     </p>
                   </div>
                 </div>

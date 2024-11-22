@@ -43,21 +43,18 @@ const swiperOptions = {
   },
 };
 
-
-
 export default function Products_Limited() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wishlistStatus, setWishlistStatus] = useState({}); // Di chuyển vào trong hàm
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useContextElement(); // Di chuyển vào trong hàm
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContextElement(); // Di chuyển vào trong hàm
 
   useEffect(() => {
-    axios.post('http://127.0.0.1:8000/api/products/index', {
-     
-    })
-      .then(response => {
-
+    axios
+      .post("http://127.0.0.1:8000/api/products/index", {})
+      .then((response) => {
         setProducts(response.data.data);
         setLoading(false);
       })
@@ -68,15 +65,15 @@ export default function Products_Limited() {
       });
   }, []);
 
-const toggleWishlist = async (productId) => {
-  if (isInWishlist(productId)) {
-    await removeFromWishlist(productId); // Đảm bảo gọi hàm xóa
-    setWishlistStatus((prev) => ({ ...prev, [productId]: false })); // Cập nhật trạng thái khi xóa
-  } else {
-    await addToWishlist(productId); // Đảm bảo gọi hàm thêm
-    setWishlistStatus((prev) => ({ ...prev, [productId]: true })); // Cập nhật trạng thái khi thêm
-  }
-};
+  const toggleWishlist = async (productId) => {
+    if (isInWishlist(productId)) {
+      await removeFromWishlist(productId); // Đảm bảo gọi hàm xóa
+      setWishlistStatus((prev) => ({ ...prev, [productId]: false })); // Cập nhật trạng thái khi xóa
+    } else {
+      await addToWishlist(productId); // Đảm bảo gọi hàm thêm
+      setWishlistStatus((prev) => ({ ...prev, [productId]: true })); // Cập nhật trạng thái khi thêm
+    }
+  };
   return (
     <section className="container mx-auto">
       <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
@@ -119,6 +116,11 @@ const toggleWishlist = async (productId) => {
                         alt={product.ProductName}
                         className="w-[330px] h-[400px] "
                       />
+                    </Link>
+                    <Link to={`/shop-detail/${product.ProductID}`}>
+                      <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                        Xem chi tiết
+                      </button>
                     </Link>
                   </div>
 
@@ -180,6 +182,9 @@ const toggleWishlist = async (productId) => {
                         </button>
                       </div>
                     </div>
+                    <p className="text-sm text-gray-600">
+                      Đã bán: {product.total_sold}
+                    </p>
                   </div>
                 </div>
               </SwiperSlide>

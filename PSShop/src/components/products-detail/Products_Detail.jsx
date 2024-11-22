@@ -8,7 +8,8 @@ import Reviews from "./Reviews";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Description from "./Description";
-import Star from "../../components/common/Star";
+import Star from "../common/Star";
+
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -240,11 +241,11 @@ const ProductDetail = () => {
       <ToastContainer />
       <div className="flex flex-col lg:flex-row">
         {/* Phần hình ảnh sản phẩm */}
-        <div className="product-single__media  vertical-thumbnail product-media-initialized lg:w-1/2">
+        <div className="product-single__media mt-6 vertical-thumbnail product-media-initialized  ">
           <div className="swiper-container mb-3 ml-2">
             <img
               loading="lazy"
-              className="h-[664px] w-full object-cover"
+              className="h-[615px] w-full object-cover"
               src={product.MainImageURL}
               alt="image"
             />
@@ -254,10 +255,8 @@ const ProductDetail = () => {
               <img
                 key={index}
                 loading="lazy"
-                className="h-[180px] w-[200px] mb-2 cursor-pointer border border-gray-300 rounded"
+                className="h-[200px] w-[240px] mb-2 cursor-pointer border border-gray-300 rounded"
                 src={image.trim()}
-                width="104"
-                height="104"
                 alt={`image-${index}`}
               />
             ))}
@@ -287,11 +286,16 @@ const ProductDetail = () => {
           </div>
 
           <div className="space-y-4 text-sm text-gray-700 mb-6">
-            <p className="flex items-center ">
-              <span className="font-medium mr-2  text-gray-900">
-                Đánh giá trung bình:{" "}
+            <p>
+              <span className="font-medium text-gray-900">
+                Đánh giá trung bình:
               </span>{" "}
-              <Star stars={product.average_rating} />
+              <p className="flex items-center ">
+                <span className="font-medium mr-2 text-gray-900">
+                  Đánh giá trung bình:{" "}
+                </span>{" "}
+                <Star stars={product.average_rating} />{" "}
+              </p>
             </p>
             <p>
               <span className="font-medium text-gray-900">Tổng số đã bán:</span>{" "}

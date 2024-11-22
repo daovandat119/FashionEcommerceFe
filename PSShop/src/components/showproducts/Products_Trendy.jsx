@@ -143,6 +143,11 @@ export default function Products_Trendy() {
                           alt={product.ProductName}
                           className="w-[330px] h-[400px] "
                         />
+                        <button
+                    className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside"
+                  >
+                    Xem chi tiết
+                  </button>
                       </Link>
                     </div>
 
@@ -202,6 +207,9 @@ export default function Products_Trendy() {
             </button>
                         </div>
                       </div>
+                      <p className="text-sm text-gray-600">
+                      Đã bán: {product.total_sold}
+                    </p>
                     </div>
                   </div>
                 </div>

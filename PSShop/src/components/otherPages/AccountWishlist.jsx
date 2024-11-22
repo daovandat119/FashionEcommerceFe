@@ -58,6 +58,11 @@ export default function AccountWishlist() {
                         className="pc__img"
                       />
                     </Link>
+                    <Link to={`/shop-detail/${item.ProductID}`}>
+                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                          Xem chi tiết
+                        </button>
+                      </Link>
                     <button
                       className="btn-remove-from-wishlist position-absolute top-4 end-0"
                       onClick={() => handleRemoveFromWishlist(item.WishlistID)}
@@ -138,7 +143,11 @@ export default function AccountWishlist() {
                           </span>
                         )}
                     </div>
-                    <div className="flex justify-between items-center"></div>
+                    <div className="flex justify-between items-center">
+                    <p className="text-sm text-gray-600">
+                      Đã bán: {item.total_sold}
+                    </p>
+                    </div>
                   </div>
                 </div>
               </div>
