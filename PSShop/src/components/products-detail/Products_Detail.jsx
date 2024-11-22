@@ -287,9 +287,7 @@ const ProductDetail = () => {
 
           <div className="space-y-4 text-sm text-gray-700 mb-6">
             <p>
-              <span className="font-medium text-gray-900">
-                Đánh giá trung bình:
-              </span>{" "}
+             
               <p className="flex items-center ">
                 <span className="font-medium mr-2 text-gray-900">
                   Đánh giá trung bình:{" "}

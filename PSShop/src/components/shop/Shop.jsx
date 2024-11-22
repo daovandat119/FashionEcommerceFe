@@ -33,13 +33,41 @@ export default function Shop1() {
     { label: "Date, new to old", value: "8" },
   ];
 
-  // const [filters, setFilters] = useState({}); // State cho bộ lọc
-  // const handleFilterChange = (newFilters) => {
-  //   setFilters(newFilters); // Cập nhật bộ lọc
-  // };
+  const [filters, setFilters] = useState({}); // Thêm state cho bộ lọc
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters); // Cập nhật bộ lọc
+    fetchProducts(newFilters); // Gọi lại API với bộ lọc mới
+  };
+
+  const fetchProducts = async (filters) => {
+    // Tạo một đối tượng bộ lọc mới
+    const filteredParams = {};
+
+    // Chỉ thêm các thuộc tính có giá trị khác null
+    if (filters.categoryId) {
+        filteredParams.CategoryID = filters.categoryId;
+    }
+    if (filters.colorId) {
+        filteredParams.ColorID = filters.colorId;
+    }
+    if (filters.sizeId) {
+        filteredParams.SizeID = filters.sizeId;
+    } // Ghi log bộ lọc đã được lọc
+    try {
+        const response = await axios.post(
+            "http://127.0.0.1:8000/api/products/index",
+            filteredParams // Truyền filters đã được lọc vào API
+        );
+        setProducts(response.data.data || response.data.data);
+    } catch (error) {
+        setError("Không thể tải sản phẩm.");
+    } finally {
+        setLoading(false);
+    }
+  };
 
   const [selectedColView, setSelectedColView] = useState(3);
-  // eslint-disable-next-line no-unused-vars
   const [currentCategory] = useState(menuCategories[0]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +81,7 @@ export default function Shop1() {
       try {
         const response = await axios.post(
           "http://127.0.0.1:8000/api/products/index",
-          {}
+          filters // Truyền filters vào API
         );
         setProducts(response.data.data || response.data.data);
       } catch (error) {
@@ -123,7 +151,7 @@ export default function Shop1() {
             <h3 className="text-uppercase fs-6 mb-0">Filter By</h3>
             <button className="btn-close-lg js-close-aside btn-close-aside ms-auto"></button>
           </div>
-          <FilterAll />
+          <FilterAll onFilterChange={handleFilterChange} />
         </div>
 
         <div className="shop-list flex-grow-1">

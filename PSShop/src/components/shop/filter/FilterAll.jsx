@@ -34,7 +34,7 @@ export default function FilterAll({ onFilterChange }) {
         setSizes(sizesRes.data.data);
         // hasFetchedData.current = true; // Đánh dấu là đã gọi API
       } catch (error) {
-        console.error("Error fetching data:", error);
+        error
       }
     };
 
@@ -47,8 +47,6 @@ export default function FilterAll({ onFilterChange }) {
       ...selectedFilters,
       [type]: value,
     };
-
-    console.log(newFilters);
     setSelectedFilters(newFilters);
     onFilterChange(newFilters); // Gửi filters lên component cha
   };
