@@ -40,7 +40,7 @@ const OrderBarChart = () => {
 
   return (
    <div className="bg-white rounded-lg border-2 border-gray-300 py-5 ">
-     <ResponsiveContainer  height={400}>
+     <ResponsiveContainer  height={280}>
       <p className="text-lg font-semibold  px-4 relative bottom-5">
         Đơn hàng : 4
       </p>

@@ -56,7 +56,6 @@ import AccountPage from "./pages/dashboard/account_dashboard";
 import AccountOrderPage from "./pages/dashboard/account_orders";
 import AccountEditAddressPage from "./pages/dashboard/account_edit_address/index";
 import AccountEditPage from "./pages/dashboard/account_edit";
-// import Add_Address from './components/otherPages/Add_Address';
 import AccountWishlist from "./pages/dashboard/account_wishlist";
 
 import OrderList from "./pages/admin/oder/OderList";
@@ -70,6 +69,7 @@ import StatisticalOrders from "./pages/admin/statistical/orders/StatisticalOrder
 import ProductStatistics from "./pages/admin/statistical/products/ProductStatistics";
 import ErrorPage from "./pages/error/ErrorPage";
 import StatisticalUsers from "./pages/admin/statistical/users/StatisticalUsers";
+import ProductDetailAdmin from "./pages/admin/products/ProductDetailAdmin";
 
 function App() {
   return (
@@ -107,72 +107,37 @@ const AppRoutes = () => {
         <ThemeProvider>
           <Routes>
             {/* Client routes */}
-            <Route
-              path="/"
-              element={
-                <LoginProvider>
-                  <HomePages />
-                </LoginProvider>
-              }
-            />
+            <Route path="/" element={<HomePages />} />
             <Route path="shop" element={<ShopPages1 />} />
             <Route path="blogs" element={<BlogPage1 />} />
             <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
-            <Route
-              path="login_register"
-              element={
-                <LoginProvider>
-                  <LoginPage />
-                </LoginProvider>
-              }
-            />
+            <Route path="login_register" element={<LoginPage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="shop_cart" element={<ShopCartPage />} />
             <Route path="shop_checkout" element={<ShopCheckoutPage />} />
-            <Route
-              path="shop_order_complete/:orderId"
-              element={<ShopOrderConplate />}
-            />
-            <Route
-              path="shop_order_tracking"
-              element={<ShopOrderTrackingPage />}
-            />
+            <Route path="shop_order_complete/:orderId" element={<ShopOrderConplate />} />
+            <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />} />
 
             {/* Account routes */}
             <Route path="account_dashboard" element={<AccountPage />} />
             <Route path="account_orders" element={<AccountOrderPage />} />
-            <Route
-              path="account_edit_address"
-              element={<AccountEditAddressPage />}
-            />
+            <Route path="account_edit_address" element={<AccountEditAddressPage />} />
             <Route path="account_edit" element={<AccountEditPage />} />
             <Route path="account_wishlist" element={<AccountWishlist />} />
 
             {/* Admin routes */}
             <Route path="/admin/login" element={<LoginAdmin />} />
-            <Route
-              path="/admin"
-              element={
-                <AuthGuard>
-                  <AdminLayout />
-                </AuthGuard>
-              }
-            >
+            <Route path="/admin" element={<AuthGuard><AdminLayout /></AuthGuard>}>
               <Route index element={<Dashboard />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="categories" element={<CategoriesList />} />
               <Route path="categories/add" element={<AddCategories />} />
-              <Route
-                path="categories/edit/:CategoryID"
-                element={<UpdateCategory />}
-              />
+              <Route path="categories/edit/:CategoryID" element={<UpdateCategory />} />
               <Route path="products/add" element={<AddProducts />} />
-              <Route
-                path="products/edit/:ProductID"
-                element={<UpdateProducts />}
-              />
+              <Route path="products/edit/:ProductID" element={<UpdateProducts />} />
+              <Route path="products/detail" element={<ProductDetailAdmin />} />
               <Route path="users" element={<UserList />} />
               <Route path="users/add-users" element={<AddUsers />} />
               <Route path="users/edit-users/:id" element={<UpdateUsers />} />
@@ -180,25 +145,16 @@ const AppRoutes = () => {
               <Route path="statistics" element={<StatisticalUsers />} />
               <Route path="colors" element={<ColorList />} />
               <Route path="colors/add" element={<AddColor />} />
-              <Route
-                path="colors/edit/:ColorID"
-                element={<UpdateColorComponent />}
-              />
+              <Route path="colors/edit/:ColorID" element={<UpdateColorComponent />} />
               <Route path="sizes" element={<SizeList />} />
               <Route path="sizes/add" element={<AddSizeComponent />} />
               <Route path="sizes/edit/:SizeID" element={<UpdateSize />} />
-              <Route
-                path="products/edit-variant/:VariantID"
-                element={<UpdateVariant />}
-              />
+              <Route path="products/edit-variant/:VariantID" element={<UpdateVariant />} />
               <Route path="orders" element={<OrderList />} />
               <Route path="orders/edit/:OrderID" element={<UpdateOrder />} />
               <Route path="vouchers" element={<VoucherList />} />
               <Route path="vouchers/add" element={<AddVoucher />} />
-              <Route
-                path="vouchers/edit/:VoucherID"
-                element={<UpdateVoucher />}
-              />
+              <Route path="vouchers/edit/:VoucherID" element={<UpdateVoucher />} />
               <Route path="user-statistics" element={<StatisticalUsers />} />
               <Route path="profile" element={<ProfileAdmin />} />
               <Route path="profile/edit" element={<UpdateProfileAdmin />} />
@@ -206,7 +162,7 @@ const AppRoutes = () => {
               <Route path="product-statistics" element={<ProductStatistics />} />
             </Route>
 
-            {/* Error route - Phải đặt ở cuối cùng */}
+            {/* Error route - Must be placed at the end */} 
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </ThemeProvider>

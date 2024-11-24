@@ -16,7 +16,7 @@ const BlockedUsersChart = () => {
   return (
     <div className="w-full border border-gray-200 rounded-lg bg-white">
       <h2 className="text-xl font-semibold mb-4 p-3">Thống Kê Người Dùng Bị Chặn Trong Tuần</h2>
-      <LineChart width={600} height={300} data={data}>
+      <LineChart width={1300} height={300} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="day" />
         <YAxis />

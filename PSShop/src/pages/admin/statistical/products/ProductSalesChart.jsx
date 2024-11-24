@@ -52,9 +52,24 @@ const ProductSalesTable = () => {
     <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[380px]">
       <h2 className="text-xl font-bold mb-4">Thống kê sản phẩm bán ra</h2>
 
-      <div className="flex items-center justify-between">
-        <label className="mr-2 text-base font-bold">Bộ lọc</label>
-        <div>
+    <div>
+    <div className="flex items-center justify-between">
+        
+        
+        <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Nhập tên sản phẩm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border border-gray-300 p-2 rounded"
+          />
+      
+        </div>
+        
+      </div>
+      <div>
           <label className="mr-2">Hiển thị:</label>
           <select
             value={itemsPerPage}
@@ -67,24 +82,8 @@ const ProductSalesTable = () => {
           </select>
         </div>
       </div>
-      <div className="flex justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            placeholder="Nhập tên sản phẩm"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border border-gray-300 p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Nhập mã sản phẩm"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border border-gray-300 p-2 rounded"
-          />
-        </div>
-      </div>
+      
+    </div>
 
       {loading ? (
         <div className="text-center">Loading...</div>

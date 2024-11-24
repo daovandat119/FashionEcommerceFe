@@ -118,6 +118,26 @@ const ProductsList = () => {
       });
   }, [listProducts]);
 
+  const handleDeleteSelected = useCallback(() => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa các sản phẩm đã chọn?")) {
+      Promise.all(selectedProducts.map(ProductID => DeleteProducts(ProductID)))
+        .then(responses => {
+          const successfulDeletes = responses.filter(response => response.success);
+          if (successfulDeletes.length > 0) {
+            setListProducts(prevList => prevList.filter(product => !selectedProducts.includes(product.ProductID)));
+            setSelectedProducts([]); // Clear selected products after deletion
+            toast.success("Các sản phẩm đã được xóa thành công");
+          } else {
+            toast.error("Xóa sản phẩm thất bại");
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi khi xóa sản phẩm:", error);
+          toast.error("Đã xảy ra lỗi khi xóa sản phẩm");
+        });
+    }
+  }, [selectedProducts]);
+
   useEffect(() => {
     if (location.state && location.state.success) {
       toast.success(location.state.message);
@@ -139,12 +159,22 @@ const ProductsList = () => {
           />
         </div>
         
-        <Link
-          to="/admin/products/add"
-          className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
-        >
-          <PlusIcon className="h-5 w-5" /> New Product
-        </Link>
+        <div className="flex items-center gap-2">
+        <button
+            onClick={handleDeleteSelected}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
+            disabled={selectedProducts.length === 0} // Disable if no products are selected
+          >
+            <TrashIcon className="h-5 w-5" /> Delete Selected
+          </button>
+          <Link
+            to="/admin/products/add"
+            className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
+          >
+            <PlusIcon className="h-5 w-5" /> New Product
+          </Link>
+         
+        </div>
       </div>
 
       <div className="overflow-x-auto bg-white rounded-lg shadow">
@@ -205,7 +235,7 @@ const ProductsList = () => {
                   </td>
                   <td className=" p-4 flex items-center mb-7">
                     <Link
-                      to={`/shop-detail/${item.ProductID}`}
+                      to={`/admin/products/detail`}
                       className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors"
                     >
                       <EyeIcon className="h-4 w-4" />

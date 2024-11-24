@@ -9,6 +9,7 @@ import OrderList from "./oder/OderList";
 import VoucherList from "./voucher/VoucherList";
 import StatisticalUsers from "./statistical/StatisticalUsers";
 import StatisticalProducts from "./statistical/StatisticalProducts";
+import ProductDetailAdmin from "./products/ProductDetailAdmin";
 const Admin = () => {
   return (
     <Card>
@@ -21,6 +22,7 @@ const Admin = () => {
       <VoucherList />
       <StatisticalUsers />
       <StatisticalProducts />
+      <ProductDetailAdmin />
     </Card>
   );
 };

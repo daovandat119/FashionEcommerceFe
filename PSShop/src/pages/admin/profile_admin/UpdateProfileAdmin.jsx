@@ -160,19 +160,7 @@ const UpdateProfileAdmin = ({ address, setAddress, setIsEditing }) => {
               />
             </div>
           </div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={address.IsDefault === 1}
-              onChange={(e) =>
-                setAddress({
-                  ...address,
-                  IsDefault: e.target.checked ? 1 : 0,
-                })
-              }
-            />
-            <span className="ml-2">Đặt làm địa chỉ mặc định</span>
-          </label>
+   
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <button

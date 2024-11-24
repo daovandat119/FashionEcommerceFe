@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import OrderBarChart from './OrderBarChart';
 import RevenueChart from './RevenueChart';
-
+import OrderStatisticsTable from './OrderStatisticsTable';
 
 function StatisticalOrders() {
     const [chartType, setChartType] = useState('line');
@@ -21,16 +21,6 @@ function StatisticalOrders() {
             <div className="filter-section p-4 bg-gray-100 rounded-md">
                 <div className="flex justify-between">
                     <div className="flex justify-start gap-2 w-[100%]">
-                    <div className="w-[30%]">
-                            <label className="block mb-1">Loại đơn hàng</label>
-                            <select className="border rounded-md p-2 w-full">
-                                <option value="all">Tất cả đơn hàng</option>
-                                <option value="new">Đơn hàng mới</option>
-                                <option value="in_transit">Đang vận chuyển</option>
-                                <option value="delivered">Đã Giao</option>
-                                <option value="canceled">Đơn hàng bị hủy</option>
-                            </select>
-                        </div>
                         <div className="w-[30%]">
                             <label className="block mb-1">Khoảng thời gian</label>
                             <select
@@ -46,28 +36,35 @@ function StatisticalOrders() {
                                 <option value="last_6_months">6 tháng gần nhất</option>
                             </select>
                         </div>
-                        <div className="w-[30%]">
-                            <label className="block mb-1">Ngày</label>
-                            <input
-                                type="date"
-                                className="border rounded-md p-2 w-full"
-                            />
+                        <div className="w-[36%]">
+                            <label className="block mb-1">Chọn trong khoảng</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="date"
+                                    className="border rounded-md p-2 w-full"
+                                />
+                                <p className='mt-2'>-</p>
+                                <input
+                                    type="date"
+                                    className="border rounded-md p-2 w-full"
+                                />
+                            </div>
                         </div>
-                       
                     </div>
                 </div>
             </div>
 
-            <div className="flex w-[100%] gap-4 mb-5 justify-center ">
-                <div className="w-[47%] ">
-                    <OrderBarChart />
-                </div>
-
-                <div className="w-[47%]">
-                    <RevenueChart />
-                </div>
+            <div className="w-[96%] mx-auto ">
+                <OrderBarChart />
             </div>
-           
+
+            <div className="w-[96%] mx-auto my-4">
+                <RevenueChart />
+            </div>
+
+            <div className="w-[96%] mx-auto my-4">
+                <OrderStatisticsTable />
+            </div>
         </div>
     );
 }

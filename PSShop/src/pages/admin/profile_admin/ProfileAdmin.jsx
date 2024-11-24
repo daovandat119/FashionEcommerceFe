@@ -9,8 +9,8 @@ import {
 } from "../service/api_service";
 import { Link } from "react-router-dom";
 import UpdateProfileAdmin from "./UpdateProfileAdmin";
-import { FaSpinner } from "react-icons/fa";
-import UpdateUser from "../users/UpdateUsers";
+import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 const ProfileAdmin = () => {
   const [address, setAddress] = useState(null);
@@ -23,14 +23,19 @@ const ProfileAdmin = () => {
   const [selectedWard, setSelectedWard] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Giả lập thời gian tải dữ liệu
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Thay đổi 1000 thành thời gian bạn muốn (ms)
+
         const addressResponse = await GetAddressByUserId();
         const provincesResponse = await GetProvinces();
 
+        // Cập nhật dữ liệu sau khi đã nhận được tất cả
         setAddress(addressResponse.data[0]);
         setProvinces(provincesResponse.data);
 
@@ -47,29 +52,6 @@ const ProfileAdmin = () => {
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const userId = localStorage.getItem("UserId");
-      console.log("UserId:", userId);
-      if (userId) {
-        try {
-          const response = await GetUserById(userId);
-          setUserData(response.data);
-        } catch (error) {
-          if (error.response) {
-            console.error("Error fetching user data:", error.response.data);
-          } else {
-            console.error("Error fetching user data:", error.message);
-          }
-        }
-      } else {
-        console.error("UserId is not found in localStorage");
-      }
-    };
-
-    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -145,10 +127,10 @@ const ProfileAdmin = () => {
     "Không xác định";
 
   return (
-    <div className="flex justify-center items-start h-screen w-[95%] mx-auto bg-gray-100">
+    <div className="flex justify-center items-center h-screen w-[95%] mx-auto bg-gray-100">
       <div className="w-[50%] mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl md:text-3xl font-bold text-left text-gray-800 mb-6">
-          Profile Admin
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
+           Admin
         </h1>
         {address ? (
           isEditing ? (
@@ -181,10 +163,10 @@ const ProfileAdmin = () => {
                   />
                 </div>
                 <div className="flex-1 ml-2">
-                  <label className="font-medium">Số điện thoại:</label>
+                  <label className="font-medium"> Tỉnh/Thành phố</label>
                   <input
                     type="text"
-                    value={address.PhoneNumber}
+                    value={provinceName}
                     readOnly
                     className="border border-gray-300 rounded-md p-2 mt-1 w-full"
                   />
@@ -192,11 +174,12 @@ const ProfileAdmin = () => {
               </div>
               {/* Row 2: Province and District */}
               <div className="flex justify-between">
+                
                 <div className="flex-1 mr-2">
-                  <label className="font-medium">Tỉnh/Thành phố:</label>
+                  <label className="font-medium">Số điện thoại:</label>
                   <input
                     type="text"
-                    value={provinceName}
+                    value={address.PhoneNumber} 
                     readOnly
                     className="border border-gray-300 rounded-md p-2 mt-1 w-full"
                   />
@@ -214,13 +197,40 @@ const ProfileAdmin = () => {
               {/* Row 3: Ward and Address */}
               <div className="flex justify-between">
                 <div className="flex-1 mr-2">
-                  <label className="font-medium">Phường/Xã:</label>
+                  <label className="font-medium">Email:</label>
+                  <input
+                    type="text"
+                    value="adminhai@gmail.com"
+                    readOnly
+                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                  />
+                </div>
+                <div className="flex-1 ml-2">
+                  <label className="font-medium">Phường/Xã: </label>
                   <input
                     type="text"
                     value={wardName}
                     readOnly
                     className="border border-gray-300 rounded-md p-2 mt-1 w-full"
                   />
+                </div>
+              </div>
+                  {/* Row 4: Ward and Address */}
+                  <div className="flex justify-between">
+                <div className="flex-1 mr-2 relative">
+                  <label className="font-medium">Mật khẩu:</label>
+                  <input
+                    type={isPasswordVisible ? "text" : "password"}
+                    value="123456"
+                    readOnly
+                    className="border border-gray-300 rounded-md p-2 mt-1 w-full pr-10"
+                  />
+                  <span 
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    className="absolute right-2 bottom-1 transform -translate-y-1/2 cursor-pointer"
+                  >
+                    {isPasswordVisible ? <FaEye /> : <FaEyeSlash />}
+                  </span>
                 </div>
                 <div className="flex-1 ml-2">
                   <label className="font-medium">Tên đường/Số nhà:</label>
@@ -256,9 +266,7 @@ const ProfileAdmin = () => {
       </div>
 
       {/* Cột bên phải hiển thị UpdateUser */}
-      <div className="w-[50%] p-6">
-        <UpdateUser userData={userData} />
-      </div>
+      
     </div>
   );
 };

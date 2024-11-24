@@ -4,11 +4,14 @@ import { FaDollarSign, FaUsers, FaUserPlus, FaUser, FaEye, FaSignOutAlt, FaBox }
 import { toast, ToastContainer } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import WebsiteViewChart from './WebsiteViewChart';
-import DailySalesChart from './DailySalesChart';
-import CompletedTasksChart from './CompletedTasksChart';
-import TransactionHistory from './TransactionHistory';
-import CreditBalance from './CreditBalance';
+
+import OrderBarChart from '../statistical/orders/OrderBarChart';
+import ProductLineChart from '../statistical/products/ProductsLineChart';
+import ActiveUsersChart from '../statistical/users/ActiveUsersChart';
+import OrderStatisticsTable from '../statistical/orders/OrderStatisticsTable';
+import UserStatisticsTable from '../statistical/users/UserStatisticsTable';
+
+
 
 const Dashboard = () => {
   const { showToast, setShowToast, logout } = useAuth();
@@ -123,7 +126,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className='flex flex-col items-end'>
-                <p className="text-gray-600 font-medium">Người dùng đang online</p>
+                <p className="text-gray-600 font-medium">Người dùng hoạt động</p>
                 <div className="text-2xl font-bold ">
                   300
                 </div>
@@ -143,7 +146,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className='flex flex-col items-end'>
-                <p className="text-gray-600 font-medium">Người dùng mới</p>
+                <p className="text-gray-600 font-medium">Người dùng bị chặn</p>
                 <div className="text-2xl font-bold ">
                   50
                 </div>
@@ -159,20 +162,20 @@ const Dashboard = () => {
         {/* Biểu đồ */}
         <div className='flex justify-between gap-3 mt-4'>
           <div className='w-[50%]'>
-            <WebsiteViewChart />
+            <OrderBarChart />
           </div>
           <div className='w-[50%]'>
-            <DailySalesChart />
+            <ProductLineChart />
           </div>
         </div>
-        <div className='mt-3 w-full'> <CompletedTasksChart /></div>
+        <div className='mt-3 w-full'> <ActiveUsersChart /></div>
 
         <div className='flex gap-3 my-3'>
-          <div className='w-[30%]'>
-            <CreditBalance />
+          <div className='w-[50%]'>
+            <OrderStatisticsTable />
           </div>
-          <div className='w-[70%]'>
-            <TransactionHistory />
+          <div className='w-[50%]'>
+            <UserStatisticsTable />
           </div>
         </div>
       </div>

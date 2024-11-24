@@ -52,7 +52,7 @@ const RevenueChart = () => {
       <h4 className="text-xl font-bold  py-2 px-4">
         Tổng Đơn hàng: {totalTransactions.toLocaleString()}
       </h4>
-      <ResponsiveContainer width="100%" height={405}>
+      <ResponsiveContainer width="96%" height={405}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="Date" />
