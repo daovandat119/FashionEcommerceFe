@@ -135,7 +135,6 @@ export default function LoginRegister() {
         {successMessage && (
           <div className="alert alert-success">{successMessage}</div>
         )}
-
         <div className="forgot-password-form">
           <form
             onSubmit={handleForgotPasswordSubmit}

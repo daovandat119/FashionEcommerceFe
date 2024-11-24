@@ -4,11 +4,9 @@ import { FcGoogle } from 'react-icons/fc';
 
 const GoogleLogin = () => {
     const { googleLogin } = useContext(LoginContext);
-
     const handleGoogleLogin = () => {
-        googleLogin();
-    };
-
+        window.location.href = 'http://127.0.0.1:8000/api/auth/google'; // Chuyển hướng đến Google
+    }
     return (
         <div className="text-center">
             <button 
