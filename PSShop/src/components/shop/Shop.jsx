@@ -3,12 +3,12 @@ import Star from "../common/Star";
 import { Link } from "react-router-dom";
 import { useContextElement } from "../../context/Context";
 import BreadCumb from "./BreadCumb";
-import Pagination1 from "../common/Pagination1";
 import { openModalShopFilter } from "../../utlis/aside";
 import FilterAll from "./filter/FilterAll";
 import axios from "axios";
 
 const itemPerRow = [2, 3, 4];
+const itemsPerPage = 12; // Số sản phẩm trên mỗi trang
 
 export default function Shop1() {
   const menuCategories = [
@@ -34,13 +34,19 @@ export default function Shop1() {
   ];
 
   const [filters, setFilters] = useState({}); // Thêm state cho bộ lọc
+  const [currentPage, setCurrentPage] = useState(1); // Trạng thái trang hiện tại
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters); // Cập nhật bộ lọc
     fetchProducts(newFilters); // Gọi lại API với bộ lọc mới
   };
 
-  const fetchProducts = async (filters) => {
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber); // Cập nhật trang hiện tại
+    fetchProducts(filters, pageNumber); // Gọi lại API với trang mới
+  };
+
+  const fetchProducts = async (filters, page = 1) => {
     // Tạo một đối tượng bộ lọc mới
     const filteredParams = {};
 
@@ -56,7 +62,7 @@ export default function Shop1() {
     } // Ghi log bộ lọc đã được lọc
     try {
         const response = await axios.post(
-            "http://127.0.0.1:8000/api/products/index",
+            `http://127.0.0.1:8000/api/products/index?page=${page}`, // Thêm tham số trang vào API
             filteredParams // Truyền filters đã được lọc vào API
         );
         setProducts(response.data.data || response.data.data);
@@ -127,17 +133,10 @@ export default function Shop1() {
     );
   }
 
-  // // Lọc sản phẩm dựa trên bộ lọc đã chọn
-  // const filteredProducts = products.filter((product) => {
-  //   console.log("Current filters:", filters);
-  //   const matchesCategory =
-  //     !filters.categoryId || product.CategoryID === filters.categoryId;
-  //   const matchesColor =
-  //     !filters.colorId || product.ColorID === filters.colorId;
-  //   const matchesSize = !filters.sizeId || product.SizeID === filters.sizeId;
-
-  //   return matchesCategory && matchesColor && matchesSize;
-  // });
+  // Tính toán sản phẩm hiển thị cho trang hiện tại
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = products.slice(startIndex, endIndex); // Lấy sản phẩm cho trang hiện tại
 
   return (
     <>
@@ -192,7 +191,7 @@ export default function Shop1() {
             className={`products-grid row row-cols-2 row-cols-md-3 row-cols-lg-${selectedColView}`}
             id="products-grid"
           >
-            {products
+            {currentProducts
               .filter(
                 (elm) =>
                   currentCategory === "All" ||
@@ -294,7 +293,17 @@ export default function Shop1() {
               </div>
             ))}
           </div>
-          <Pagination1 />
+          <div className="pagination flex justify-center mt-4">
+            {Array.from({ length: Math.ceil(products.length / itemsPerPage) }, (_, index) => (
+                <button
+                    key={index}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`mx-1 mb-4 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-dark text-white' : 'bg-gray-200 text-gray-700'}`}
+                >
+                    {index + 1}
+                </button>
+            ))}
+        </div>
         </div>
       </section>
     </>
