@@ -24,6 +24,13 @@ const HomePages = () => {
     }
   }, [successMessage, errorMessage]); // Theo dõi sự thay đổi của successMessage và errorMessage
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token'); // Lấy token từ query params
+    if (token) {
+        localStorage.setItem('token', token); // Lưu token vào localStorage
+    }
+}, []);
   return (
     <div>
       <ToastContainer /> {/* Thêm ToastContainer vào đây */}
