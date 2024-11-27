@@ -9,8 +9,8 @@ import {
 } from "../service/api_service";
 import { Link } from "react-router-dom";
 import UpdateProfileAdmin from "./UpdateProfileAdmin";
+import MyAdminProfile from "./AdminPR"; 
 import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
-
 
 const ProfileAdmin = () => {
   const [address, setAddress] = useState(null);
@@ -30,7 +30,7 @@ const ProfileAdmin = () => {
       setLoading(true);
       try {
         // Giả lập thời gian tải dữ liệu
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Thay đổi 1000 thành thời gian bạn muốn (ms)
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Thay đổi 1000 thành thời gian bạn muốn (ms)
 
         const addressResponse = await GetAddressByUserId();
         const provincesResponse = await GetProvinces();
@@ -111,7 +111,9 @@ const ProfileAdmin = () => {
     return (
       <div className="flex justify-center items-center h-screen">
         <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
-        <span className="ml-4 text-lg">Đang tải thông tin địa chỉ, vui lòng chờ...</span>
+        <span className="ml-4 text-lg">
+          Đang tải thông tin địa chỉ, vui lòng chờ...
+        </span>
       </div>
     );
   }
@@ -128,9 +130,13 @@ const ProfileAdmin = () => {
 
   return (
     <div className="flex justify-center items-center h-screen w-[95%] mx-auto bg-gray-100">
-      <div className="w-[50%] mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
-           Admin
+        <div className="w-[40%] mx-auto p-6 bg-white rounded-lg shadow-lg">
+        
+        <MyAdminProfile />
+      </div>
+      <div className="w-[45%] mx-auto p-6 bg-white rounded-lg  shadow-lg">
+        <h1 className="text-2xl md:text-3xl font-bold text-center py-5 text-gray-800 mb-6">
+          Địa chỉ liên hệ
         </h1>
         {address ? (
           isEditing ? (
@@ -174,12 +180,11 @@ const ProfileAdmin = () => {
               </div>
               {/* Row 2: Province and District */}
               <div className="flex justify-between">
-                
                 <div className="flex-1 mr-2">
                   <label className="font-medium">Số điện thoại:</label>
                   <input
                     type="text"
-                    value={address.PhoneNumber} 
+                    value={address.PhoneNumber}
                     readOnly
                     className="border border-gray-300 rounded-md p-2 mt-1 w-full"
                   />
@@ -196,15 +201,7 @@ const ProfileAdmin = () => {
               </div>
               {/* Row 3: Ward and Address */}
               <div className="flex justify-between">
-                <div className="flex-1 mr-2">
-                  <label className="font-medium">Email:</label>
-                  <input
-                    type="text"
-                    value="adminhai@gmail.com"
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
+               
                 <div className="flex-1 ml-2">
                   <label className="font-medium">Phường/Xã: </label>
                   <input
@@ -214,24 +211,7 @@ const ProfileAdmin = () => {
                     className="border border-gray-300 rounded-md p-2 mt-1 w-full"
                   />
                 </div>
-              </div>
-                  {/* Row 4: Ward and Address */}
-                  <div className="flex justify-between">
-                <div className="flex-1 mr-2 relative">
-                  <label className="font-medium">Mật khẩu:</label>
-                  <input
-                    type={isPasswordVisible ? "text" : "password"}
-                    value="123456"
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full pr-10"
-                  />
-                  <span 
-                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                    className="absolute right-2 bottom-1 transform -translate-y-1/2 cursor-pointer"
-                  >
-                    {isPasswordVisible ? <FaEye /> : <FaEyeSlash />}
-                  </span>
-                </div>
+
                 <div className="flex-1 ml-2">
                   <label className="font-medium">Tên đường/Số nhà:</label>
                   <input
@@ -242,6 +222,8 @@ const ProfileAdmin = () => {
                   />
                 </div>
               </div>
+              {/* Row 4: Ward and Address */}
+            
               <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setIsEditing(true)}
@@ -264,9 +246,8 @@ const ProfileAdmin = () => {
           </p>
         )}
       </div>
-
+    
       {/* Cột bên phải hiển thị UpdateUser */}
-      
     </div>
   );
 };

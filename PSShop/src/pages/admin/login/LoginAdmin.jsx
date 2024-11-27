@@ -46,7 +46,7 @@ const Login = () => {
         const res = await LoginAdmin(Email, Password);
         if (res && res.token) {
           login(res.token);
-          localStorage.setItem("UserID", res.userId);
+          
           toast.success("Đăng nhập thành công!");
           navigate("/admin/dashboard");
         } else {

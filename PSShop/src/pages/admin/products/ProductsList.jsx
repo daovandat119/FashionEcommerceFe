@@ -235,7 +235,7 @@ const ProductsList = () => {
                   </td>
                   <td className=" p-4 flex items-center mb-7">
                     <Link
-                      to={`/admin/products/detail`}
+                      to={`/admin/products/detail/${item.ProductID}`}
                       className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors"
                     >
                       <EyeIcon className="h-4 w-4" />
