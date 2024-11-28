@@ -9,8 +9,15 @@ import {
 } from "../service/api_service";
 import { Link } from "react-router-dom";
 import UpdateProfileAdmin from "./UpdateProfileAdmin";
-import MyAdminProfile from "./AdminPR"; 
-import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
+import MyAdminProfile from "./AdminPR";
+import { FaSpinner } from "react-icons/fa";
+
+const Loading = () => (
+  <div className="flex justify-center items-center h-full">
+    <FaSpinner className="animate-spin text-3xl" />
+    <span className="ml-4 text-lg">Đang tải dữ liệu, vui lòng chờ...</span>
+  </div>
+);
 
 const ProfileAdmin = () => {
   const [address, setAddress] = useState(null);
@@ -22,20 +29,14 @@ const ProfileAdmin = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Giả lập thời gian tải dữ liệu
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Thay đổi 1000 thành thời gian bạn muốn (ms)
-
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const addressResponse = await GetAddressByUserId();
         const provincesResponse = await GetProvinces();
-
-        // Cập nhật dữ liệu sau khi đã nhận được tất cả
         setAddress(addressResponse.data[0]);
         setProvinces(provincesResponse.data);
 
@@ -84,62 +85,118 @@ const ProfileAdmin = () => {
     fetchWards();
   }, [selectedDistrict]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const dataToSubmit = {
-      UserID: address.UserID,
-      UserName: address.Username,
-      Address: address.Address,
-      PhoneNumber: address.PhoneNumber,
-      ProvinceID: selectedProvince,
-      DistrictID: selectedDistrict,
-      WardCode: selectedWard,
-      IsDefault: address.IsDefault !== undefined ? address.IsDefault : 1,
-    };
-
-    try {
-      await UpdateAddress(address.AddressID, dataToSubmit);
-      alert("Cập nhật địa chỉ thành công!");
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error submitting data:", error);
-      alert("Cập nhật địa chỉ thất bại!");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
-        <span className="ml-4 text-lg">
-          Đang tải thông tin địa chỉ, vui lòng chờ...
-        </span>
-      </div>
-    );
-  }
-
-  const provinceName =
-    provinces.find((province) => province.ProvinceID == selectedProvince)
-      ?.ProvinceName || "Không xác định";
-  const districtName =
-    districts.find((district) => district.DistrictID == selectedDistrict)
-      ?.DistrictName || "Không xác định";
-  const wardName =
-    wards.find((ward) => ward.WardCode === selectedWard)?.WardName ||
-    "Không xác định";
-
   return (
-    <div className="flex justify-center items-center h-screen w-[95%] mx-auto bg-gray-100">
-        <div className="w-[40%] mx-auto p-6 bg-white rounded-lg shadow-lg">
-        
-        <MyAdminProfile />
-      </div>
-      <div className="w-[45%] mx-auto p-6 bg-white rounded-lg  shadow-lg">
-        <h1 className="text-2xl md:text-3xl font-bold text-center py-5 text-gray-800 mb-6">
-          Địa chỉ liên hệ
-        </h1>
-        {address ? (
-          isEditing ? (
+    <div className="flex justify-center items-center h-screen w-[100%] mx-auto bg-gray-100 relative">
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className="flex justify-center w-[100%] gap-4">
+          <div className="w-[45%] p-6 bg-white rounded-lg shadow-lg">
+            <MyAdminProfile />
+          </div>
+          <div className="w-[45%] p-6 bg-white rounded-lg shadow-lg">
+            <h1 className="text-2xl md:text-3xl font-bold text-center py-5 text-gray-800 mb-10">
+              Địa chỉ liên hệ
+            </h1>
+            {address ? (
+              <div className="space-y-4">
+                {/* Row 1: Name and Phone Number */}
+                <div className="flex justify-between">
+                  <div className="flex-1 mr-2">
+                    <label className="font-medium">Họ và tên:</label>
+                    <input
+                      type="text"
+                      value={address.Username}
+                      readOnly
+                      className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                    />
+                  </div>
+                  <div className="flex-1 ml-2">
+                    <label className="font-medium"> Tỉnh/Thành phố</label>
+                    <input
+                      type="text"
+                      value={
+                        provinces.find(
+                          (province) => province.ProvinceID == selectedProvince
+                        )?.ProvinceName || "Không xác định"
+                      }
+                      readOnly
+                      className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                    />
+                  </div>
+                </div>
+                {/* Row 2: Province and District */}
+                <div className="flex justify-between">
+                  <div className="flex-1 mr-2">
+                    <label className="font-medium">Số điện thoại:</label>
+                    <input
+                      type="text"
+                      value={address.PhoneNumber}
+                      readOnly
+                      className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                    />
+                  </div>
+                  <div className="flex-1 ml-2">
+                    <label className="font-medium">Quận/Huyện:</label>
+                    <input
+                      type="text"
+                      value={
+                        districts.find(
+                          (district) => district.DistrictID == selectedDistrict
+                        )?.DistrictName || "Không xác định"
+                      }
+                      readOnly
+                      className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                    />
+                  </div>
+                </div>
+                {/* Row 3: Ward and Address */}
+                <div className="flex justify-between">
+                  <div className="flex-1 mr-2">
+                    <label className="font-medium">Phường/Xã: </label>
+                    <input
+                      type="text"
+                      value={
+                        wards.find((ward) => ward.WardCode === selectedWard)
+                          ?.WardName || "Không xác định"
+                      }
+                      readOnly
+                      className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                    />
+                  </div>
+                  <div className="flex-1 ml-2">
+                    <label className="font-medium">Tên đường/Số nhà:</label>
+                    <input
+                      type="text"
+                      value={address.Address}
+                      readOnly
+                      className="border border-gray-300 rounded-md p-2 mt-1 w-full"
+                    />
+                  </div>
+                </div>
+                {/* Row 4: Edit Button */}
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-blue-500 text-white font-bold rounded-2xl hover:bg-blue-600 w-[20%] py-3 my-4"
+                  >
+                    Chỉnh sửa
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-red-500 text-center mt-4">
+                Không có thông tin địa chỉ.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal for editing */}
+      {isEditing && (
+        <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-100 z-50">
+          <div className="w-[45%]">
             <UpdateProfileAdmin
               address={address}
               setAddress={setAddress}
@@ -152,102 +209,15 @@ const ProfileAdmin = () => {
               provinces={provinces}
               districts={districts}
               wards={wards}
-              handleSubmit={handleSubmit}
+              handleSubmit={() => {
+                // Handle submit logic here
+                setIsEditing(false);
+              }}
               setIsEditing={setIsEditing}
             />
-          ) : (
-            <div className="space-y-4">
-              {/* Row 1: Name and Phone Number */}
-              <div className="flex justify-between">
-                <div className="flex-1 mr-2">
-                  <label className="font-medium">Họ và tên:</label>
-                  <input
-                    type="text"
-                    value={address.Username}
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
-                <div className="flex-1 ml-2">
-                  <label className="font-medium"> Tỉnh/Thành phố</label>
-                  <input
-                    type="text"
-                    value={provinceName}
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
-              </div>
-              {/* Row 2: Province and District */}
-              <div className="flex justify-between">
-                <div className="flex-1 mr-2">
-                  <label className="font-medium">Số điện thoại:</label>
-                  <input
-                    type="text"
-                    value={address.PhoneNumber}
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
-                <div className="flex-1 ml-2">
-                  <label className="font-medium">Quận/Huyện:</label>
-                  <input
-                    type="text"
-                    value={districtName}
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
-              </div>
-              {/* Row 3: Ward and Address */}
-              <div className="flex justify-between">
-               
-                <div className="flex-1 ml-2">
-                  <label className="font-medium">Phường/Xã: </label>
-                  <input
-                    type="text"
-                    value={wardName}
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
-
-                <div className="flex-1 ml-2">
-                  <label className="font-medium">Tên đường/Số nhà:</label>
-                  <input
-                    type="text"
-                    value={address.Address}
-                    readOnly
-                    className="border border-gray-300 rounded-md p-2 mt-1 w-full"
-                  />
-                </div>
-              </div>
-              {/* Row 4: Ward and Address */}
-            
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-500 text-white font-bold rounded-2xl hover:bg-blue-600 w-[15%] py-3"
-                >
-                  Chỉnh sửa
-                </button>
-                <Link
-                  to="/admin"
-                  className="bg-gray-500 text-white font-bold rounded-2xl hover:bg-gray-600 text-center block w-[15%] py-3"
-                >
-                  Quay lại
-                </Link>
-              </div>
-            </div>
-          )
-        ) : (
-          <p className="text-red-500 text-center mt-4">
-            Không có thông tin địa chỉ.
-          </p>
-        )}
-      </div>
-    
-      {/* Cột bên phải hiển thị UpdateUser */}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

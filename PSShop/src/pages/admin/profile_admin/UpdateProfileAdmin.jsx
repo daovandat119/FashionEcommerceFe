@@ -72,7 +72,7 @@ const UpdateProfileAdmin = ({ address, setAddress, setIsEditing }) => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg ">
-      <h2 className="text-xl font-bold ">Cập nhật thông tin</h2>
+      <h2 className="text-2xl font-bold text-center ">Cập nhật thông tin</h2>
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div className="flex justify-between">
