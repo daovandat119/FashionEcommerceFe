@@ -8,15 +8,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const ProductPieChart = () => {
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
-
-  // Cập nhật dữ liệu cho biểu đồ tròn
-  const pieChartData = [
-    { name: "Danh mục A", value: 400, total: 1000 },
-    { name: "Danh mục B", value: 300, total: 800 },
-    { name: "Danh mục C", value: 300, total: 600 },
-  ];
+const ProductPieChart = ({ data }) => {
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FFBB28", "#00C49F", "#0088FE", "#FF8042", "#FFBB28", "#00C49F"];
+  
+  const pieChartData = data.map(item => ({
+    name: item.Category,
+    value: parseInt(item.TotalSold, 10),
+    total: parseFloat(item.TotalRevenue).toFixed(2)
+  }));
 
   return (
     <div className="bg-white rounded-lg border-2 border-gray-300">

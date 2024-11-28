@@ -36,10 +36,6 @@ const OrderChart = () => {
             TotalCancel: item.TotalCancel,
           }))
         );
-      } else {
-        console.error(
-          "No product data found or data is not in expected format."
-        );
       }
     } catch (error) {
       console.error("Error fetching order statuses:", error);

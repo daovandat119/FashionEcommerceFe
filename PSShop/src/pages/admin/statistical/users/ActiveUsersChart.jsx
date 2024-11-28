@@ -1,29 +1,44 @@
-import React from 'react';
-import { LineChart, XAxis, YAxis, Tooltip, CartesianGrid, Legend, Line } from 'recharts';
+import React, { useEffect, useState } from "react";
+import {
+  BarChart,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+  Bar,
+} from "recharts";
 
-// Sample data for active users over a week
-const data = [
-  { day: 'Thứ 2', activeUsers: 20 },
-  { day: 'Thứ 3', activeUsers: 35 },
-  { day: 'Thứ 4', activeUsers: 50 },
-  { day: 'Thứ 5', activeUsers: 40 },
-  { day: 'Thứ 6', activeUsers: 60 },
-  { day: 'Thứ 7', activeUsers: 70 },
-  { day: 'CN', activeUsers: 55 },
-];
+const ActiveUsersChart = ({ monthlyRegistrations }) => {
+  const [chartData, setChartData] = useState([]);
 
-const ActiveUsersChart = () => {
+  useEffect(() => {
+    const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
+    const formattedData = allMonths.map((month) => {
+      const item = monthlyRegistrations.find(
+        (stat) => stat.Month === String(month).padStart(2, "0")
+      );
+      return {
+        Month: `Tháng ${month}`,
+        Total: item ? item.Total : 0,
+      };
+    });
+    setChartData(formattedData);
+  }, [monthlyRegistrations]);
+
   return (
     <div className="w-full border border-gray-200 rounded-lg bg-white">
-      <h2 className="text-lg font-semibold mb-4  p-3">Thống Kê Người Dùng Hoạt Động Trong Tuần</h2>
-      <LineChart width={1300} height={300} data={data}>
+      <h2 className="text-lg font-semibold mb-4  p-3">
+        Thống Kê Đăng Ký Theo Tháng
+      </h2>
+      <BarChart width={1300} height={300} data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="day" />
+        <XAxis dataKey="Month" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="activeUsers" stroke="#82ca9d" />
-      </LineChart>
+        <Bar dataKey="Total" fill="#82ca9d" />
+      </BarChart>
     </div>
   );
 };

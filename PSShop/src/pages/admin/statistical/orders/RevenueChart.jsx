@@ -10,42 +10,37 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { GetOrdersStatistics } from "../../service/api_service";
-
-const RevenueChart = () => {
-  const [data, setData] = useState([]);
-
-  const GetRevenueStatistics = async () => {
-    const response = await GetOrdersStatistics();
-
-    if (response.data && Array.isArray(response.data)) {
-      const formattedData = response.data.map((item) => ({
-        Date: `Tháng ${item.Month}`,
-        TotalRevenue: parseFloat(item.TotalRevenue),
-        TotalOrder: item.TotalTransactions,
-      }));
-      setData(formattedData);
-    } else {
-      console.error("No product data found or data is not in expected format.");
-    }
-  };
+const RevenueChart = ({data}) => {
+  const [chartData, setChartData] = useState([])
 
   useEffect(() => {
-    GetRevenueStatistics();
-  }, []);
-  const totalRevenue = data.reduce((acc, item) => acc + item.TotalRevenue, 0);
-  const totalTransactions = data.reduce(
+    if (data.statistics && Array.isArray(data.statistics)) {
+      const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
+      const formattedData = allMonths.map((month) => {
+        const item = data.statistics.find((stat) => stat.Month === month);
+        return {
+          Date: `Tháng ${month}`,
+          TotalRevenue: item ? parseFloat(item.TotalRevenue) : 0,
+          TotalOrder: item ? item.TotalTransactions : 0,
+        };
+      });
+      setChartData(formattedData);
+    }
+  }, [data]);
+
+  const totalRevenue = chartData.reduce((acc, item) => acc + item.TotalRevenue, 0);
+  const totalTransactions = chartData.reduce(
     (acc, item) => acc + item.TotalOrder,
     0
   );
-
+  
   return (
     <div className="bg-white rounded-lg border-2 border-gray-300 ">
      <div className="flex items-center gap-2 px-4">
-     <h1 className="text-lg py-2 font-semibold ">
+     <h1 className="text-lg py-2 font-semibold pt-4 ">
         Doanh thu :
       </h1>
-      <h4 className="text-xl font-bold ">
+      <h4 className="text-xl font-bold pt-4 ">
         {totalRevenue.toLocaleString()}đ
       </h4>
      </div>
@@ -53,7 +48,7 @@ const RevenueChart = () => {
         Tổng Đơn hàng: {totalTransactions.toLocaleString()}
       </h4>
       <ResponsiveContainer width="96%" height={405}>
-        <LineChart data={data}>
+        <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="Date" />
           <YAxis />        

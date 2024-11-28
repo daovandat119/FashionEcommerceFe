@@ -10,47 +10,33 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { GetOrderStatusStatistics } from "../../service/api_service";
-
-const OrderBarChart = () => {
-  const [data, setData] = useState([]);
-  const GetOrderStatus = async () => {
-    try {
-      const response = await GetOrderStatusStatistics();
-      if (response.data && Array.isArray(response.data)) {
-        setData(
-          response.data.map((item) => ({
-            name: item.StatusName,
-            sốLượng: item.TotalOrders,
-          }))
-        );
-      } else {
-        console.error(
-          "No product data found or data is not in expected format."
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching order statuses:", error);
-    }
-  };
-
+const OrderBarChart = ({ data }) => {
+  const [chartData, setChartData] = useState([]);
   useEffect(() => {
-    GetOrderStatus();
-  }, []);
-
+    if (data.statisticsOrderStatus && Array.isArray(data.statisticsOrderStatus)) {
+      setChartData(
+        data.statisticsOrderStatus.map((item) => ({
+          Name: item.StatusName,
+          Quantity: item.TotalOrders,
+          TotalRevenue: item.TotalRevenue,
+        }))
+      );
+    }
+  }, [data]);
+ 
   return (
    <div className="bg-white rounded-lg border-2 border-gray-300 py-5 ">
      <ResponsiveContainer  height={280}>
       <p className="text-lg font-semibold  px-4 relative bottom-5">
-        Đơn hàng : 4
+        Thống kê đơn hàng theo trạng thái
       </p>
-      <BarChart data={data}>
+      <BarChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="Name" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="sốLượng" fill="#82ca9d" />
+        <Bar dataKey="Quantity" fill="#82ca9d" />
       </BarChart>
     </ResponsiveContainer>
    </div>

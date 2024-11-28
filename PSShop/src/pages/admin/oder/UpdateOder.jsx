@@ -69,6 +69,10 @@ const UpdateOrder = () => {
     navigate("/admin/orders");
   };
 
+  const handleBackToStatistics = () => {
+    navigate("/admin/order-statistics");
+  };
+
   const handleChangeStatus = async (e) => {
     const selectedValue = e.target.value;
     console.log("Selected Order Status:", orderDetails.OrderID, selectedValue);
@@ -294,10 +298,13 @@ const UpdateOrder = () => {
           </Typography>
         </div>
         <div className="flex justify-end mt-4">
+          <Button color="green" onClick={handleBackToStatistics} className="mr-2">
+            Quay lại trang thống kê
+          </Button>
           <Button color="blue" onClick={handleCancel}>
             Thoát
           </Button>
-        </div>
+        </div>  
       </div>
     </Card>
   );
