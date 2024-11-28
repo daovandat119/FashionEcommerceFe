@@ -185,14 +185,7 @@ export function SidebarWithSearch() {
                 Sản phẩm
               </ListItem>
             </Link>
-            <Link to="/admin/revenue-statistics">
-              <ListItem className="bg-white duration-300 rounded-xl border-b-2 border-gray-200 transition-opacity hover:bg-gray-100">
-                <ListItemPrefix>
-                  <ChartBarIcon className="h-5 w-5" />
-                </ListItemPrefix>
-                Khác
-              </ListItem>
-            </Link>
+           
           </div>
         )}
 

@@ -24,7 +24,6 @@ export default function AccountOrders() {
   const [rating, setRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [reviewedOrders, setReviewedOrders] = useState(new Set());
 
   const cancelReasons = [
     "Muốn thay đổi địa chỉ giao hàng",
@@ -153,10 +152,14 @@ export default function AccountOrders() {
         }
       );
 
-      // Cập nhật state để ẩn nút đánh giá
-      const newReviewedOrders = new Set(reviewedOrders);
-      newReviewedOrders.add(selectedOrderForReview);
-      setReviewedOrders(newReviewedOrders);
+      // Cập nhật state orders để thêm đánh giá vào đơn hàng
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.OrderID === selectedOrderForReview
+            ? { ...order, Rating: rating, Review: reviewComment }
+            : order
+        )
+      );
 
       toast.success("Đánh giá thành công!");
       setShowReviewModal(false);
@@ -206,7 +209,7 @@ export default function AccountOrders() {
     if (order.OrderStatus === "Đã hoàn thành") {
       return (
         <div className="flex gap-2">
-          {!reviewedOrders.has(order.OrderID) && (
+          {!order.Rating && (
             <button 
               className="bg-purple-500 hover:bg-purple-600 text-white py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2"
               onClick={() => {
@@ -374,7 +377,9 @@ export default function AccountOrders() {
         "Đã hoàn thành"
       ]).isRequired,
       PaymentStatus: PropTypes.string,
-      IsConfirmed: PropTypes.bool
+      IsConfirmed: PropTypes.bool,
+      Rating: PropTypes.number,
+      Review: PropTypes.string
     }).isRequired
   };
 

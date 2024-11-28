@@ -287,7 +287,6 @@ const ProductDetail = () => {
 
           <div className="space-y-4 text-sm text-gray-700 mb-6">
             <p>
-             
               <p className="flex items-center ">
                 <span className="font-medium mr-2 text-gray-900">
                   Đánh giá trung bình:{" "}
@@ -539,7 +538,7 @@ const ProductDetail = () => {
               aria-controls="tab-reviews"
               aria-selected="false"
             >
-              Đánh giá (2)
+              Đánh giá
             </a>
           </li>
         </ul>
