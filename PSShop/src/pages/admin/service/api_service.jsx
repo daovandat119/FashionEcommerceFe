@@ -17,17 +17,17 @@ const AddCategory = (CategoryName) => {
     { CategoryName },
     {
       headers: {
-        Authorization: `Bearer ${token}`, // Thêm token vào header
+        Authorization: `Bearer ${token}`,
       },
     }
   );
 };
 
 const GetCategoryById = (CategoryID) => {
-  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
   return axios.get(`/api/categories/${CategoryID}`, {
     headers: {
-      Authorization: `Bearer ${token}`, // Thêm token vào header
+      Authorization: `Bearer ${token}`,
     },
   });
 };
@@ -292,15 +292,6 @@ const GetOrderDetails = async (orderId) => {
   });
 };
 
-const GetUserStatistics = () => {
-  const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.get("/api/statistics/users", {
-    headers: {
-      Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
-    },
-  });
-};
-
 const UpdateOrderStatus = (OrderID, OrderStatusID) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(
@@ -316,11 +307,23 @@ const UpdateOrderStatus = (OrderID, OrderStatusID) => {
   );
 };
 
-const GetProductStatistics = async () => {
+const GetProductStatistics = async (
+  TimePeriod,
+  startDate,
+  endDate,
+  productName,
+  currentPage
+) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return await axios.post(
-    `http://127.0.0.1:8000/api/statistics/products`,
-    {},
+    "/api/statistics/products-statistics",
+    {
+      timeFrame: TimePeriod,
+      startDate: startDate,
+      endDate: endDate,
+      ProductName: productName,
+      page: currentPage,
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
@@ -331,29 +334,63 @@ const GetProductStatistics = async () => {
 
 const GetProductVariantsStatistics = async (ProductID) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return await axios.get(`http://127.0.0.1:8000/api/statistics/product-variants/${ProductID}`, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
-    },
-  });
+  return await axios.get(
+    `/api/statistics/product-variants-statistics/${ProductID}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm token vào header nếu cần
+      },
+    }
+  );
 };
 
-const GetOrdersStatistics = async () => {
+const GetOrdersStatistics = async (
+  TimePeriod,
+  startDate,
+  endDate,
+  currentPage,
+  searchValue
+) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return await axios.get("http://127.0.0.1:8000/api/statistics/orders", {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return await axios.post(
+    "/api/statistics/orders-statistics",
+    {
+      timeFrame: TimePeriod,
+      startDate: startDate,
+      endDate: endDate,
+      Page: currentPage,
+      OrderCode: searchValue,
     },
-  });
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
-
-const GetOrderStatusStatistics = async () => {
-  const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return await axios.get("http://127.0.0.1:8000/api/statistics/order-statuses", {
-    headers: {
-      Authorization: `Bearer ${token}`,
+const GetUserStatistics = async (
+  timePeriod,
+  startDate,
+  endDate,
+  currentPage,
+  searchValue
+) => {
+  const token = localStorage.getItem("token");
+  return await axios.post(
+    "/api/statistics/user-statistics",
+    {
+      timeFrame: timePeriod,
+      startDate: startDate,
+      endDate: endDate,
+      page: currentPage,
+      UserName: searchValue,
     },
-  });
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export {
@@ -407,5 +444,4 @@ export {
   GetProductStatistics,
   GetProductVariantsStatistics,
   GetOrdersStatistics,
-  GetOrderStatusStatistics,
 };

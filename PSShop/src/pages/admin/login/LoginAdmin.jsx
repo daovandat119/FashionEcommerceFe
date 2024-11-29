@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../../../public/assets/images/logo.png";
 import { LoginAdmin } from "../service/api_service";
 import { useAuth } from '../../../context/AuthContext';
@@ -13,6 +13,7 @@ const Login = () => {
   const [Password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loi, setLoi] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
 
@@ -46,7 +47,7 @@ const Login = () => {
         const res = await LoginAdmin(Email, Password);
         if (res && res.token) {
           login(res.token);
-          localStorage.setItem("UserID", res.userId);
+          
           toast.success("Đăng nhập thành công!");
           navigate("/admin/dashboard");
         } else {
@@ -59,6 +60,10 @@ const Login = () => {
         console.error("Lỗi đăng nhập:", err);
       }
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -110,9 +115,14 @@ const Login = () => {
                 }}
                 className="outline-none w-full py-2 pl-10 text-lg"
                 placeholder="Password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="current-password"
+              />
+              <FontAwesomeIcon
+                icon={showPassword ? faEye : faEyeSlash}
+                className="absolute right-3 cursor-pointer text-gray-400"
+                onClick={togglePasswordVisibility}
               />
             </div>
             {errors.Password && (

@@ -1,78 +1,116 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaUsers, FaUserPlus } from "react-icons/fa";
 import ActiveUsersChart from "./ActiveUsersChart";
-import BlockedUsersChart from "./BlockUsersChart";
 import UserStatisticsTable from "./UserStatisticsTable";
+import { GetUserStatistics } from "../../service/api_service";
 
 const StatisticalUsers = () => {
-  const [userType, setUserType] = useState("active"); // Default to active users
-  const [timeRange, setTimeRange] = useState("today"); // Default to today
-  const [selectedDate, setSelectedDate] = useState(""); // Thêm state cho ngày
-  const [endDate, setEndDate] = useState(""); // Thêm state cho ngày kết thúc
+  const [timePeriod, setTimePeriod] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [monthlyRegistrations, setMonthlyRegistrations] = useState([]);
+  const [activeUsers, setActiveUsers] = useState(0);
+  const [bannedUsers, setBannedUsers] = useState(0);
+  const [queryUser, setQueryUser] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
 
-  const handleUserTypeChange = (e) => {
-    setUserType(e.target.value);
+  const userStatistics = async (
+    timePeriod,
+    startDate,
+    endDate,
+    currentPage,
+    searchValue
+  ) => {
+    try {
+      const response = await GetUserStatistics(
+        timePeriod,
+        startDate,
+        endDate,
+        currentPage,
+        searchValue
+      );
+      setMonthlyRegistrations(response.data.monthlyRegistrations);
+      setActiveUsers(response.data.activeCount);
+      setBannedUsers(response.data.bannedCount);
+      setQueryUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user statistics:", error);
+    }
   };
 
-  const handleTimeRangeChange = (e) => {
-    setTimeRange(e.target.value);
+  useEffect(() => {
+    userStatistics(timePeriod, startDate, endDate, currentPage, searchValue);
+  }, [timePeriod, startDate, endDate, currentPage, searchValue]);
+
+  const handleChartTypeChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "startDate") {
+      setStartDate(value);
+    } else if (name === "endDate") {
+      setEndDate(value);
+    }
   };
 
-  const handleDateChange = (e) => { // Hàm xử lý thay đổi ngày
-    setSelectedDate(e.target.value);
+  const handleTimePeriodChange = (e) => {
+    setTimePeriod(e.target.value);
   };
 
-  const handleEndDateChange = (e) => { // Hàm xử lý thay đổi ngày kết thúc
-    setEndDate(e.target.value);
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleSearch = (searchValue) => {
+    setSearchValue(searchValue);
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold ml-5 pt-5 mb-5">Thống Kê Người Dùng</h1>
-    
+      <h1 className="text-2xl font-semibold ml-5 pt-5 mb-5">
+        Thống Kê Người Dùng
+      </h1>
+
       {/* Search Options */}
-      <div className="flex items-center justify-between w-[96%] mx-auto gap-2">
-       <div className="flex items-center gap-2">
-       <div>
-          <select value={userType} onChange={handleUserTypeChange} className="border rounded p-1">
-            <option value="active">Người dùng hoạt động</option>
-            <option value="blocked">Người dùng bị chặn</option>
-          </select>
+      <div className="filter-section p-4 bg-gray-100 rounded-md">
+        <div className="flex justify-between">
+          <div className="flex justify-start gap-4 w-full">
+            <div className="w-[30%]">
+              <label className="block mb-1">Khoảng thời gian</label>
+              <select
+                value={timePeriod}
+                onChange={handleTimePeriodChange}
+                className="border rounded-md p-2 w-full"
+              >
+                <option value="">Chọn khoảng thời gian</option>
+                <option value="1_month">1 tháng gần nhất</option>
+                <option value="6_months">6 tháng gần nhất</option>
+                <option value="1_year">1 năm gần nhất</option>
+              </select>
+            </div>
+            {!timePeriod && (
+              <div className="w-[36%]">
+                <label className="block mb-1">Chọn trong khoảng</label>
+                <div className="flex gap-2">
+                  <>
+                    <input
+                      type="date"
+                      name="startDate"
+                      onChange={handleChartTypeChange}
+                      className="border rounded-md p-2 w-full"
+                    />
+                    <p className="mt-2">-</p>
+                    <input
+                      type="date"
+                      name="endDate"
+                      onChange={handleChartTypeChange}
+                      className="border rounded-md p-2 w-full"
+                    />
+                  </>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-
-        <div>
-          <select value={timeRange} onChange={handleTimeRangeChange} className="border rounded p-1">
-            <option value="today">Hôm nay</option>
-            <option value="yesterday">Hôm qua</option>
-            <option value="lastWeek">Tuần trước</option>
-            <option value="lastMonth">1 tháng trước</option>
-            <option value="last3Months">3 tháng trước</option>
-            <option value="last6Months">6 tháng trước</option>
-            <option value="lastYear">1 năm trước</option>
-          </select>
-        </div>
-       </div>
-
-        <div className="flex items-center gap-2">
-          <div>
-            <label className="mr-2">Chọn trong khoảng</label>
-            <input
-            type="date" 
-            value={selectedDate} 
-            onChange={handleDateChange} 
-            className="border rounded p-1" 
-          />
-        </div>
-        <div>
-          <label className="mr-2">-</label>
-          <input 
-            type="date" 
-            value={endDate}
-            onChange={handleEndDateChange}
-            className="border rounded p-1" 
-          />
-        </div>
-      </div>
       </div>
 
       <div className="flex justify-center gap-3 mt-4 w-[97%] mx-auto">
@@ -85,7 +123,7 @@ const StatisticalUsers = () => {
             </div>
             <div className="flex flex-col items-end">
               <p className="text-gray-600 font-medium">Người dùng hoạt động</p>
-              <div className="text-2xl font-bold">50</div>
+              <div className="text-2xl font-bold">{activeUsers}</div>
             </div>
           </div>
           <div className="text-red-500 font-medium flex pt-3 gap-2">
@@ -102,7 +140,7 @@ const StatisticalUsers = () => {
             </div>
             <div className="flex flex-col items-end">
               <p className="text-gray-600 font-medium">Người dùng bị chặn</p>
-              <div className="text-2xl font-bold">50</div>
+              <div className="text-2xl font-bold">{bannedUsers}</div>
             </div>
           </div>
           <div className="text-red-500 font-medium flex pt-3 gap-2">
@@ -111,17 +149,18 @@ const StatisticalUsers = () => {
         </div>
       </div>
 
-      <div className="w-[97%] mx-auto my-4"> 
+      <div className="w-[97%] mx-auto my-4">
         <div className="">
-          {userType === "active" ? <ActiveUsersChart /> : null}
-        </div>
-        <div className="">
-          {userType === "blocked" ? <BlockedUsersChart /> : null}
+          <ActiveUsersChart monthlyRegistrations={monthlyRegistrations} />
         </div>
       </div>
 
       <div className="w-[97%] mx-auto my-4">
-        <UserStatisticsTable />
+        <UserStatisticsTable
+          data={queryUser}
+          onPageChange={handlePageChange}
+          onSearch={handleSearch}
+        />
       </div>
     </div>
   );
