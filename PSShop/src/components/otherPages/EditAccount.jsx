@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function EditAccount() {
   const [accountData, setAccountData] = useState(null);
@@ -7,7 +8,6 @@ export default function EditAccount() {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,109 +28,84 @@ export default function EditAccount() {
     fetchAccountData();
   }, []);
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
+  const handleEditClick = () => setIsEditing(true);
   const handleCancelClick = () => {
     setIsEditing(false);
     setShowPasswordForm(false);
-    setMessage("");
-    fetchAccountData();
+    
   };
-
-  const handleShowPasswordForm = () => {
-    setShowPasswordForm(true);
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-    }
-  };
+  const handleShowPasswordForm = () => setShowPasswordForm(true);
+  const handleImageChange = (e) => setImage(e.target.files[0]);
 
   const handleUpdateProfile = async () => {
+    if (!name || name.length < 3) {
+      toast.error("Tên không được để trống và phải có ít nhất 3 ký tự!");
+      return;
+    }
     const token = localStorage.getItem("token");
     const formData = new FormData();
-
     formData.append("name", name);
-    if (image) {
-      formData.append("image", image);
-    }
+    if (image) formData.append("image", image);
 
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/users/update-profile",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
-    );
-
-    const textResponse = await response.text();
+    const response = await fetch("http://127.0.0.1:8000/api/users/update-profile", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
 
     if (!response.ok) {
-      console.error("Lỗi từ API:", response.status, textResponse);
-      setMessage("Có lỗi xảy ra khi cập nhật thông tin.");
+      toast.error("Có lỗi xảy ra khi cập nhật thông tin.");
       return;
     }
 
-    try {
-      const result = JSON.parse(textResponse);
-      setMessage(result.message);
-      setAccountData(result.data);
-      setImage(result.data.image);
-
-      window.location.reload();
-    } catch (error) {
-      console.error("Lỗi phân tích cú pháp JSON:", error);
-      setMessage("Có lỗi xảy ra khi cập nhật thông tin.");
-    }
+    toast.success("Cập nhật thông tin thành công.");
+    
+    window.location.reload();
   };
 
-  const handleChangePassword = async (
-    currentPassword,
-    newPassword,
-    confirmPassword
-  ) => {
+  const handleChangePassword = async (currentPassword, newPassword, confirmPassword) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/users/change-password/",
-      {
+
+    if (newPassword.length < 6) {
+        toast.error("Mật khẩu mới phải có ít nhất 6 ký tự!");
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        toast.error("Mật khẩu xác nhận không khớp!");
+        return;
+    }
+
+    const response = await fetch("http://127.0.0.1:8000/api/users/change-password/", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
-          new_password_confirmation: confirmPassword,
+            current_password: currentPassword,
+            new_password: newPassword,
+            new_password_confirmation: confirmPassword,
         }),
-      }
-    );
+    });
 
-    const textResponse = await response.text();
     if (!response.ok) {
-      console.error("Lỗi từ API:", response.status, textResponse);
-      setMessage("Có lỗi xảy ra khi đổi mật khẩu.");
-      return;
+        const textResponse = await response.text();
+        if (response.status === 400) {
+            toast.error("Mật khẩu hiện tại sai.");
+        } else {
+            toast.error("Có lỗi xảy ra khi đổi mật khẩu.");
+        }
+        console.error("Lỗi từ API:", response.status, textResponse);
+        return;
     }
 
-    try {
-      const result = JSON.parse(textResponse);
-      setMessage(result.message);
-      localStorage.removeItem("token");
-      setTimeout(() => {
+    const result = await response.json();
+    toast.success(result.message);
+    localStorage.removeItem("token");
+    setTimeout(() => {
         navigate("/login_register");
-      }, 2000);
-    } catch (error) {
-      console.error("Lỗi phân tích cú pháp JSON:", error);
-      setMessage("Có lỗi xảy ra khi đổi mật khẩu.");
-    }
+    }, 2000);
   };
 
   return (
@@ -140,31 +115,15 @@ export default function EditAccount() {
           {accountData && !showPasswordForm && (
             <div className="flex justify-between">
               <div>
-                <h3 className="text-xl font-semibold mb-4">
-                  Thông tin tài khoản
-                </h3>
+                <h3 className="text-xl font-semibold mb-4">Thông tin tài khoản</h3>
                 {accountData.image && (
-                  <img
-                    src={accountData.image}
-                    alt="Avatar"
-                    className="w-24 h-24 rounded-full mb-4"
-                  />
+                  <img src={accountData.image} alt="Avatar" className="w-24 h-24 rounded-full mb-4" />
                 )}
-                <p>
-                  <strong>Tên người dùng:</strong> {accountData.username}
-                </p>
-                <p>
-                  <strong>Email:</strong> {accountData.email}
-                </p>
-                <p>
-                  <strong>Trạng thái:</strong>{" "}
-                  {accountData.is_active ? "Kích hoạt" : "Không kích hoạt"}
-                </p>
+                <p><strong>Tên người dùng:</strong> {accountData.username}</p>
+                <p><strong>Email:</strong> {accountData.email}</p>
+                <p><strong>Trạng thái:</strong> {accountData.is_active ? "Kích hoạt" : "Không kích hoạt"}</p>
               </div>
-              <button
-                onClick={handleEditClick}
-                className="btn btn-secondary h-10 py-2 px-4 float-right bg-dark text-white rounded"
-              >
+              <button onClick={handleEditClick} className="btn btn-secondary h-10 py-2 px-4 float-right bg-dark text-white rounded">
                 Sửa tài khoản
               </button>
             </div>
@@ -173,13 +132,7 @@ export default function EditAccount() {
 
         {isEditing && !showPasswordForm && (
           <div className="my-account__edit-form mt-6">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleUpdateProfile();
-              }}
-              className="needs-validation"
-            >
+            <form onSubmit={(e) => { e.preventDefault(); handleUpdateProfile(); }} className="needs-validation">
               <div className="row">
                 <div className="col-md-12">
                   <label htmlFor="account_display_name">Tên hiển thị</label>
@@ -195,9 +148,8 @@ export default function EditAccount() {
                     />
                   </div>
                 </div>
-
-                <div className="col-md-12 ">
-                  <label htmlFor="account_image ">Tải lên hình ảnh</label>
+                <div className="col-md-12">
+                  <label htmlFor="account_image">Tải lên hình ảnh</label>
                   <div className="form-floating my-3 w-full">
                     <input
                       type="file"
@@ -207,117 +159,50 @@ export default function EditAccount() {
                     />
                   </div>
                 </div>
-
                 <div className="col-md-12 flex justify-end mt-4">
-                  <button
-                    type="button"
-                    onClick={handleCancelClick}
-                    className="btn btn-danger bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mr-2"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-                  >
-                    Cập nhật thông tin
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleShowPasswordForm}
-                    className="btn btn-secondary bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-2"
-                  >
-                    Đổi mật khẩu
-                  </button>
+                  <button type="button" onClick={handleCancelClick} className="btn btn-danger bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mr-2">Hủy</button>
+                  <button type="submit" className="btn btn-primary bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Cập nhật thông tin</button>
+                  <button type="button" onClick={handleShowPasswordForm} className="btn btn-secondary bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-2">Đổi mật khẩu</button>
                 </div>
               </div>
             </form>
-            {message && <div className="alert alert-info mt-3">{message}</div>}
           </div>
         )}
 
         {isEditing && showPasswordForm && (
           <div className="my-account__edit-password-form mt-6">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const currentPassword = e.target.current_password.value;
-                const newPassword = e.target.new_password.value;
-                const confirmPassword =
-                  e.target.new_password_confirmation.value;
-                handleChangePassword(
-                  currentPassword,
-                  newPassword,
-                  confirmPassword
-                );
-              }}
-              className="needs-validation"
-            >
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const currentPassword = e.target.current_password.value;
+              const newPassword = e.target.new_password.value;
+              const confirmPassword = e.target.new_password_confirmation.value;
+              handleChangePassword(currentPassword, newPassword, confirmPassword);
+            }} className="needs-validation">
               <div className="row">
                 <div className="col-md-12">
-                  <div className="my-3">
-                    <h5 className="text-uppercase mb-0">Thay đổi mật khẩu</h5>
+                  <h5 className="text-uppercase mb-0">Thay đổi mật khẩu</h5>
+                </div>
+                <div className="col-md-12">
+                  <div className="form-floating my-3">
+                    <input type="password" className="form-control" id="account_current_password" name="current_password" placeholder="Mật khẩu hiện tại" required />
+                    <label htmlFor="account_current_password">Mật khẩu hiện tại</label>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="form-floating my-3">
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="account_current_password"
-                      name="current_password"
-                      placeholder="Mật khẩu hiện tại"
-                      required
-                    />
-                    <label htmlFor="account_current_password">
-                      Mật khẩu hiện tại
-                    </label>
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="form-floating my-3">
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="account_new_password"
-                      name="new_password"
-                      placeholder="Mật khẩu mới"
-                      required
-                    />
+                    <input type="password" className="form-control" id="account_new_password" name="new_password" placeholder="Mật khẩu mới" required />
                     <label htmlFor="account_new_password">Mật khẩu mới</label>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div className="form-floating my-3">
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="account_confirm_password"
-                      name="new_password_confirmation"
-                      placeholder="Xác nhận mật khẩu mới"
-                      required
-                    />
-                    <label htmlFor="account_confirm_password">
-                      Xác nhận mật khẩu mới
-                    </label>
-                    <div className="invalid-feedback">Mật khẩu không khớp!</div>
+                    <input type="password" className="form-control" id="account_confirm_password" name="new_password_confirmation" placeholder="Xác nhận mật khẩu mới" required />
+                    <label htmlFor="account_confirm_password">Xác nhận mật khẩu mới</label>
                   </div>
                 </div>
-
                 <div className="col-md-12 flex justify-end mt-4">
-                  <button
-                    type="button"
-                    onClick={handleCancelClick}
-                    className="btn btn-danger bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mr-2"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-                  >
-                    Cập nhật mật khẩu
-                  </button>
+                  <button type="button" onClick={handleCancelClick} className="btn btn-danger bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 mr-2">Hủy</button>
+                  <button type="submit" className="btn btn-primary bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Cập nhật mật khẩu</button>
                 </div>
               </div>
             </form>
