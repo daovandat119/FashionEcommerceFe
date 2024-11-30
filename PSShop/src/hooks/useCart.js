@@ -23,7 +23,7 @@ const useCart = () => {
 
   return {
     cartItems,
-    addToCart,
+    addToCart,  
     removeFromCart,
     clearCart,
     getTotal,

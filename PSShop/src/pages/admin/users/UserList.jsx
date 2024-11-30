@@ -21,7 +21,7 @@ const UserList = () => {
     const fetchUsers = async () => {
       setIsLoading(true); // Bắt đầu loading
       try {
-        const response = await ListUsers(1); // Lấy trang đầu tiên
+        const response = await ListUsers(); // Lấy trang đầu tiên
         setUsers(response.data); // Giả sử response.data chứa danh sách người dùng
       } catch (err) {
         setError(err.message);
@@ -66,24 +66,11 @@ const UserList = () => {
           Users.map((user) =>
             user.UserID === userID ? { ...user, IsActive: false } : user
           )
-        ); // Cập nhật trạng thái người dùng trong state
+        );
         toast.success(response.message || "Người dùng đã bị chặn thành công!"); // Hiển thị thông báo từ API
       } catch (err) {
         setError(err.message); // Xử lý lỗi
         toast.error(err.message || "Có lỗi xảy ra khi chặn người dùng."); // Hiển thị thông báo lỗi
-      }
-    }
-  };
-
-  const handleBlockedUser = async (userID) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
-      try {
-        const response = await BlockedUser(userID); // Gọi API để xóa người dùng
-        setUsers(Users.filter((user) => user.UserID !== userID)); // Cập nhật danh sách người dùng trong state
-        toast.success(response.message || "Người dùng đã bị xóa thành công!"); // Hiển thị thông báo từ API
-      } catch (err) {
-        setError(err.message); // Xử lý lỗi
-        toast.error(err.message || "Có lỗi xảy ra khi xóa người dùng."); // Hiển thị thông báo lỗi
       }
     }
   };

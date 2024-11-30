@@ -24,6 +24,7 @@ const Dashboard = () => {
   const { showToast, setShowToast, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [GetOrdersStatistics, setGetOrdersStatistics] = useState([]);
 
   useEffect(() => {
     if (showToast) {
@@ -43,6 +44,16 @@ const Dashboard = () => {
 
   const handleProfileClick = () => {
     navigate("/admin/users/profile");
+  };
+
+  const GetUserStatistics = async () => {
+    const response = await GetUserStatistics();
+    console.log(response);
+  };
+
+  const GetOrderStatus = async () => {
+    const response = await GetOrdersStatistics();
+    setGetOrdersStatistics(response.data);
   };
 
   return (
@@ -175,9 +186,9 @@ const Dashboard = () => {
           {/* <div className='w-[50%]'>
             <OrderStatisticsTable />
           </div> */}
-          <div className="w-[50%]">
-            <StatisticalUsers />
-          </div>
+          {/* <div className="w-[50%]">
+            <UserStatisticsTable />
+          </div> */}
         </div>
       </div>
     </>
