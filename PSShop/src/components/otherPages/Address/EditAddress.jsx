@@ -3,7 +3,6 @@ import axios from 'axios';
 import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
 
 export default function EditAddress() {

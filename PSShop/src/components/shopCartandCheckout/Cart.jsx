@@ -1,11 +1,10 @@
-import {  toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useCallback } from "react";
 import axios from "axios";
 import debounce from 'lodash/debounce';
 
-// Đặt bên ngoài component
 const debouncedUpdateQuantity = debounce(async (
   itemId, 
   productID, 
@@ -40,14 +39,7 @@ const debouncedUpdateQuantity = debounce(async (
       )
     );
   }
-}, 3000);
-
-// Sửa lại các hàm toast để thêm containerId
-const showToast = (message, type = 'error') => {
-  toast[type](message, {
-    containerId: "cart-toast"  // Thêm containerId riêng cho Cart
-  });
-};
+}, 1000);
 
 export default function Cart() {
   const {
@@ -73,7 +65,7 @@ export default function Cart() {
 
   const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
     if (newQuantity < 1 || newQuantity > 99) {
-      showToast("Số lượng phải từ 1 đến 99", "warning");
+      toast.warning("Số lượng phải từ 1 đến 99");
       setCartProducts(prevProducts => 
         prevProducts.map(item => 
           item.CartItemID === itemId ? { ...item } : item
@@ -93,7 +85,7 @@ export default function Cart() {
       // Gọi API cập nhật
       await updateQuantityAPI(itemId, productID, colorID, sizeID, newQuantity);
     } catch {
-      showToast("Lỗi khi cập nhật số lượng");
+      toast.error("Lỗi khi cập nhật số lượng");
       // Khôi phục lại số lượng cũ nếu có lỗi
       setCartProducts(prevProducts => 
         prevProducts.map(item => 
@@ -130,19 +122,6 @@ export default function Cart() {
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
-      <ToastContainer
-        enableMultiContainer 
-        containerId="cart-toast"
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <div className="cart-table__wrapper">
         {cartProducts.length ? (
           <>
@@ -310,7 +289,7 @@ export default function Cart() {
               onClick={(e) => {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
-                 showToast("Giỏ hàng trống!")
+                 toast("Giỏ hàng trống!")
                 }
               }}
             >

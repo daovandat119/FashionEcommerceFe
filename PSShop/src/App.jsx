@@ -73,14 +73,27 @@ import ProductDetailAdmin from "./pages/admin/products/ProductDetailAdmin";
 
 function App() {
   return (
-    <CheckoutProvider>
-      <LoginProvider>
-        <Router>
-          <ToastContainer />
-          <AppRoutes />
-        </Router>
-      </LoginProvider>
-    </CheckoutProvider>
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <CheckoutProvider>
+        <LoginProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
+        </LoginProvider>
+      </CheckoutProvider>
+    </>
   );
 }
 
