@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import Headers from "../../../components/headers/Headers";
 import DashboardSidebar from "../../../components/otherPages/DashboardSidebar";
 import Footers from "../../../components/footers/Footers";
-import AccountDisplay from "../../../components/otherPages/AccountDisplay";
-import EditProfile from "../../../components/otherPages/EditProfile";
-import ChangePassword from "../../../components/otherPages/ChangePassword";
+import AccountDisplay from "../../../components/otherPages/Account/AccountDisplay";
+import EditProfile from "../../../components/otherPages/Account/EditProfile";
+import ChangePassword from "../../../components/otherPages/Account/ChangePassword";
 
 export default function AccountEditPage() {
   const [isEditing, setIsEditing] = useState(false);
