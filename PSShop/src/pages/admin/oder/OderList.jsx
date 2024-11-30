@@ -40,7 +40,7 @@ const OrderList = () => {
 
   return (
     <>
-      <div className="text-2xl font-bold p-4">LIST ORDER</div>
+      <div className="text-2xl font-bold p-4">Quản lý đơn hàng</div>
   <div className="flex  items-center mb-4 ">
   <div className="flex justify-between items-center w-[30%] bg-white ml-3 rounded-lg">
         <Input

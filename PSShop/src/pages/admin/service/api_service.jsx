@@ -393,6 +393,93 @@ const GetUserStatistics = async (
   );
 };
 
+const GetReviewsByProductId = async (id) => {
+  try {
+    const response = await axios.get(`/api/reviews/${id}`); // Lấy danh sách đánh giá cho sản phẩm
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return [];
+  }
+};
+
+const CheckReview = async (id, token) => {
+  try {
+    const response = await axios.post(
+      "/api/reviews/checkReview",
+      { ProductID: id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error checking review:", error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi
+  }
+};
+
+const AddReview = async (id, ratingLength, reviewContent, token) => {
+  try {
+    await axios.post(
+      "/api/reviews",
+      {
+        ProductID: id,
+        RatingLevelID: ratingLength,
+        ReviewContent: reviewContent.trim(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error adding review:", error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi
+  }
+};
+
+// Hàm để lấy thông tin admin dựa trên UserID
+const fetchAdminDetails = async (userId) => {
+  try {
+    const response = await axios.get(`/api/users/${userId}`);
+    return response; // Trả về thông tin admin
+  } catch (error) {
+    console.error("Error fetching admin details:", error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi
+  }
+};
+
+const fetchAccountDetails = async () => {
+  const token = localStorage.getItem("token"); // Get token from localStorage
+  const response = await axios.get("http://127.0.0.1:8000/api/users/account", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data; // Return the account data
+};
+
+
+
+const response = await fetch("http://127.0.0.1:8000/api/users/change-password/", {
+  method: "POST",
+  headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+      new_password_confirmation: confirmPassword,
+  }),
+});
+
 export {
   LoginAdmin,
   ListCategories,
@@ -444,4 +531,9 @@ export {
   GetProductStatistics,
   GetProductVariantsStatistics,
   GetOrdersStatistics,
+  GetReviewsByProductId,
+  CheckReview,
+  AddReview,
+  fetchAdminDetails, // Xuất hàm fetchAdminDetails
+  fetchAccountDetails, // Export the new function
 };

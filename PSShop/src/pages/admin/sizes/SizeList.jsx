@@ -99,7 +99,7 @@ const SizeList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">Sizes Management</h1>
+      <h1 className="text-2xl font-bold mb-6">Quản lý kích thước</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
           <Input 
@@ -131,9 +131,9 @@ const SizeList = () => {
             <thead className="bg-gray-100">
               <tr className='text-center'>
                 <th className="border-b p-4 ">Select</th>
-                <th className="border-b p-4 ">Size</th>
-                <th className="border-b p-4 ">Active</th>
-                <th className="border-b p-4 ">Actions</th>
+                <th className="border-b p-4 ">Kích thước</th>
+                <th className="border-b p-4 ">Trạng thái</th>
+                <th className="border-b p-4 ">Chức năng</th>
               </tr>
             </thead>
             <tbody className='text-center'>
