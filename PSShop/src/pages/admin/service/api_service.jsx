@@ -456,8 +456,9 @@ const fetchAdminDetails = async (userId) => {
 };
 
 const fetchAccountDetails = async () => {
-  const token = localStorage.getItem("token"); // Get token from localStorage
-  const response = await axios.get("http://127.0.0.1:8000/api/users/account", {
+  // Get token from localStorage
+  const token = localStorage.getItem("token");
+  const response = await axios.get("/api/users/account", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -465,20 +466,33 @@ const fetchAccountDetails = async () => {
   return response.data; // Return the account data
 };
 
-
-
-const response = await fetch("http://127.0.0.1:8000/api/users/change-password/", {
-  method: "POST",
-  headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
+const ChangePassword = async (
+  currentPassword,
+  newPassword,
+  confirmPassword
+) => {
+  try {
+    const response = await axios.post("/api/users/change-password", {
       current_password: currentPassword,
       new_password: newPassword,
       new_password_confirmation: confirmPassword,
-  }),
-});
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error changing password:", error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi
+  }
+};
+
+const updateUserProfile = async (formData) => {
+  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  return axios.post("http://127.0.0.1:8000/api/users/update-profile", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`, // Thêm token vào header
+    },
+  });
+};
 
 export {
   LoginAdmin,
@@ -536,4 +550,6 @@ export {
   AddReview,
   fetchAdminDetails, // Xuất hàm fetchAdminDetails
   fetchAccountDetails, // Export the new function
+  ChangePassword,
+  updateUserProfile, // Export the new function
 };

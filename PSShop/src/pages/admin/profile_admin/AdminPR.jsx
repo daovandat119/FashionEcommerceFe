@@ -1,8 +1,15 @@
 // src/components/UserProfileDisplay.js
+import "react-toastify/dist/ReactToastify.css";
 
 import React, { useEffect, useState } from "react";
-import { FaUserCircle } from "react-icons/fa"; // Import icon cho mật khẩu và user
-import { fetchAccountDetails } from "../service/api_service"; // Đường dẫn đến hàm fetchAccountDetails
+import { FaUserCircle, FaPencilAlt } from "react-icons/fa"; // Import icon cho mật khẩu và user
+import {
+  ChangePassword,
+  fetchAccountDetails,
+  updateUserProfile,
+} from "../service/api_service"; // Đường dẫn đến hàm fetchAccountDetails
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyAdminProfile = () => {
   const [user, setUser] = useState(null); // Khởi tạo state cho user
@@ -10,6 +17,9 @@ const MyAdminProfile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [newImage, setNewImage] = useState(null); // State for the new image
+  const [isEditingUsername, setIsEditingUsername] = useState(false); // State to track editing mode
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -21,7 +31,7 @@ const MyAdminProfile = () => {
       }
     };
 
-    getUserDetails(); // Call the function when the component mounts
+    getUserDetails();
   }, []);
 
   const handleChangePassword = async () => {
@@ -29,31 +39,40 @@ const MyAdminProfile = () => {
       alert("Mật khẩu xác nhận không khớp!");
       return;
     }
-    // Call API to change password here
-    // Example: await changePasswordAPI(oldPassword, newPassword);
+    await ChangePassword(oldPassword, newPassword, confirmPassword);
     alert("Mật khẩu đã được thay đổi thành công!");
     setShowChangePassword(false);
   };
 
-  useEffect(() => {
-    const updatePassword = async () => {
-      await changePassword(oldPassword, newPassword);
-    };
-    updatePassword();
-  }, [oldPassword, newPassword, confirmPassword]);
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setNewImage(file); // Set the new image file
+      console.log("Image uploaded:", file);
+    }
+  };
 
   if (!user) {
-    return <p>Loading...</p>; // Show loading while fetching data
+    return <p>Loading...</p>;
   }
 
-  const handleUpdateProfile = async (e) => {
-    const { name, value } = e.target;
-    if (name === "oldPassword") {
-      setOldPassword(value);
-    } else if (name === "newPassword") {
-      setNewPassword(value);
-    } else if (name === "confirmPassword") {
-      setConfirmPassword(value);
+  const handleUpdateProfile = async () => {
+    const formData = new FormData();
+    formData.append("name", newUsername);
+    if (newImage) {
+      formData.append("image", newImage);
+    }
+
+    try {
+      console.log(formData);
+      const response = await updateUserProfile(formData);
+      if (response) {
+        toast.success(response.message);
+      }
+      setIsEditingUsername(false);
+      // Optionally, refresh user data here
+    } catch (error) {
+      toast.error("Có lỗi khi cập nhật thông tin.");
     }
   };
 
@@ -61,11 +80,26 @@ const MyAdminProfile = () => {
     <div>
       <div className="flex justify-center mb-4 py-3">
         {user.image ? (
-          <img
-            src={user.image}
-            alt="Avatar"
-            className="w-24 h-24 rounded-full"
-          />
+          <div className="relative">
+            <img
+              src={user.image}
+              alt="Avatar"
+              className="w-24 h-24 rounded-full"
+            />
+            <label
+              htmlFor="file-upload"
+              className="absolute bottom-0 right-0 cursor-pointer"
+            >
+              <FaPencilAlt className="text-gray-500" />
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </div>
         ) : (
           <FaUserCircle className="text-6xl text-gray-500" />
         )}
@@ -78,22 +112,61 @@ const MyAdminProfile = () => {
           <input
             className="border-2 border-gray-300 rounded-md w-full p-2"
             type="text"
-            value={user.username} // Adjusted to match the API response
-            readOnly
+            value={isEditingUsername ? newUsername : user.username} // Use newUsername if editing
+            onChange={(e) => setNewUsername(e.target.value)}
+            readOnly={!isEditingUsername} // Make it editable only when in editing mode
+            onClick={() => {
+              if (!isEditingUsername) {
+                setNewUsername(user.username); // Set current username for editing
+                setIsEditingUsername(true); // Enable editing mode
+              }
+            }}
           />
         </div>
 
         <div>
           <p>Email:</p>
           <input
-            className="border-2 border-gray-300 rounded-md w-full p-2"
+            className="border-2 border-gray-300 rounded-md w-full p-2 bg-gray-200"
             type="text"
             value={user.email} // Adjusted to match the API response
             readOnly
           />
         </div>
 
-        <div className="flex justify-end">
+        <div>
+          <p>Image:</p>
+          <input
+            className="border-2 border-gray-300 rounded-md w-full p-2 bg-gray-200"
+            type="file"
+            onChange={handleImageUpload} // Handle image upload
+          />
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => {
+              if (isEditingUsername) {
+                // Check if the username or image has changed
+                if (newUsername !== user.username || newImage !== user.image) {
+                  handleUpdateProfile(); // Call API only if changes are detected
+                } else {
+                  // Optionally, you can show a message indicating no changes were made
+                  alert("Không có thay đổi nào để cập nhật."); // "No changes to update."
+                }
+              } else {
+                setNewUsername(user.username); // Set current username for editing
+                setIsEditingUsername(true); // Enable editing mode
+              }
+            }}
+            className={
+              isEditingUsername
+                ? "bg-green-500 text-white p-3 my-3 rounded-xl"
+                : "bg-green-600 text-white p-3 my-3 rounded-xl"
+            }
+          >
+            Thay đổi thông tin
+          </button>
           <button
             onClick={() => setShowChangePassword(true)}
             className="bg-blue-500 text-white p-3 my-3 rounded-xl"
@@ -106,7 +179,7 @@ const MyAdminProfile = () => {
       {/* Popup for changing password */}
       {showChangePassword && (
         <div className="fixed inset-0 flex  items-center justify-center backdrop-blur-sm bg-opacity-50">
-          <div className="bg-white w-[30%]  p-6 rounded-lg shadow-lg">
+          <div className="bg-white w-[30%]  p-6 rounded-lg ">
             <h2 className="text-xl font-bold mb-4">Đổi mật khẩu</h2>
             <div>
               <label className="block mb-2">Mật khẩu cũ:</label>
@@ -114,7 +187,7 @@ const MyAdminProfile = () => {
                 type="password"
                 name="oldPassword"
                 value={oldPassword}
-                onChange={handleUpdateProfile}
+                onChange={(e) => setOldPassword(e.target.value)}
                 className="border-2 border-gray-300 rounded-md w-full p-2"
               />
             </div>
@@ -124,7 +197,7 @@ const MyAdminProfile = () => {
                 type="password"
                 name="newPassword"
                 value={newPassword}
-                onChange={handleUpdateProfile}
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="border-2 border-gray-300 rounded-md w-full p-2"
               />
             </div>
@@ -134,7 +207,7 @@ const MyAdminProfile = () => {
                 type="password"
                 name="confirmPassword"
                 value={confirmPassword}
-                onChange={handleUpdateProfile}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="border-2 border-gray-300 rounded-md w-full p-2"
               />
             </div>
