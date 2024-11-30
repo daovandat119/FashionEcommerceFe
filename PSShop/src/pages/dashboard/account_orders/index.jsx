@@ -1,8 +1,8 @@
 import Headers from './../../../components/headers/Headers';
-import AccountOrders from './../../../components/otherPages/AccountOrders';
+import AccountOrders from './../../../components/otherPages/order/AccountOrders';
 import Footers from './../../../components/footers/Footers';
 import DashboardSidebar from '../../../components/otherPages/DashboardSidebar';
-import { OrderProvider } from '../../../components/otherPages/OrderContext';
+import { OrderProvider } from '../../../components/otherPages/order/OrderContext';
 
 export default function AccountOrderPage() {
   return (
