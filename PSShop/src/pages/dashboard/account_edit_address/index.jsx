@@ -1,7 +1,7 @@
 import Footers from "../../../components/footers/Footers";
 import Headers from "../../../components/headers/Headers";
 import DashboardSidebar from "../../../components/otherPages/DashboardSidebar";
-import EditAddress from "../../../components/otherPages/EditAddress";
+import EditAddress from "../../../components/otherPages/Address/EditAddress";
 
 export default function AccountEditAddressPage() {
   return (

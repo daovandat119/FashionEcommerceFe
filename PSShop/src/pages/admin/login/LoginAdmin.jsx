@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../../../public/assets/images/logo.png";
-import { LoginAdmin } from "../service/api_service";
+import { LoginAdmin, fetchAdminDetails } from "../service/api_service";
 import { useAuth } from '../../../context/AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -48,6 +48,7 @@ const Login = () => {
         if (res && res.token) {
           login(res.token);
           
+
           toast.success("Đăng nhập thành công!");
           navigate("/admin/dashboard");
         } else {

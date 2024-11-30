@@ -45,7 +45,8 @@ const ColorList = () => {
   };
 
   useEffect(() => {
-    if (!hasFetched) { // Chỉ gọi API nếu chưa gọi trước đó
+    if (!hasFetched) {
+      // Chỉ gọi API nếu chưa gọi trước đó
       getColors(1); // Gọi hàm getColors khi component mount
       setHasFetched(true); // Đánh dấu là đã gọi API
     }
@@ -101,7 +102,7 @@ const ColorList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6 ">Colors Management</h1>
+      <h1 className="text-2xl font-bold mb-6 ">Quản lý màu sắc</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
           <Input
@@ -129,16 +130,18 @@ const ColorList = () => {
         {isLoading ? ( // Hiển thị loading trong bảng
           <div className="flex justify-center items-center h-64">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
-            <span className="ml-4 text-lg">Đang tải màu sắc, vui lòng chờ...</span>
+            <span className="ml-4 text-lg">
+              Đang tải màu sắc, vui lòng chờ...
+            </span>
           </div>
         ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-gray-100">
               <tr className="text-center">
                 <th className="border-b p-4 ">Select</th>
-                <th className="border-b p-4 ">Color</th>
-                <th className="border-b p-4 ">Active</th>
-                <th className="border-b p-4 ">Actions</th>
+                <th className="border-b p-4 ">Màu sắc</th>
+                <th className="border-b p-4 ">Trạng thái</th>
+                <th className="border-b p-4 ">Chức năng</th>
               </tr>
             </thead>
             <tbody className="text-center">

@@ -62,13 +62,13 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
   }, [debouncedSearchValue]);
 
   return (
-    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[380px] overflow-hidden">
+    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[700px] overflow-hidden">
       <h2 className="text-xl font-bold mb-4">Thống kê sản phẩm bán ra</h2>
       <div>
         <div className="flex items-center justify-between">
           <div className="flex justify-between mb-4">
             <div className="flex items-center gap-2">
-              <input
+              <input  
                 type="text"
                 placeholder="Nhập tên sản phẩm"
                 onChange={(e) => {

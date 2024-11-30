@@ -53,7 +53,6 @@ const ProductDetail = () => {
         );
         if (productRes.data.success) {
           setProduct(productRes.data.data);
-          // localStorage.setItem(`product_${id}`, JSON.stringify(productRes.data.data));
         }
 
         // Gọi fetchWishlistItems chỉ một lần
@@ -180,10 +179,8 @@ const ProductDetail = () => {
         selectedSize.SizeID,
         quantity
       );
-
-      fetchWishlistItems();
-
       toast.success("Đã thêm sản phẩm vào giỏ hàng");
+      fetchWishlistItems();
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
       toast.error("Đã có lỗi xảy ra, vui lòng thử lại sau");

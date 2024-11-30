@@ -104,7 +104,7 @@ const VoucherList = () => {
     <>
       <ToastContainer /> {/* Thêm ToastContainer */}
       <Typography variant="h5" className="text-2xl font-bold mb-6 ml-5">
-        Voucher List
+        Quản lý mã giảm giá
       </Typography>
       <div className="flex justify-between items-center mb-6 w-[96%] mx-auto ">
         <div className="w-1/2 bg-white rounded-xl">
