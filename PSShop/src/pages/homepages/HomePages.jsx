@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useContext, useEffect } from "react";
 import { LoginContext } from "../../components/login/LoginContext"; // Import LoginContext
-import { ToastContainer, toast } from "react-toastify"; // Thêm ToastContainer và toast
+import { toast } from "react-toastify"; // Chỉ import toast
 import Headers from "../../components/headers/Headers";
 import Banners from "../../components/banners/Banners";
 import Footers from "../../components/footers/Footers";
@@ -33,17 +33,11 @@ const HomePages = () => {
 }, []);
   return (
     <div>
-      <ToastContainer /> {/* Thêm ToastContainer vào đây */}
       <Headers />
       <Banners />
-      <br />
       <BlogCards />
-      <br />
       <Products_Trendy />
-      <br />
       <CountDown />
-      <br />
-      <br />
       <Products_Limited />
       <Support />
       <Footers />

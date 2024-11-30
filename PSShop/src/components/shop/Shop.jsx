@@ -62,8 +62,8 @@ export default function Shop1() {
     } // Ghi log bộ lọc đã được lọc
     try {
         const response = await axios.post(
-            `http://127.0.0.1:8000/api/products/index?page=${page}`, // Thêm tham số trang vào API
-            filteredParams // Truyền filters đã được lọc vào API
+            `http://127.0.0.1:8000/api/products/index?page=${page}`, 
+            filteredParams 
         );
         setProducts(response.data.data || response.data.data);
     } catch (error) {

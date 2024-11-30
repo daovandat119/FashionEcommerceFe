@@ -101,7 +101,6 @@ export default function ContextProvider({ children }) {
     const token = localStorage.getItem("token");
 
     try {
-        // Gọi API để thêm sản phẩm vào giỏ hàng
         const response = await axios.post(
             "http://127.0.0.1:8000/api/cart-items",
             {
@@ -118,38 +117,18 @@ export default function ContextProvider({ children }) {
             }
         );
 
-        // Sau khi thêm thành công, cập nhật lại toàn bộ giỏ hàng
-        const cartResponse = await axios.get(
-            "http://127.0.0.1:8000/api/cart-items",
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        if (cartResponse.data.message === "Success") {
-            const cartData = cartResponse.data.data;
-            // Cập nhật state giỏ hàng
-            setCartProducts(cartData);
-            // Tính toán tổng giá
-            const totalPrice = Number(
-                cartData.reduce((total, item) => 
-                    total + (item.Quantity * item.Price), 0
-                ).toFixed(2)
-            );
-            setTotalPrice(totalPrice);
-        }
-
-      
+        // Cập nhật giỏ hàng ngay sau khi thêm thành công
+        await fetchCartItems();
+        return { success: true, message: "Thêm vào giỏ hàng thành công" };
+        
     } catch (error) {
-        console.error("Error adding to cart:", error);
+        // Ném lỗi để component có thể xử lý
         if (error.response?.status === 400) {
-            toast.error(error.response.data.message || "Không thể thêm sản phẩm");
+            throw new Error(error.response.data.message || "Không thể thêm sản phẩm");
         } else if (error.response?.status === 401) {
-            toast.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+            throw new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
         } else {
-            toast.error("Thêm không thành công");
+            throw new Error("Có lỗi xảy ra, vui lòng thử lại sau");
         }
     } finally {
         setLoading(false);

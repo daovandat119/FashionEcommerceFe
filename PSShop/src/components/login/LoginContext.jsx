@@ -35,21 +35,30 @@ export const LoginProvider = ({ children }) => {
       });
 
       const data = await response.json();
-      // console.log("Login response:", data);
 
       if (response.ok) {
         const roleId = data.user.RoleID;
-        // console.log("Role ID:", roleId);
         if (roleId == 1) {
           setErrorMessage("Tài khoản này không thể đăng nhập. Vui lòng thử lại.");
           return;
         }
-
         setUser(data.user);
         setIsAuthenticated(true);
-        setSuccessMessage("Đăng nhập thành công!");
         localStorage.setItem("token", data.token);
-        navigate("/");
+        
+        toast.success("Đăng nhập thành công!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       } else {
         setErrorMessage(data.message || "Email hoặc mật khẩu không đúng");
       }

@@ -167,23 +167,22 @@ const ProductDetail = () => {
       const variant = await checkProductVariant();
 
       if (!variant) {
-        toast.warning(
-          "Rất tiếc, sản phẩm này tạm hết hàng với màu sắc và kích thước đã chọn"
-        );
+        toast.warning("Rất tiếc, sản phẩm này tạm hết hàng với màu sắc và kích thước đã chọn");
         return;
       }
 
-      await addProductToCart(
+      const result = await addProductToCart(
         product.ProductID,
         selectedColor.ColorID,
         selectedSize.SizeID,
         quantity
       );
-      toast.success("Đã thêm sản phẩm vào giỏ hàng");
-      fetchWishlistItems();
+      
+      if (result.success) {
+        toast.success(result.message);
+      }
     } catch (error) {
-      console.error("Lỗi khi thêm vào giỏ hàng:", error);
-      toast.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
+      toast.error(error.message);
     } finally {
       setIsChecking(false);
     }

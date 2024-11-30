@@ -1,13 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function ChangePassword({ onCancel }) {
+  const navigate = useNavigate();
+
   const handleChangePassword = async (
     currentPassword,
     newPassword,
     confirmPassword
   ) => {
     const token = localStorage.getItem("token");
-
+    
     if (newPassword.length < 6) {
       toast.error("Mật khẩu mới phải có ít nhất 6 ký tự!");
       return;

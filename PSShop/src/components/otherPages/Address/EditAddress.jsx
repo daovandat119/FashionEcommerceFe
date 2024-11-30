@@ -3,7 +3,6 @@ import axios from 'axios';
 import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
 
 export default function EditAddress() {
@@ -157,7 +156,16 @@ export default function EditAddress() {
     setExpandedAddressId(null);
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="col-lg-9">
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
+  }
+    
   if (error) return <p>Error: {error}</p>;
 
   return (

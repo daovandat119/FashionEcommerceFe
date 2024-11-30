@@ -1,11 +1,10 @@
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useCallback } from "react";
 import axios from "axios";
 import debounce from 'lodash/debounce';
 
-// Đặt bên ngoài component
 const debouncedUpdateQuantity = debounce(async (
   itemId, 
   productID, 
@@ -40,7 +39,7 @@ const debouncedUpdateQuantity = debounce(async (
       )
     );
   }
-}, 3000);
+}, 1000);
 
 export default function Cart() {
   const {
@@ -75,13 +74,25 @@ export default function Cart() {
       return;
     }
 
-    setCartProducts(prevProducts => 
-      prevProducts.map(item => 
-        item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
-      )
-    );
+    try {
+      // Cập nhật UI trước
+      setCartProducts(prevProducts => 
+        prevProducts.map(item => 
+          item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
+        )
+      );
 
-    updateQuantityAPI(itemId, productID, colorID, sizeID, newQuantity);
+      // Gọi API cập nhật
+      await updateQuantityAPI(itemId, productID, colorID, sizeID, newQuantity);
+    } catch {
+      toast.error("Lỗi khi cập nhật số lượng");
+      // Khôi phục lại số lượng cũ nếu có lỗi
+      setCartProducts(prevProducts => 
+        prevProducts.map(item => 
+          item.CartItemID === itemId ? { ...item } : item
+        )
+      );
+    }
   };
 
   const handleInputChange = (e, item) => {
