@@ -73,10 +73,10 @@ const UpdateCategoryComponent = () => {
               htmlFor="CategoryName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              UPDATE CATEGORY
+              Tên danh mục
             </label>
             <input
-              placeholder="edit category"
+              placeholder="Nhập tên danh mục muốn cập nhật"
               id="CategoryName"
               className="border-2 p-2 w-full rounded-xl"
               type="text"
@@ -91,13 +91,13 @@ const UpdateCategoryComponent = () => {
               className="bg-blue-400 text-white px-4 py-2 rounded-md"
               to="/admin/categories"
             >
-              LIST CATEGORY
+              Quay lại danh mục
             </Link>
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              UPDATE CATEGORY
+              Cập nhật danh mục
             </button>
           </div>
         </form>

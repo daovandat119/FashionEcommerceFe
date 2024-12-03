@@ -276,7 +276,7 @@ const UpdateProducts = () => {
                 htmlFor={name}
                 className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
               >
-                <span>Upload a file</span>
+                <span>Tải ảnh từ thiết bị</span>
                 <input
                   id={name}
                   name={name}
@@ -287,9 +287,9 @@ const UpdateProducts = () => {
                   accept="image/*"
                 />
               </label>
-              <p className="pl-1">or drag and drop</p>
+              <p className="pl-1 ">với các định dạng</p>
             </div>
-            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            <p className="text-xs text-gray-500">PNG, JPG, GIF tối đa 10MB</p>
           </div>
         </div>
         {errors[name] && (
@@ -380,7 +380,7 @@ const UpdateProducts = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">Update Product</h1>
+      <h1 className="text-2xl font-bold mb-6">Cập nhật sản phẩm</h1>
       <div className="flex gap-2">
         {/* Phần bên trái - Thông tin sản phẩm */}
         <div className="w-[40%] bg-white rounded-lg shadow p-6">
@@ -388,7 +388,7 @@ const UpdateProducts = () => {
             {/* Các trường thông tin sản phẩm */}
             <div className="mb-4">
               <Input
-                label="Product Name"
+                label="Tên sản phẩm"
                 name="ProductName"
                 value={productData.ProductName}
                 onChange={handleChange}
@@ -410,7 +410,7 @@ const UpdateProducts = () => {
                   ? categories.find(
                       (cat) => cat.CategoryID === productData.CategoryID
                     )?.CategoryName
-                  : "Chọn Category"}
+                  : "Chọn danh mục"}
                 <ChevronDownIcon className="w-5 h-5 ml-2 -mr-1 absolute right-2 top-1/2 transform -translate-y-1/2" />
               </button>
               {isOpen && (
@@ -438,7 +438,7 @@ const UpdateProducts = () => {
             </div>
             <div className="mb-4">
               <Input
-                label="Price"
+                label="Giá"
                 name="Price"
                 type="number"
                 value={productData.Price}
@@ -451,7 +451,7 @@ const UpdateProducts = () => {
             </div>
             <div className="mb-4">
               <Input
-                label="Sale Price"
+                label="Giá bán"
                 name="SalePrice"
                 type="number"
                 value={productData.SalePrice}
@@ -463,11 +463,11 @@ const UpdateProducts = () => {
                 </p>
               )}
             </div>
-            {renderImageUpload("Main Image", "MainImageURL")}
-            {renderImageUpload("Other Images", "ImagePath", true)}
+            {renderImageUpload("Ảnh chính", "MainImageURL")}
+            {renderImageUpload("Hình ảnh khác", "ImagePath", true)}
             <div className="my-4">
               <Textarea
-                label="Short Description"
+                label="Mô tả ngắn"
                 name="ShortDescription"
                 value={productData.ShortDescription}
                 onChange={handleChange}
@@ -481,7 +481,7 @@ const UpdateProducts = () => {
             </div>
             <div className="mb-4">
               <Textarea
-                label="Description"
+                label="Mô tả"
                 name="Description"
                 value={productData.Description}
                 onChange={handleChange}
@@ -500,10 +500,10 @@ const UpdateProducts = () => {
                 onClick={handleBackToList}
                 className="mr-2"
               >
-                Product List
+                Danh sách sản phẩm
               </Button>
               <Button type="submit" color="green" disabled={loading}>
-                Update Product
+                Cập nhật sản phẩm
               </Button>
             </div>
           </form>
@@ -511,18 +511,18 @@ const UpdateProducts = () => {
 
         {/* Phần bên phải - Colors, Sizes, và Add Product Variant */}
         <div className="w-[60%] bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4">Add Product Variant</h2>
+          <h2 className="text-xl font-bold mb-4">Thêm biến thể sản phẩm</h2>
           <div className="flex space-x-4 mb-4">
             <input
               type="number"
-              placeholder="Price"
+              placeholder="Giá"
               value={variantPrice}
               onChange={(e) => setVariantPrice(e.target.value)}
               className="border-2 p-2 w-full rounded-xl"
             />
             <input
               type="number"
-              placeholder="Quantity"
+              placeholder="Số lượng"
               value={variantQuantity}
               onChange={(e) => setVariantQuantity(e.target.value)}
               className="border-2 p-2 w-full rounded-xl"
@@ -531,7 +531,7 @@ const UpdateProducts = () => {
 
           {/* Colors */}
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Colors</h3>
+            <h3 className="text-lg font-semibold mb-2">Màu sắc</h3>
             <div className="grid grid-cols-5 gap-4">
               {colors.map((color) => (
                 <div key={color.ColorID} className="flex items-center">
@@ -553,7 +553,7 @@ const UpdateProducts = () => {
 
           {/* Sizes */}
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Sizes</h3>
+            <h3 className="text-lg font-semibold mb-2">Kích thước</h3>
             <div className="grid grid-cols-5 gap-4">
               {sizes.map((size) => (
                 <div key={size.SizeID} className="flex items-center">
@@ -575,30 +575,30 @@ const UpdateProducts = () => {
 
           {/* Nút Thêm Biến Thể */}
           <Button color="blue" onClick={handleAddVariant} className="w-full">
-            + ADD PRODUCT VARIANT
+            + THÊM BIẾN THỂ SẢN PHẨM
           </Button>
 
           {/* Product Variants Table */}
           <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Product Variants</h2>
+            <h2 className="text-xl font-bold mb-4">Biến thể sản phẩm</h2>
             {productVariants.length > 0 ? (
               <div className="overflow-y-auto" style={{ maxHeight: "730px" }}>
                 <table className="min-w-full border-collapse border border-gray-300">
                   <thead>
                     <tr className="bg-gray-100 text-center">
-                      <th className="border border-gray-300  py-2">Select</th>
+                      <th className="border border-gray-300  py-2">Lựa chọn</th>
                       <th className="border border-gray-300 px-4 py-2">
-                        Color
+                        Màu sắc
                       </th>
-                      <th className="border border-gray-300 px-4 py-2">Size</th>
+                      <th className="border border-gray-300 px-4 py-2">Kích Thước</th>
                       <th className="border border-gray-300 px-4 py-2">
-                        Price
-                      </th>
-                      <th className="border border-gray-300 px-4 py-2">
-                        Quantity
+                        Giá 
                       </th>
                       <th className="border border-gray-300 px-4 py-2">
-                        Actions
+                        Số lượng
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Chức năng
                       </th>
                     </tr>
                   </thead>
@@ -638,7 +638,7 @@ const UpdateProducts = () => {
                 </table>
               </div>
             ) : (
-              <p>No product variants added yet.</p>
+              <p>Chưa có biến thể sản phẩm nào được thêm.</p>
             )}
           </div>
         </div>
@@ -648,7 +648,7 @@ const UpdateProducts = () => {
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg flex items-center">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
             <span className="ml-4 text-white text-lg font-semibold">
-              Updating product, please wait...
+              Đang cập nhật sản phẩm, vui lòng chờ...
             </span>
           </div>
         </div>

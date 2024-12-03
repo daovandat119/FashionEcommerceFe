@@ -182,11 +182,14 @@ const UpdateUserStatus = (UserID, data = null) => {
   }
 };
 
-const GetCoupons = () => {
+const GetCoupons = (page, searchValue) => {
   const token = localStorage.getItem("token");
   return axios.post(
     "/api/coupons/checkCoupon",
-    {},
+    {
+      Page: page,
+      Code: searchValue,
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -260,11 +263,15 @@ const UpdateAddress = (addressId, addressData) => {
 };
 
 // Hàm để lấy ơn hàng
-const GetOrders = async () => {
+const GetOrders = async (page, statusFilter, searchTerm) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return axios.post(
     "/api/order/views",
-    {},
+    {
+      Page: page,
+      OrderStatusID: statusFilter,
+      OrderCode: searchTerm,
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`, // Gửi token trong header
@@ -355,11 +362,11 @@ const GetOrdersStatistics = async (
   return await axios.post(
     "/api/statistics/orders-statistics",
     {
-      timeFrame: TimePeriod,
-      startDate: startDate,
-      endDate: endDate,
-      Page: currentPage,
-      OrderCode: searchValue,
+      timeFrame: TimePeriod ?? null,
+      startDate: startDate ?? null,
+      endDate: endDate ?? null,
+      Page: currentPage ?? null,
+      OrderCode: searchValue ?? null,
     },
     {
       headers: {
@@ -486,12 +493,16 @@ const ChangePassword = async (
 
 const updateUserProfile = async (formData) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-  return axios.post("http://127.0.0.1:8000/api/users/update-profile", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`, // Thêm token vào header
-    },
-  });
+  return axios.post(
+    "http://127.0.0.1:8000/api/users/update-profile",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`, // Thêm token vào header
+      },
+    }
+  );
 };
 
 export {

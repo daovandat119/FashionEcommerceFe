@@ -75,7 +75,7 @@ const UpdateSizeComponent = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">UPDATE SIZE</h1>
+      <h1 className="text-2xl font-bold mb-6">Tên kích thước</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleUpdateSize} className="space-y-6">
           <div>
@@ -83,10 +83,10 @@ const UpdateSizeComponent = () => {
               htmlFor="SizeName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              UPDATE SIZE
+              Tên kích thước
             </label>
             <input
-              placeholder="edit size"
+              placeholder="Nhập tên kích thước muốn cập nhật"
               id="SizeName"
               className="border-2 p-2 w-full rounded-xl"
               type="text"
@@ -101,13 +101,13 @@ const UpdateSizeComponent = () => {
               className="bg-blue-400 text-white px-4 py-2 rounded-md"
               to="/admin/sizes"
             >
-              LIST SIZES
+              Quay lại kích thước
             </Link>
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              UPDATE SIZE
+              Cập nhật kích thước
             </button>
           </div>
         </form>

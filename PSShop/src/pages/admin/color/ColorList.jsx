@@ -107,7 +107,7 @@ const ColorList = () => {
         <div className="w-1/2">
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            label="Search colors"
+            label="Tìm kiếm màu sắc"
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg"
           />
         </div>
@@ -116,13 +116,13 @@ const ColorList = () => {
             to="/admin/colors/add"
             className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
           >
-            <PlusIcon className="h-5 w-5" /> New Color
+            <PlusIcon className="h-5 w-5" /> Tạo màu sắc
           </Link>
           <button
             onClick={() => handleDeleteColors()}
             className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
           >
-            <TrashIcon className="h-5 w-5" /> Delete Selected
+            <TrashIcon className="h-5 w-5" /> Xoá các lựa chọn
           </button>
         </div>
       </div>
@@ -138,7 +138,7 @@ const ColorList = () => {
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-gray-100">
               <tr className="text-center">
-                <th className="border-b p-4 ">Select</th>
+                <th className="border-b p-4 ">Lựa chọn</th>
                 <th className="border-b p-4 ">Màu sắc</th>
                 <th className="border-b p-4 ">Trạng thái</th>
                 <th className="border-b p-4 ">Chức năng</th>

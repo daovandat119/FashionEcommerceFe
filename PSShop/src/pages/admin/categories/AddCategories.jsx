@@ -46,7 +46,7 @@ const AddCategoryComponent = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">ADD NEW CATEGORY</h1>
+      <h1 className="text-2xl font-bold mb-6">TẠO DANH MỤC MỚI</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSaveCategory} className="space-y-6">
           <div>
@@ -54,10 +54,10 @@ const AddCategoryComponent = () => {
               htmlFor="CategoryName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Category Name
+              Tên danh mục
             </label>
             <input
-              placeholder="New Category"
+              placeholder="Nhập tên danh mục"
               id="CategoryName"
               className="border-2 p-2 w-full rounded-xl"
               type="text"
@@ -72,13 +72,13 @@ const AddCategoryComponent = () => {
               className="bg-blue-400 text-white px-4 py-2  rounded-md"
               to="/admin/categories"
             >
-              List Category
+              Quay lại danh mục
             </Link>
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              NEW CATEGORY
+              THÊM DANH MỤC
             </button>
           </div>
         </form>

@@ -75,10 +75,10 @@ const UpdateColorComponent = () => {
               htmlFor="ColorName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              UPDATE COLOR
+              Nhập màu sắc
             </label>
             <input
-              placeholder="edit color"
+              placeholder="Nhập màu sắc muốn cập nhật"
               id="ColorName"
               className="border-2 p-2 w-full rounded-xl"
               type="text"
@@ -93,13 +93,13 @@ const UpdateColorComponent = () => {
               className="bg-blue-400 text-white px-4 py-2 rounded-md"
               to="/admin/colors"
             >
-              LIST COLOR
+              Quay lại màu sắc
             </Link>
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              UPDATE COLOR
+              Cập nhật màu sắc
             </button>
           </div>
         </form>

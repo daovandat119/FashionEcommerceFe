@@ -9,6 +9,8 @@ import {
 } from "../service/api_service";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { EyeIcon } from "@heroicons/react/24/outline";
+import { FaSpinner } from "react-icons/fa";
 
 import Star from "../../../components/common/Star";
 import ReviewsProducts from "./ReviewProducts";
@@ -29,6 +31,7 @@ const ProductDetailAdmin = () => {
   const [additionalImages, setAdditionalImages] = useState([]);
   const [imagePaths, setImagePaths] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
+  const [selectedVariantQuantity, setSelectedVariantQuantity] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +65,10 @@ const ProductDetailAdmin = () => {
         setColors(colorsRes.data || []);
         setSizes(sizesRes.data || []);
         setVariants(variantsRes.data || []);
+
+        if (variants.length > 0) {
+          setSelectedVariantQuantity(variants[0].Quantity);
+        }
       } catch (error) {
         console.error("Error fetching product details:", error);
         toast.error("Không thể tải thông tin sản phẩm");
@@ -82,45 +89,82 @@ const ProductDetailAdmin = () => {
       );
       if (variant) {
         setCurrentPrice(variant.Price);
+        setSelectedVariantQuantity(variant.Quantity);
       }
     } else {
       setCurrentPrice(originalPrice);
+      if (variants.length > 0) {
+        setSelectedVariantQuantity(variants[0].Quantity);
+      }
     }
   }, [selectedColor, selectedSize, variants, originalPrice]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+        <span className="ml-4 text-lg">
+          Đang tải thông tin sản phẩm, vui lòng chờ...
+        </span>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="flex flex-col md:flex-row p-4">
-        <div className="flex flex-row-reverse w-[80%]">
-          <div>
-            {product && product.MainImageURL && (
-              <img
-                src={product.MainImageURL}
-                alt={product.ProductName}
-                className="w-[400px] h-[400px] object-cover"
-              />
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2">
+      <div className="flex relative flex-col md:flex-row p-4 w-full">
+        <button
+          onClick={() => navigate("/admin/products")}
+          className="absolute top-0 left-0 bg-black text-white px-4 py-2 rounded-br-lg"
+        >
+          Quay lại danh sách sản phẩm
+        </button>
+        <div className="flex w-[70%]">
+          <div className="flex flex-col  w-[20%]">
             {imagePaths.map((image, index) => (
               <img
                 key={index}
                 src={image.trim()}
                 alt={`Image Path ${index + 1}`}
-                className="w-32 h-32 mr-2 object-cover cursor-pointer"
+                className="w-[100%] h-auto border-2 border-gray-300 object-cover "
               />
             ))}
           </div>
+          <div className="flex w-[80%]">
+            {product && product.MainImageURL && (
+              <img
+                src={product.MainImageURL}
+                alt={product.ProductName}
+                className="w-[100%] h-auto object-cover border-2 border-gray-300"
+              />
+            )}
+          </div>
         </div>
-        <div className="md:w-1/2 md:pl-4">
-          <h1 className="text-2xl font-bold">{product.ProductName}</h1>
+        <div className=" w-[40%]  right-0 top-7 z-10 px-3">
+          <h1 className="text-4xl flex items-center justify-between font-bold">
+            {product.ProductName}{" "}
+            <p className="text-sm text-gray-500 flex gap-2  items-center">
+              <span className="material-icons">
+                <EyeIcon className="h-4 w-4" />
+              </span>
+              {product.ViewCount || "Chưa có lượt xem "}
+            </p>
+          </h1>
+          <p className="text-lg flex items-center justify-between py-2 gap-2 text-gray-500">
+            <p className="flex items-center gap-2">
+              Đánh giá trung bình: <Star rating={product.Rating || 0} />
+            </p>
+            <p className="text-lg text-gray-500">
+              Đã bán: {product.SoldCount || 0}
+            </p>
+          </p>
           <div className="flex items-center">
-            <p className="text-lg text-blue-600">{currentPrice} VND</p>
+            <p className="text-2xl flex font-se items-center gap-2 text-red-700">
+              <p className="font-bold text-lg text-black border-b border-black">
+                Giá bán :
+              </p>
+              {currentPrice} VND
+            </p>
             {currentPrice < originalPrice && (
               <p className="text-sm text-gray-500 line-through ml-2">
                 {originalPrice} VND
@@ -136,20 +180,7 @@ const ProductDetailAdmin = () => {
               </span>
             )}
           </div>
-          <p className="text-sm flex items-center text-gray-500">
-            Đánh giá trung bình: <Star rating={product.Rating || 0} />
-          </p>
-          <p className="text-sm text-gray-500">
-            Tổng số đã bán: {product.total_sold || 0}
-          </p>
-          <p className="text-sm text-gray-500">
-            Lượt xem: {product.Views || 0}
-          </p>
-          <p className="text-sm text-gray-500">
-            Mô tả ngắn: {product.ShortDescription || "Chưa có mô tả"}
-          </p>
-
-          <h3 className="mt-4 font-semibold">Màu sắc</h3>
+          <h3 className="my-3 font-semibold text-2xl">Màu sắc</h3>
           <div className="flex gap-3">
             {colors.map((color) => (
               <div key={color.ColorID} className="relative">
@@ -161,7 +192,7 @@ const ProductDetailAdmin = () => {
                   onChange={() => setSelectedColor(color)}
                 />
                 <label
-                  className={`w-8 h-8 flex-shrink-0 rounded-full cursor-pointer border-2 border-gray-300 ${
+                  className={`w-8 h-8 flex-shrink-0 rounded-full cursor-pointer border-2 border-black ${
                     selectedColor?.ColorID === color.ColorID
                       ? "ring-2 ring-blue-500"
                       : ""
@@ -174,7 +205,7 @@ const ProductDetailAdmin = () => {
             ))}
           </div>
 
-          <h3 className="mt-4 font-semibold">Kích thước</h3>
+          <h3 className="my-3 font-semibold text-2xl">Kích thước</h3>
           <div className="flex gap-3">
             {sizes.map((size) => (
               <div key={size.SizeID} className="relative">
@@ -186,10 +217,10 @@ const ProductDetailAdmin = () => {
                   onChange={() => setSelectedSize(size)}
                 />
                 <label
-                  className={`cursor-pointer py-2 px-4 rounded-md text-sm font-medium border border-gray-300 ${
+                  className={`cursor-pointer py-2 px-3 rounded-sm text-sm font-medium border-2 border-black ${
                     selectedSize?.SizeID === size.SizeID
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 text-gray-700"
+                      ? "bg-black text-white transform scale-125 border-2 border-white"
+                      : "bg-white text-black"
                   }`}
                   htmlFor={`size-${size.SizeID}`}
                 >
@@ -198,26 +229,46 @@ const ProductDetailAdmin = () => {
               </div>
             ))}
           </div>
+          <p className="text-base text-black mt-2">
+            Số lượng: {selectedVariantQuantity}
+          </p>
+
+          <p className="text-lg my-3 text-black font-semibold">
+            Mô tả ngắn: {product.ShortDescription || "Chưa có mô tả"}
+          </p>
+          <div className="flex justify-between items-center "></div>
         </div>
       </div>
 
-      <div className="mt-4 flex justify-center">
+      <div className="mt-4 w-[95%] mx-auto flex justify-center">
         <button
           onClick={() => setShowReviews(false)}
-          className={`mr-4 ${!showReviews ? "font-bold" : ""}`}
+          className={`mr-4 ${showReviews ? "" : "font-bold"}`}
         >
-          Mô tả
+          <p className="text-2xl font-bold border-2 border-gray-300 px-2 py-1 rounded-lg">
+            Mô tả{" "}
+          </p>
         </button>
         <button
           onClick={() => setShowReviews(true)}
           className={`${showReviews ? "font-bold" : ""}`}
         >
-          Đánh giá
+          <p className="text-2xl font-bold border-2 border-gray-300 px-2 py-1 rounded-lg">
+            Đánh giá
+          </p>
         </button>
       </div>
 
-      <div className="mt-4 flex justify-center">
-        {showReviews ? <ReviewsProducts /> : <AdditionalInfo />}
+      <div className="mt-4  flex justify-center w-[95%] mx-auto  rounded-lg">
+        {showReviews ? (
+          <div className="w-full py-5 ">
+            <ReviewsProducts />
+          </div>
+        ) : (
+          <div className="w-full py-5">
+            <AdditionalInfo />
+          </div>
+        )}
       </div>
     </>
   );

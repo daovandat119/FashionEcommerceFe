@@ -250,7 +250,7 @@ const UpdateOrder = () => {
               <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
                 Hình Ảnh
               </th>
-                <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
+              <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
                 Màu sắc
               </th>
               <th className="p-4 border-b border-r border-gray-300 text-center font-medium">
@@ -271,7 +271,9 @@ const UpdateOrder = () => {
                 className="text-center border-b border-gray-100"
               >
                 <td className="p-4 border-r border-gray-300">{index + 1}</td>
-                <td className="border-r border-gray-300">{order.ProductName}</td>
+                <td className="border-r border-gray-300">
+                  {order.ProductName}
+                </td>
                 <td className="p-4 border-r border-gray-300">
                   <img
                     src={order.MainImageURL}
@@ -279,8 +281,12 @@ const UpdateOrder = () => {
                     className="w-12 h-12 object-cover mx-auto rounded"
                   />
                 </td>
-                <td className="p-4 border-r border-gray-300">{order.VariantColor}</td>
-                <td className="p-4 border-r border-gray-300">{order.VariantSize}</td>
+                <td className="p-4 border-r border-gray-300">
+                  {order.VariantColor}
+                </td>
+                <td className="p-4 border-r border-gray-300">
+                  {order.VariantSize}
+                </td>
                 <td className="p-4 border-r border-gray-300">
                   {order.TotalQuantity}
                 </td>
@@ -293,22 +299,41 @@ const UpdateOrder = () => {
         </table>
 
         <div className="mt-6 text-right">
-          <Typography variant="h6" className="mt-2 text-gray-800 font-semibold">
-            Tổng tiền: ${orderDetails.TotalAmount}
+          <p className="flex justify-between">
+            <span className="font-medium">Tổng tiền sản phẩm:</span>
+            <span>{orderDetails.TotalAmount}VNĐ</span>
+          </p>
+          <p className="flex justify-between">
+            <span className="font-medium">Phí vận chuyển:</span>
+            <span>{orderDetails.ShippingFee}VNĐ</span>
+          </p>
+          <p className="flex justify-between">
+            <span className="font-medium">Giảm giá:</span>
+            <span>{orderDetails.Discount}VNĐ</span>
+          </p>
+          <Typography
+            variant="h6"
+            className="mt-2 text-gray-800 font-semibold flex justify-between"
+          >
+            <span>Tổng tiền:</span>
+            <span>{orderDetails.TotalProductAmount}VNĐ</span>
           </Typography>
         </div>
         <div className="flex justify-end mt-4">
-          <Button color="green" onClick={handleBackToStatistics} className="mr-2">
+          <Button
+            color="green"
+            onClick={handleBackToStatistics}
+            className="mr-2"
+          >
             Quay lại trang thống kê
           </Button>
           <Button color="blue" onClick={handleCancel}>
             Thoát
           </Button>
-        </div>  
+        </div>
       </div>
     </Card>
   );
 };
 
 export default UpdateOrder;
-

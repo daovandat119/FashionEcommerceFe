@@ -648,6 +648,14 @@ export default function AccountOrders() {
                           </span>{" "}
                           {order.PaymentStatus}
                         </p>
+                        <p>
+                          <span className="font-medium">Địa chỉ:</span>{" "}
+                          {order.ShippingAddress}
+                        </p>
+                        <p>
+                          <span className="font-medium">Ngày mua:</span>{" "}
+                          {order.OrderDate}
+                        </p>
                       </div>
 
                       {expandedOrder === order.OrderID &&
@@ -694,26 +702,29 @@ export default function AccountOrders() {
 
                       <div className="flex justify-between items-center mt-6">
                         <div>
+                          <p className="text-sm text-gray-500">
+                            Tổng tiền:{" "}
+                            <span className="text-black-600">
+                              {order.TotalProductAmount} VND
+                            </span>
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Phí vận chuyển:{" "}
+                            <span className="text-black-600">
+                              {order.ShippingFee} VND
+                            </span>
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Giảm giá:{" "}
+                            <span className="text-black-600">
+                              -{order.Discount} VND
+                            </span>
+                          </p>
                           <p className="text-lg font-bold text-gray-800">
                             Tổng tiền:{" "}
                             <span className="text-black-600">
                               {order.TotalAmount} VND
                             </span>
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Ngày mua:{" "}
-                            {order.OrderDate
-                              ? new Date(order.OrderDate).toLocaleDateString(
-                                  "vi-VN",
-                                  {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                    // hour: '2-digit',
-                                    // minute: '2-digit'
-                                  }
-                                )
-                              : "Không có dữ liệu"}
                           </p>
                         </div>
                         <div className="flex gap-2">

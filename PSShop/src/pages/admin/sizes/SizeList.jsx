@@ -104,19 +104,19 @@ const SizeList = () => {
         <div className="w-1/2">
           <Input 
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            label="Search sizes"
+            label="Tìm kiếm kích thước"
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg"
           />
         </div>
         <div className='flex gap-2'>
           <Link to="/admin/sizes/add" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
-            <PlusIcon className="h-5 w-5" /> New Size
+            <PlusIcon className="h-5 w-5" /> Tạo kích thước
           </Link>
           <button
             onClick={() => handleDeleteSizes()}
             className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
           >
-            <TrashIcon className="h-5 w-5" /> Delete Selected
+            <TrashIcon className="h-5 w-5" /> Xoá các lựa chọn
           </button>
         </div>
       </div>
@@ -124,13 +124,13 @@ const SizeList = () => {
         {isLoading ? ( // Hiển thị loading trong bảng
           <div className="flex justify-center items-center h-64">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
-            <span className="ml-4 text-lg">Đang tải kích thước, vui lòng chờ...</span>
+                <span className="ml-4 text-lg">Đang tải kích thước, vui lòng chờ...</span>
           </div>
         ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-gray-100">
               <tr className='text-center'>
-                <th className="border-b p-4 ">Select</th>
+                <th className="border-b p-4 ">Lựa chọn</th>
                 <th className="border-b p-4 ">Kích thước</th>
                 <th className="border-b p-4 ">Trạng thái</th>
                 <th className="border-b p-4 ">Chức năng</th>
