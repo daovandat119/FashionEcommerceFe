@@ -145,8 +145,10 @@ const ListUsers = () => {
   return axios.post(`/api/users`);
 };
 
-const DeleteProductVariant = (VariantID) => {
-  return axios.delete(`/api/product-variants/${VariantID}`);
+const DeleteProductVariant = (ids) => {
+  return axios.delete(`/api/product-variants`, {
+    data: { ids }, // Send the ids in the request body
+  });
 };
 
 const GetProductVariantById = (VariantID) => {
