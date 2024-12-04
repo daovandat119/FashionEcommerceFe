@@ -180,27 +180,27 @@ export default function AccountOrders() {
       if (!products) {
         await fetchOrderProducts(orderId);
       }
-
+      
       // Thêm từng sản phẩm vào giỏ hàng
       const token = localStorage.getItem("token");
       for (const product of orderProducts[orderId]) {
         await axios.post(
-          "http://127.0.0.1:8000/api/cart/add",
+          'http://127.0.0.1:8000/api/cart/add',
           {
             productId: product.ProductID,
             quantity: product.TotalQuantity,
             color: product.VariantColor,
-            size: product.VariantSize,
+            size: product.VariantSize
           },
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token}` }
           }
         );
       }
-
+      
       toast.success("Đã thêm sản phẩm vào giỏ hàng");
       // Chuyển hưng đến trang giỏ hàng
-      window.location.href = "/cart";
+      window.location.href = '/cart';
     } catch (error) {
       console.error("Lỗi khi mua lại:", error);
       toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
@@ -484,22 +484,25 @@ export default function AccountOrders() {
 
     return null;
   };
-
+  // PropTypes là một thư viện trong React được sử dụng để kiểm tra
+  // kiểu dữ liệu của các props (thuộc tính) mà một component nhận vào. Việc
+  // sử dụng PropTypes giúp đảm bảo rằng các props được truyền vào component có kiểu dữ liệu đúng,
+  // từ đó giúp phát hiện lỗi sớm trong quá trình phát triển ứng dụng
   OrderActionButton.propTypes = {
     order: PropTypes.shape({
-      OrderID: PropTypes.number.isRequired,
-      OrderStatus: PropTypes.oneOf([
+      OrderID: PropTypes.number.isRequired, // Thuộc tính OrderID phải là một số và là bắt buộc
+      OrderStatus: PropTypes.oneOf([ // Thuộc tính OrderStatus phải là một trong các giá trị đã định nghĩa
         "Đang xử lý",
         "Đang giao hàng",
         "Đã giao hàng",
         "Đã hủy",
-        "Đã hoàn thành",
+        "Đã hoàn thành"
       ]).isRequired,
       PaymentStatus: PropTypes.string,
       IsConfirmed: PropTypes.bool,
       Rating: PropTypes.number,
-      Review: PropTypes.string,
-    }).isRequired,
+      Review: PropTypes.string
+    }).isRequired
   };
 
   const fetchOrderProducts = async (orderId) => {

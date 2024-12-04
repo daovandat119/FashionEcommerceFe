@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -23,12 +23,10 @@ const ProductDetail = () => {
   const [variantPrice, setVariantPrice] = useState(null);
   const {
     addProductToCart,
-    isAddedToCartProducts,
     addToWishlist,
     removeFromWishlist,
     isInWishlist,
     isLoadingWishlist,
-    wishlistProducts,
     fetchWishlistItems,
   } = useContextElement();
 
@@ -36,7 +34,7 @@ const ProductDetail = () => {
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isExceedQuantity, setIsExceedQuantity] = useState(false);
-  const hasFetchedData = React.useRef(false);
+
 
   useEffect(() => {
     // Cuộn lên đầu trang khi component được tải
@@ -77,7 +75,8 @@ const ProductDetail = () => {
     };
 
     initializeData();
-  }, [id, fetchWishlistItems]); // Giữ nguyên dependency array
+  }, [id, fetchWishlistItems]);
+   // Giữ nguyên dependency array
   useEffect(() => {
     if (product && typeof isInWishlist === "function") {
       const status = isInWishlist(product.ProductID);
@@ -148,6 +147,7 @@ const ProductDetail = () => {
     }
   }, [selectedSize, selectedColor, product]);
 
+
   const handleAddToCart = async (e) => {
     e.preventDefault();
 
@@ -164,13 +164,6 @@ const ProductDetail = () => {
 
     setIsChecking(true);
     try {
-      const variant = await checkProductVariant();
-
-      if (!variant) {
-        toast.warning("Rất tiếc, sản phẩm này tạm hết hàng với màu sắc và kích thước đã chọn");
-        return;
-      }
-
       const result = await addProductToCart(
         product.ProductID,
         selectedColor.ColorID,

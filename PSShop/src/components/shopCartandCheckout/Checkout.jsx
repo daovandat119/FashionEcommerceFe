@@ -29,11 +29,11 @@ export default function Checkout() {
   const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [lastFetchedPrice, setLastFetchedPrice] = useState(0);
 
-  useEffect(() => {
-    if (!orderData.PaymentMethodID) {
-      updateOrderData({ PaymentMethodID: 2 });
-    }
-  }, [orderData.PaymentMethodID, updateOrderData]);
+  // useEffect(() => {
+  //   if (!orderData.PaymentMethodID) {
+  //     updateOrderData({ PaymentMethodID: 2 });
+  //   }
+  // }, [orderData.PaymentMethodID, updateOrderData]);
 
   const paymentMethods = [
     {
@@ -157,6 +157,7 @@ export default function Checkout() {
       }
     } catch (err) {
       console.error("Chi tiết lỗi:", err);
+      console.error("Chi tiết lỗi:", err.response ? err.response.data : err.message);
       setError("Đặt hàng thất bại. Vui lòng thử lại.");
     }
   };
@@ -196,12 +197,20 @@ export default function Checkout() {
     fetchCoupons();
   }, [fetchCoupons]);
 
+
+  // useEffect(() => {
+  //   if (Math.abs(totalPrice - lastFetchedPrice) > 1000) { // Chỉ fetch lại khi giá thay đổi đáng kể
+  //     fetchCoupons();
+  //   }
+  // }, [totalPrice, fetchCoupons]);
+
   useEffect(() => {
     if (Math.abs(totalPrice - lastFetchedPrice) > 1000) {
       // Chỉ fetch lại khi giá thay đổi đáng kể
       fetchCoupons();
     }
   }, [totalPrice, fetchCoupons]);
+
 
   if (loading) {
     return (
