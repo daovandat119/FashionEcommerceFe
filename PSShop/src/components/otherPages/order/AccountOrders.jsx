@@ -172,36 +172,36 @@ export default function AccountOrders() {
   };
 
   const handleRepurchase = async (orderId) => {
-    try {
-      const products = orderProducts[orderId];
-      if (!products) {
-        await fetchOrderProducts(orderId);
-      }
+    // try {
+    //   const products = orderProducts[orderId];
+    //   if (!products) {
+    //     await fetchOrderProducts(orderId);
+    //   }
       
-      // Thêm từng sản phẩm vào giỏ hàng
-      const token = localStorage.getItem("token");
-      for (const product of orderProducts[orderId]) {
-        await axios.post(
-          'http://127.0.0.1:8000/api/cart/add',
-          {
-            productId: product.ProductID,
-            quantity: product.TotalQuantity,
-            color: product.VariantColor,
-            size: product.VariantSize
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-      }
+    //   // Thêm từng sản phẩm vào giỏ hàng
+    //   const token = localStorage.getItem("token");
+    //   for (const product of orderProducts[orderId]) {
+    //     await axios.post(
+    //       'http://127.0.0.1:8000/api/cart/add',
+    //       {
+    //         productId: product.ProductID,
+    //         quantity: product.TotalQuantity,
+    //         color: product.VariantColor,
+    //         size: product.VariantSize
+    //       },
+    //       {
+    //         headers: { Authorization: `Bearer ${token}` }
+    //       }
+    //     );
+    //   }
       
-      toast.success("Đã thêm sản phẩm vào giỏ hàng");
-      // Chuyển hưng đến trang giỏ hàng
-      window.location.href = '/cart';
-    } catch (error) {
-      console.error("Lỗi khi mua lại:", error);
-      toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
-    }
+    //   toast.success("Đã thêm sản phẩm vào giỏ hàng");
+    //   // Chuyển hưng đến trang giỏ hàng
+    //   window.location.href = '/cart';
+    // } catch (error) {
+    //   console.error("Lỗi khi mua lại:", error);
+    //   toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
+    // }
   };
 
   const OrderActionButton = ({ order }) => {
@@ -382,22 +382,25 @@ export default function AccountOrders() {
 
     return null;
   };
-
+  // PropTypes là một thư viện trong React được sử dụng để kiểm tra
+  // kiểu dữ liệu của các props (thuộc tính) mà một component nhận vào. Việc
+  // sử dụng PropTypes giúp đảm bảo rằng các props được truyền vào component có kiểu dữ liệu đúng,
+  // từ đó giúp phát hiện lỗi sớm trong quá trình phát triển ứng dụng
   OrderActionButton.propTypes = {
     order: PropTypes.shape({
-      OrderID: PropTypes.number.isRequired,
-      OrderStatus: PropTypes.oneOf([
+      OrderID: PropTypes.number.isRequired, // Thuộc tính OrderID phải là một số và là bắt buộc
+      OrderStatus: PropTypes.oneOf([ // Thuộc tính OrderStatus phải là một trong các giá trị đã định nghĩa
         "Đang xử lý",
         "Đang giao hàng", 
         "Đã giao hàng",
         "Đã hủy",
         "Đã hoàn thành"
-      ]).isRequired,
-      PaymentStatus: PropTypes.string,
-      IsConfirmed: PropTypes.bool,
-      Rating: PropTypes.number,
-      Review: PropTypes.string
-    }).isRequired
+      ]).isRequired, // Bắt buộc phải có
+      PaymentStatus: PropTypes.string, // Thuộc tính PaymentStatus có thể là một chuỗi, không bắt buộc
+      IsConfirmed: PropTypes.bool, // Thuộc tính IsConfirmed phải là một giá trị boolean, không bắt buộc
+      Rating: PropTypes.number, // Thuộc tính Rating có thể là một số, không bắt buộc
+      Review: PropTypes.string // Thuộc tính Review có thể là một chuỗi, không bắt buộc
+    }).isRequired // Toàn bộ đối tượng order là bắt buộc
   };
 
   const fetchOrderProducts = async (orderId) => {
