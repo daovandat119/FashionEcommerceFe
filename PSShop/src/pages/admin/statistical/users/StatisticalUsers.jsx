@@ -11,7 +11,7 @@ const StatisticalUsers = () => {
   const [monthlyRegistrations, setMonthlyRegistrations] = useState([]);
   const [activeUsers, setActiveUsers] = useState(0);
   const [bannedUsers, setBannedUsers] = useState(0);
-  const [queryUser, setQueryUser] = useState([]);
+  const [queryOrder, setQueryOrder] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
 
@@ -33,7 +33,7 @@ const StatisticalUsers = () => {
       setMonthlyRegistrations(response.data.monthlyRegistrations);
       setActiveUsers(response.data.activeCount);
       setBannedUsers(response.data.bannedCount);
-      setQueryUser(response.data);
+      setQueryOrder(response.data);
     } catch (error) {
       console.error("Error fetching user statistics:", error);
     }
@@ -157,7 +157,7 @@ const StatisticalUsers = () => {
 
       <div className="w-[97%] mx-auto my-4">
         <UserStatisticsTable
-          data={queryUser}
+          data={queryOrder}
           onPageChange={handlePageChange}
           onSearch={handleSearch}
         />

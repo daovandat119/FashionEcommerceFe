@@ -15,7 +15,6 @@ import {  toast } from "react-toastify";
 const Context = createContext();
 
 export const useContextElement = () => useContext(Context);
-
 export default function ContextProvider({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -28,7 +27,6 @@ export default function ContextProvider({ children }) {
   });
   const [wishlistProducts, setWishlistProducts] = useState([]);
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
-  const [isFetchingCart, setIsFetchingCart] = useState(false);
 
   const hasFetchedCartItems = useRef(false);
 

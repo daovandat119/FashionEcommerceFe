@@ -52,24 +52,24 @@ export default function Shop1() {
 
     // Chỉ thêm các thuộc tính có giá trị khác null
     if (filters.categoryId) {
-        filteredParams.CategoryID = filters.categoryId;
+      filteredParams.CategoryID = filters.categoryId;
     }
     if (filters.colorId) {
-        filteredParams.ColorID = filters.colorId;
+      filteredParams.ColorID = filters.colorId;
     }
     if (filters.sizeId) {
-        filteredParams.SizeID = filters.sizeId;
+      filteredParams.SizeID = filters.sizeId;
     } // Ghi log bộ lọc đã được lọc
     try {
-        const response = await axios.post(
-            `http://127.0.0.1:8000/api/products/index?page=${page}`, 
-            filteredParams 
-        );
-        setProducts(response.data.data || response.data.data);
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/products/index?page=${page}`,
+        filteredParams
+      );
+      setProducts(response.data.data || response.data.data);
     } catch (error) {
-        setError("Không thể tải sản phẩm.");
+      setError("Không thể tải sản phẩm.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -159,20 +159,9 @@ export default function Shop1() {
               <BreadCumb />
             </div>
             <div className="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
-              <select
-                className="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0"
-                aria-label="Sort Items"
-                name="total-number"
-              >
-                {sortingOptions.map((option, index) => (
-                  <option key={index} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
               <div className="shop-asc__seprator mx-3 bg-light d-none d-md-block order-md-0"></div>
               <div className="col-size align-items-center order-1 d-none d-lg-flex">
-                <span className="text-uppercase fw-medium me-2">View</span>
+                <span className="text-uppercase fw-medium me-2">Xem</span>
                 {itemPerRow.map((elm, i) => (
                   <button
                     key={i}
@@ -201,109 +190,116 @@ export default function Shop1() {
                 <div key={i} className="product-card-wrapper">
                   <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                     <div className="pc__img-wrapper">
-                    <Link to={`/shop-detail/${elm.ProductID}`}>
-                      <img
-                        loading="lazy"
-                        src={elm.MainImageURL}
-                        width="330"
-                        height="400"
-                        alt={elm.ProductName}
-                        className="pc__img"
-                      />
                       <Link to={`/shop-detail/${elm.ProductID}`}>
-                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
-                          Xem chi tiết
-                        </button>
-                      </Link>
-                      {elm.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
-                        <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
-                          -{elm.discount_percentage}%
-                        </span>
-                      )}
-                      {new Date(elm.created_at) >
-                        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
-                        elm.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
-                          <div className="absolute top-12 left-0  product-label bg-white text-dark">
-                            NEW
-                          </div>
-                        )}
-                    </Link>
-                  </div>
-
-                  <div className="p-2 text-left">
-                    <div className="flex justify-between items-center">
-                      <p className="mb-0 text-sm">{elm.category_name}</p>
-                      <div className="flex items-center">
-                        <Star stars={elm.average_rating} />
-                        <span className="text-gray-500 ml-1">
-                          {elm.reviews}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between">
-                      <h6 className="text-lg font-semibold">
+                        <img
+                          loading="lazy"
+                          src={elm.MainImageURL}
+                          width="330"
+                          height="400"
+                          alt={elm.ProductName}
+                          className="pc__img"
+                        />
                         <Link to={`/shop-detail/${elm.ProductID}`}>
-                          {elm.ProductName}
+                          <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                            Xem chi tiết
+                          </button>
                         </Link>
-                      </h6>
-                      <button
-                        title="Add To Wishlist"
-                        className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
-                          isInWishlist(elm.ProductID) ||
-                          wishlistStatus[elm.ProductID]
-                            ? "active"
-                            : ""
-                        }`}
-                        onClick={() => toggleWishlist(elm.ProductID)} // Gọi hàm toggleWishlist
-                      >
-                        <svg
-                          width="25px"
-                          height="25px"
-                          className=""
-                          viewBox="0 0 64 64"
-                          xmlns="http://www.w3.org/2000/svg"
-                          stroke="#000000"
-                          fill={
+                        {elm.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
+                          <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
+                            -{elm.discount_percentage}%
+                          </span>
+                        )}
+                        {new Date(elm.created_at) >
+                          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
+                          elm.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
+                            <div className="absolute top-12 left-0  product-label bg-white text-dark">
+                              NEW
+                            </div>
+                          )}
+                      </Link>
+                    </div>
+
+                    <div className="p-2 text-left">
+                      <div className="flex justify-between items-center">
+                        <p className="mb-0 text-sm">{elm.category_name}</p>
+                        <div className="flex items-center">
+                          <Star stars={elm.average_rating} />
+                          <span className="text-gray-500 ml-1">
+                            {elm.reviews}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <h6 className="text-lg font-semibold">
+                          <Link to={`/shop-detail/${elm.ProductID}`}>
+                            {elm.ProductName}
+                          </Link>
+                        </h6>
+                        <button
+                          title="Add To Wishlist"
+                          className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
                             isInWishlist(elm.ProductID) ||
                             wishlistStatus[elm.ProductID]
-                              ? "red"
-                              : "none"
-                          } // Thay đổi màu sắc
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() => toggleWishlist(elm.ProductID)} // Gọi hàm toggleWishlist
                         >
-                          <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="flex justify-start">
-                      <span className="text-lg font-bold text-red-600">
-                        {elm.SalePrice}₫
-                      </span>
-                      {elm.Price && (
-                        <span className="text-sm mt-1 line-through text-gray-500 ml-2">
-                          {elm.Price}₫
+                          <svg
+                            width="25px"
+                            height="25px"
+                            className=""
+                            viewBox="0 0 64 64"
+                            xmlns="http://www.w3.org/2000/svg"
+                            stroke="#000000"
+                            fill={
+                              isInWishlist(elm.ProductID) ||
+                              wishlistStatus[elm.ProductID]
+                                ? "red"
+                                : "none"
+                            } // Thay đổi màu sắc
+                          >
+                            <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="flex justify-start">
+                        <span className="text-lg font-bold text-red-600">
+                          {elm.SalePrice}₫
                         </span>
-                      )}
-                    </div>
+                        {elm.Price && (
+                          <span className="text-sm mt-1 line-through text-gray-500 ml-2">
+                            {elm.Price}₫
+                          </span>
+                        )}
+                      </div>
 
-                    <p className="text-sm text-gray-600">
-                      Đã bán: {elm.total_sold}
-                    </p>
+                      <p className="text-sm text-gray-600">
+                        Đã bán: {elm.total_sold}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <div className="pagination flex justify-center mt-4">
-            {Array.from({ length: Math.ceil(products.length / itemsPerPage) }, (_, index) => (
+            {Array.from(
+              { length: Math.ceil(products.length / itemsPerPage) },
+              (_, index) => (
                 <button
-                    key={index}
-                    onClick={() => handlePageChange(index + 1)}
-                    className={`mx-1 mb-4 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-dark text-white' : 'bg-gray-200 text-gray-700'}`}
+                  key={index}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`mx-1 mb-4 px-3 py-1 rounded ${
+                    currentPage === index + 1
+                      ? "bg-dark text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
                 >
-                    {index + 1}
+                  {index + 1}
                 </button>
-            ))}
-        </div>
+              )
+            )}
+          </div>
         </div>
       </section>
     </>

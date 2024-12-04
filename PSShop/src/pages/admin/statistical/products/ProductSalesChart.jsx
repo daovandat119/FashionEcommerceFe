@@ -13,7 +13,7 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
   const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearchValue] = useDebounce(searchTerm, 500);
-  const [isDetailsVisible, setIsDetailsVisible] = useState(false); // Trạng thái mới cho tính khả dụng
+  const [isDetailsVisible, setIsDetailsVisible] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -60,9 +60,10 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
   useEffect(() => {
     handleSearch(debouncedSearchValue);
   }, [debouncedSearchValue]);
+  
 
   return (
-    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[380px] overflow-hidden">
+    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[500px] overflow-hidden">
       <h2 className="text-xl font-bold mb-4">Thống kê sản phẩm bán ra</h2>
       <div>
         <div className="flex items-center justify-between">
@@ -134,69 +135,83 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
                   </tr>
                   {expandedProduct === product &&
                     isDetailsVisible && ( // Kiểm tra tính khả dụng
-                      <tr>
-                        <td colSpan="5" className="border border-gray-300 p-2">
-                          <div className="max-h-40 overflow-y-auto transition-all duration-300 ease-in-out">
-                            <p>
-                              <strong>Tên sản phẩm:</strong> {product.name}
-                            </p>
-                            <table className="min-w-full border border-gray-300 text-center">
-                              <thead>
-                                <tr className="bg-gray-100">
-                                  <th className="border border-gray-300 p-2">
-                                    Size
-                                  </th>
-                                  <th className="border border-gray-300 p-2">
-                                    Color
-                                  </th>
-                                  <th className="border border-gray-300 p-2">
-                                    Tồn kho
-                                  </th>
-                                  <th className="border border-gray-300 p-2">
-                                    Đã bán
-                                  </th>
-                                  <th className="border border-gray-300 p-2">
-                                    Giá
-                                  </th>
-                                  <th className="border border-gray-300 p-2">
-                                    Tổng doanh thu
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="overflow-hidden">
-                                {productVariants.map((variant, index) => (
-                                  <tr key={index} className="hover:bg-gray-50">
-                                    <td className="border border-gray-300 p-2">
-                                      {variant.Size}
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                      {variant.Color}
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                      {variant.StockQuantity}
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                      {variant.TotalSold}
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                      {parseFloat(
-                                        variant.Price
-                                      ).toLocaleString()}{" "}
-                                      VNĐ
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                      {parseFloat(
-                                        variant.TotalRevenue
-                                      ).toLocaleString()}{" "}
-                                      VNĐ
-                                    </td>
+                      <div
+                        onClick={() => handleDetailsToggle(product)}
+                        className="fixed top-0 left-0 w-full h-full z-10"
+                      >
+                        <tr className="fixed top-1/2 left-1/2 transform -translate-x-1/2 backdrop-blur-sm bg-opacity-50 -translate-y-1/2 shadow-2xl z-20 bg-white p-5 rounded-lg">
+                          <td
+                            colSpan="5"
+                            className="border border-gray-300 p-2"
+                          >
+                            <div
+                              className="h-auto overflow-y-auto w-[800px] transition-all duration-300 ease-in-out"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <p>
+                                <strong>Tên sản phẩm:</strong> {product.name}
+                              </p>
+                              <table className="border w-full border-gray-300 text-center">
+                                <thead>
+                                  <tr className="bg-gray-100">
+                                    <th className="border border-gray-300 p-2">
+                                      Size
+                                    </th>
+                                    <th className="border border-gray-300 p-2">
+                                      Color
+                                    </th>
+                                    <th className="border border-gray-300 p-2">
+                                      Tồn kho
+                                    </th>
+                                    <th className="border border-gray-300 p-2">
+                                      Đã bán
+                                    </th>
+                                    <th className="border border-gray-300 p-2">
+                                      Giá
+                                    </th>
+                                    <th className="border border-gray-300 p-2">
+                                      Tổng doanh thu
+                                    </th>
                                   </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </td>
-                      </tr>
+                                </thead>
+                                <tbody className="overflow-hidden">
+                                  {productVariants.map((variant, index) => (
+                                    <tr
+                                      key={index}
+                                      className="hover:bg-gray-50"
+                                    >
+                                      <td className="border border-gray-300 p-2">
+                                        {variant.Size}
+                                      </td>
+                                      <td className="border border-gray-300 p-2">
+                                        {variant.Color}
+                                      </td>
+                                      <td className="border border-gray-300 p-2">
+                                        {variant.StockQuantity}
+                                      </td>
+                                      <td className="border border-gray-300 p-2">
+                                        {variant.TotalSold}
+                                      </td>
+                                      <td className="border border-gray-300 p-2">
+                                        {parseFloat(
+                                          variant.Price
+                                        ).toLocaleString()}{" "}
+                                        VNĐ
+                                      </td>
+                                      <td className="border border-gray-300 p-2">
+                                        {parseFloat(
+                                          variant.TotalRevenue
+                                        ).toLocaleString()}{" "}
+                                        VNĐ
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      </div>
                     )}
                 </React.Fragment>
               ))}

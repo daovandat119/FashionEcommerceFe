@@ -21,7 +21,7 @@ const UserList = () => {
     const fetchUsers = async () => {
       setIsLoading(true); // Bắt đầu loading
       try {
-        const response = await ListUsers(1); // Lấy trang đầu tiên
+        const response = await ListUsers(); // Lấy trang đầu tiên
         setUsers(response.data); // Giả sử response.data chứa danh sách người dùng
       } catch (err) {
         setError(err.message);
@@ -66,24 +66,11 @@ const UserList = () => {
           Users.map((user) =>
             user.UserID === userID ? { ...user, IsActive: false } : user
           )
-        ); // Cập nhật trạng thái người dùng trong state
+        );
         toast.success(response.message || "Người dùng đã bị chặn thành công!"); // Hiển thị thông báo từ API
       } catch (err) {
         setError(err.message); // Xử lý lỗi
         toast.error(err.message || "Có lỗi xảy ra khi chặn người dùng."); // Hiển thị thông báo lỗi
-      }
-    }
-  };
-
-  const handleBlockedUser = async (userID) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
-      try {
-        const response = await BlockedUser(userID); // Gọi API để xóa người dùng
-        setUsers(Users.filter((user) => user.UserID !== userID)); // Cập nhật danh sách người dùng trong state
-        toast.success(response.message || "Người dùng đã bị xóa thành công!"); // Hiển thị thông báo từ API
-      } catch (err) {
-        setError(err.message); // Xử lý lỗi
-        toast.error(err.message || "Có lỗi xảy ra khi xóa người dùng."); // Hiển thị thông báo lỗi
       }
     }
   };
@@ -96,16 +83,11 @@ const UserList = () => {
         <div className="w-1/2">
           <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            label="Search users"
+            label="Tìm kiếm người dùng"
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
-        <Link
-          to="/admin/users/add"
-          className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
-        >
-          <PlusIcon className="h-5 w-5" /> New User
-        </Link>
+       
       </div>
       <div className="overflow-x-auto bg-white rounded-lg shadow">
         {isLoading ? ( // Hiển thị loading
@@ -120,9 +102,9 @@ const UserList = () => {
                 <th className="border-b p-4 text-left">STT</th>
                 <th className="border-b p-4 text-left">Name</th>
                 <th className="border-b p-4 text-left">Email</th>
-                <th className="border-b p-4 text-left">Role</th>
-                <th className="border-b p-4 text-left">Status</th>
-                <th className="border-b p-4 text-left">Actions</th>
+                <th className="border-b p-4 text-left">Chức vụ</th>
+                <th className="border-b p-4 text-left">Trạng thái</th>
+                <th className="border-b p-4 text-left">Chức năng</th>
               </tr>
             </thead>
             <tbody>

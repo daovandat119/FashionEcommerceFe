@@ -196,7 +196,7 @@ const AddProducts = () => {
               htmlFor={name}
               className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
             >
-              <span>Upload a file</span>
+              <span>Thêm ảnh từ thiết bị</span>
               <input
                 id={name}
                 name={name}
@@ -207,9 +207,9 @@ const AddProducts = () => {
                 accept="image/*"
               />
             </label>
-            <p className="pl-1">or drag and drop</p>
+            <p className="pl-1">thuộc các định dạng</p>
           </div>
-          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          <p className="text-xs text-gray-500">PNG, JPG, GIF tối đa 10MB</p>
         </div>
       </div>
       {errors[name] && (
@@ -257,7 +257,7 @@ const AddProducts = () => {
         {productData.CategoryID
           ? categories.find((cat) => cat.CategoryID === productData.CategoryID)
               ?.CategoryName
-          : "Select Category"}
+          : "Chọn danh mục"}
       </button>
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
@@ -283,12 +283,12 @@ const AddProducts = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
+      <h1 className="text-2xl font-bold mb-6">TẠO SẢN PHẨM MỚI</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="mb-4">
             <Input
-              label="Product Name"
+              label="Tên sản phẩm"
               name="ProductName"
               value={productData.ProductName}
               onChange={handleChange}
@@ -302,7 +302,7 @@ const AddProducts = () => {
           {renderCategorySelect()}
           <div className="mb-4">
             <Input
-              label="Price"
+              label="Giá"
               name="Price"
               type="number"
               value={productData.Price}
@@ -314,7 +314,7 @@ const AddProducts = () => {
           </div>
           <div className="mb-4">
             <Input
-              label="Sale Price"
+              label="Giá bán"
               name="SalePrice"
               type="number"
               value={productData.SalePrice}
@@ -325,19 +325,19 @@ const AddProducts = () => {
             )}
           </div>
           <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-2">Upload Images</h2>
+            <h2 className="text-lg font-semibold mb-2">Tải lên hình ảnh</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="border border-dashed border-gray-300 rounded-md p-4">
-                {renderImageUpload("Main Image", "MainImageURL")}
+                {renderImageUpload("Ảnh chính", "MainImageURL")}
               </div>
               <div className="border border-dashed border-gray-300 rounded-md p-4">
-                {renderImageUpload("Additional Images", "ImagePath", true)}
+                {renderImageUpload("Hình ảnh bổ sung", "ImagePath", true)}
               </div>
             </div>
           </div>
           <div className="mb-4">
             <Textarea
-              label="Short Description"
+              label="Mô tả ngắn"
               name="ShortDescription"
               value={productData.ShortDescription}
               onChange={handleChange}
@@ -351,7 +351,7 @@ const AddProducts = () => {
           </div>
           <div className="mb-4">
             <Textarea
-              label="Description"
+              label="Mô tả"
               name="Description"
               value={productData.Description}
               onChange={handleChange}
@@ -368,10 +368,10 @@ const AddProducts = () => {
               className="bg-blue-400 text-white px-4 py-2 rounded-md"
               to="/admin/products"
             >
-              List Products
+              Danh sách sản phẩm
             </Link>
             <Button type="submit" color="green" disabled={loading}>
-              {loading ? "Loading..." : "Add Product"}
+              {loading ? "Đang tải..." : "Thêm sản phẩm"}
             </Button>
           </div>
         </form>

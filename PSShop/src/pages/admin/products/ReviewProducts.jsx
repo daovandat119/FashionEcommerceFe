@@ -5,18 +5,11 @@ import { useParams } from "react-router-dom";
 export default function ReviewsProducts() {
   const { id } = useParams();
   const [reviews, setReviews] = useState([]);
-  const [ratingLength, setRatingLength] = useState(0);
-  const [reviewContent, setReviewContent] = useState("");
   const [replyContent, setReplyContent] = useState("");
   const [replyTo, setReplyTo] = useState(null);
-  const [canReview, setCanReview] = useState({
-    checkOrder: false,
-    checkReview: false,
-  });
   const [hoverRating, setHoverRating] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (id) => {
     try {
       const response = await axios.get(
         `http://127.0.0.1:8000/api/reviews/${id}`
@@ -29,45 +22,13 @@ export default function ReviewsProducts() {
     }
   };
 
-  const checkReviewPermission = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setCanReview({ checkOrder: false, checkReview: false });
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/reviews/checkReview",
-        { ProductID: id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.data?.data) {
-        setCanReview(response.data.data);
-      }
-    } catch {
-      setCanReview({ checkOrder: false, checkReview: false });
-    }
-  };
-
   useEffect(() => {
-    const initializeData = async () => {
-      setIsLoading(true);
-      await Promise.all([fetchReviews(), checkReviewPermission()]);
-      setIsLoading(false);
-    };
-
-    initializeData();
+    fetchReviews(id);
   }, [id]);
 
-  const handleSubmitReview = async (e) => {
+  const handleReplySubmit = async (e) => {
     e.preventDefault();
-    if (!ratingLength || !reviewContent.trim()) return;
+    if (!replyContent.trim()) return;
 
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -77,8 +38,8 @@ export default function ReviewsProducts() {
         "http://127.0.0.1:8000/api/reviews",
         {
           ProductID: id,
-          RatingLevelID: ratingLength,
-          ReviewContent: reviewContent.trim(),
+          ReviewContent: replyContent.trim(),
+          ParentReviewID: replyTo,
         },
         {
           headers: {
@@ -87,42 +48,9 @@ export default function ReviewsProducts() {
           },
         }
       );
-
-      setRatingLength(0);
-      setReviewContent("");
-
-      await checkReviewPermission();
-      fetchReviews();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleReplySubmit = async (e, reviewId) => {
-    e.preventDefault();
-    if (!replyContent.trim()) return;
-
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/reviews/reply",
-        {
-          ReviewID: reviewId,
-          ReplyContent: replyContent.trim(),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
       setReplyContent("");
       setReplyTo(null);
-      fetchReviews();
+      fetchReviews(id);
     } catch (error) {
       console.log(error);
     }
@@ -136,7 +64,7 @@ export default function ReviewsProducts() {
           className={`${size} ${
             interactive ? "cursor-pointer transition-colors duration-200" : ""
           } ${
-            index < (interactive ? hoverRating || ratingLength : rating)
+            index < (interactive ? hoverRating : rating)
               ? "text-yellow-400 fill-current"
               : "text-gray-300 fill-current hover:text-yellow-400"
           }`}
@@ -156,14 +84,14 @@ export default function ReviewsProducts() {
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-6">Đánh giá sản phẩm</h2>
+    <div className="w-full max-w-4xl mx-auto px-4 py-6 bg-gray-50 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center">Đánh giá sản phẩm</h2>
 
       <div className="space-y-6">
         {reviews.map((review) => (
           <div
             key={review.ReviewID}
-            className="flex gap-4 p-4 bg-white rounded-lg shadow"
+            className="flex gap-4 p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-200"
           >
             <div className="flex-shrink-0">
               <img
@@ -174,7 +102,7 @@ export default function ReviewsProducts() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h6 className="font-semibold">{review.Username}</h6>
+                <h6 className="font-semibold text-lg">{review.Username}</h6>
                 <StarRating rating={review.RatingLevelID} />
               </div>
               <div className="text-sm text-gray-500 mb-2">
@@ -210,8 +138,12 @@ export default function ReviewsProducts() {
                   ))}
               </div>
               <button
-                onClick={() => setReplyTo(replyTo === review.ReviewID ? null : review.ReviewID)}
-                className="text-blue-500 mt-2 flex items-center justify-end w-full"
+                onClick={() =>
+                  setReplyTo(
+                    replyTo === review.ReviewID ? null : review.ReviewID
+                  )
+                }
+                className="text-blue-500 mt-2 flex items-center justify-end w-full hover:underline"
               >
                 Trả lời
               </button>
@@ -230,7 +162,7 @@ export default function ReviewsProducts() {
                   />
                   <button
                     type="submit"
-                    className="mt-2 bg-blue-600 text-white py-1 px-4 rounded-md flex"
+                    className="mt-2 bg-blue-600 text-white py-1 px-4 rounded-md flex hover:bg-blue-700 transition-colors duration-200"
                   >
                     Gửi
                   </button>
@@ -240,51 +172,6 @@ export default function ReviewsProducts() {
           </div>
         ))}
       </div>
-
-      {!isLoading && canReview?.checkOrder && !canReview?.checkReview && (
-        <div className="mt-8 p-6 bg-white rounded-lg shadow">
-          <form onSubmit={handleSubmitReview} className="space-y-6">
-            <h5 className="text-xl font-semibold mb-4">
-              Viết đánh giá của bạn
-            </h5>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Đánh giá của bạn *
-              </label>
-              <StarRating
-                rating={ratingLength}
-                size="w-8 h-8"
-                interactive={true}
-              />
-            </div>
-
-            <div>
-              <textarea
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Nhập nội dung đánh giá của bạn (tối thiểu 10 ký tự)"
-                value={reviewContent}
-                onChange={(e) => setReviewContent(e.target.value)}
-                rows="6"
-                required
-                minLength="10"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={!ratingLength || !reviewContent.trim()}
-              className={`w-full py-2 px-4 rounded-md text-white font-medium ${
-                !ratingLength || !reviewContent.trim()
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
-              }`}
-            >
-              Gửi đánh giá
-            </button>
-          </form>
-        </div>
-      )}
     </div>
   );
 }

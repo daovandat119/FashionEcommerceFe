@@ -1,45 +1,7 @@
 import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
-import { useEffect, useCallback } from "react";
-import axios from "axios";
-import debounce from 'lodash/debounce';
-
-const debouncedUpdateQuantity = debounce(async (
-  itemId, 
-  productID, 
-  colorID, 
-  sizeID, 
-  newQuantity, 
-  setCartProducts
-) => {
-  const token = localStorage.getItem("token");
-  try {
-    await axios.patch(
-      `http://127.0.0.1:8000/api/cart-items/${itemId}`,
-      {
-        productID,
-        colorID,
-        sizeID,
-        quantity: newQuantity,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-  } catch (err) {
-    console.error(err);
-    toast.error("Lỗi cập nhật số lượng");
-    
-    setCartProducts(prevProducts => 
-      prevProducts.map(item => 
-        item.CartItemID === itemId 
-          ? { ...item, Quantity: item.Quantity } 
-          : item
-      )
-    );
-  }
-}, 1000);
+import { useEffect, useState } from "react";
 
 export default function Cart() {
   const {
@@ -51,60 +13,59 @@ export default function Cart() {
     fetchCartItems,
     setCartProducts,
     removeSelectedItems,
+    updateCartItem,
   } = useContextElement();
 
-
+  const [timeoutId, setTimeoutId] = useState(null);
 
   useEffect(() => {
-    fetchCartItems(); 
+    fetchCartItems();
   }, [fetchCartItems]);
 
-  const updateQuantityAPI = useCallback((itemId, productID, colorID, sizeID, newQuantity) => {
-    debouncedUpdateQuantity(itemId, productID, colorID, sizeID, newQuantity, setCartProducts);
-  }, [setCartProducts]);
+  const handleQuantityChange = async (
+    itemId,
+    productID,
+    colorID,
+    sizeID,
+    newQuantity
+  ) => {
+    setCartProducts((prevProducts) =>
+      prevProducts.map((item) =>
+        item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
+      )
+    );
 
-  const handleQuantityChange = async (itemId, productID, colorID, sizeID, newQuantity) => {
-    if (newQuantity < 1 || newQuantity > 99) {
-      toast.warning("Số lượng phải từ 1 đến 99");
-      setCartProducts(prevProducts => 
-        prevProducts.map(item => 
-          item.CartItemID === itemId ? { ...item } : item
-        )
-      );
-      return;
+    if (timeoutId) {
+      clearTimeout(timeoutId);
     }
 
-    try {
-      // Cập nhật UI trước
-      setCartProducts(prevProducts => 
-        prevProducts.map(item => 
-          item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
-        )
-      );
+    const id = setTimeout(async () => {
+      try {
+        await updateCartItem(itemId, {
+          productID,
+          colorID,
+          sizeID,
+          quantity: newQuantity,
+        });
+      } catch {
+        toast.error("Cập nhật số lượng sản phẩm thất bại!");
+        fetchCartItems();
+      }
+    }, 1000);
 
-      // Gọi API cập nhật
-      await updateQuantityAPI(itemId, productID, colorID, sizeID, newQuantity);
-    } catch {
-      toast.error("Lỗi khi cập nhật số lượng");
-      // Khôi phục lại số lượng cũ nếu có lỗi
-      setCartProducts(prevProducts => 
-        prevProducts.map(item => 
-          item.CartItemID === itemId ? { ...item } : item
-        )
-      );
-    }
+    setTimeoutId(id);
   };
 
   const handleInputChange = (e, item) => {
     const value = e.target.value;
     if (!/^\d*$/.test(value)) return;
-    
-    const newQuantity = value === '' ? 1 : parseInt(value);
+
+    const newQuantity = value === "" ? 1 : parseInt(value);
     handleQuantityChange(
-      item.CartItemID, 
-      item.ProductID, 
-      item.ColorID, 
-      item.SizeID, 
+      item.CartItemID,
+      item.ProductID,
+      item.ColorID,
+      item.SizeID,
       newQuantity
     );
   };
@@ -114,11 +75,6 @@ export default function Cart() {
   };
 
   // Cleanup
-  useEffect(() => {
-    return () => {
-      debouncedUpdateQuantity.cancel();
-    };
-  }, []);
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
@@ -141,8 +97,12 @@ export default function Cart() {
                   <th>Sản phẩm</th>
                   <th>Màu sắc và kích thước</th>
                   <th>Giá</th>
-                  <th width="10%" className="text-center">Số lượng</th>
-                  <th width="20%" className="text-center">Tổng cộng</th>
+                  <th width="10%" className="text-center">
+                    Số lượng
+                  </th>
+                  <th width="20%" className="text-center">
+                    Tổng cộng
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -191,7 +151,7 @@ export default function Cart() {
                           value={item.Quantity}
                           onChange={(e) => handleInputChange(e, item)}
                           onBlur={(e) => {
-                            if (e.target.value === '') {
+                            if (e.target.value === "") {
                               handleQuantityChange(
                                 item.CartItemID,
                                 item.ProductID,
@@ -206,25 +166,29 @@ export default function Cart() {
                           max="99"
                         />
                         <div
-                          onClick={() => handleQuantityChange(
-                            item.CartItemID,
-                            item.ProductID,
-                            item.ColorID,
-                            item.SizeID,
-                            item.Quantity - 1
-                          )}
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.CartItemID,
+                              item.ProductID,
+                              item.ColorID,
+                              item.SizeID,
+                              item.Quantity - 1
+                            )
+                          }
                           className="qty-control__reduce"
                         >
                           -
                         </div>
                         <div
-                          onClick={() => handleQuantityChange(
-                            item.CartItemID,
-                            item.ProductID,
-                            item.ColorID,
-                            item.SizeID,
-                            item.Quantity + 1
-                          )}
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.CartItemID,
+                              item.ProductID,
+                              item.ColorID,
+                              item.SizeID,
+                              item.Quantity + 1
+                            )
+                          }
                           className="qty-control__increase"
                         >
                           +
@@ -233,7 +197,7 @@ export default function Cart() {
                     </td>
                     <td width="20%" className="text-center">
                       <span className="shopping-cart__subtotal">
-                        ${ (item.Quantity * item.Price).toFixed(2) }
+                        ${(item.Quantity * item.Price).toFixed(2)}
                       </span>
                     </td>
                   </tr>
@@ -278,7 +242,13 @@ export default function Cart() {
                 <tr>
                   <th>Tổng cộng</th>
                   <td>
-                    ${ cartProducts.reduce((total, item) => total + (item.Quantity * item.Price), 0).toFixed(2) }
+                    $
+                    {cartProducts
+                      .reduce(
+                        (total, item) => total + item.Quantity * item.Price,
+                        0
+                      )
+                      .toFixed(2)}
                   </td>
                 </tr>
               </tbody>
@@ -289,7 +259,7 @@ export default function Cart() {
               onClick={(e) => {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
-                 toast("Giỏ hàng trống!")
+                  toast("Giỏ hàng trống!");
                 }
               }}
             >

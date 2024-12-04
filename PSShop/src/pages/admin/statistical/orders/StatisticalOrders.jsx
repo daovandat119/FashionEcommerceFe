@@ -17,6 +17,7 @@ function StatisticalOrders() {
     const GetOrderStatus = async (selectedTimePeriod, startDate, endDate, currentPage, searchValue) => {
         const response = await GetOrdersStatistics(selectedTimePeriod, startDate, endDate, currentPage, searchValue);
         setData(response.data);
+        console.log(response.data);
     };
 
     useEffect(() => {

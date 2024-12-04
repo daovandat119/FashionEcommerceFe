@@ -55,7 +55,7 @@ const ProductsList = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -64,11 +64,14 @@ const ProductsList = () => {
     getProducts(currentPage, searchTerm);
   }, [currentPage, searchTerm, getProducts]);
 
-  const handlePageClick = useCallback((event) => {
-    const newPage = event.selected + 1;
-    setCurrentPage(newPage);
-    getProducts(newPage, searchTerm);
-  }, [searchTerm, getProducts]);
+  const handlePageClick = useCallback(
+    (event) => {
+      const newPage = event.selected + 1;
+      setCurrentPage(newPage);
+      getProducts(newPage, searchTerm);
+    },
+    [searchTerm, getProducts]
+  );
 
   const handleSelectProduct = useCallback((ProductID) => {
     setSelectedProducts((prev) =>
@@ -83,7 +86,9 @@ const ProductsList = () => {
       DeleteProducts(ProductID)
         .then((response) => {
           if (response.success) {
-            setListProducts((prevList) => prevList.filter(product => product.ProductID !== ProductID));
+            setListProducts((prevList) =>
+              prevList.filter((product) => product.ProductID !== ProductID)
+            );
             toast.success("Sản phẩm đã được xóa thành công");
           } else {
             toast.error("Xóa sản phẩm thất bại");
@@ -96,35 +101,46 @@ const ProductsList = () => {
     }
   }, []);
 
-  const handleToggleActive = useCallback((item) => {
-    const newStatus = item.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-    UpdateProductStatus(item.ProductID, { Status: newStatus })
-      .then((response) => {
-        if (response.success) {
-          const updatedProducts = listProducts.map((product) =>
-            product.ProductID === item.ProductID
-              ? { ...product, Status: newStatus }
-              : product
-          );
-          setListProducts(updatedProducts);
-          toast.success("Cập nhật trạng thái sản phẩm thành công");
-        } else {
-          toast.error("Cập nhật trạng thái sản phẩm thất bại");
-        }
-      })
-      .catch((error) => {
-        console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
-        toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
-      });
-  }, [listProducts]);
+  const handleToggleActive = useCallback(
+    (item) => {
+      const newStatus = item.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      UpdateProductStatus(item.ProductID, { Status: newStatus })
+        .then((response) => {
+          if (response.success) {
+            const updatedProducts = listProducts.map((product) =>
+              product.ProductID === item.ProductID
+                ? { ...product, Status: newStatus }
+                : product
+            );
+            setListProducts(updatedProducts);
+            toast.success("Cập nhật trạng thái sản phẩm thành công");
+          } else {
+            toast.error("Cập nhật trạng thái sản phẩm thất bại");
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
+          toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
+        });
+    },
+    [listProducts]
+  );
 
   const handleDeleteSelected = useCallback(() => {
     if (window.confirm("Bạn có chắc chắn muốn xóa các sản phẩm đã chọn?")) {
-      Promise.all(selectedProducts.map(ProductID => DeleteProducts(ProductID)))
-        .then(responses => {
-          const successfulDeletes = responses.filter(response => response.success);
+      Promise.all(
+        selectedProducts.map((ProductID) => DeleteProducts(ProductID))
+      )
+        .then((responses) => {
+          const successfulDeletes = responses.filter(
+            (response) => response.success
+          );
           if (successfulDeletes.length > 0) {
-            setListProducts(prevList => prevList.filter(product => !selectedProducts.includes(product.ProductID)));
+            setListProducts((prevList) =>
+              prevList.filter(
+                (product) => !selectedProducts.includes(product.ProductID)
+              )
+            );
             setSelectedProducts([]); // Clear selected products after deletion
             toast.success("Các sản phẩm đã được xóa thành công");
           } else {
@@ -158,22 +174,21 @@ const ProductsList = () => {
             onKeyPress={handleKeyPress}
           />
         </div>
-        
+
         <div className="flex items-center gap-2">
-        <button
-            onClick={handleDeleteSelected}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
-            disabled={selectedProducts.length === 0} // Disable if no products are selected
-          >
-            <TrashIcon className="h-5 w-5" /> Delete Selected
-          </button>
           <Link
             to="/admin/products/add"
             className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
           >
-            <PlusIcon className="h-5 w-5" /> New Product
+            <PlusIcon className="h-5 w-5" /> Tạo sản phẩm
           </Link>
-         
+          <button
+            onClick={handleDeleteSelected}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
+            disabled={selectedProducts.length === 0} // Disable if no products are selected
+          >
+            <TrashIcon className="h-5 w-5" /> Xoá các lựa chọn
+          </button>
         </div>
       </div>
 
@@ -181,13 +196,15 @@ const ProductsList = () => {
         {isLoading ? ( // Hiển thị loading trong bảng
           <div className="flex justify-center items-center h-64">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
-            <span className="ml-4 text-lg">Đang tải sản phẩm, vui lòng chờ...</span>
+            <span className="ml-4 text-lg">
+              Đang tải sản phẩm, vui lòng chờ...
+            </span>
           </div>
         ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-white">
               <tr>
-                <th className="border-b p-4 w-1 text-left">Select</th>
+                <th className="border-b p-4 w-1 text-left">Chọn</th>
                 <th className="border-b p-4 text-left">Tên sản phẩm</th>
                 <th className="border-b p-4 text-left">Danh mục</th>
                 <th className="border-b p-4 text-left">Giá</th>

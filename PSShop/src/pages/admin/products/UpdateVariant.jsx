@@ -84,22 +84,22 @@ const UpdateVariant = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-2xl">
-        <h2 className="text-3xl font-bold mb-6 text-center">UPDATE VARIANT</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Chỉnh sửa biến thể</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Color</label>
+            <label className="block text-sm font-medium mb-1">Màu sắc</label>
             <span className="border border-gray-300 rounded p-2 w-full block bg-gray-100">
               {variantData.ColorName}
             </span>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Size</label>
+            <label className="block text-sm font-medium mb-1">Kích thước</label>
             <span className="border border-gray-300 rounded p-2 w-full block bg-gray-100">
               {variantData.SizeName}
             </span>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Price</label>
+            <label className="block text-sm font-medium mb-1">Giá</label>
             <input
               type="number"
               name="Price"
@@ -109,7 +109,7 @@ const UpdateVariant = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Quantity</label>
+            <label className="block text-sm font-medium mb-1">Số lượng</label>
             <input
               type="number"
               name="Quantity"
@@ -121,17 +121,17 @@ const UpdateVariant = () => {
           </div>
           <button
             type="submit"
-            className="col-span-2 w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+            className="col-span-2 w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
           >
-            UPDATE VARIANT
+            Cập nhật
           </button>
         </form>
         <div className="mt-4 flex justify-between">
           <Link
             to={`/admin/products/edit/${variantData.ProductID}`} // Đường dẫn đến trang Edit Products với ProductID
-            className="w-full bg-blue-500 text-center text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            className="w-full bg-blue-500 text-center text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            RETURN TO PRODUCTS
+            Quay về sản phẩm
           </Link>
         </div>
       </div>

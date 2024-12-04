@@ -48,7 +48,7 @@ const AddSizeComponent = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">ADD NEW SIZE</h1>
+      <h1 className="text-2xl font-bold mb-6">TẠO KÍCH THƯỚC MỚI</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSaveSize} className="space-y-6">
           <div>
@@ -56,10 +56,10 @@ const AddSizeComponent = () => {
               htmlFor="SizeName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Size Name
+              Tên kích thước
             </label>
             <input
-              placeholder="New Size"
+              placeholder="Nhập tên kích thước"
               id="SizeName"
               className="border-2 p-2 w-full rounded-xl"
               type="text"
@@ -73,13 +73,13 @@ const AddSizeComponent = () => {
               className="bg-blue-400 text-white px-4 py-2 rounded-md"
               to="/admin/sizes"
             >
-              List Sizes
+              Quay lại kích thước
             </Link>
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              NEW SIZE
+              THÊM MỚI
             </button>
           </div>
         </form>

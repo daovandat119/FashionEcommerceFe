@@ -79,14 +79,14 @@ const UpdateVoucher = () => {
     <div className="container  px-4 py-8 w-full">
       <ToastContainer />
       <Typography variant="h5" className="text-2xl font-bold mb-6 text-left">
-        Update Voucher
+        Cập nhật mã giảm giá
       </Typography>
       <Card className="p-6  mx-auto">
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           {error && <div className="text-red-500">{error}</div>}
           <div className="mb-4 col-span-2">
             <Input
-              label="Voucher Name"
+              label="Tên mã giảm giá"
               name="Name"
               value={voucherData.Name}
               onChange={handleChange}
@@ -95,7 +95,7 @@ const UpdateVoucher = () => {
           </div>
           <div className="mb-4 col-span-2">
             <Input
-              label="Voucher Code"
+              label="Mã giảm giá"
               name="Code"
               value={voucherData.Code}
               onChange={handleChange}
@@ -104,17 +104,18 @@ const UpdateVoucher = () => {
           </div>
           <div className="mb-4">
             <Input
-              label="Discount Percentage"
+              label="Phần trăm giảm giá" 
               name="DiscountPercentage"
               type="number"
-              value={voucherData.DiscountPercentage}
+              value={voucherData.DiscountPercentage} 
               onChange={handleChange}
               required
+              
             />
           </div>
           <div className="mb-4">
             <Input
-              label="Minimum Order Value"
+              label="Đơn tối thiểu"
               name="MinimumOrderValue"
               type="number"
               value={voucherData.MinimumOrderValue}
@@ -124,7 +125,7 @@ const UpdateVoucher = () => {
           </div>
           <div className="mb-4">
             <Input
-              label="Usage Limit"
+              label="Số lượng sử dụng"
               name="UsageLimit"
               type="number"
               value={voucherData.UsageLimit}
@@ -134,7 +135,7 @@ const UpdateVoucher = () => {
           </div>
           <div className="mb-4">
             <Input
-              label="Expiration Date and Time"
+              label="Ngày hết hạn"
               name="ExpiresAt"
               type="datetime-local"
               value={voucherData.ExpiresAt.substring(0, 16)}
@@ -144,14 +145,14 @@ const UpdateVoucher = () => {
           </div>
           <div className="flex justify-end gap-4 w-full col-span-2">
             <button type="submit" className="w-[15%] bg-green-500 text-white py-3 px-4 rounded-xl shadow-md hover:bg-green-600 transition transform hover:scale-105">
-              Update Voucher
+              Cập nhật mã giảm giá
             </button>
             <button
               type="button"
               className="w-[15%] bg-blue-500 text-white py-3 px-4 rounded-xl shadow-md hover:bg-blue-600 transition transform hover:scale-105"
               onClick={handleBackToList}
             >
-              List Voucher
+              Quay lại mã giảm giá
             </button>
           </div>
         </form>

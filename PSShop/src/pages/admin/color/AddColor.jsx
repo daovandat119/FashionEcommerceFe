@@ -47,7 +47,7 @@ const AddColorComponent = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">ADD NEW COLOR</h1>
+      <h1 className="text-2xl font-bold mb-6">TẠO MÀU SẮC MỚI</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSaveColor} className="space-y-6">
           <div>
@@ -55,10 +55,10 @@ const AddColorComponent = () => {
               htmlFor="ColorName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Color Name
+              Màu sắc
             </label>
             <input
-              placeholder="New Color"
+              placeholder="Nhập tên màu sắc"
               id="ColorName"
               className="border-2 p-2 w-full rounded-xl"
               type="text"
@@ -72,13 +72,13 @@ const AddColorComponent = () => {
               className="bg-blue-400 text-white px-4 py-2 rounded-md"
               to="/admin/colors"
             >
-              List Colors
+              Quay lại màu sắc
             </Link>
             <button
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              NEW COLOR
+              THÊM MÀU SẮC
             </button>
           </div>
         </form>

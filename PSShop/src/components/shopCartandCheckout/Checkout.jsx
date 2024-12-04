@@ -7,12 +7,13 @@ import { useContextElement } from "../../context/Context";
 import Swal from "sweetalert2";
 import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
-import CouponStore from './CouponStore';
-import { toast } from 'react-hot-toast';
+import CouponStore from "./CouponStore";
+import { toast } from "react-hot-toast";
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
   const { setTotalPrice, totalPrice } = useContextElement();
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -39,13 +40,13 @@ export default function Checkout() {
       id: 1,
       name: "Thanh toán khi nhận hàng (COD)",
       description: "Thanh toán tiền mặt khi nhận hàng",
-      logo: shipCodLogo
+      logo: shipCodLogo,
     },
     {
       id: 2,
       name: "Thanh toán qua VNPAY",
       description: "Thanh toán trực tuyến qua VNPAY",
-      logo: vnPayLogo
+      logo: vnPayLogo,
     },
   ];
 
@@ -54,10 +55,9 @@ export default function Checkout() {
   };
 
   useEffect(() => {
-    // Kiểm tra nếu giỏ hàng rỗng
     if (cartItems.length === 0) {
-      navigate("/shop_cart"); // Điều hướng về trang giỏ hàng
-      return; // Dừng render component
+      navigate("/shop_cart");
+      return;
     }
   }, [cartItems, navigate]);
 
@@ -123,12 +123,10 @@ export default function Checkout() {
       return;
     }
 
-    const total = totalPrice + shippingFee;
-
     const orderPayload = {
       CouponID: appliedCoupon,
       PaymentMethodID: orderData.PaymentMethodID,
-      TotalAmount: total,
+      TotalAmount: Number(totalPrice + shippingFee - discount).toFixed(2),
     };
 
     try {
@@ -143,23 +141,19 @@ export default function Checkout() {
         }
       );
 
-      if (response.data.message && response.data.message.includes("Bạn đã hủy quá 3 lần.Vui lòng thanh toán chuyển khoản để tiếp tục.")) {
-        Swal.fire({
-          title: "Bạn đã hủy đơn hàng quá 3 lần vui lòng thanh toán chuyển khoản để tiếp tục",
-          text: response.data.message,
-          icon: "warning",
-          confirmButtonText: "Đồng ý"
-        });
-        return;
-      }
-
       if (response.data.status === "success") {
         setCartItems([]);
         navigate(`/shop_order_complete/${response.data.data.OrderID}`);
       } else if (response.data.vnpay_url) {
         window.location.href = response.data.vnpay_url;
-      } else {
-        setError("Đặt hàng thất bại. Vui lòng thử lại.");
+      } else if (response.data.message) {
+        Swal.fire({
+          title: "Thông báo",
+          text: response.data.message,
+          icon: "warning",
+          confirmButtonText: "Đồng ý",
+        });
+        return;
       }
     } catch (err) {
       console.error("Chi tiết lỗi:", err);
@@ -171,16 +165,19 @@ export default function Checkout() {
   const handleApplyCoupon = (coupon) => {
     if (coupon.usable) {
       setAppliedCoupon(coupon.CouponID);
-      const discountAmount = (totalPrice * coupon.DiscountPercentage) / 100;
+      const discountAmount =
+        ((totalPrice + shippingFee) * coupon.DiscountPercentage) / 100;
       setDiscount(discountAmount);
+      setTotal(Number(totalPrice + shippingFee - discountAmount).toFixed(2));
+      console.log(total);
       setIsCouponStoreOpen(false);
-      toast.success('Áp dụng mã giảm giá thành công!');
+      toast.success("Áp dụng mã giảm giá thành công!");
     }
   };
 
   const fetchCoupons = useCallback(async () => {
     if (isCouponLoading) return; // Tránh gọi API nhiều lần
-    
+
     try {
       setIsCouponLoading(true);
       const response = await axios.post(
@@ -200,11 +197,20 @@ export default function Checkout() {
     fetchCoupons();
   }, [fetchCoupons]);
 
+
   // useEffect(() => {
   //   if (Math.abs(totalPrice - lastFetchedPrice) > 1000) { // Chỉ fetch lại khi giá thay đổi đáng kể
   //     fetchCoupons();
   //   }
   // }, [totalPrice, fetchCoupons]);
+
+  useEffect(() => {
+    if (Math.abs(totalPrice - lastFetchedPrice) > 1000) {
+      // Chỉ fetch lại khi giá thay đổi đáng kể
+      fetchCoupons();
+    }
+  }, [totalPrice, fetchCoupons]);
+
 
   if (loading) {
     return (
@@ -232,7 +238,10 @@ export default function Checkout() {
               {addresses.find((address) => address.IsDefault === 1) ? (
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h1 className="text-gray-900">
-                    {addresses.find((address) => address.IsDefault === 1).Address}
+                    {
+                      addresses.find((address) => address.IsDefault === 1)
+                        .Address
+                    }
                   </h1>
                   <div className="mt-4">
                     <button
@@ -311,8 +320,8 @@ export default function Checkout() {
               >
                 Xem kho mã giảm giá
               </button>
-              
-              <CouponStore 
+
+              <CouponStore
                 onApplyCoupon={handleApplyCoupon}
                 totalPrice={totalPrice}
                 isOpen={isCouponStoreOpen}
@@ -320,16 +329,20 @@ export default function Checkout() {
                 coupons={cachedCoupons}
                 isLoading={isCouponLoading}
               />
-              
+
               {appliedCoupon && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-600">
-                    Đã áp dụng mã giảm giá: 
-                    {coupons.find(c => c.CouponID === parseInt(appliedCoupon))?.Name}
+                    Đã áp dụng mã giảm giá:
+                    {
+                      coupons.find(
+                        (c) => c.CouponID === parseInt(appliedCoupon)
+                      )?.Name
+                    }
                   </p>
                   <button
                     onClick={() => {
-                      setAppliedCoupon('');
+                      setAppliedCoupon("");
                       setDiscount(0);
                     }}
                     className="text-sm text-red-600 hover:text-red-700 mt-1"
@@ -362,8 +375,7 @@ export default function Checkout() {
                           {item.ProductName}
                         </h4>
                         <div className="text-sm text-gray-500 mt-1">
-                          {item.ColorName} • {item.SizeName} • x
-                          {item.Quantity}
+                          {item.ColorName} • {item.SizeName} • x{item.Quantity}
                         </div>
                         <div className="text-sm font-medium text-gray-900 mt-1">
                           {(item.Price * item.Quantity).toFixed(2)}VND
@@ -381,7 +393,9 @@ export default function Checkout() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="font-medium">{Number(shippingFee).toLocaleString()}VND</span>
+                    <span className="font-medium">
+                      {Number(shippingFee).toLocaleString()}VND
+                    </span>
                   </div>
                   {discount > 0 && appliedCoupon && (
                     <div className="flex justify-between text-sm text-red-600">
@@ -395,7 +409,10 @@ export default function Checkout() {
                         Thanh toán
                       </span>
                       <span className="text-base font-semibold text-gray-900">
-                        {Number(totalPrice + shippingFee - discount).toLocaleString()}VND
+                        {Number(
+                          totalPrice + shippingFee - discount
+                        ).toLocaleString()}
+                        VND
                       </span>
                     </div>
                   </div>
