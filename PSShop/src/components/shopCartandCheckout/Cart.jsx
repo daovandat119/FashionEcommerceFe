@@ -140,7 +140,7 @@ export default function Cart() {
                     </td>
                     <td>
                       <span className="shopping-cart__product-price">
-                        {item.Price}
+                        {Math.floor(item.Price)}
                       </span>
                     </td>
                     <td width="10%" className="text-center">
@@ -197,7 +197,7 @@ export default function Cart() {
                     </td>
                     <td width="20%" className="text-center">
                       <span className="shopping-cart__subtotal">
-                        ${(item.Quantity * item.Price).toFixed(2)}
+                        {Math.floor(item.Quantity * item.Price)}
                       </span>
                     </td>
                   </tr>
@@ -243,12 +243,14 @@ export default function Cart() {
                   <th>Tổng cộng</th>
                   <td>
                     $
-                    {cartProducts
-                      .reduce(
-                        (total, item) => total + item.Quantity * item.Price,
+                    {Math.floor(
+                      cartProducts
+                        .reduce(
+                          (total, item) => total + item.Quantity * item.Price,
                         0
                       )
-                      .toFixed(2)}
+                      .toFixed(2)
+                    )}
                   </td>
                 </tr>
               </tbody>
