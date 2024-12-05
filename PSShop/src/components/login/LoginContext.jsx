@@ -39,13 +39,15 @@ export const LoginProvider = ({ children }) => {
       if (response.ok) {
         const roleId = data.user.RoleID;
         if (roleId == 1) {
-          setErrorMessage("Tài khoản này không thể đăng nhập. Vui lòng thử lại.");
+          setErrorMessage(
+            "Tài khoản này không thể đăng nhập. Vui lòng thử lại."
+          );
           return;
         }
         setUser(data.user);
         setIsAuthenticated(true);
         localStorage.setItem("token", data.token);
-        
+
         toast.success("Đăng nhập thành công!", {
           position: "top-right",
           autoClose: 2000,
@@ -99,7 +101,7 @@ export const LoginProvider = ({ children }) => {
 
       const data = await response.json();
 
-      if (response.status === 201) {
+      if (response) {
         setSuccessMessage(data.message);
         setVerificationStep(true);
         setTempEmail(Email);
@@ -107,15 +109,6 @@ export const LoginProvider = ({ children }) => {
           setUserId(data.user.UserID);
         }
         setTempLoginInfo({ Email, Password });
-      } else {
-        if (response.status === 422 && data.errors) {
-          const errorMessages = Object.values(data.errors)
-            .map((errors) => errors[0])
-            .join("\n");
-          setErrorMessage(errorMessages);
-        } else {
-          setErrorMessage(data.message || "Đăng ký thất bại");
-        }
       }
     } catch (error) {
       setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");

@@ -114,7 +114,7 @@ export default function Products_Limited() {
                         width="330"
                         height="400"
                         alt={product.ProductName}
-                        className="w-[330px] h-[400px] "
+                        className="w-[400px] h-[450px] "
                       />
                     </Link>
                     <Link to={`/shop-detail/${product.ProductID}`}>

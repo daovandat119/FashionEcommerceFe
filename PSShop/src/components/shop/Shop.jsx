@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Star from "../common/Star";
 import { Link } from "react-router-dom";
 import { useContextElement } from "../../context/Context";
@@ -6,9 +6,9 @@ import BreadCumb from "./BreadCumb";
 import { openModalShopFilter } from "../../utlis/aside";
 import FilterAll from "./filter/FilterAll";
 import axios from "axios";
+import ReactPaginate from "react-paginate";
 
 const itemPerRow = [2, 3, 4];
-const itemsPerPage = 12; // Số sản phẩm trên mỗi trang
 
 export default function Shop1() {
   const menuCategories = [
@@ -21,57 +21,6 @@ export default function Shop1() {
     "Accessories",
     "Shoes",
   ];
-  const sortingOptions = [
-    { label: "Default Sorting", value: "", selected: true },
-    { label: "Featured", value: "1" },
-    { label: "Best selling", value: "2" },
-    { label: "Alphabetically, A-Z", value: "3" },
-    { label: "Alphabetically, Z-A", value: "4" },
-    { label: "Price, low to high", value: "5" },
-    { label: "Price, high to low", value: "6" },
-    { label: "Date, old to new", value: "7" },
-    { label: "Date, new to old", value: "8" },
-  ];
-
-  const [filters, setFilters] = useState({}); // Thêm state cho bộ lọc
-  const [currentPage, setCurrentPage] = useState(1); // Trạng thái trang hiện tại
-
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters); // Cập nhật bộ lọc
-    fetchProducts(newFilters); // Gọi lại API với bộ lọc mới
-  };
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber); // Cập nhật trang hiện tại
-    fetchProducts(filters, pageNumber); // Gọi lại API với trang mới
-  };
-
-  const fetchProducts = async (filters, page = 1) => {
-    // Tạo một đối tượng bộ lọc mới
-    const filteredParams = {};
-
-    // Chỉ thêm các thuộc tính có giá trị khác null
-    if (filters.categoryId) {
-      filteredParams.CategoryID = filters.categoryId;
-    }
-    if (filters.colorId) {
-      filteredParams.ColorID = filters.colorId;
-    }
-    if (filters.sizeId) {
-      filteredParams.SizeID = filters.sizeId;
-    } // Ghi log bộ lọc đã được lọc
-    try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/products/index?page=${page}`,
-        filteredParams
-      );
-      setProducts(response.data.data || response.data.data);
-    } catch (error) {
-      setError("Không thể tải sản phẩm.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const [selectedColView, setSelectedColView] = useState(3);
   const [currentCategory] = useState(menuCategories[0]);
@@ -79,27 +28,57 @@ export default function Shop1() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wishlistStatus, setWishlistStatus] = useState({});
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState({});
+  const [categoryId, setCategoryID] = useState({});
+  const [colorId, setColorID] = useState({});
+  const [sizeId, setSizeID] = useState({});
   const { isInWishlist, addToWishlist, removeFromWishlist } =
     useContextElement(); // Di chuyển vào trong hàm
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.post(
-          "http://127.0.0.1:8000/api/products/index",
-          filters // Truyền filters vào API
-        );
-        setProducts(response.data.data || response.data.data);
-      } catch (error) {
-        console.error("Có lỗi xảy ra khi gọi API", error);
-        setError("Không thể tải sản phẩm.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async (page, categoryId, colorId, sizeId) => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/products/index",
+        {
+          Page: page,
+          Limit: 12,
+          CategoryID: categoryId,
+          ColorID: colorId,
+          SizeID: sizeId,
+        }
+      );
+      setProducts(response.data.data);
+      setPage(response.data.page);
+      setTotalPage(response.data.totalPage);
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi gọi API", error);
+      setError("Không thể tải sản phẩm.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProducts();
+  useEffect(() => {
+    fetchProducts(page, categoryId, colorId, sizeId);
+  }, [page, categoryId, colorId, sizeId]);
+
+  const handleFilterChange = (newFilters) => {
+    setColorID(newFilters.colorId);
+    setCategoryID(newFilters.categoryId);
+    setSizeID(newFilters.sizeId);
+    console.log(newFilters);
+    console.log(newFilters.categoryId);
+    console.log(newFilters.colorId);
+    console.log(newFilters.sizeId);
+    // setFilters(newFilters);
+  };
+
+  const handlePageClick = useCallback((event) => {
+    const newPage = event.selected + 1;
+    setPage(newPage);
   }, []);
+
   const toggleWishlist = async (productId) => {
     if (isInWishlist(productId)) {
       await removeFromWishlist(productId); // Đảm bảo gọi hàm xóa
@@ -132,11 +111,6 @@ export default function Shop1() {
       </div>
     );
   }
-
-  // Tính toán sản phẩm hiển thị cho trang hiện tại
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentProducts = products.slice(startIndex, endIndex); // Lấy sản phẩm cho trang hiện tại
 
   return (
     <>
@@ -180,124 +154,123 @@ export default function Shop1() {
             className={`products-grid row row-cols-2 row-cols-md-3 row-cols-lg-${selectedColView}`}
             id="products-grid"
           >
-            {currentProducts
-              .filter(
-                (elm) =>
-                  currentCategory === "All" ||
-                  elm.filterCategory2 === currentCategory
-              )
-              .map((elm, i) => (
-                <div key={i} className="product-card-wrapper">
-                  <div className="product-card mb-3 mb-md-4 mb-xxl-5">
-                    <div className="pc__img-wrapper">
+            {products.map((elm, i) => (
+              <div key={i} className="product-card-wrapper">
+                <div className="product-card mb-3 mb-md-4 mb-xxl-5">
+                  <div className="pc__img-wrapper">
+                    <Link to={`/shop-detail/${elm.ProductID}`}>
+                      <img
+                        loading="lazy"
+                        src={elm.MainImageURL}
+                        width="330"
+                        height="400"
+                        alt={elm.ProductName}
+                        className="pc__img"
+                      />
                       <Link to={`/shop-detail/${elm.ProductID}`}>
-                        <img
-                          loading="lazy"
-                          src={elm.MainImageURL}
-                          width="330"
-                          height="400"
-                          alt={elm.ProductName}
-                          className="pc__img"
-                        />
-                        <Link to={`/shop-detail/${elm.ProductID}`}>
-                          <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
-                            Xem chi tiết
-                          </button>
-                        </Link>
-                        {elm.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
-                          <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
-                            -{elm.discount_percentage}%
-                          </span>
-                        )}
-                        {new Date(elm.created_at) >
-                          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
-                          elm.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
-                            <div className="absolute top-12 left-0  product-label bg-white text-dark">
-                              NEW
-                            </div>
-                          )}
+                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                          Xem chi tiết
+                        </button>
                       </Link>
-                    </div>
+                      {elm.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có
+                        <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
+                          -{elm.discount_percentage}%
+                        </span>
+                      )}
+                      {new Date(elm.created_at) >
+                        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
+                        elm.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
+                          <div className="absolute top-12 left-0  product-label bg-white text-dark">
+                            NEW
+                          </div>
+                        )}
+                    </Link>
+                  </div>
 
-                    <div className="p-2 text-left">
-                      <div className="flex justify-between items-center">
-                        <p className="mb-0 text-sm">{elm.category_name}</p>
-                        <div className="flex items-center">
-                          <Star stars={elm.average_rating} />
-                          <span className="text-gray-500 ml-1">
-                            {elm.reviews}
-                          </span>
-                        </div>
+                  <div className="p-2 text-left">
+                    <div className="flex justify-between items-center">
+                      <p className="mb-0 text-sm">{elm.category_name}</p>
+                      <div className="flex items-center">
+                        <Star stars={elm.average_rating} />
+                        <span className="text-gray-500 ml-1">
+                          {elm.reviews}
+                        </span>
                       </div>
-                      <div className="flex justify-between">
-                        <h6 className="text-lg font-semibold">
-                          <Link to={`/shop-detail/${elm.ProductID}`}>
-                            {elm.ProductName}
-                          </Link>
-                        </h6>
-                        <button
-                          title="Add To Wishlist"
-                          className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
+                    </div>
+                    <div className="flex justify-between">
+                      <h6 className="text-lg font-semibold">
+                        <Link to={`/shop-detail/${elm.ProductID}`}>
+                          {elm.ProductName}
+                        </Link>
+                      </h6>
+                      <button
+                        title="Add To Wishlist"
+                        className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
+                          isInWishlist(elm.ProductID) ||
+                          wishlistStatus[elm.ProductID]
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => toggleWishlist(elm.ProductID)} // Gọi hàm toggleWishlist
+                      >
+                        <svg
+                          width="25px"
+                          height="25px"
+                          className=""
+                          viewBox="0 0 64 64"
+                          xmlns="http://www.w3.org/2000/svg"
+                          stroke="#000000"
+                          fill={
                             isInWishlist(elm.ProductID) ||
                             wishlistStatus[elm.ProductID]
-                              ? "active"
-                              : ""
-                          }`}
-                          onClick={() => toggleWishlist(elm.ProductID)} // Gọi hàm toggleWishlist
+                              ? "red"
+                              : "none"
+                          } // Thay đổi màu sắc
                         >
-                          <svg
-                            width="25px"
-                            height="25px"
-                            className=""
-                            viewBox="0 0 64 64"
-                            xmlns="http://www.w3.org/2000/svg"
-                            stroke="#000000"
-                            fill={
-                              isInWishlist(elm.ProductID) ||
-                              wishlistStatus[elm.ProductID]
-                                ? "red"
-                                : "none"
-                            } // Thay đổi màu sắc
-                          >
-                            <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
-                          </svg>
-                        </button>
-                      </div>
-                      <div className="flex justify-start">
-                        <span className="text-lg font-bold text-red-600">
-                          {elm.SalePrice}₫
-                        </span>
-                        {elm.Price && (
-                          <span className="text-sm mt-1 line-through text-gray-500 ml-2">
-                            {elm.Price}₫
-                          </span>
-                        )}
-                      </div>
-
-                      <p className="text-sm text-gray-600">
-                        Đã bán: {elm.total_sold}
-                      </p>
+                          <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
+                        </svg>
+                      </button>
                     </div>
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">
+                        {elm.SalePrice}₫
+                      </span>
+                      {elm.Price && (
+                        <span className="text-sm mt-1 line-through text-gray-500 ml-2">
+                          {elm.Price}₫
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-gray-600">
+                      Đã bán: {elm.total_sold}
+                    </p>
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
           <div className="pagination flex justify-center mt-4">
-            {Array.from(
-              { length: Math.ceil(products.length / itemsPerPage) },
-              (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`mx-1 mb-4 px-3 py-1 rounded ${
-                    currentPage === index + 1
-                      ? "bg-dark text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              )
+            {totalPage > 1 && (
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel=" >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={totalPage}
+                previousLabel="<"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination flex justify-center space-x-2 mt-4"
+                activeClassName="active bg-blue-500 text-white"
+                forcePage={page - 1}
+              />
             )}
           </div>
         </div>
