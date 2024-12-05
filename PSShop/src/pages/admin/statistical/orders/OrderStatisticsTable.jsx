@@ -87,7 +87,7 @@ const OrderStatisticsTable = ({data, onPageChange, onSearch, onEditOrder}) => {
                     <td className="border border-gray-300 p-2">{order.PaymentMethodName}</td>
                     <td className="border border-gray-300 p-2">{order.Quantity}</td>
                     <td className="border border-gray-300 p-2">
-                      {order.Amount.toLocaleString()} VNĐ
+                    {Math.floor(order.Amount.toLocaleString())} VNĐ
                     </td>
                     <td className="border border-gray-300 p-2">{order.created_at}</td>
                     <td className="border border-gray-300 p-2">

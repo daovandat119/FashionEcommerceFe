@@ -614,7 +614,7 @@ const UpdateProducts = () => {
                         <td className="border px-4 py-2">
                           {variant.SizeName || "N/A"}
                         </td>
-                        <td className="border px-4 py-2">{variant.Price}</td>
+                        <td className="border px-4 py-2">{Math.floor(variant.Price)}</td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
                         <td className="border-b px-4 py-4 flex">
                           <button

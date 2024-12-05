@@ -163,11 +163,11 @@ const ProductDetailAdmin = () => {
               <p className="font-bold text-lg text-black border-b border-black">
                 Giá bán :
               </p>
-              {currentPrice} VND
+              {Math.floor(currentPrice) } VND
             </p>
             {currentPrice < originalPrice && (
               <p className="text-sm text-gray-500 line-through ml-2">
-                {originalPrice} VND
+                {Math.floor(originalPrice)} VND
               </p>
             )}
             {currentPrice < originalPrice && (
