@@ -19,6 +19,7 @@ export default function Blog1() {
       excerpt:
         "Quần jean luôn là lựa chọn hoàn hảo cho mọi dịp. Hãy cùng tìm hiểu cách chọn kiểu quần jean phù hợp để tôn lên vóc dáng của bạn.",
       image: "/assets/images/jeans.jpg",
+
     },
     {
       id: 3,
@@ -36,9 +37,11 @@ export default function Blog1() {
       author: "Admin",
       excerpt:
         "Phụ kiện là yếu tố quan trọng để hoàn thiện trang phục. Tìm hiểu cách kết hợp phụ kiện để tạo điểm nhấn cho phong cách của bạn.",
-      image: "/assets/images/a.jpg",
+
+        image: "/assets/images/a.jpg",
     },
   ];
+
 
   return (
     <>
@@ -52,6 +55,8 @@ export default function Blog1() {
             alt="hình ảnh"
           />
         </div>
+
+
       </section>
       <section className="blog-page container">
         <h2 className="d-none">Bài viết</h2>
@@ -79,6 +84,7 @@ export default function Blog1() {
             </div>
           ))}
         </div>
+
         <p className="mb-5 text-center fw-medium">
           HIỂN THỊ 36 trong số 497 bài viết
         </p>
