@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -260,11 +259,11 @@ const ProductDetail = () => {
 
           <div className="flex items-center gap-3 mb-4">
             <span className="text-2xl font-semibold text-blue-600">
-              {(variantPrice || product?.Price || 0).toLocaleString()} VND
+              {Math.floor(variantPrice || product?.Price || 0)} VND
             </span>
             {variantPrice && variantPrice !== product?.Price && (
               <span className="text-sm text-gray-500 line-through">
-                {product?.Price.toLocaleString()} VND
+                {Math.floor(product?.Price)} VND
               </span>
             )}
             {product.discount_percentage && (
@@ -377,17 +376,17 @@ const ProductDetail = () => {
                 <input
                   type="number"
                   name="quantity"
-                  value={quantity}
                   min="1"
                   className="w-full h-full text-center text-gray-700 focus:outline-none"
+                  value={quantity}
                   onChange={(e) => {
-                    const newValue =
-                      e.target.value === "" ? "" : parseInt(e.target.value);
-                    if (!isNaN(newValue)) {
+                    const newValue = parseInt(e.target.value);
+                    if (newValue >= 1) {
                       setQuantity(newValue);
                       setIsExceedQuantity(newValue > variantInfo.Quantity);
                     }
                   }}
+                  style={{ textAlign: 'center' }}
                 />
 
                 <button
@@ -474,7 +473,7 @@ const ProductDetail = () => {
                         </>
                       ) : variantInfo.Quantity > 0 ? (
                         <>
-                          <i className="fas fa-check-circle mr-2"></i>Có thể mua
+                          <i className="fas fa-check-circle mr-2"></i>Có thể mua: {variantInfo.Quantity}
                         </>
                       ) : (
                         <>

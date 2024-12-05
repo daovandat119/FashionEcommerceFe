@@ -708,25 +708,25 @@ export default function AccountOrders() {
                           <p className="text-sm text-gray-500">
                             Tổng tiền:{" "}
                             <span className="text-black-600">
-                              {order.TotalProductAmount} VND
+                            {Math.floor(order.TotalProductAmount)} VND
                             </span>
                           </p>
                           <p className="text-sm text-gray-500">
                             Phí vận chuyển:{" "}
                             <span className="text-black-600">
-                              {order.ShippingFee} VND
+                              {Math.floor(order.ShippingFee)} VND
                             </span>
                           </p>
                           <p className="text-sm text-gray-500">
                             Giảm giá:{" "}
                             <span className="text-black-600">
-                              -{order.Discount} VND
+                              -{Math.floor(order.Discount)} VND
                             </span>
                           </p>
                           <p className="text-lg font-bold text-gray-800">
                             Tổng tiền:{" "}
                             <span className="text-black-600">
-                              {order.TotalAmount} VND
+                              {Math.floor(order.TotalAmount)} VND
                             </span>
                           </p>
                         </div>

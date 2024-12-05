@@ -133,11 +133,11 @@ export default function RelatedSlider() {
                   <div className="flex justify-between items-center">
                   <div className="flex justify-start">
                     <span className="text-lg font-bold text-red-600">
-                      {product.SalePrice}₫
+                      {Math.floor(product.SalePrice)}₫
                     </span>
                     {product.Price && (
                       <span className="text-sm mt-1 line-through text-gray-500 ml-2">
-                        {product.Price}₫
+                        {Math.floor(product.Price)}₫
                       </span>
                     )}
                   </div>
