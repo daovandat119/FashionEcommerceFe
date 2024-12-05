@@ -9,6 +9,7 @@ import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
 import CouponStore from "./CouponStore";
 import { toast } from "react-hot-toast";
+import { faWindowMinimize } from "@fortawesome/free-solid-svg-icons";
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
@@ -146,6 +147,7 @@ export default function Checkout() {
         navigate(`/shop_order_complete/${response.data.data.OrderID}`);
       } else if (response.data.vnpay_url) {
         window.location.href = response.data.vnpay_url;
+        
       } else if (response.data.message) {
         Swal.fire({
           title: "Thông báo",
@@ -153,7 +155,7 @@ export default function Checkout() {
           icon: "warning",
           confirmButtonText: "Đồng ý",
         });
-        return;
+       
       }
     } catch (err) {
       console.error("Chi tiết lỗi:", err);
@@ -163,54 +165,46 @@ export default function Checkout() {
   };
 
   const handleApplyCoupon = (coupon) => {
-    if (coupon.usable) {
+    if (coupon.usable && totalPrice >= coupon.MinimumOrderValue) {
       setAppliedCoupon(coupon.CouponID);
-      const discountAmount =
-        ((totalPrice + shippingFee) * coupon.DiscountPercentage) / 100;
-      setDiscount(discountAmount);
-      setTotal(Number(totalPrice + shippingFee - discountAmount).toFixed(2));
-      console.log(total);
+      let finalDiscount;
+
+      if (totalPrice  < coupon.MaxAmount) {
+        finalDiscount = (coupon.DiscountPercentage / 100) * (totalPrice + shippingFee); // Tính phần trăm giảm giá
+      } else {
+        finalDiscount = coupon.MaxAmount; // Lấy MaxAmount
+      }
+
+      setDiscount(finalDiscount);
+      setTotal(Number(totalPrice + shippingFee - finalDiscount).toFixed(2));
       setIsCouponStoreOpen(false);
       toast.success("Áp dụng mã giảm giá thành công!");
+    } else {
+      toast.error("Mã giảm giá không hợp lệ hoặc không đủ điều kiện.");
     }
   };
 
-  const fetchCoupons = useCallback(async () => {
-    if (isCouponLoading) return; // Tránh gọi API nhiều lần
-
-    try {
-      setIsCouponLoading(true);
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/coupons/checkCoupon",
-        { MinimumOrderValue: totalPrice.toFixed(2) },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setCachedCoupons(response.data.data || []);
-    } catch (error) {
-      console.error("Lỗi khi tải mã giảm giá:", error);
-    } finally {
-      setIsCouponLoading(false);
-    }
-  }, [token, totalPrice]);
-
   useEffect(() => {
+    const fetchCoupons = async () => {
+      if (isCouponLoading) return; // Tránh gọi API nhiều lần
+
+      try {
+        setIsCouponLoading(true);
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/coupons/checkCoupon",
+          { MinimumOrderValue: totalPrice.toFixed(2) },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setCachedCoupons(response.data.data || []);
+      } catch (error) {
+        console.error("Lỗi khi tải mã giảm giá:", error);
+      } finally {
+        setIsCouponLoading(false);
+      }
+    };
+
     fetchCoupons();
-  }, [fetchCoupons]);
-
-
-  // useEffect(() => {
-  //   if (Math.abs(totalPrice - lastFetchedPrice) > 1000) { // Chỉ fetch lại khi giá thay đổi đáng kể
-  //     fetchCoupons();
-  //   }
-  // }, [totalPrice, fetchCoupons]);
-
-  useEffect(() => {
-    if (Math.abs(totalPrice - lastFetchedPrice) > 1000) {
-      // Chỉ fetch lại khi giá thay đổi đáng kể
-      fetchCoupons();
-    }
-  }, [totalPrice, fetchCoupons]);
-
+  }, [token, totalPrice]);
 
   if (loading) {
     return (
@@ -223,7 +217,7 @@ export default function Checkout() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-2xl font-bold text-gray-900 mb-8">Checkout</div>
+        <div className="text-2xl font-bold text-gray-900 mb-8">Thanh Toán</div>
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600">{error}</p>
@@ -339,6 +333,11 @@ export default function Checkout() {
                         (c) => c.CouponID === parseInt(appliedCoupon)
                       )?.Name
                     }
+                  </p>
+                  <p className="text-sm text-blue-600">
+                    Giảm tối đa: {Number(coupons.find(
+                      (c) => c.CouponID === parseInt(appliedCoupon)
+                    )?.MaxAmount).toLocaleString()} VND
                   </p>
                   <button
                     onClick={() => {

@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { toast } from "react-hot-toast";
 
 export default function CouponStore({
   onApplyCoupon,
@@ -90,7 +91,10 @@ export default function CouponStore({
                               {coupon.Name}
                             </h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Giảm {coupon.DiscountPercentage}%
+                              Giảm: {coupon.DiscountPercentage}%
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Giảm tối đa: {Number(coupon.MaxAmount).toLocaleString()}VNĐ
                             </p>
                             {coupon.MinimumOrderValue && (
                               <p className="text-sm text-gray-500 mt-1">
@@ -121,8 +125,14 @@ export default function CouponStore({
                           </div>
                           <button
                             onClick={() => {
-                              onApplyCoupon(coupon);
-                              onClose();
+                              if (totalPrice >= coupon.MinimumOrderValue) {
+                                onApplyCoupon(coupon);
+                                onClose();
+                              } else {
+                                toast.error("Cần thêm " + 
+                                  (coupon.MinimumOrderValue - totalPrice).toLocaleString() + 
+                                  " VND để sử dụng mã này");
+                              }
                             }}
                             disabled={
                               !coupon.usable || isExpired(coupon.ExpiresAt)
@@ -164,16 +174,4 @@ export default function CouponStore({
   );
 }
 
-CouponStore.propTypes = {
-  onApplyCoupon: PropTypes.func.isRequired,
-  totalPrice: PropTypes.number.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  coupons: PropTypes.array,
-  isLoading: PropTypes.bool,
-};
 
-CouponStore.defaultProps = {
-  totalPrice: 0,
-  isOpen: false,
-};
