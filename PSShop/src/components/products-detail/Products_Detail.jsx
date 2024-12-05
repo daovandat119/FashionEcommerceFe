@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useContextElement } from "../../context/Context";
 import AdditionalInfo from "./AdditionalInfo";
@@ -11,6 +11,7 @@ import Star from "../common/Star";
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
@@ -33,7 +34,7 @@ const ProductDetail = () => {
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isExceedQuantity, setIsExceedQuantity] = useState(false);
-
+  const [outOfStock, setOutOfStock] = useState(false);
 
   useEffect(() => {
     // Cuộn lên đầu trang khi component được tải
@@ -50,6 +51,9 @@ const ProductDetail = () => {
         );
         if (productRes.data.success) {
           setProduct(productRes.data.data);
+        } else {
+          // Nếu không tìm thấy sản phẩm, chuyển hướng đến trang Not Found
+          navigate("/notfound");
         }
 
         // Gọi fetchWishlistItems chỉ một lần
@@ -67,14 +71,14 @@ const ProductDetail = () => {
         setColors(colorsRes.data.data);
       } catch (error) {
         console.error("Error:", error);
-        toast.error("Không thể tải thông tin sản phẩm");
+        navigate("*"); // Chuyển hướng đến trang Not Found nếu có lỗi
       } finally {
         setLoading(false);
       }
     };
 
     initializeData();
-  }, [id, fetchWishlistItems]);
+  }, [id, fetchWishlistItems, navigate]);
    // Giữ nguyên dependency array
   useEffect(() => {
     if (product && typeof isInWishlist === "function") {
@@ -215,6 +219,17 @@ const ProductDetail = () => {
     };
     checkVariant();
   }, [selectedSize, selectedColor, product, checkProductVariant]);
+
+  const handleQuantityChange = (newQuantity) => {
+    if (newQuantity < 1) return; // Không cho phép số lượng âm
+    setQuantity(newQuantity);
+    // Kiểm tra xem số lượng có vượt quá số lượng trong kho không
+    if (variantInfo && newQuantity > variantInfo.Quantity) {
+      setOutOfStock(true); // Đặt trạng thái hết hàng
+    } else {
+      setOutOfStock(false); // Reset trạng thái hết hàng
+    }
+  };
 
   if (loading || !product) {
     return (
@@ -367,8 +382,9 @@ const ProductDetail = () => {
               <div className="relative flex items-center w-32 h-10 border rounded-lg bg-white">
                 <button
                   type="button"
+                  onClick={() => handleQuantityChange(quantity - 1)}
+                  disabled={quantity <= 1}
                   className="absolute left-0 w-8 h-full flex items-center justify-center text-gray-500 hover:text-gray-700"
-                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
                 >
                   <i className="fas fa-minus text-xs"></i>
                 </button>
@@ -379,25 +395,16 @@ const ProductDetail = () => {
                   min="1"
                   className="w-full h-full text-center text-gray-700 focus:outline-none"
                   value={quantity}
-                  onChange={(e) => {
-                    const newValue = parseInt(e.target.value);
-                    if (newValue >= 1) {
-                      setQuantity(newValue);
-                      setIsExceedQuantity(newValue > variantInfo.Quantity);
-                    }
-                  }}
-                  style={{ textAlign: 'center' }}
+                  onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
                 />
 
                 <button
                   type="button"
-                  disabled={isExceedQuantity}
+                  onClick={() => handleQuantityChange(quantity + 1)}
+                  disabled={outOfStock}
                   className={`absolute right-0 w-8 h-full flex items-center justify-center text-gray-500 ${
-                    isExceedQuantity
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:text-gray-700"
+                    outOfStock ? "opacity-50 cursor-not-allowed" : "hover:text-gray-700"
                   }`}
-                  onClick={() => setQuantity(quantity + 1)}
                 >
                   <i className="fas fa-plus text-xs"></i>
                 </button>
@@ -411,20 +418,19 @@ const ProductDetail = () => {
                 disabled={
                   isChecking ||
                   (variantInfo && variantInfo.Quantity === 0) ||
-                  isExceedQuantity
+                  outOfStock
                 }
                 className={`flex-1 px-6 py-3 text-sm font-medium text-white rounded-lg transition-all duration-300 ${
                   isChecking ||
                   (variantInfo && variantInfo.Quantity === 0) ||
-                  isExceedQuantity
+                  outOfStock
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-dark"
                 }`}
               >
                 {isChecking
                   ? "Đang kiểm tra..."
-                  : (variantInfo && variantInfo.Quantity === 0) ||
-                    isExceedQuantity
+                  : outOfStock
                   ? "Hết hàng"
                   : "Thêm vào giỏ"}
               </button>
@@ -459,14 +465,14 @@ const ProductDetail = () => {
                   variantInfo && (
                     <span
                       className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        isExceedQuantity
+                        outOfStock
                           ? "bg-red-100 text-red-800"
                           : variantInfo.Quantity > 0
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {isExceedQuantity ? (
+                      {outOfStock ? (
                         <>
                           <i className="fas fa-exclamation-circle mr-2"></i>Vượt
                           quá số lượng trong kho

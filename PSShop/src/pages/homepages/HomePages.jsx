@@ -36,8 +36,10 @@ const HomePages = () => {
       <Headers />
       <Banners />
       <BlogCards />
+      <br /><br />
       <Products_Trendy />
       <CountDown />
+      <br /><br />
       <Products_Limited />
       <Support />
       <Footers />
