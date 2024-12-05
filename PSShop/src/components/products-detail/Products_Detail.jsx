@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -377,17 +376,17 @@ const ProductDetail = () => {
                 <input
                   type="number"
                   name="quantity"
-                  value={quantity}
                   min="1"
                   className="w-full h-full text-center text-gray-700 focus:outline-none"
+                  value={quantity}
                   onChange={(e) => {
-                    const newValue =
-                      e.target.value === "" ? "" : parseInt(e.target.value);
-                    if (!isNaN(newValue)) {
+                    const newValue = parseInt(e.target.value);
+                    if (newValue >= 1) {
                       setQuantity(newValue);
                       setIsExceedQuantity(newValue > variantInfo.Quantity);
                     }
                   }}
+                  style={{ textAlign: 'center' }}
                 />
 
                 <button
@@ -474,7 +473,7 @@ const ProductDetail = () => {
                         </>
                       ) : variantInfo.Quantity > 0 ? (
                         <>
-                          <i className="fas fa-check-circle mr-2"></i>Có thể mua
+                          <i className="fas fa-check-circle mr-2"></i>Có thể mua: {variantInfo.Quantity}
                         </>
                       ) : (
                         <>
