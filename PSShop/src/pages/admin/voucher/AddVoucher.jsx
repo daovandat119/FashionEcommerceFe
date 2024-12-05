@@ -11,6 +11,7 @@ const AddVoucher = () => {
     Code: '',
     DiscountPercentage: '',
     MinimumOrderValue: '',
+    UsageLimit: '',
     MaxAmount: '',
     ExpiresAt: '',
   });
@@ -28,7 +29,7 @@ const AddVoucher = () => {
     setError('');
 
     // Kiểm tra dữ liệu đầu vào
-    if (!voucherDetails.Name || !voucherDetails.Code || !voucherDetails.DiscountPercentage || !voucherDetails.MinimumOrderValue || !voucherDetails.MaxAmount || !voucherDetails.ExpiresAt) {
+    if (!voucherDetails.Name || !voucherDetails.Code || !voucherDetails.DiscountPercentage || !voucherDetails.MinimumOrderValue  || !voucherDetails.MaxAmount || !voucherDetails.ExpiresAt) {
       setError('Vui lòng điền tất cả các trường.');
       return;
     }
@@ -86,6 +87,14 @@ const AddVoucher = () => {
             name="MinimumOrderValue"
             type="number"
             value={voucherDetails.MinimumOrderValue}
+            onChange={handleChange}
+            min="0"
+          />
+          <Input
+            label="Giá trị tối đa"
+            name="UsageLimit"
+            type="number"
+            value={voucherDetails.UsageLimit}
             onChange={handleChange}
             min="0"
           />

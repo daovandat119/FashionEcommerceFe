@@ -179,7 +179,7 @@ const VoucherList = () => {
                 </th>
                 <th className="border border-gray-300 p-2">Đơn tối thiểu</th>
                 <th className="border border-gray-300 p-2">Giá trị tối đa</th>
-                <th className="border border-gray-300 p-2">Đã sử dụng</th>
+                <th className="border border-gray-300 p-2">Giảm giá tối đa</th>
                 <th className="border border-gray-300 p-2">Ngày hết hạn</th>
                 <th className="border border-gray-300 p-2">Tùy chỉnh</th>
               </tr>
@@ -203,10 +203,10 @@ const VoucherList = () => {
                     {voucher.MinimumOrderValue} VNĐ
                   </td>
                   <td className="border border-gray-300 p-2">
-                    {voucher.MaxAmount} VNĐ
+                    {voucher.UsageLimit} Lần
                   </td>
                   <td className="border border-gray-300 p-2">
-                    {voucher.UsedCount}
+                    {voucher.MaxAmount} VNĐ
                   </td>
                   <td className="border border-gray-300 p-2">
                     {voucher.ExpiresAt}
