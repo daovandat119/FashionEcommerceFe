@@ -122,7 +122,7 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
                       {product.totalSold}
                     </td>
                     <td className="border border-gray-300 p-2">
-                      {product.total.toLocaleString()} VNĐ
+                    {Math.floor(product.total).toLocaleString()} VNĐ
                     </td>
                     <td className="border border-gray-300 p-2">
                       <button
@@ -193,15 +193,11 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
                                         {variant.TotalSold}
                                       </td>
                                       <td className="border border-gray-300 p-2">
-                                        {parseFloat(
-                                          variant.Price
-                                        ).toLocaleString()}{" "}
+                                        {Math.floor(parseFloat(variant.Price)).toLocaleString()}{" "}
                                         VNĐ
                                       </td>
                                       <td className="border border-gray-300 p-2">
-                                        {parseFloat(
-                                          variant.TotalRevenue
-                                        ).toLocaleString()}{" "}
+                                        {Math.floor(parseFloat(variant.TotalRevenue)).toLocaleString()}{" "}
                                         VNĐ
                                       </td>
                                     </tr>

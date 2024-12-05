@@ -254,7 +254,7 @@ export default function ContextProvider({ children }) {
             `http://127.0.0.1:8000/api/cart-items/${itemID}`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`, 
                     'Content-Type': 'application/json',
                 },
             }

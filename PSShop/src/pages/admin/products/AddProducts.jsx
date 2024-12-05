@@ -305,7 +305,7 @@ const AddProducts = () => {
               label="Giá"
               name="Price"
               type="number"
-              value={productData.Price}
+              value={Math.floor(productData.Price)}
               onChange={handleChange}
             />
             {errors.Price && (
@@ -317,7 +317,7 @@ const AddProducts = () => {
               label="Giá bán"
               name="SalePrice"
               type="number"
-              value={productData.SalePrice}
+              value={Math.floor(productData.SalePrice)}
               onChange={handleChange}
             />
             {errors.SalePrice && (

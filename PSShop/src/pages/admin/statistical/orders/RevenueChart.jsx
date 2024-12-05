@@ -41,7 +41,7 @@ const RevenueChart = ({data}) => {
         Doanh thu :
       </h1>
       <h4 className="text-xl font-bold pt-4 ">
-        {totalRevenue.toLocaleString()}đ
+        {Math.round(totalRevenue).toLocaleString()} VND
       </h4>
      </div>
       <h4 className="text-xl font-bold  py-2 px-4">
