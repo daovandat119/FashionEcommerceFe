@@ -17,7 +17,7 @@ const UpdateVoucher = () => {
     Code: "",
     DiscountPercentage: "",
     MinimumOrderValue: "",
-    UsageLimit: "",
+    MaxAmount: "",
     ExpiresAt: "",
   });
   const [error, setError] = useState("");
@@ -33,7 +33,7 @@ const UpdateVoucher = () => {
             Code: voucher.Code,
             DiscountPercentage: voucher.DiscountPercentage,
             MinimumOrderValue: voucher.MinimumOrderValue,
-            UsageLimit: voucher.UsageLimit,
+            MaxAmount: voucher.MaxAmount,
             ExpiresAt: voucher.ExpiresAt,
           });
         }
@@ -104,13 +104,12 @@ const UpdateVoucher = () => {
           </div>
           <div className="mb-4">
             <Input
-              label="Phần trăm giảm giá" 
+              label="Phần trăm giảm giá"
               name="DiscountPercentage"
               type="number"
-              value={voucherData.DiscountPercentage} 
+              value={voucherData.DiscountPercentage}
               onChange={handleChange}
               required
-              
             />
           </div>
           <div className="mb-4">
@@ -125,10 +124,10 @@ const UpdateVoucher = () => {
           </div>
           <div className="mb-4">
             <Input
-              label="Số lượng sử dụng"
-              name="UsageLimit"
+              label="Giá trị tối đa"
+              name="MaxAmount"
               type="number"
-              value={voucherData.UsageLimit}
+              value={voucherData.MaxAmount}
               onChange={handleChange}
               required
             />
@@ -144,7 +143,10 @@ const UpdateVoucher = () => {
             />
           </div>
           <div className="flex justify-end gap-4 w-full col-span-2">
-            <button type="submit" className="w-[15%] bg-green-500 text-white py-3 px-4 rounded-xl shadow-md hover:bg-green-600 transition transform hover:scale-105">
+            <button
+              type="submit"
+              className="w-[15%] bg-green-500 text-white py-3 px-4 rounded-xl shadow-md hover:bg-green-600 transition transform hover:scale-105"
+            >
               Cập nhật mã giảm giá
             </button>
             <button

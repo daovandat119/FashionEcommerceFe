@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function Cart() {
   const {
@@ -48,7 +49,12 @@ export default function Cart() {
           quantity: newQuantity,
         });
       } catch {
-        toast.error("Cập nhật số lượng sản phẩm thất bại!");
+        Swal.fire({
+          title: "Thông báo",
+          text: "Sản phẩm không đủ",
+          icon: "warning",
+          timer: 10000,
+        });
         fetchCartItems();
       }
     }, 1000);

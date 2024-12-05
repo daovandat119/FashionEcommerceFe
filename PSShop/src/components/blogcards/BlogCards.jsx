@@ -17,9 +17,11 @@ export default function BlogCards() {
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                <p className="text-uppercase text-white mb-1">Danh Sách Nổi Bật</p>
+                <p className="text-uppercase text-white mb-1">
+                  Danh Sách Nổi Bật
+                </p>
                 <h3 className="text-uppercase text-white">
-                  <strong>Bộ Sưu Tập Nữ</strong> 
+                  <strong>Bộ Sưu Tập Nữ</strong>
                 </h3>
                 <Link
                   to="/shop"
@@ -40,9 +42,11 @@ export default function BlogCards() {
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                <p className="text-uppercase mb-1 text-white">Danh Sách Nổi Bật</p>
+                <p className="text-uppercase mb-1 text-white">
+                  Danh Sách Nổi Bật
+                </p>
                 <h3 className="text-uppercase text-white">
-                  <strong>Bộ Sưu Tập Nam</strong> 
+                  <strong>Bộ Sưu Tập Nam</strong>
                 </h3>
                 <Link
                   to="/shop"
@@ -63,7 +67,9 @@ export default function BlogCards() {
                       }}
                     ></div>
                     <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                      <p className="text-uppercase text-white mb-1">Danh Sách Nổi Bật</p>
+                      <p className="text-uppercase text-white mb-1">
+                        Danh Sách Nổi Bật
+                      </p>
                       <h3 className="text-uppercase text-white">
                         <strong>Bộ Sưu Tập Trẻ Em</strong>
                       </h3>
