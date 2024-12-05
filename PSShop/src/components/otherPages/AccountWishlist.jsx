@@ -123,11 +123,11 @@ export default function AccountWishlist() {
                     </h6>
                     <div className="flex justify-start">
                       <span className="text-lg font-bold text-red-600">
-                      {Math.floor(item.SalePrice)}VND
+                      {Math.floor(item.SalePrice)} VND
                       </span>
                       {item.Price && (
                         <span className="text-sm line-through text-gray-500 ml-2">
-                          {Math.floor(item.Price)}VND
+                          {Math.floor(item.Price)} VND
                         </span>
                       )}
                       {item.discount_percentage > 0 && ( // Hiển thị mã giảm giá nếu có

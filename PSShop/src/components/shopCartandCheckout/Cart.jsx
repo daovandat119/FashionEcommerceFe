@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function Cart() {
   const {
@@ -30,6 +30,35 @@ export default function Cart() {
     sizeID,
     newQuantity
   ) => {
+    const cartItem = cartProducts.find((item) => item.CartItemID === itemId);
+    if (!cartItem) return;
+
+    const { QuantityLimit, Status } = cartItem;
+
+    if (Status === "INACTIVE") {
+      toast.error("Sản phẩm không đủ số lượng!");
+      return;
+    } else if (QuantityLimit === 0) {
+      toast.error("Sản phẩm đã hết hàng!");
+      await updateCartItemStatus(itemId);
+      return;
+    } else if (newQuantity > QuantityLimit) {
+      newQuantity = QuantityLimit;
+      toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
+      reloadPage();
+      return;
+    }
+
+    if (QuantityLimit === newQuantity) {
+      await updateCartItemStatus(itemId);
+    } else if (QuantityLimit >= newQuantity) {
+      // Không cần làm gì vì số lượng hợp lệ
+    } else {
+      toast.warning("Số lượng không hợp lệ, vui lòng điều chỉnh lại.");
+      reloadPage();
+      return;
+    }
+
     setCartProducts((prevProducts) =>
       prevProducts.map((item) =>
         item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
@@ -49,12 +78,7 @@ export default function Cart() {
           quantity: newQuantity,
         });
       } catch {
-        Swal.fire({
-          title: "Thông báo",
-          text: "Sản phẩm không đủ",
-          icon: "warning",
-          timer: 10000,
-        });
+        toast.error("Sản phẩm không đủ");
         fetchCartItems();
       }
     }, 1000);
@@ -66,7 +90,13 @@ export default function Cart() {
     const value = e.target.value;
     if (!/^\d*$/.test(value)) return;
 
-    const newQuantity = value === "" ? 1 : parseInt(value);
+    let newQuantity = value === "" ? 1 : parseInt(value);
+
+    if (newQuantity > item.QuantityLimit) {
+      newQuantity = item.QuantityLimit;
+      toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
+    }
+
     handleQuantityChange(
       item.CartItemID,
       item.ProductID,
@@ -80,7 +110,26 @@ export default function Cart() {
     await removeSelectedItems();
   };
 
-  // Cleanup
+  // Hàm cập nhật trạng thái
+  const updateCartItemStatus = async (cartItemId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        "http://127.0.0.1:8000/api/cart-items/status/",
+        { ids: cartItemId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // Tải lại giỏ hàng sau khi cập nhật trạng thái
+      await fetchCartItems();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
 
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
@@ -122,7 +171,7 @@ export default function Cart() {
                       />
                     </td>
                     <td>
-                      <div className="shopping-cart__product-item">
+                      <div className="shopping-cart__product-item relative">
                         {item.ImageUrl && (
                           <img
                             loading="lazy"
@@ -130,8 +179,13 @@ export default function Cart() {
                             width="120"
                             height="120"
                             alt={item.ProductName}
-                            className="object-fit-cover"
+                            className="object-fit-cover w-full h-full opacity-50"
                           />
+                        )}
+                        {item.QuantityLimit === 0 && (
+                          <span className="absolute ml-5 flex items-center justify-center text-dark text-lg font-bold">
+                            Hết hàng
+                          </span>
                         )}
                       </div>
                     </td>
@@ -146,7 +200,7 @@ export default function Cart() {
                     </td>
                     <td>
                       <span className="shopping-cart__product-price">
-                        {Math.floor(item.Price)}
+                        {Math.floor(item.Price)} VND
                       </span>
                     </td>
                     <td width="10%" className="text-center">
@@ -170,9 +224,11 @@ export default function Cart() {
                           className="qty-control__number text-center"
                           min="1"
                           max="99"
+                          disabled={item.QuantityLimit === 0}
+                          
                         />
                         <div
-                          onClick={() =>
+                          onClick={() =>item.QuantityLimit > 0 &&
                             handleQuantityChange(
                               item.CartItemID,
                               item.ProductID,
@@ -186,7 +242,7 @@ export default function Cart() {
                           -
                         </div>
                         <div
-                          onClick={() =>
+                          onClick={() =>item.QuantityLimit > 0 &&
                             handleQuantityChange(
                               item.CartItemID,
                               item.ProductID,
@@ -203,7 +259,7 @@ export default function Cart() {
                     </td>
                     <td width="20%" className="text-center">
                       <span className="shopping-cart__subtotal">
-                        {Math.floor(item.Quantity * item.Price)}
+                        {Math.floor(item.Quantity * item.Price)} VND
                       </span>
                     </td>
                   </tr>
@@ -253,10 +309,11 @@ export default function Cart() {
                       cartProducts
                         .reduce(
                           (total, item) => total + item.Quantity * item.Price,
-                        0
-                      )
-                      .toFixed(2)
-                    )}
+                          0
+                        )
+                        .toFixed(2)
+                    )}{" "}
+                    VND
                   </td>
                 </tr>
               </tbody>

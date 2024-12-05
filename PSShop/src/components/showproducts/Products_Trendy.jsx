@@ -200,11 +200,11 @@ export default function Products_Trendy() {
                   <div className="flex justify-between ">
                     <div className="flex justify-start">
                       <span className="text-lg font-bold text-red-600">
-                        {Math.floor(product.SalePrice)}VND
+                        {Math.floor(product.SalePrice)} VND
                       </span>
                       {product.Price && (
                         <span className="text-sm line-through text-gray-500 ml-2">
-                          {Math.floor(product.Price)}VND
+                          {Math.floor(product.Price)} VND
                         </span>
                       )}
                     </div>

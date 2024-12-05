@@ -233,11 +233,11 @@ export default function Shop1() {
                     </div>
                     <div className="flex justify-start">
                       <span className="text-lg font-bold text-red-600">
-                        {Math.floor(elm.SalePrice)}VND
+                        {Math.floor(elm.SalePrice)} VND
                       </span>
                       {elm.Price && (
                         <span className="text-sm mt-1 line-through text-gray-500 ml-2">
-                          {Math.floor(elm.Price)}VND
+                          {Math.floor(elm.Price)} VND
                         </span>
                       )}
                     </div>
