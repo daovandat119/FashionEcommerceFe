@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { toast } from "react-hot-toast";
 
 export default function CouponStore({
@@ -69,7 +68,7 @@ export default function CouponStore({
                   </p>
                 ) : (
                   <div className="space-y-4">
-                    {coupons.map((coupon) => (
+                    {coupons.filter(coupon => coupon.UsageLimit > 0).map((coupon) => (
                       <div
                         key={coupon.CouponID}
                         className={`border rounded-lg p-4 relative ${
@@ -125,18 +124,20 @@ export default function CouponStore({
                           </div>
                           <button
                             onClick={() => {
-                              if (totalPrice >= coupon.MinimumOrderValue) {
-                                onApplyCoupon(coupon);
-                                onClose();
+                              if (coupon.usable && !isExpired(coupon.ExpiresAt)) {
+                                if (totalPrice >= coupon.MinimumOrderValue) {
+                                  onApplyCoupon(coupon);
+                                  onClose();
+                                } else {
+                                  toast.error("Cần thêm " + 
+                                    (coupon.MinimumOrderValue - totalPrice).toLocaleString() + 
+                                    " VND để sử dụng mã này");
+                                }
                               } else {
-                                toast.error("Cần thêm " + 
-                                  (coupon.MinimumOrderValue - totalPrice).toLocaleString() + 
-                                  " VND để sử dụng mã này");
+                                toast.error("Mã giảm giá không khả dụng.");
                               }
                             }}
-                            disabled={
-                              !coupon.usable || isExpired(coupon.ExpiresAt)
-                            }
+                            disabled={!coupon.usable || isExpired(coupon.ExpiresAt)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${
                               coupon.usable && !isExpired(coupon.ExpiresAt)
                                 ? "bg-blue-600 text-white hover:bg-blue-700"
