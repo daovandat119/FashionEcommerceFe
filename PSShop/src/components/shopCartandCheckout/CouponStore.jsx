@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+
 import { toast } from "react-hot-toast";
 
 export default function CouponStore({

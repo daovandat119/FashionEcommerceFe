@@ -30,12 +30,6 @@ export default function Checkout() {
   const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [lastFetchedPrice, setLastFetchedPrice] = useState(0);
 
-  // useEffect(() => {
-  //   if (!orderData.PaymentMethodID) {
-  //     updateOrderData({ PaymentMethodID: 2 });
-  //   }
-  // }, [orderData.PaymentMethodID, updateOrderData]);
-
   const paymentMethods = [
     {
       id: 1,
@@ -205,6 +199,9 @@ export default function Checkout() {
 
     fetchCoupons();
   }, [token, totalPrice]);
+
+  
+
 
   if (loading) {
     return (
