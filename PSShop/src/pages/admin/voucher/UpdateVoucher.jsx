@@ -17,6 +17,7 @@ const UpdateVoucher = () => {
     Code: "",
     DiscountPercentage: "",
     MinimumOrderValue: "",
+    UsageLimit: "",
     MaxAmount: "",
     ExpiresAt: "",
   });
@@ -33,6 +34,7 @@ const UpdateVoucher = () => {
             Code: voucher.Code,
             DiscountPercentage: voucher.DiscountPercentage,
             MinimumOrderValue: voucher.MinimumOrderValue,
+            UsageLimit: voucher.UsageLimit,
             MaxAmount: voucher.MaxAmount,
             ExpiresAt: voucher.ExpiresAt,
           });
@@ -118,6 +120,16 @@ const UpdateVoucher = () => {
               name="MinimumOrderValue"
               type="number"
               value={voucherData.MinimumOrderValue}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <Input
+              label="Giá trị tối đa"
+              name="UsageLimit"
+              type="number"
+              value={voucherData.UsageLimit}
               onChange={handleChange}
               required
             />
