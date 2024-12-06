@@ -10,8 +10,8 @@ import {
 } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import PropTypes from 'prop-types';
-import {  toast } from "react-toastify";
+import PropTypes from "prop-types";
+import { toast } from "react-toastify";
 const Context = createContext();
 
 export const useContextElement = () => useContext(Context);
@@ -28,28 +28,22 @@ export default function ContextProvider({ children }) {
   const [wishlistProducts, setWishlistProducts] = useState([]);
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
 
-  const hasFetchedCartItems = useRef(false);
-
   const handleSelectAll = (checked) => {
     const ids = checked ? cartProducts.map((item) => item.CartItemID) : [];
     setSelectedItems(ids);
   };
 
   const handleSelectItem = (cartItemId) => {
-    setSelectedItems((prev) => 
-      prev.includes(cartItemId) 
-        ? prev.filter((id) => id !== cartItemId) 
+    setSelectedItems((prev) =>
+      prev.includes(cartItemId)
+        ? prev.filter((id) => id !== cartItemId)
         : [...prev, cartItemId]
     );
   };
 
-
-
   const formatPrice = (price) => {
     return typeof price === "number" ? price.toFixed(2) : "0.00";
   };
-
-
 
   const fetchCartItems = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -57,19 +51,15 @@ export default function ContextProvider({ children }) {
 
     try {
       setLoading(true);
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/cart-items",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.message === "Success") {
         const cartData = response.data.data;
         setCartProducts(cartData);
-        // Tính tổng tiền
         const total = cartData.reduce(
           (sum, item) => sum + item.Price * item.Quantity,
           0
@@ -99,40 +89,40 @@ export default function ContextProvider({ children }) {
     const token = localStorage.getItem("token");
 
     try {
-        const response = await axios.post(
-            "http://127.0.0.1:8000/api/cart-items",
-            {
-                productID,
-                colorID,
-                sizeID,
-                quantity
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        // Cập nhật giỏ hàng ngay sau khi thêm thành công
-        await fetchCartItems();
-        return { success: true, message: "Thêm vào giỏ hàng thành công" };
-        
-    } catch (error) {
-        // Ném lỗi để component có thể xử lý
-        if (error.response?.status === 400) {
-            throw new Error(error.response.data.message || "Không thể thêm sản phẩm");
-        } else if (error.response?.status === 401) {
-            throw new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
-        } else {
-            throw new Error("Có lỗi xảy ra, vui lòng thử lại sau");
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/cart-items",
+        {
+          productID,
+          colorID,
+          sizeID,
+          quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-    } finally {
-        setLoading(false);
-    }
-};
+      );
 
+      // Cập nhật giỏ hàng ngay sau khi thêm thành công
+      await fetchCartItems();
+      return { success: true, message: "Thêm vào giỏ hàng thành công" };
+    } catch (error) {
+      // Ném lỗi để component có thể xử lý
+      if (error.response?.status === 400) {
+        throw new Error(
+          error.response.data.message || "Không thể thêm sản phẩm"
+        );
+      } else if (error.response?.status === 401) {
+        throw new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+      } else {
+        throw new Error("Có lỗi xảy ra, vui lòng thử lại sau");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const checkVariantQuantity = async (variantID) => {
     const token = localStorage.getItem("token");
@@ -159,7 +149,9 @@ export default function ContextProvider({ children }) {
     if (!cartItemId || newQuantity < 1) return;
 
     try {
-      const cartItem = cartProducts.find(item => item.CartItemID === cartItemId);
+      const cartItem = cartProducts.find(
+        (item) => item.CartItemID === cartItemId
+      );
       if (!cartItem) return;
 
       const variantID = cartItem.SizeID; // Giả sử SizeID là ID của biến thể
@@ -172,8 +164,10 @@ export default function ContextProvider({ children }) {
       }
 
       // Nếu số lượng hợp lệ, cập nhật số lượng trong giỏ hàng
-      const updatedCartProducts = cartProducts.map(item => 
-        item.CartItemID === cartItemId ? { ...item, Quantity: newQuantity } : item
+      const updatedCartProducts = cartProducts.map((item) =>
+        item.CartItemID === cartItemId
+          ? { ...item, Quantity: newQuantity }
+          : item
       );
 
       setCartProducts(updatedCartProducts); // Cập nhật trạng thái với danh sách sản phẩm mới
@@ -185,15 +179,14 @@ export default function ContextProvider({ children }) {
         colorID: cartItem.ColorID,
         quantity: newQuantity,
       });
-
     } catch (error) {
-      console.error('Error setting quantity:', error);
+      console.error("Error setting quantity:", error);
     }
   };
 
   const updateCartItem = async (cartItemId, data) => {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     try {
       const response = await axios.patch(
         `http://127.0.0.1:8000/api/cart-items/${cartItemId}`,
@@ -206,68 +199,60 @@ export default function ContextProvider({ children }) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
       // console.log('Update response:', response.data);
     } catch (error) {
-      console.error('Error updating cart:', error.response?.data);
+      console.error("Error updating cart:", error.response?.data);
       throw error;
     }
   };
 
   const removeSelectedItems = async () => {
     if (selectedItems.length === 0) return;
-    const token = localStorage.getItem('token');
-    const ids = selectedItems.join(',');
+    const token = localStorage.getItem("token");
+    const ids = selectedItems.join(",");
 
     try {
-      await axios.delete(
-        `http://127.0.0.1:8000/api/cart-items`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          data: { ids },
-        }
-      );
+      await axios.delete(`http://127.0.0.1:8000/api/cart-items`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        data: { ids },
+      });
 
-      setCartProducts(prevProducts => 
-        prevProducts.filter(item => !selectedItems.includes(item.CartItemID))
+      setCartProducts((prevProducts) =>
+        prevProducts.filter((item) => !selectedItems.includes(item.CartItemID))
       );
 
       setSelectedItems([]);
-
     } catch (error) {
-      console.error('Error removing from cart:', error);
+      console.error("Error removing from cart:", error);
       toast.error("Không thể xóa sản phẩm");
     }
   };
 
   const removeCartItem = async (itemID) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
-        await axios.delete(
-            `http://127.0.0.1:8000/api/cart-items/${itemID}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`, 
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+      await axios.delete(`http://127.0.0.1:8000/api/cart-items/${itemID}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-        // Cập nhật trạng thái giỏ hàng sau khi xóa
-        setCartProducts(prevProducts => 
-            prevProducts.filter(item => item.CartItemID !== itemID)
-        );
-
+      // Cập nhật trạng thái giỏ hàng sau khi xóa
+      setCartProducts((prevProducts) =>
+        prevProducts.filter((item) => item.CartItemID !== itemID)
+      );
     } catch (error) {
-        console.error('Lỗi khi xóa sản phẩm:', error);
-        toast.error("Không thể xóa sản phẩm");
+      console.error("Lỗi khi xóa sản phẩm:", error);
+      toast.error("Không thể xóa sản phẩm");
     }
   };
 
@@ -347,22 +332,19 @@ export default function ContextProvider({ children }) {
 
     try {
       setIsLoadingWishlist(true);
-      setWishlistProducts(prev => 
-        prev.filter(item => item.WishlistID !== wishlistId)
+      setWishlistProducts((prev) =>
+        prev.filter((item) => item.WishlistID !== wishlistId)
       );
 
-      await axios.delete(
-        `http://127.0.0.1:8000/api/wishlist/${wishlistId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://127.0.0.1:8000/api/wishlist/${wishlistId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       await fetchWishlistItems();
-      
+
       if (error.response?.status === 404) {
         toast.error("Không tìm thấy sản phẩm trong danh sách yêu thích");
       } else {
@@ -373,17 +355,43 @@ export default function ContextProvider({ children }) {
     }
   };
 
-  const isProductInWishlist = useCallback((productId) => {
-    return wishlistProducts.some(item => 
-      parseInt(item.ProductID) === parseInt(productId)
-    );
-  }, [wishlistProducts]);
+  const isProductInWishlist = useCallback(
+    (productId) => {
+      return wishlistProducts.some(
+        (item) => parseInt(item.ProductID) === parseInt(productId)
+      );
+    },
+    [wishlistProducts]
+  );
 
-  const isInWishlist = useCallback((productId) => {
-    return wishlistProducts.some(item => 
-      parseInt(item.ProductID) === parseInt(productId)
-    );
-  }, [wishlistProducts]);
+  const isInWishlist = useCallback(
+    (productId) => {
+      return wishlistProducts.some(
+        (item) => parseInt(item.ProductID) === parseInt(productId)
+      );
+    },
+    [wishlistProducts]
+  );
+
+  const updateCartItemStatus = async (cartItemId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        "http://127.0.0.1:8000/api/cart-items/status/",
+        { ids: cartItemId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // Tải lại giỏ hàng sau khi cập nhật trạng thái
+      await fetchCartItems();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
 
   const value = {
     cartProducts,
@@ -398,8 +406,8 @@ export default function ContextProvider({ children }) {
     setQuantity,
     handleCheckboxChange,
     removeCartItem,
-    handleSelectItem, 
-    handleSelectAll, 
+    handleSelectItem,
+    handleSelectAll,
     selectedItems,
     wishlistProducts,
     addToWishlist,
@@ -410,6 +418,7 @@ export default function ContextProvider({ children }) {
     isLoadingWishlist,
     checkVariantQuantity,
     setCartProducts,
+    updateCartItemStatus,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

@@ -9,8 +9,9 @@ import {
   Bar,
 } from "recharts";
 
-const ActiveUsersChart = ({ monthlyRegistrations }) => {
+const ActiveUsersChart = ({ monthlyRegistrations, handleYearChange }) => {
   const [chartData, setChartData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState("");
 
   useEffect(() => {
     const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -26,11 +27,32 @@ const ActiveUsersChart = ({ monthlyRegistrations }) => {
     setChartData(formattedData);
   }, [monthlyRegistrations]);
 
+  const onYearChange = (event) => {
+    setSelectedYear(event.target.value);
+    handleYearChange(event.target.value);
+  };
+
   return (
     <div className="w-full border border-gray-200 rounded-lg bg-white">
-      <h2 className="text-lg font-semibold mb-4  p-3">
-        Thống Kê Đăng Ký Theo Tháng
-      </h2>
+      <h2 className="text-lg font-semibold p-3">Thống Kê Đăng Ký Theo Tháng</h2>
+
+      <div className="w-[20%] ml-12">
+        <select
+          value={selectedYear}
+          onChange={onYearChange}
+          className="border rounded-md p-2 w-full mb-2"
+        >
+          <option value="">Chọn Năm</option>
+          {Array.from(
+            { length: new Date().getFullYear() - 2000 + 1 },
+            (_, i) => (
+              <option key={2000 + i} value={2000 + i}>
+                Năm {2000 + i}
+              </option>
+            )
+          )}
+        </select>
+      </div>
       <BarChart width={1300} height={300} data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="Month" />

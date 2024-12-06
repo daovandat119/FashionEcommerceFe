@@ -358,7 +358,8 @@ const GetOrdersStatistics = async (
   startDate,
   endDate,
   currentPage,
-  searchValue
+  searchValue,
+  year
 ) => {
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
   return await axios.post(
@@ -369,6 +370,7 @@ const GetOrdersStatistics = async (
       endDate: endDate ?? null,
       Page: currentPage ?? null,
       OrderCode: searchValue ?? null,
+      year: year ?? null,
     },
     {
       headers: {
@@ -382,7 +384,8 @@ const GetUserStatistics = async (
   startDate,
   endDate,
   currentPage,
-  searchValue
+  searchValue,
+  year
 ) => {
   const token = localStorage.getItem("token");
   return await axios.post(
@@ -393,6 +396,7 @@ const GetUserStatistics = async (
       endDate: endDate,
       page: currentPage,
       UserName: searchValue,
+      year: year,
     },
     {
       headers: {

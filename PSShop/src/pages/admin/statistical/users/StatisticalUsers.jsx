@@ -14,13 +14,15 @@ const StatisticalUsers = () => {
   const [queryOrder, setQueryOrder] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
+  const [year, setYear] = useState("");
 
   const userStatistics = async (
     timePeriod,
     startDate,
     endDate,
     currentPage,
-    searchValue
+    searchValue,
+    year
   ) => {
     try {
       const response = await GetUserStatistics(
@@ -28,7 +30,8 @@ const StatisticalUsers = () => {
         startDate,
         endDate,
         currentPage,
-        searchValue
+        searchValue,
+        year
       );
       setMonthlyRegistrations(response.data.monthlyRegistrations);
       setActiveUsers(response.data.activeCount);
@@ -40,8 +43,15 @@ const StatisticalUsers = () => {
   };
 
   useEffect(() => {
-    userStatistics(timePeriod, startDate, endDate, currentPage, searchValue);
-  }, [timePeriod, startDate, endDate, currentPage, searchValue]);
+    userStatistics(
+      timePeriod,
+      startDate,
+      endDate,
+      currentPage,
+      searchValue,
+      year
+    );
+  }, [timePeriod, startDate, endDate, currentPage, searchValue, year]);
 
   const handleChartTypeChange = (e) => {
     const { name, value } = e.target;
@@ -64,11 +74,14 @@ const StatisticalUsers = () => {
     setSearchValue(searchValue);
   };
 
+  const handleYearChange = (year) => {
+    console.log(year);
+    setYear(year);
+  };
+
   return (
     <div>
-      <h1 className="text-2xl font-semibold ml-5 pt-5 mb-5">
-        Thống Kê Người Dùng
-      </h1>
+      <h1 className="text-2xl font-semibold ml-5 pt-5">Thống Kê Người Dùng</h1>
 
       {/* Search Options */}
       <div className="filter-section p-4 bg-gray-100 rounded-md">
@@ -150,17 +163,20 @@ const StatisticalUsers = () => {
       </div>
 
       <div className="w-[97%] mx-auto my-4">
-        <div className="">
-          <ActiveUsersChart monthlyRegistrations={monthlyRegistrations} />
-        </div>
-      </div>
-
-      <div className="w-[97%] mx-auto my-4">
         <UserStatisticsTable
           data={queryOrder}
           onPageChange={handlePageChange}
           onSearch={handleSearch}
         />
+      </div>
+
+      <div className="w-[97%] mx-auto my-4">
+        <div className="">
+          <ActiveUsersChart
+            monthlyRegistrations={monthlyRegistrations}
+            handleYearChange={handleYearChange}
+          />
+        </div>
       </div>
     </div>
   );

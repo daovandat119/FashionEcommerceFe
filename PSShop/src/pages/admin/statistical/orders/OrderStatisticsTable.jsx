@@ -1,28 +1,33 @@
 import React, { useState, useEffect, useCallback } from "react";
 import ReactPaginate from "react-paginate";
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
 
-const OrderStatisticsTable = ({data, onPageChange, onSearch, onEditOrder}) => {
+const OrderStatisticsTable = ({
+  data,
+  onPageChange,
+  onSearch,
+  onEditOrder,
+}) => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 500);
 
   useEffect(() => {
-    if(data && data.statisticsOrder && data.statisticsOrder.data){
-      const updatedOrders = data.statisticsOrder.data.map(order => ({
-        "OrderID": order.OrderID,
-        "OrderCode": order.OrderCode,
-        "OrderStatusName": order.OrderStatusName,
-        "created_at": order.created_at,
-        "Amount": order.Amount,
-        "PaymentMethodName": order.PaymentMethodName,
-        "PaymentStatusName": order.PaymentStatusName,
-        "Quantity": order.Quantity
+    if (data && data.statisticsOrder && data.statisticsOrder.data) {
+      const updatedOrders = data.statisticsOrder.data.map((order) => ({
+        OrderID: order.OrderID,
+        OrderCode: order.OrderCode,
+        OrderStatusName: order.OrderStatusName,
+        created_at: order.created_at,
+        Amount: order.Amount,
+        PaymentMethodName: order.PaymentMethodName,
+        PaymentStatusName: order.PaymentStatusName,
+        Quantity: order.Quantity,
       }));
       setOrders(updatedOrders);
       setLoading(false);
@@ -37,17 +42,25 @@ const OrderStatisticsTable = ({data, onPageChange, onSearch, onEditOrder}) => {
     handleSearch(debouncedSearchValue);
   }, [debouncedSearchValue]);
 
-  const handlePageClick = useCallback((event) => {
-    const newPage = event.selected + 1;
-    onPageChange(newPage);
-  }, [onPageChange]);
+  const handlePageClick = useCallback(
+    (event) => {
+      const newPage = event.selected + 1;
+      onPageChange(newPage);
+    },
+    [onPageChange]
+  );
 
-  const handleSearch = useCallback((searchValue) => {
-    onSearch(searchValue);
-  }, [onSearch]);
+  const handleSearch = useCallback(
+    (searchValue) => {
+      onSearch(searchValue);
+    },
+    [onSearch]
+  );
 
   const handleEditOrder = (orderID) => {
-    navigate(`/admin/orders/edit/${orderID}`, { state: { from: 'statistics' } });
+    navigate(`/admin/orders/edit/${orderID}`, {
+      state: { from: "statistics" },
+    });
   };
 
   return (
@@ -69,34 +82,37 @@ const OrderStatisticsTable = ({data, onPageChange, onSearch, onEditOrder}) => {
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-gray-100 text-center">
-                <th className="border border-gray-300 p-2 w-[10%]" >ID</th>
+                <th className="border border-gray-300 p-2 w-[10%]">ID</th>
                 <th className="border border-gray-300 p-2">Trạng thái</th>
-                <th className="border border-gray-300 p-2">Phương thức thanh toán</th>  
+                <th className="border border-gray-300 p-2">
+                  Phương thức thanh toán
+                </th>
                 <th className="border border-gray-300 p-2">Tổng số lượng</th>
                 <th className="border border-gray-300 p-2">Tổng doanh thu</th>
                 <th className="border border-gray-300 p-2">Chi tiết</th>
-                <th className="border border-gray-300 p-2">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order, index) => (
                 <React.Fragment key={index}>
                   <tr className="hover:bg-gray-50 text-center">
-                    <td className="border border-gray-300 p-2">{order.OrderCode}</td>
-                    <td className="border border-gray-300 p-2">{order.OrderStatusName}</td>
-                    <td className="border border-gray-300 p-2">{order.PaymentMethodName}</td>
-                    <td className="border border-gray-300 p-2">{order.Quantity}</td>
                     <td className="border border-gray-300 p-2">
-                    {Math.floor(order.Amount.toLocaleString())} VNĐ
+                      {order.OrderCode}
                     </td>
-                    <td className="border border-gray-300 p-2">{order.created_at}</td>
                     <td className="border border-gray-300 p-2">
-                      <button
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
-                        onClick={() => handleEditOrder(order.OrderID)}
-                      >
-                        Chi tiết
-                      </button>
+                      {order.OrderStatusName}
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      {order.PaymentMethodName}
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      {order.Quantity}
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      {Math.floor(order.Amount.toLocaleString())} VNĐ
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      {order.created_at}
                     </td>
                   </tr>
                 </React.Fragment>
@@ -104,26 +120,26 @@ const OrderStatisticsTable = ({data, onPageChange, onSearch, onEditOrder}) => {
             </tbody>
           </table>
           {totalPage > 1 && (
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=" >"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={5}
-            pageCount={totalPage}
-            previousLabel="<"
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousClassName="page-item"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName="pagination flex justify-center space-x-2 mt-4"
-            activeClassName="active bg-blue-500 text-white"
-            forcePage={currentPage - 1}
-          />
-        )}
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel=" >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={totalPage}
+              previousLabel="<"
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination flex justify-center space-x-2 mt-4"
+              activeClassName="active bg-blue-500 text-white"
+              forcePage={currentPage - 1}
+            />
+          )}
         </div>
       )}
     </div>

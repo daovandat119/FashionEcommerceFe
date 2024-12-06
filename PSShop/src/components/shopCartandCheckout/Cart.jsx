@@ -2,7 +2,6 @@ import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 export default function Cart() {
   const {
@@ -13,6 +12,7 @@ export default function Cart() {
     handleSelectAll,
     fetchCartItems,
     setCartProducts,
+    updateCartItemStatus,
     removeSelectedItems,
     updateCartItem,
   } = useContextElement();
@@ -21,7 +21,26 @@ export default function Cart() {
 
   useEffect(() => {
     fetchCartItems();
+    checkQuantityLimits();
   }, [fetchCartItems]);
+
+  const checkQuantityLimits = () => {
+    cartProducts.forEach((cartItem) => {
+      const { QuantityLimit, CartItemID } = cartItem;
+      if (QuantityLimit === 0) {
+        updateCartItemStatus(CartItemID);
+      } else if (cartItem.Quantity > QuantityLimit) {
+        updateCartItem(CartItemID, {
+          productID: cartItem.ProductID,
+          colorID: cartItem.ColorID,
+          sizeID: cartItem.SizeID,
+          quantity: QuantityLimit,
+        });
+      }
+    });
+
+    fetchCartItems();
+  };
 
   const handleQuantityChange = async (
     itemId,
@@ -30,33 +49,15 @@ export default function Cart() {
     sizeID,
     newQuantity
   ) => {
+    if (loading) return;
     const cartItem = cartProducts.find((item) => item.CartItemID === itemId);
     if (!cartItem) return;
 
-    const { QuantityLimit, Status } = cartItem;
+    const { QuantityLimit } = cartItem;
 
-    if (Status === "INACTIVE") {
-      toast.error("Sản phẩm không đủ số lượng!");
-      return;
-    } else if (QuantityLimit === 0) {
-      toast.error("Sản phẩm đã hết hàng!");
-      await updateCartItemStatus(itemId);
-      return;
-    } else if (newQuantity > QuantityLimit) {
+    if (newQuantity > QuantityLimit) {
       newQuantity = QuantityLimit;
       toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
-      reloadPage();
-      return;
-    }
-
-    if (QuantityLimit === newQuantity) {
-      await updateCartItemStatus(itemId);
-    } else if (QuantityLimit >= newQuantity) {
-      // Không cần làm gì vì số lượng hợp lệ
-    } else {
-      toast.warning("Số lượng không hợp lệ, vui lòng điều chỉnh lại.");
-      reloadPage();
-      return;
     }
 
     setCartProducts((prevProducts) =>
@@ -92,7 +93,7 @@ export default function Cart() {
 
     let newQuantity = value === "" ? 1 : parseInt(value);
 
-    if (newQuantity > item.QuantityLimit) {
+    if (newQuantity >= item.QuantityLimit) {
       newQuantity = item.QuantityLimit;
       toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
     }
@@ -108,27 +109,6 @@ export default function Cart() {
 
   const removeSelectedItem = async () => {
     await removeSelectedItems();
-  };
-
-  // Hàm cập nhật trạng thái
-  const updateCartItemStatus = async (cartItemId) => {
-    const token = localStorage.getItem("token");
-    try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/cart-items/status/",
-        { ids: cartItemId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      // Tải lại giỏ hàng sau khi cập nhật trạng thái
-      await fetchCartItems();
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
   };
 
   return (
@@ -225,10 +205,10 @@ export default function Cart() {
                           min="1"
                           max="99"
                           disabled={item.QuantityLimit === 0}
-                          
                         />
                         <div
-                          onClick={() =>item.QuantityLimit > 0 &&
+                          onClick={() =>
+                            item.QuantityLimit > 0 &&
                             handleQuantityChange(
                               item.CartItemID,
                               item.ProductID,
@@ -242,7 +222,8 @@ export default function Cart() {
                           -
                         </div>
                         <div
-                          onClick={() =>item.QuantityLimit > 0 &&
+                          onClick={() =>
+                            item.QuantityLimit > 0 &&
                             handleQuantityChange(
                               item.CartItemID,
                               item.ProductID,

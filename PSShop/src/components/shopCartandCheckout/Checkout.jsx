@@ -128,6 +128,7 @@ export default function Checkout() {
       CouponID: appliedCoupon,
       PaymentMethodID: orderData.PaymentMethodID,
       TotalAmount: Number(totalPrice + shippingFee - discount).toFixed(2),
+      Discount: discount ? Number(discount).toFixed(2) : null,
     };
 
     try {
@@ -147,7 +148,6 @@ export default function Checkout() {
         navigate(`/shop_order_complete/${response.data.data.OrderID}`);
       } else if (response.data.vnpay_url) {
         window.location.href = response.data.vnpay_url;
-        
       } else if (response.data.message) {
         Swal.fire({
           title: "Thông báo",
@@ -155,11 +155,13 @@ export default function Checkout() {
           icon: "warning",
           confirmButtonText: "Đồng ý",
         });
-       
       }
     } catch (err) {
       console.error("Chi tiết lỗi:", err);
-      console.error("Chi tiết lỗi:", err.response ? err.response.data : err.message);
+      console.error(
+        "Chi tiết lỗi:",
+        err.response ? err.response.data : err.message
+      );
       setError("Đặt hàng thất bại. Vui lòng thử lại.");
     }
   };
@@ -169,8 +171,9 @@ export default function Checkout() {
       setAppliedCoupon(coupon.CouponID);
       let finalDiscount;
 
-      if (totalPrice  < coupon.MaxAmount) {
-        finalDiscount = (coupon.DiscountPercentage / 100) * (totalPrice + shippingFee); // Tính phần trăm giảm giá
+      if (totalPrice < coupon.MaxAmount) {
+        finalDiscount =
+          (coupon.DiscountPercentage / 100) * (totalPrice + shippingFee); // Tính phần trăm giảm giá
       } else {
         finalDiscount = coupon.MaxAmount; // Lấy MaxAmount
       }
@@ -335,9 +338,13 @@ export default function Checkout() {
                     }
                   </p>
                   <p className="text-sm text-blue-600">
-                    Giảm tối đa: {Number(coupons.find(
-                      (c) => c.CouponID === parseInt(appliedCoupon)
-                    )?.MaxAmount).toLocaleString()} VND
+                    Giảm tối đa:{" "}
+                    {Number(
+                      coupons.find(
+                        (c) => c.CouponID === parseInt(appliedCoupon)
+                      )?.MaxAmount
+                    ).toLocaleString()}{" "}
+                    VND
                   </p>
                   <button
                     onClick={() => {
