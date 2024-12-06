@@ -384,7 +384,7 @@ export default function Checkout() {
                           {item.ColorName} • {item.SizeName} • x{item.Quantity}
                         </div>
                         <div className="text-sm font-medium text-gray-900 mt-1">
-                          {Math.floor(item.Price * item.Quantity)}VND
+                          {Math.floor(item.Price * item.Quantity)} VND
                         </div>
                       </div>
                     </div>
@@ -394,19 +394,19 @@ export default function Checkout() {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
                     <span className="font-medium">
-                      {Math.floor(totalPrice)}VND
+                      {Math.floor(totalPrice)} VND
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
                     <span className="font-medium">
-                      {Math.floor(shippingFee)}VND
+                      {Math.floor(shippingFee)} VND
                     </span>
                   </div>
                   {discount > 0 && appliedCoupon && (
                     <div className="flex justify-between text-sm text-red-600">
                       <span>Giảm giá</span>
-                      <span>-{Math.floor(discount)}VND</span>
+                      <span>-{Math.floor(discount)} VND</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 pt-4 mt-4">
@@ -415,8 +415,7 @@ export default function Checkout() {
                         Thanh toán
                       </span>
                       <span className="text-base font-semibold text-gray-900">
-                        {Math.floor(totalPrice + shippingFee - discount)}
-                        VND
+                        {Math.floor(totalPrice + shippingFee - discount)} VND
                       </span>
                     </div>
                   </div>

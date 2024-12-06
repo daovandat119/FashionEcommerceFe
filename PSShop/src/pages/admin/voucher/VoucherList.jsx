@@ -200,13 +200,13 @@ const VoucherList = () => {
                     {voucher.DiscountPercentage}%
                   </td>
                   <td className="border border-gray-300 p-2">
-                    {voucher.MinimumOrderValue} VNĐ
+                  {Math.floor(voucher.MinimumOrderValue)} VND
                   </td>
                   <td className="border border-gray-300 p-2">
                     {voucher.UsageLimit} Lần
                   </td>
                   <td className="border border-gray-300 p-2">
-                    {voucher.MaxAmount} VNĐ
+                  {Math.floor(voucher.MaxAmount)} VND
                   </td>
                   <td className="border border-gray-300 p-2">
                     {voucher.ExpiresAt}

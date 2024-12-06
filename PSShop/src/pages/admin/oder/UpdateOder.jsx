@@ -284,10 +284,10 @@ const UpdateOrder = () => {
                   {order.VariantSize}
                 </td>
                 <td className="p-4 border-r border-gray-300">
-                  {order.TotalQuantity}
+                {Math.floor(order.TotalQuantity)} VND
                 </td>
                 <td className="p-4 border-r border-gray-300">
-                  ${parseFloat(order.VariantPrice).toFixed(2)}
+                  {Math.floor(parseFloat(order.VariantPrice).toFixed(2)) } VND
                 </td>
               </tr>
             ))}
@@ -297,22 +297,22 @@ const UpdateOrder = () => {
         <div className="mt-6 text-right">
           <p className="flex justify-between">
             <span className="font-medium">Tổng tiền sản phẩm:</span>
-            <span>{orderDetails.TotalAmount}VNĐ</span>
+            <span>{Math.floor(orderDetails.TotalAmount)} VND</span>
           </p>
           <p className="flex justify-between">
             <span className="font-medium">Phí vận chuyển:</span>
-            <span>{orderDetails.ShippingFee}VNĐ</span>
+            <span>{Math.floor(orderDetails.ShippingFee)} VND</span>
           </p>
           <p className="flex justify-between">
             <span className="font-medium">Giảm giá:</span>
-            <span>{orderDetails.Discount}VNĐ</span>
+            <span>{Math.floor(orderDetails.Discount)} VND</span>
           </p>
           <Typography
             variant="h6"
             className="mt-2 text-gray-800 font-semibold flex justify-between"
           >
             <span>Tổng tiền:</span>
-            <span>{orderDetails.TotalProductAmount}VNĐ</span>
+            <span>{Math.floor(orderDetails.TotalProductAmount)} VND</span>
           </Typography>
         </div>
         <div className="flex justify-end mt-4">

@@ -248,7 +248,7 @@ const Dashboard = () => {
               </div>
               <div className="flex flex-col items-end">
                 <p className="text-gray-600 font-medium">Tổng doanh thu</p>
-                <div className="text-2xl font-bold ">{totalRevenue} VNĐ</div>
+                <div className="text-2xl font-bold ">{totalRevenue} VND</div>
               </div>
             </div>
           </div>

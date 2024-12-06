@@ -285,7 +285,7 @@ export default function Cart() {
                 <tr>
                   <th>Tổng cộng</th>
                   <td>
-                    $
+                    
                     {Math.floor(
                       cartProducts
                         .reduce(

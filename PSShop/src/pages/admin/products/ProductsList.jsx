@@ -242,8 +242,8 @@ const ProductsList = () => {
                     <span>{item.ProductName}</span>
                   </td>
                   <td className=" p-4">{item.category_name}</td>
-                  <td className=" p-4">{Math.floor(item.Price)}</td>
-                  <td className=" p-4">{Math.floor(item.SalePrice)}</td>
+                  <td className=" p-4">{Math.floor(item.Price)} VND</td>
+                  <td className=" p-4">{Math.floor(item.SalePrice)} VND</td>
                   <td className=" p-4">
                     <ToggleSwitch
                       isOn={item.Status === "ACTIVE"}

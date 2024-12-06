@@ -152,7 +152,7 @@ const OrderList = () => {
                         {order.TotalQuantity || "0"}
                       </td>
                       <td className="p-4 border-r border-gray-300">
-                        {order.TotalAmount || "0.00"}
+                      {Math.floor(order.TotalAmount || "0") } VND
                       </td>
                       <td className="p-4 flex gap-2 justify-center">
                         <Link

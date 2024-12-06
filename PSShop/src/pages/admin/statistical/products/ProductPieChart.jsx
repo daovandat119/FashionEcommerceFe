@@ -36,7 +36,7 @@ const ProductPieChart = ({ data }) => {
             outerRadius={80}
             fill="#8884d8"
             label={({ name, value, total }) =>
-              `${name}: ${value} (Tổng: ${Math.floor(total)})`
+              `${name}: ${value} (Tổng: ${Math.floor(total)} VND) `
             }
           >
             {pieChartData.map((entry, index) => (

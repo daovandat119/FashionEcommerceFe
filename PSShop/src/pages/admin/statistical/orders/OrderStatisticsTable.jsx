@@ -109,7 +109,7 @@ const OrderStatisticsTable = ({
                       {order.Quantity}
                     </td>
                     <td className="border border-gray-300 p-2">
-                      {Math.floor(order.Amount.toLocaleString())} VNĐ
+                      {Math.floor(order.Amount.toLocaleString())} VND
                     </td>
                     <td className="border border-gray-300 p-2">
                       {order.created_at}
