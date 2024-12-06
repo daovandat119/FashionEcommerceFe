@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
@@ -9,11 +9,11 @@ import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
 import CouponStore from "./CouponStore";
 import { toast } from "react-hot-toast";
-import { faWindowMinimize } from "@fortawesome/free-solid-svg-icons";
+
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
-  const { setTotalPrice, totalPrice } = useContextElement();
+  const [totalPrice, setTotalPrice] = useState(0);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -28,7 +28,6 @@ export default function Checkout() {
   const [isCouponStoreOpen, setIsCouponStoreOpen] = useState(false);
   const [cachedCoupons, setCachedCoupons] = useState([]);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
-  const [lastFetchedPrice, setLastFetchedPrice] = useState(0);
 
   const paymentMethods = [
     {
@@ -44,6 +43,22 @@ export default function Checkout() {
       logo: vnPayLogo,
     },
   ];
+
+  const calculateTotalPrice = (cartItems) => {
+    return cartItems.reduce((total, item) => total + item.Price * item.Quantity, 0);
+};
+
+useEffect(() => {
+  const fetchCartItems = async () => {
+      const response = await axios.get("http://127.0.0.1:8000/api/cart-items", {
+          headers: { Authorization: `Bearer ${token}` },
+      });
+      const items = response.data.data || [];
+      setTotalPrice(calculateTotalPrice(items));
+  };
+
+  fetchCartItems();
+}, [token]);
 
   const handlePaymentMethodSelect = (methodId) => {
     updateOrderData({ PaymentMethodID: parseInt(methodId) });
@@ -61,6 +76,8 @@ export default function Checkout() {
       setLoading(true);
 
       try {
+        console.log("Tổng tiền hiện tại:", totalPrice); 
+
         const [addressesResponse, cartItemsResponse, couponResponse] =
           await Promise.all([
             axios.get("http://127.0.0.1:8000/api/address", {
@@ -75,7 +92,7 @@ export default function Checkout() {
               { headers: { Authorization: `Bearer ${token}` } }
             ),
           ]);
-
+          console.log("Tổng tiền hiện tại:", totalPrice); 
         setAddresses(addressesResponse.data.data);
         setCartItems(cartItemsResponse.data.data || []);
         setCoupons(couponResponse.data.data || []);
@@ -158,25 +175,91 @@ export default function Checkout() {
     }
   };
 
-  const handleApplyCoupon = (coupon) => {
-    if (coupon.usable && totalPrice >= coupon.MinimumOrderValue) {
-      setAppliedCoupon(coupon.CouponID);
-      let finalDiscount;
+  const handleApplyCoupon = async (coupon) => {
+    try {
+      console.log("Tổng tiền hiện tại:", totalPrice); 
+        // Gọi API để kiểm tra mã giảm giá
+        const response = await axios.post(`http://127.0.0.1:8000/api/coupons/checkCoupon`, {
+            MinimumOrderValue: totalPrice.toFixed(2),
+            Code: coupon.Code // Gửi mã giảm giá để kiểm tra
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
 
-      if (totalPrice  < coupon.MaxAmount) {
-        finalDiscount = (coupon.DiscountPercentage / 100) * (totalPrice + shippingFee); // Tính phần trăm giảm giá
-      } else {
-        finalDiscount = coupon.MaxAmount; // Lấy MaxAmount
-      }
+        const availableCoupons = response.data.data;
 
-      setDiscount(finalDiscount);
-      setTotal(Number(totalPrice + shippingFee - finalDiscount).toFixed(2));
-      setIsCouponStoreOpen(false);
-      toast.success("Áp dụng mã giảm giá thành công!");
-    } else {
-      toast.error("Mã giảm giá không hợp lệ hoặc không đủ điều kiện.");
+        // Kiểm tra xem mã giảm giá có còn khả dụng không
+        const validCoupon = availableCoupons.find(c => c.CouponID === coupon.CouponID);
+
+        if (validCoupon && validCoupon.UsageLimit > 0 && totalPrice >= validCoupon.MinimumOrderValue) {
+            setAppliedCoupon(validCoupon.CouponID);
+            let finalDiscount;
+
+            if (totalPrice < validCoupon.MaxAmount) {
+                finalDiscount = (validCoupon.DiscountPercentage / 100) * (totalPrice + shippingFee);
+            } else {
+                finalDiscount = validCoupon.MaxAmount;
+            }
+
+            setDiscount(finalDiscount);
+            setTotal(Number(totalPrice + shippingFee - finalDiscount).toFixed(2));
+            setIsCouponStoreOpen(false);
+
+            toast.success("Áp dụng mã giảm giá thành công!");
+        } else {
+            toast.error("Mã giảm giá không hợp lệ hoặc không đủ điều kiện.");
+            // Nếu mã giảm giá không còn đủ điều kiện, reset lại
+            setAppliedCoupon("");
+            setDiscount(0);
+        }
+    } catch (error) {
+        console.error("Lỗi khi kiểm tra mã giảm giá:", error);
+        toast.error("Có lỗi xảy ra khi kiểm tra mã giảm giá.");
     }
   };
+
+  useEffect(() => {
+    const checkAppliedCoupon = async () => {
+        if (appliedCoupon) {
+            try {
+              console.log("Tổng tiền hiện tại:", totalPrice); 
+                const response = await axios.post(`http://127.0.0.1:8000/api/coupons/checkCoupon`, {
+                    MinimumOrderValue: totalPrice.toFixed(2),
+                    Code: appliedCoupon // Gửi mã giảm giá để kiểm tra
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                const availableCoupons = response.data.data;
+                const validCoupon = availableCoupons.find(c => c.CouponID === appliedCoupon);
+
+                if (!validCoupon || validCoupon.UsageLimit <= 0 || totalPrice < validCoupon.MinimumOrderValue) {
+                    // Nếu mã giảm giá không còn đủ điều kiện, reset lại
+                    setAppliedCoupon("");
+                    setDiscount(0);
+                    toast.error("Mã giảm giá không còn đủ điều kiện.");
+                } else {
+                    // Nếu mã giảm giá vẫn còn khả dụng, cập nhật discount
+                    let finalDiscount;
+
+                    if (totalPrice < validCoupon.MaxAmount) {
+                        finalDiscount = (validCoupon.DiscountPercentage / 100) * (totalPrice + shippingFee);
+                    } else {
+                        finalDiscount = validCoupon.MaxAmount;
+                    }
+
+                    setDiscount(finalDiscount);
+                    setTotal(Number(totalPrice + shippingFee - finalDiscount).toFixed(2));
+                }
+            } catch (error) {
+                console.error("Lỗi khi kiểm tra mã giảm giá:", error);
+                toast.error("Có lỗi xảy ra khi kiểm tra mã giảm giá.");
+            }
+        }
+    };
+
+    checkAppliedCoupon();
+  }, [appliedCoupon, totalPrice]);
 
   useEffect(() => {
     const fetchCoupons = async () => {

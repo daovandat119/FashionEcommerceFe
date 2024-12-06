@@ -154,7 +154,7 @@ export default function AccountOrders() {
         }
       );
 
-      // Cập nhật state orders để thêm đánh giá vào đơn hàng
+      // Cập nhật state orders để thêm Đánh giá vào đơn hàng
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order.OrderID === selectedOrderForReview
@@ -254,7 +254,7 @@ export default function AccountOrders() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976-2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
                 />
               </svg>
               ĐÁNH GIÁ
@@ -289,69 +289,49 @@ export default function AccountOrders() {
           </button>
 
           {showFeedbackModal && currentOrderId === order.OrderID && (
-            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-50">
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-6">
-                  Lý do hủy đơn
-                </h3>
-
-                <div className="space-y-3 mb-6">
-                  {cancelReasons.map((reason) => (
-                    <div
-                      key={reason}
-                      className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all duration-200 cursor-pointer
-                        ${
-                          selectedReason === reason
-                            ? "border-red-500 bg-red-50"
-                            : "border-gray-200 hover:border-red-200 hover:bg-red-50"
-                        }`}
-                      onClick={() => setSelectedReason(reason)}
-                    >
-                      <div
-                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
-                        ${
-                          selectedReason === reason
-                            ? "border-red-500"
-                            : "border-gray-400"
-                        }`}
-                      >
-                        {selectedReason === reason && (
-                          <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                        )}
-                      </div>
-                      <label className="flex-1 text-sm text-gray-700 cursor-pointer">
-                        {reason}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-
-                {selectedReason === "Khác" && (
-                  <div className="mb-6">
-                    <textarea
-                      value={otherReason}
-                      onChange={(e) => setOtherReason(e.target.value)}
-                      placeholder="Vui lòng chia sẻ lý do của bạn..."
-                      className="w-full p-4 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
-                      rows="3"
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white rounded-lg shadow-lg z-50 p-4">
+              <h3 className="text-lg font-semibold mb-4">Lý do hủy đơn</h3>
+              <div className="space-y-2 mb-4">
+                {cancelReasons.map((reason) => (
+                  <div
+                    key={reason}
+                    className={`flex items-center cursor-pointer p-2 rounded ${
+                      selectedReason === reason ? "bg-red-100" : "hover:bg-gray-100"
+                    }`}
+                    onClick={() => setSelectedReason(reason)}
+                  >
+                    <input
+                      type="radio"
+                      checked={selectedReason === reason}
+                      onChange={() => setSelectedReason(reason)}
+                      className="mr-2"
                     />
+                    <label className="text-sm">{reason}</label>
                   </div>
-                )}
-
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                  <button
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 focus:outline-none"
-                    onClick={handleCloseCancelModal}
-                  >
-                    Đóng
-                  </button>
-                  <button
-                    className="px-5 py-2.5 text-sm font-medium text-white bg-red-500 rounded-lg focus:outline-none"
-                    onClick={handleSubmitCancelOrder}
-                  >
-                    Xác nhận hủy
-                  </button>
-                </div>
+                ))}
+              </div>
+              {selectedReason === "Khác" && (
+                <textarea
+                  value={otherReason}
+                  onChange={(e) => setOtherReason(e.target.value)}
+                  placeholder="Chia sẻ lý do khác..."
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  rows="4"
+                />
+              )}
+              <div className="flex justify-end mt-4">
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded mr-2"
+                  onClick={handleCloseCancelModal}
+                >
+                  Đóng
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded"
+                  onClick={handleSubmitCancelOrder}
+                >
+                  Xác nhận hủy
+                </button>
               </div>
             </div>
           )}
@@ -766,65 +746,48 @@ export default function AccountOrders() {
 
       {/* Form đánh giá */}
       {showReviewModal && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-50">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-6">
-              Đánh giá đơn hàng
-            </h3>
-
-            <div className="space-y-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-lg font-medium text-gray-700">
-                  Mức độ hài lòng của bạn
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setRating(star)}
-                      className={`text-3xl transition-colors ${
-                        star <= rating ? "text-yellow-400" : "text-gray-300"
-                      } hover:scale-110`}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-lg font-medium text-gray-700 block">
-                  Nhận xét của bạn
-                </label>
-                <textarea
-                  value={reviewComment}
-                  onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Chia sẻ trải nghiệm mua hàng của bạn..."
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[120px] text-gray-700 resize-none"
-                  rows="4"
-                />
-              </div>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-white rounded-xl shadow-lg border border-gray-100 z-50 p-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Đánh giá đơn hàng</h3>
+          <div className="flex flex-col gap-4">
+            <label className="text-lg font-medium text-gray-700">Mức độ hài lòng của bạn</label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRating(star)}
+                  className={`text-3xl transition-colors ${star <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                >
+                  ★
+                </button>
+              ))}
             </div>
-
-            <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
-              <button
-                onClick={() => {
-                  setShowReviewModal(false);
-                  setRating(5);
-                  setReviewComment("");
-                  setSelectedOrderForReview(null);
-                }}
-                className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleSubmitReview}
-                className="px-5 py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200"
-              >
-                Gửi đánh giá
-              </button>
-            </div>
+            <label className="text-lg font-medium text-gray-700">Nhận xét của bạn</label>
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder="Chia sẻ trải nghiệm mua hàng của bạn..."
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              rows="4"
+            />
+          </div>
+          <div className="flex justify-end gap-4 mt-6">
+            <button
+              onClick={() => {
+                setShowReviewModal(false);
+                setRating(5);
+                setReviewComment("");
+                setSelectedOrderForReview(null);
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+            >
+              Hủy
+            </button>
+            <button
+              onClick={handleSubmitReview}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+            >
+              Gửi đánh giá
+            </button>
           </div>
         </div>
       )}
