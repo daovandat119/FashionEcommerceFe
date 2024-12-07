@@ -7,16 +7,16 @@ const Footers = () => {
                         <div className="w-full md:w-1/5 mb-6 md:mb-0">
                             <img alt="Logo UOMO" className="mb-4" height="50" src="/assets/images/1.jpg" width="100" />
                             <p>
-                                1418 River Drive, Suite 35 Cottonhall, CA 96222
+                                Số 1, Trịnh Văn Bô
                                 <br />
-                                Hoa Kỳ
+                                Việt Nam
                             </p>
                             <p className="mt-2">
                                 <a className="text-gray-700" href="mailto:sale@uomo.com">
                                     sale@ProShirts.com
                                 </a>
                                 <br />
-                                +1 246-345-0695
+                                +84 463450695
                             </p>
                             <div className="flex mt-4 space-x-4">
                                 <a className="text-gray-700" href="#">
@@ -179,13 +179,13 @@ const Footers = () => {
                                 Ngôn Ngữ
                             </a>
                             <a className="text-gray-700" href="#">
-                                Vương Quốc Anh | Tiếng Anh
+                                Tiếng Việt | Việt Nam
                             </a>
                             <a className="text-gray-700" href="#">
                                 Tiền Tệ
                             </a>
                             <a className="text-gray-700" href="#">
-                                $ USD
+                               VND
                             </a>
                         </div>
                     </div>

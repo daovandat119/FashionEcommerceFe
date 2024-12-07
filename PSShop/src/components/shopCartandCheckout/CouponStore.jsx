@@ -93,14 +93,14 @@ export default function CouponStore({
                               Giảm: {coupon.DiscountPercentage}%
                             </p>
                             <p className="text-sm text-gray-600 mt-1">
-                              Giảm tối đa: {Number(coupon.MaxAmount).toLocaleString()} VND
+                              Giảm tối đa: {Math.floor(Number(coupon.MaxAmount)).toLocaleString()} VND
                             </p>
                             {coupon.MinimumOrderValue && (
                               <p className="text-sm text-gray-500 mt-1">
                                 Đơn tối thiểu:{" "}
-                                {Number(
+                                {Math.floor(Number(
                                   coupon.MinimumOrderValue
-                                ).toLocaleString()}
+                                )).toLocaleString()}
                                 VND
                               </p>
                             )}

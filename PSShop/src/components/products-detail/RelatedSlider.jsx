@@ -5,6 +5,7 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Star from "../../components/common/Star";
 import { useContextElement } from "../../context/Context";
+import { handleViewProduct } from "../../components/views/view";
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
   autoplay: {
@@ -64,9 +65,7 @@ export default function RelatedSlider() {
   useEffect(() => {
     // Gọi API PHP từ React
     axios
-      .post("http://127.0.0.1:8000/api/products/index", {
-        
-      })
+      .post("http://127.0.0.1:8000/api/products/index", {})
       .then((response) => {
         setProducts(response.data.data || response.data); // Điều chỉnh nếu cần
         setLoading(false);
@@ -93,7 +92,10 @@ export default function RelatedSlider() {
             {products.map((product, i) => (
               <SwiperSlide key={i} className="swiper-slide product-card">
                 <div className="pc__img-wrapper">
-                  <Link to={`/shop-detail/${product.ProductID}`}>
+                  <Link
+                    to={`/shop-detail/${product.ProductID}`}
+                    onClick={() => handleViewProduct(product.ProductID)}
+                  >
                     <img
                       loading="lazy"
                       src={product.MainImageURL}
@@ -103,11 +105,14 @@ export default function RelatedSlider() {
                       className="pc__img"
                     />
                   </Link>
-                  <Link to={`/shop-detail/${product.ProductID}`}>
-                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
-                          Xem chi tiết
-                        </button>
-                      </Link>
+                  <Link
+                    to={`/shop-detail/${product.ProductID}`}
+                    onClick={() => handleViewProduct(product.ProductID)}
+                  >
+                    <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                      Xem chi tiết
+                    </button>
+                  </Link>
                   {product.discount_percentage > 0 && (
                     <span className="discount-label position-absolute top-0 start-0 m-1 border border-light bg-red text-white p-1 rounded">
                       -{product.discount_percentage}%
@@ -131,47 +136,47 @@ export default function RelatedSlider() {
                     </Link>
                   </h6>
                   <div className="flex justify-between items-center">
-                  <div className="flex justify-start">
-                    <span className="text-lg font-bold text-red-600">
-                      {Math.floor(product.SalePrice)} VND
-                    </span>
-                    {product.Price && (
-                      <span className="text-sm mt-1 line-through text-gray-500 ml-2">
-                        {Math.floor(product.Price)} VND
+                    <div className="flex justify-start">
+                      <span className="text-lg font-bold text-red-600">
+                        {Math.floor(product.SalePrice)} VND
                       </span>
-                    )}
-                  </div>
-                  <button
-                    title="Add To Wishlist"
-                    className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
-                      isInWishlist(product.ProductID) ||
-                      wishlistStatus[product.ProductID]
-                        ? "active"
-                        : ""
-                    }`}
-                    onClick={() => toggleWishlist(product.ProductID)} // Gọi hàm toggleWishlist
-                  >
-                    <svg
-                      width="25px"
-                      height="25px"
-                      className=""
-                      viewBox="0 0 64 64"
-                      xmlns="http://www.w3.org/2000/svg"
-                      stroke="#000000"
-                      fill={
+                      {product.Price && (
+                        <span className="text-sm mt-1 line-through text-gray-500 ml-2">
+                          {Math.floor(product.Price)} VND
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      title="Add To Wishlist"
+                      className={`transition-transform duration-200 hover:scale-110 active:scale-95 ${
                         isInWishlist(product.ProductID) ||
                         wishlistStatus[product.ProductID]
-                          ? "red"
-                          : "none"
-                      } // Thay đổi màu sắc
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => toggleWishlist(product.ProductID)} // Gọi hàm toggleWishlist
                     >
-                      <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
-                    </svg>
-                  </button>
+                      <svg
+                        width="25px"
+                        height="25px"
+                        className=""
+                        viewBox="0 0 64 64"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="#000000"
+                        fill={
+                          isInWishlist(product.ProductID) ||
+                          wishlistStatus[product.ProductID]
+                            ? "red"
+                            : "none"
+                        } // Thay đổi màu sắc
+                      >
+                        <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z" />
+                      </svg>
+                    </button>
                   </div>
                   <p className="text-sm text-gray-600">
-                      Đã bán: {product.total_sold}
-                    </p>
+                    Đã bán: {product.total_sold}
+                  </p>
                 </div>
               </SwiperSlide>
             ))}
