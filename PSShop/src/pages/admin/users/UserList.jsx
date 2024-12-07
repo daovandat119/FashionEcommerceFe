@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Input } from "@material-tailwind/react";
 import {
   MagnifyingGlassIcon,
@@ -10,28 +10,31 @@ import { Link, useLocation } from "react-router-dom";
 import { ListUsers, BlockedUser } from "../service/api_service"; // Import hàm ListUsers, BlockedUser
 import { toast, ToastContainer } from "react-toastify"; // Import toast
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
+import { useDebounce } from "use-debounce";
 
 const UserList = () => {
   const [Users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
   const [error, setError] = useState(null);
-  const location = useLocation(); // Lấy location để kiểm tra trạng thái
+  const location = useLocation();
+  const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue] = useDebounce(searchValue, 500);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setIsLoading(true); // Bắt đầu loading
-      try {
-        const response = await ListUsers(); // Lấy trang đầu tiên
-        setUsers(response.data); // Giả sử response.data chứa danh sách người dùng
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false); // Kết thúc loading
-      }
-    };
+    fetchUsers(debouncedSearchValue);
+  }, [debouncedSearchValue]);
 
-    fetchUsers();
-  }, []);
+  const fetchUsers = async (debouncedSearchValue) => {
+    setIsLoading(true); 
+    try {
+      const response = await ListUsers(debouncedSearchValue); // Lấy trang đầu tiên
+      setUsers(response.data); // Giả sử response.data chứa danh sách người dùng
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false); // Kết thúc loading
+    }
+  };
 
   useEffect(() => {
     if (location.state?.success) {
@@ -82,12 +85,14 @@ const UserList = () => {
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
           <Input
+            type="text"
+            value={searchValue}
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Tìm kiếm người dùng"
+            onChange={(e) => setSearchValue(e.target.value)}
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
           />
         </div>
-       
       </div>
       <div className="overflow-x-auto bg-white rounded-lg shadow">
         {isLoading ? ( // Hiển thị loading

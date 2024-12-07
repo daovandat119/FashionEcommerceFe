@@ -72,14 +72,16 @@ export default function Cart() {
 
     const id = setTimeout(async () => {
       try {
-        await updateCartItem(itemId, {
+        const response = await updateCartItem(itemId, {
           productID,
           colorID,
           sizeID,
           quantity: newQuantity,
         });
-      } catch {
-        toast.error("Sản phẩm không đủ");
+      } catch (error) {
+        const errorMessage =
+          error.response?.data?.message || "Sản phẩm không đủ";
+        toast.error(errorMessage);
         fetchCartItems();
       }
     }, 1000);
@@ -285,7 +287,6 @@ export default function Cart() {
                 <tr>
                   <th>Tổng cộng</th>
                   <td>
-                    
                     {Math.floor(
                       cartProducts
                         .reduce(

@@ -141,8 +141,9 @@ const AddProductVariant = (variantData) => {
 const GetProductVariants = (ProductID) => {
   return axios.post(`/api/product-variants/productID`, { ProductID }); // Sử dụng POST để gửi ProductID
 };
-const ListUsers = () => {
-  return axios.post(`/api/users`);
+
+const ListUsers = (searchValue) => {
+  return axios.post(`/api/users`, { search: searchValue });
 };
 
 const DeleteProductVariant = (ids) => {
