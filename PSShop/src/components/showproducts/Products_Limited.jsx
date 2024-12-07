@@ -51,19 +51,24 @@ export default function Products_Limited() {
   const { isInWishlist, addToWishlist, removeFromWishlist } =
     useContextElement(); // Di chuyển vào trong hàm
 
-  useEffect(() => {
-    axios
-      .post("http://127.0.0.1:8000/api/products/index", {})
-      .then((response) => {
-        setProducts(response.data.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Có lỗi xảy ra khi gọi API", error);
-        setError("Không thể tải sản phẩm.");
-        setLoading(false);
-      });
-  }, []);
+    useEffect(() => {
+      axios
+        .post("http://127.0.0.1:8000/api/products/index", {})
+        .then((response) => {
+          const allProducts = response.data.data;
+          // Lọc các sản phẩm có lượt bán > 30
+          const filteredProducts = allProducts.filter(
+            (product) => product.total_sold > 3
+          );
+          setProducts(filteredProducts); // Lưu các sản phẩm đã lọc
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Có lỗi xảy ra khi gọi API", error);
+          setError("Không thể tải sản phẩm.");
+          setLoading(false);
+        });
+    }, []);
 
   const toggleWishlist = async (productId) => {
     if (isInWishlist(productId)) {
@@ -77,7 +82,7 @@ export default function Products_Limited() {
   return (
     <section className="container mx-auto">
       <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
-        Phiên Bản <strong>Giới Hạn</strong>
+       Sản phẩm <strong>Bán chạy</strong>
       </h2>
 
       <div id="product_carousel" className="relative">

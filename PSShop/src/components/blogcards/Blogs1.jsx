@@ -37,7 +37,6 @@ export default function Blog1() {
       author: "Admin",
       excerpt:
         "Phụ kiện là yếu tố quan trọng để hoàn thiện trang phục. Tìm hiểu cách kết hợp phụ kiện để tạo điểm nhấn cho phong cách của bạn.",
-
         image: "/assets/images/a.jpg",
     },
   ];
