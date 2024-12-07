@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 
 export default function CouponStore({
   onApplyCoupon,
-  totalPrice,
+  totalAmount,
   isOpen,
   onClose,
   coupons = [],
@@ -125,12 +125,12 @@ export default function CouponStore({
                           <button
                             onClick={() => {
                               if (coupon.usable && !isExpired(coupon.ExpiresAt)) {
-                                if (totalPrice >= coupon.MinimumOrderValue) {
+                                if (totalAmount >= coupon.MinimumOrderValue) {
                                   onApplyCoupon(coupon);
                                   onClose();
                                 } else {
                                   toast.error("Cần thêm " + 
-                                    (coupon.MinimumOrderValue - totalPrice).toLocaleString() + 
+                                    (coupon.MinimumOrderValue - totalAmount).toLocaleString() + 
                                     " VND để sử dụng mã này");
                                 }
                               } else {
@@ -153,11 +153,11 @@ export default function CouponStore({
                         </div>
                         {!coupon.usable &&
                           !isExpired(coupon.ExpiresAt) &&
-                          coupon.MinimumOrderValue > totalPrice && (
+                          coupon.MinimumOrderValue > totalAmount && (
                             <p className="text-sm text-red-500 mt-2">
                               Cần thêm{" "}
                               {Number(
-                                coupon.MinimumOrderValue - totalPrice
+                                coupon.MinimumOrderValue - totalAmount
                               ).toLocaleString()}
                               VND để sử dụng mã này
                             </p>

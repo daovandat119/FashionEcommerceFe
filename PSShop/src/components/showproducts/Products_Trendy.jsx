@@ -3,67 +3,52 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useContextElement } from "../../context/Context";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
 
+// Danh sách các bộ lọc
 const filterCategories = [
-  "Tất cả",
-  "Hàng mới đến",
-  "Bán chạy nhất",
-  "Được xếp hạng hàng đầu",
+  { label: "Tất cả", sortBy: null },
+  { label: "Hàng mới đến", sortBy: "created_at" },
+  { label: "Sản phẩm được quan tâm", sortBy: "view" },
+  { label: "Được xếp hạng hàng đầu", sortBy: "average_rating" },
 ];
 
 export default function Products_Trendy() {
-  const [currentCategory, setCurrentCategory] = useState(filterCategories[0]);
+  const [currentCategory, setCurrentCategory] = useState(filterCategories[0].label);
   const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wishlistStatus, setWishlistStatus] = useState({});
-  const { isInWishlist, addToWishlist, removeFromWishlist } =
-    useContextElement();
-
-  // Fetch product data from API
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useContextElement();
   useEffect(() => {
-    axios
-      .post("http://127.0.0.1:8000/api/products/index", {})
-      .then((response) => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const sortBy = filterCategories.find((cat) => cat.label === currentCategory)?.sortBy || null;
+        const response = await axios.post("http://127.0.0.1:8000/api/products/index", {
+          Search: "",
+          CategoryID: null,
+          ColorID: null,
+          SizeID: null,
+          SortBy: sortBy,
+          Page: 1,
+          Limit: 10,
+        });
+
         const fetchedProducts = response.data.data || response.data;
         setProducts(fetchedProducts);
-        setFiltered(fetchedProducts); // Default to all products
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Có lỗi xảy ra khi gọi API:", error);
         setError("Không thể tải sản phẩm.");
+      } finally {
         setLoading(false);
-      });
-  }, []);
+      }
+    };
 
-  // Filter products based on category
-  useEffect(() => {
-    let updatedFiltered = [];
-    const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    fetchProducts();
+  }, [currentCategory]);
 
-    if (currentCategory === "Tất cả") {
-      updatedFiltered = products;
-    } else if (currentCategory === "Hàng mới đến") {
-      updatedFiltered = products.filter((product) => {
-        const createdAt = new Date(product.created_at);
-        return !isNaN(createdAt) && createdAt >= twoWeeksAgo;
-      });
-    } else if (currentCategory === "Bán chạy nhất") {
-      updatedFiltered = products.filter((product) => product.total_sold > 30);
-    } else if (currentCategory === "Được xếp hạng hàng đầu") {
-      updatedFiltered = products.filter(
-        (product) => parseFloat(product.average_rating) >= 4
-      );
-    }
-
-    setFiltered(updatedFiltered);
-  }, [currentCategory, products]);
-
+  // Xử lý thêm/xóa khỏi wishlist
   const toggleWishlist = async (productId) => {
     if (isInWishlist(productId)) {
       await removeFromWishlist(productId);
@@ -80,54 +65,49 @@ export default function Products_Trendy() {
         Sản phẩm <strong>Thịnh hành</strong>
       </h2>
 
-      {/* Tabs */}
+      {/* Tabs phân loại */}
       <ul className="nav nav-tabs mb-3 text-uppercase justify-content-center">
         {filterCategories.map((category, i) => (
           <li
             key={i}
             className="nav-item"
             role="presentation"
-            onClick={() => setCurrentCategory(category)}
+            onClick={() => setCurrentCategory(category.label)}
           >
             <button
-              className={`nav-link nav-link_underscore ${
-                currentCategory === category ? "active" : ""
-              }`}
+              className={`nav-link nav-link_underscore ${currentCategory === category.label ? "active" : ""}`}
               type="button"
             >
-              {category}
+              {category.label}
             </button>
           </li>
         ))}
       </ul>
 
-      {/* Product display */}
+      {/* Hiển thị sản phẩm */}
       {loading ? (
         <p>Đang tải...</p>
       ) : error ? (
         <p>{error}</p>
-      ) : filtered.length === 0 ? (
+      ) : products.length === 0 ? (
         <p>Không có sản phẩm nào.</p>
       ) : (
         <div className="row">
-          {filtered.map((product) => (
+          {products.map((product) => (
             <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
               <div className="product-card mb-3 mb-md-4 mb-xxl-5">
-                {/* Discount badge */}
                 {product.discount_percentage > 0 && (
                   <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
                     -{product.discount_percentage}%
                   </span>
                 )}
-
-                {/* New badge */}
-                {new Date(product.created_at) >=
-                  new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
-                  <div className="absolute top-12 left-0 product-label bg-white text-dark">
-                    NEW
-                  </div>
-                )}
-
+                {new Date(product.created_at) >
+                      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
+                      product.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
+                        <div className="absolute top-12 left-0  product-label bg-white text-dark">
+                          NEW
+                        </div>
+                      )}
                 <Link to={`/shop-detail/${product.ProductID}`}>
                   <img
                     loading="lazy"
@@ -138,7 +118,6 @@ export default function Products_Trendy() {
                     className="w-[400px] h-[450px]"
                   />
                 </Link>
-
                 <Link to={`/shop-detail/${product.ProductID}`}>
                   <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium">
                     Xem chi tiết
@@ -146,24 +125,20 @@ export default function Products_Trendy() {
                 </Link>
               </div>
 
-              {/* Product info */}
+              {/* Thông tin sản phẩm */}
               <div className="p-2 text-left">
                 <div className="flex justify-between items-center">
                   <p className="mb-0 text-sm">{product.category_name}</p>
                   <div className="flex items-center">
                     <Star stars={product.average_rating} />
-                    <span className="text-gray-500 ml-1">
-                      {product.reviews }
-                    </span>
+                    {/* <span className="text-gray-500 ml-1">{product.total_sold}</span> */}
                   </div>
                 </div>
-
                 <h6 className="text-lg font-semibold">
                   <Link to={`/shop-detail/${product.ProductID}`}>
                     {product.ProductName}
                   </Link>
                 </h6>
-
                 <div className="flex justify-between">
                   <div>
                     <span className="text-lg font-bold text-red-600">
@@ -175,13 +150,11 @@ export default function Products_Trendy() {
                       </span>
                     )}
                   </div>
-
                   <button
                     title="Add To Wishlist"
                     onClick={() => toggleWishlist(product.ProductID)}
                     className={`transition-transform duration-200 hover:scale-110 ${
-                      isInWishlist(product.ProductID) ||
-                      wishlistStatus[product.ProductID]
+                      isInWishlist(product.ProductID) || wishlistStatus[product.ProductID]
                         ? "active"
                         : ""
                     }`}
@@ -193,8 +166,7 @@ export default function Products_Trendy() {
                       xmlns="http://www.w3.org/2000/svg"
                       stroke="#000000"
                       fill={
-                        isInWishlist(product.ProductID) ||
-                        wishlistStatus[product.ProductID]
+                        isInWishlist(product.ProductID) || wishlistStatus[product.ProductID]
                           ? "red"
                           : "none"
                       }
@@ -203,10 +175,7 @@ export default function Products_Trendy() {
                     </svg>
                   </button>
                 </div>
-
-                <p className="text-sm text-gray-600">
-                  Đã bán: {product.total_sold}
-                </p>
+                <p className="text-sm text-gray-600">Đã bán: {product.total_sold}</p>
               </div>
             </div>
           ))}
