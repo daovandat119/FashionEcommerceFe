@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useContextElement } from "../../context/Context";
 import { Swiper, SwiperSlide } from "swiper/react";
-
+import { handleViewProduct } from "../../components/views/view";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 const filterCategories = [
   "Tất cả",
@@ -164,7 +164,10 @@ export default function Products_Trendy() {
                         NEW
                       </div>
                     )}
-                  <Link to={`/shop-detail/${product.ProductID}`}>
+                  <Link
+                    to={`/shop-detail/${product.ProductID}`}
+                    onClick={() => handleViewProduct(product.ProductID)}
+                  >
                     <img
                       loading="lazy"
                       src={product.MainImageURL}
@@ -174,7 +177,10 @@ export default function Products_Trendy() {
                       className="w-[400px] h-[450px]"
                     />
                   </Link>
-                  <Link to={`/shop-detail/${product.ProductID}`}>
+                  <Link
+                    to={`/shop-detail/${product.ProductID}`}
+                    onClick={() => handleViewProduct(product.ProductID)}
+                  >
                     <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
                       Xem chi tiết
                     </button>

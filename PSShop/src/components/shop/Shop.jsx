@@ -7,7 +7,7 @@ import { openModalShopFilter } from "../../utlis/aside";
 import FilterAll from "./filter/FilterAll";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
-
+import { handleViewProduct } from "../../components/views/view";
 const itemPerRow = [2, 3, 4];
 
 export default function Shop1() {
@@ -158,7 +158,7 @@ export default function Shop1() {
               <div key={i} className="product-card-wrapper">
                 <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                   <div className="pc__img-wrapper">
-                    <Link to={`/shop-detail/${elm.ProductID}`}>
+                    <Link to={`/shop-detail/${elm.ProductID}`}  onClick={() => handleViewProduct(elm.ProductID)}>
                       <img
                         loading="lazy"
                         src={elm.MainImageURL}
@@ -167,7 +167,7 @@ export default function Shop1() {
                         alt={elm.ProductName}
                         className="pc__img"
                       />
-                      <Link to={`/shop-detail/${elm.ProductID}`}>
+                      <Link to={`/shop-detail/${elm.ProductID}`}  onClick={() => handleViewProduct(elm.ProductID)}>
                         <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
                           Xem chi tiết
                         </button>
@@ -199,7 +199,7 @@ export default function Shop1() {
                     </div>
                     <div className="flex justify-between">
                       <h6 className="text-lg font-semibold">
-                        <Link to={`/shop-detail/${elm.ProductID}`}>
+                        <Link to={`/shop-detail/${elm.ProductID}`}  onClick={() => handleViewProduct(product.ProductID)}>
                           {elm.ProductName}
                         </Link>
                       </h6>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 import Star from "../common/Star";
-
+import { handleViewProduct } from "../../components/views/view";
 export default function AccountWishlist() {
   const { wishlistProducts, removeFromWishlist, fetchWishlistItems, loading } =
     useContextElement();
@@ -48,7 +48,10 @@ export default function AccountWishlist() {
               <div className="product-card-wrapper" key={item.WishlistID}>
                 <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                   <div className="pc__img-wrapper">
-                    <Link to={`/shop-detail/${item.ProductID}`}>
+                    <Link
+                      to={`/shop-detail/${item.ProductID}`}
+                      onClick={() => handleViewProduct(item.ProductID)}
+                    >
                       <img
                         loading="lazy"
                         src={item.MainImageURL}
@@ -59,10 +62,10 @@ export default function AccountWishlist() {
                       />
                     </Link>
                     <Link to={`/shop-detail/${item.ProductID}`}>
-                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
-                          Xem chi tiết
-                        </button>
-                      </Link>
+                      <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
+                        Xem chi tiết
+                      </button>
+                    </Link>
                     <button
                       className="btn-remove-from-wishlist position-absolute top-4 end-0"
                       onClick={() => handleRemoveFromWishlist(item.WishlistID)}
@@ -123,7 +126,7 @@ export default function AccountWishlist() {
                     </h6>
                     <div className="flex justify-start">
                       <span className="text-lg font-bold text-red-600">
-                      {Math.floor(item.SalePrice)} VND
+                        {Math.floor(item.SalePrice)} VND
                       </span>
                       {item.Price && (
                         <span className="text-sm line-through text-gray-500 ml-2">
@@ -144,9 +147,9 @@ export default function AccountWishlist() {
                         )}
                     </div>
                     <div className="flex justify-between items-center">
-                    <p className="text-sm text-gray-600">
-                      Đã bán: {item.total_sold}
-                    </p>
+                      <p className="text-sm text-gray-600">
+                        Đã bán: {item.total_sold}
+                      </p>
                     </div>
                   </div>
                 </div>
