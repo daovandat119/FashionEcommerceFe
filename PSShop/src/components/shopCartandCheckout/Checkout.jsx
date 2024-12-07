@@ -124,10 +124,17 @@ export default function Checkout() {
       return;
     }
 
+    const totalAmount = cartItems.reduce((total, item) => {
+      if (item.Status === 'Active') {
+        return total + item.Price * item.Quantity;
+      }
+      return total;
+    }, 0);
+
     const orderPayload = {
       CouponID: appliedCoupon,
       PaymentMethodID: orderData.PaymentMethodID,
-      TotalAmount: Number(totalPrice + shippingFee - discount).toFixed(2),
+      TotalAmount: Number(totalAmount + shippingFee - discount).toFixed(2),
       Discount: discount ? Number(discount).toFixed(2) : null,
     };
 
@@ -366,7 +373,9 @@ export default function Checkout() {
                   Tổng Quan Đơn Hàng
                 </h3>
                 <div className="space-y-4 mb-6">
-                  {cartItems.map((item, index) => (
+                  {cartItems
+                  .filter(item => item.Status === "Active")
+                  .map((item, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-4 pb-4 border-b border-gray-100"
