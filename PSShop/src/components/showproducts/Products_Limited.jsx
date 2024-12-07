@@ -5,7 +5,7 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Star from "../../components/common/Star"; // Import component Star
 import { useContextElement } from "../../context/Context";
-import { handleViewProduct } from "../../components/views/view";
+
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
   autoplay: {
@@ -53,14 +53,11 @@ export default function Products_Limited() {
 
     useEffect(() => {
       axios
-        .post("http://127.0.0.1:8000/api/products/index", {})
+        .post("http://127.0.0.1:8000/api/products/index", {
+          SortBy: "total_sold", // Thêm SortBy vào body request
+        })
         .then((response) => {
-          const allProducts = response.data.data;
-          // Lọc các sản phẩm có lượt bán > 30
-          const filteredProducts = allProducts.filter(
-            (product) => product.total_sold > 3
-          );
-          setProducts(filteredProducts); // Lưu các sản phẩm đã lọc
+          setProducts(response.data.data);
           setLoading(false);
         })
         .catch((error) => {
@@ -69,6 +66,7 @@ export default function Products_Limited() {
           setLoading(false);
         });
     }, []);
+    
 
   const toggleWishlist = async (productId) => {
     if (isInWishlist(productId)) {
@@ -82,7 +80,7 @@ export default function Products_Limited() {
   return (
     <section className="container mx-auto">
       <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
-       Sản phẩm <strong>Bán chạy</strong>
+        Phiên Bản <strong>Giới Hạn</strong>
       </h2>
 
       <div id="product_carousel" className="relative">
@@ -112,10 +110,7 @@ export default function Products_Limited() {
                           NEW
                         </div>
                       )}
-                    <Link
-                      to={`/shop-detail/${product.ProductID}`}
-                      onClick={() => handleViewProduct(product.ProductID)}
-                    >
+                    <Link to={`/shop-detail/${product.ProductID}`}>
                       <img
                         loading="lazy"
                         src={product.MainImageURL}
@@ -125,10 +120,7 @@ export default function Products_Limited() {
                         className="w-[400px] h-[450px] "
                       />
                     </Link>
-                    <Link
-                      to={`/shop-detail/${product.ProductID}`}
-                      onClick={() => handleViewProduct(product.ProductID)}
-                    >
+                    <Link to={`/shop-detail/${product.ProductID}`}>
                       <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
                         Xem chi tiết
                       </button>
