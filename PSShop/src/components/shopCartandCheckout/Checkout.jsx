@@ -404,10 +404,9 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
-                    if(item.Status === 'Active'){  
                      <span className="font-medium">
                       {Math.floor(totalAmount)} VND
-                    </span>}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
