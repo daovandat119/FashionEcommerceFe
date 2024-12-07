@@ -674,7 +674,7 @@ export default function AccountOrders() {
                                       </span>{" "}
                                       {product.VariantSize} |{" "}
                                       <span className="font-medium">Giá:</span>{" "}
-                                      {product.VariantPrice} VND
+                                      {Math.floor(product.VariantPrice)} VND
                                     </p>
                                   </div>
                                 </div>

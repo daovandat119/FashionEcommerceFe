@@ -93,7 +93,7 @@ const SearchBar = () => {
                   <div>
                     {/* Hiển thị tên sản phẩm với phần văn bản được làm nổi bật */}
                     <span>{highlightText(product.ProductName, query)}</span>
-                    <p className="text-gray-600">Giá: {product.Price} VND</p>
+                    <p className="text-gray-600">Giá: {Math.floor(product.Price)} VND</p>
                   </div>
                 </Link>
               </li>

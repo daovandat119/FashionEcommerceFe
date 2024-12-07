@@ -554,7 +554,7 @@ const ProductDetail = () => {
                 details: {
                   title: "Thông tin chi tiết",
                   items: [
-                    `Giá: ${product.Price}VND`,
+                    `Giá: ${Math.floor(product.Price)} VND`,
                     `Danh mục: ${product.category_name || "Chưa cập nhật"}`,
                   ],
                 },
