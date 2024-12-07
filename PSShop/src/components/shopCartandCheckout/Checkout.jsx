@@ -3,17 +3,17 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
-import { useContextElement } from "../../context/Context";
+// import { useContextElement } from "../../context/Context";
 import Swal from "sweetalert2";
 import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
 import CouponStore from "./CouponStore";
 import { toast } from "react-hot-toast";
-import { faWindowMinimize } from "@fortawesome/free-solid-svg-icons";
+
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
-  const { setTotalPrice, totalPrice } = useContextElement();
+  // const { settotalAmount, totalAmount } = useContextElement();
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -62,6 +62,13 @@ export default function Checkout() {
     }
   }, [cartItems, navigate]);
 
+  const totalAmount = cartItems.reduce((total, item) => {
+    if (item.Status === 'Active') {
+      return total + item.Price * item.Quantity;
+    }
+    return total;
+  }, 0);
+
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
@@ -77,7 +84,7 @@ export default function Checkout() {
             }),
             axios.post(
               "http://127.0.0.1:8000/api/coupons/checkCoupon",
-              { MinimumOrderValue: totalPrice.toFixed(2) },
+              { MinimumOrderValue: totalAmount.toFixed(2) },
               { headers: { Authorization: `Bearer ${token}` } }
             ),
           ]);
@@ -113,7 +120,7 @@ export default function Checkout() {
     if (token) {
       fetchAllData();
     }
-  }, [token, totalPrice]);
+  }, [token, totalAmount]);
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -124,12 +131,7 @@ export default function Checkout() {
       return;
     }
 
-    const totalAmount = cartItems.reduce((total, item) => {
-      if (item.Status === 'Active') {
-        return total + item.Price * item.Quantity;
-      }
-      return total;
-    }, 0);
+    
 
     const orderPayload = {
       CouponID: appliedCoupon,
@@ -174,19 +176,19 @@ export default function Checkout() {
   };
 
   const handleApplyCoupon = (coupon) => {
-    if (coupon.usable && totalPrice >= coupon.MinimumOrderValue) {
+    if (coupon.usable && totalAmount >= coupon.MinimumOrderValue) {
       setAppliedCoupon(coupon.CouponID);
       let finalDiscount;
 
-      if (totalPrice < coupon.MaxAmount) {
+      if (totalAmount < coupon.MaxAmount) {
         finalDiscount =
-          (coupon.DiscountPercentage / 100) * (totalPrice + shippingFee); // Tính phần trăm giảm giá
+          (coupon.DiscountPercentage / 100) * (totalAmount + shippingFee); // Tính phần trăm giảm giá
       } else {
         finalDiscount = coupon.MaxAmount; // Lấy MaxAmount
       }
 
       setDiscount(finalDiscount);
-      setTotal(Number(totalPrice + shippingFee - finalDiscount).toFixed(2));
+      setTotal(Number(totalAmount + shippingFee - finalDiscount).toFixed(2));
       setIsCouponStoreOpen(false);
       toast.success("Áp dụng mã giảm giá thành công!");
     } else {
@@ -202,7 +204,7 @@ export default function Checkout() {
         setIsCouponLoading(true);
         const response = await axios.post(
           "http://127.0.0.1:8000/api/coupons/checkCoupon",
-          { MinimumOrderValue: totalPrice.toFixed(2) },
+          { MinimumOrderValue: totalAmount.toFixed(2) },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setCachedCoupons(response.data.data || []);
@@ -214,7 +216,7 @@ export default function Checkout() {
     };
 
     fetchCoupons();
-  }, [token, totalPrice]);
+  }, [token, totalAmount]);
 
   if (loading) {
     return (
@@ -327,7 +329,7 @@ export default function Checkout() {
 
               <CouponStore
                 onApplyCoupon={handleApplyCoupon}
-                totalPrice={totalPrice}
+                totalAmount={totalAmount}
                 isOpen={isCouponStoreOpen}
                 onClose={() => setIsCouponStoreOpen(false)}
                 coupons={cachedCoupons}
@@ -402,9 +404,10 @@ export default function Checkout() {
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
-                    <span className="font-medium">
-                      {Math.floor(totalPrice)} VND
-                    </span>
+                    if(item.Status === 'Active'){  
+                     <span className="font-medium">
+                      {Math.floor(totalAmount)} VND
+                    </span>}
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
@@ -424,7 +427,7 @@ export default function Checkout() {
                         Thanh toán
                       </span>
                       <span className="text-base font-semibold text-gray-900">
-                        {Math.floor(totalPrice + shippingFee - discount)} VND
+                        {Math.floor(totalAmount + shippingFee - discount)} VND
                       </span>
                     </div>
                   </div>
