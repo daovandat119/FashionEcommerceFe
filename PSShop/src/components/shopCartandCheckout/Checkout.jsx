@@ -10,7 +10,6 @@ import vnPayLogo from "../../assets/logovnpay.png";
 import CouponStore from "./CouponStore";
 import { toast } from "react-hot-toast";
 
-
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
   // const { settotalAmount, totalAmount } = useContextElement();
@@ -29,12 +28,6 @@ export default function Checkout() {
   const [cachedCoupons, setCachedCoupons] = useState([]);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [lastFetchedPrice, setLastFetchedPrice] = useState(0);
-
-  // useEffect(() => {
-  //   if (!orderData.PaymentMethodID) {
-  //     updateOrderData({ PaymentMethodID: 2 });
-  //   }
-  // }, [orderData.PaymentMethodID, updateOrderData]);
 
   const paymentMethods = [
     {
@@ -63,7 +56,7 @@ export default function Checkout() {
   }, [cartItems, navigate]);
 
   const totalAmount = cartItems.reduce((total, item) => {
-    if (item.Status === 'Active') {
+    if (item.Status === "ACTIVE") {
       return total + item.Price * item.Quantity;
     }
     return total;
@@ -131,8 +124,6 @@ export default function Checkout() {
       return;
     }
 
-    
-
     const orderPayload = {
       CouponID: appliedCoupon,
       PaymentMethodID: orderData.PaymentMethodID,
@@ -164,6 +155,7 @@ export default function Checkout() {
           icon: "warning",
           confirmButtonText: "Đồng ý",
         });
+        navigate("/shop_cart");
       }
     } catch (err) {
       console.error("Chi tiết lỗi:", err);
@@ -376,38 +368,38 @@ export default function Checkout() {
                 </h3>
                 <div className="space-y-4 mb-6">
                   {cartItems
-                  .filter(item => item.Status === "Active")
-                  .map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 pb-4 border-b border-gray-100"
-                    >
-                      <img
-                        src={item.ImageUrl}
-                        alt={item.ProductName}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                      <div className="flex-grow">
-                        <h4 className="text-sm font-medium text-gray-900">
-                          {item.ProductName}
-                        </h4>
-                        <div className="text-sm text-gray-500 mt-1">
-                          {item.ColorName} • {item.SizeName} • x{item.Quantity}
-                        </div>
-                        <div className="text-sm font-medium text-gray-900 mt-1">
-                          {Math.floor(item.Price * item.Quantity)} VND
+                    .filter((item) => item.Status === "ACTIVE")
+                    .map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-4 pb-4 border-b border-gray-100"
+                      >
+                        <img
+                          src={item.ImageUrl}
+                          alt={item.ProductName}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                        <div className="flex-grow">
+                          <h4 className="text-sm font-medium text-gray-900">
+                            {item.ProductName}
+                          </h4>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {item.ColorName} • {item.SizeName} • x
+                            {item.Quantity}
+                          </div>
+                          <div className="text-sm font-medium text-gray-900 mt-1">
+                            {Math.floor(item.Price * item.Quantity)} VND
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
                 <div className="border-t border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tổng Tiền</span>
-                    if(item.Status === 'Active'){  
-                     <span className="font-medium">
+                    <span className="font-medium">
                       {Math.floor(totalAmount)} VND
-                    </span>}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>

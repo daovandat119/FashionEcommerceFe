@@ -18,6 +18,7 @@ export default function Cart() {
   } = useContextElement();
 
   const [timeoutId, setTimeoutId] = useState(null);
+  const [loadingState, setLoadingState] = useState(false);
 
   useEffect(() => {
     fetchCartItems();
@@ -25,6 +26,7 @@ export default function Cart() {
   }, [fetchCartItems]);
 
   const checkQuantityLimits = () => {
+    setLoadingState(true);
     cartProducts.forEach((cartItem) => {
       const { QuantityLimit, CartItemID } = cartItem;
       if (QuantityLimit === 0) {
@@ -39,7 +41,9 @@ export default function Cart() {
       }
     });
 
-    fetchCartItems();
+    fetchCartItems().finally(() => {
+      setLoadingState(false);
+    });
   };
 
   const handleQuantityChange = async (
@@ -143,7 +147,7 @@ export default function Cart() {
                 </tr>
               </thead>
               <tbody>
-                {cartProducts.map((item) => (
+                { cartProducts.map((item) => (
                   <tr key={item.CartItemID}>
                     <td style={{ width: "5%" }}>
                       <input
@@ -256,7 +260,7 @@ export default function Cart() {
                   onClick={removeSelectedItem}
                   disabled={selectedItems.length === 0 || loading}
                 >
-                  {loading ? (
+                  {loading || loadingState ? (
                     <span
                       className="spinner-border spinner-border-sm me-2"
                       role="status"
@@ -307,6 +311,11 @@ export default function Cart() {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
                   toast("Giỏ hàng trống!");
+                } else if (
+                  cartProducts.every((item) => item.Status === "INACTIVE")
+                ) {
+                  e.preventDefault();
+                  toast("Sản phẩm đã hết hàng!");
                 }
               }}
             >

@@ -13,27 +13,35 @@ const filterCategories = [
 ];
 
 export default function Products_Trendy() {
-  const [currentCategory, setCurrentCategory] = useState(filterCategories[0].label);
+  const [currentCategory, setCurrentCategory] = useState(
+    filterCategories[0].label
+  );
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wishlistStatus, setWishlistStatus] = useState({});
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useContextElement();
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContextElement();
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       setError(null);
       try {
-        const sortBy = filterCategories.find((cat) => cat.label === currentCategory)?.sortBy || null;
-        const response = await axios.post("http://127.0.0.1:8000/api/products/index", {
-          Search: "",
-          CategoryID: null,
-          ColorID: null,
-          SizeID: null,
-          SortBy: sortBy,
-          Page: 1,
-          Limit: 10,
-        });
+        const sortBy =
+          filterCategories.find((cat) => cat.label === currentCategory)
+            ?.sortBy || null;
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/products/index",
+          {
+            Search: "",
+            CategoryID: null,
+            ColorID: null,
+            SizeID: null,
+            SortBy: sortBy,
+            Page: 1,
+            Limit: 10,
+          }
+        );
 
         const fetchedProducts = response.data.data || response.data;
         setProducts(fetchedProducts);
@@ -75,7 +83,9 @@ export default function Products_Trendy() {
             onClick={() => setCurrentCategory(category.label)}
           >
             <button
-              className={`nav-link nav-link_underscore ${currentCategory === category.label ? "active" : ""}`}
+              className={`nav-link nav-link_underscore ${
+                currentCategory === category.label ? "active" : ""
+              }`}
               type="button"
             >
               {category.label}
@@ -94,7 +104,10 @@ export default function Products_Trendy() {
       ) : (
         <div className="row">
           {products.map((product) => (
-            <div key={product.ProductID} className="col-6 col-md-4 col-lg-3">
+            <div
+              key={product.ProductID}
+              className="col-6 col-md-4 col-lg-3 mb-5"
+            >
               <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                 {product.discount_percentage > 0 && (
                   <span className="absolute top-3 left-0 h-[30px] w-[53px] bg-red-600 text-white p-1 rounded">
@@ -102,12 +115,12 @@ export default function Products_Trendy() {
                   </span>
                 )}
                 {new Date(product.created_at) >
-                      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
-                      product.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
-                        <div className="absolute top-12 left-0  product-label bg-white text-dark">
-                          NEW
-                        </div>
-                      )}
+                  new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) &&
+                  product.ProductID && ( // Kiểm tra xem sản phẩm có được tạo trong 7 ngày qua không và có mã
+                    <div className="absolute top-12 left-0  product-label bg-white text-dark">
+                      NEW
+                    </div>
+                  )}
                 <Link to={`/shop-detail/${product.ProductID}`}>
                   <img
                     loading="lazy"
@@ -154,7 +167,8 @@ export default function Products_Trendy() {
                     title="Add To Wishlist"
                     onClick={() => toggleWishlist(product.ProductID)}
                     className={`transition-transform duration-200 hover:scale-110 ${
-                      isInWishlist(product.ProductID) || wishlistStatus[product.ProductID]
+                      isInWishlist(product.ProductID) ||
+                      wishlistStatus[product.ProductID]
                         ? "active"
                         : ""
                     }`}
@@ -166,7 +180,8 @@ export default function Products_Trendy() {
                       xmlns="http://www.w3.org/2000/svg"
                       stroke="#000000"
                       fill={
-                        isInWishlist(product.ProductID) || wishlistStatus[product.ProductID]
+                        isInWishlist(product.ProductID) ||
+                        wishlistStatus[product.ProductID]
                           ? "red"
                           : "none"
                       }
@@ -175,7 +190,9 @@ export default function Products_Trendy() {
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-gray-600">Đã bán: {product.total_sold}</p>
+                <p className="text-sm text-gray-600">
+                  Đã bán: {product.total_sold}
+                </p>
               </div>
             </div>
           ))}
