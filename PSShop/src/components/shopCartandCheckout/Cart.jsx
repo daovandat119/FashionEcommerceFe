@@ -19,14 +19,14 @@ export default function Cart() {
 
   const [timeoutId, setTimeoutId] = useState(null);
   const [loadingState, setLoadingState] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(true);
+  const [Loading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true); 
       await fetchCartItems();
-      await checkQuantityLimits(); // Đợi checkQuantityLimits hoàn thành 
-      setIsLoading(false); // Cập nhật trạng thái loading
+      await checkQuantityLimits();
+      setIsLoading(false); 
     };
     fetchData();
   }, [fetchCartItems]);
@@ -59,7 +59,7 @@ export default function Cart() {
     sizeID,
     newQuantity
   ) => {
-    if (loading) return;
+    if (Loading) return;
     const cartItem = cartProducts.find((item) => item.CartItemID === itemId);
     if (!cartItem) return;
 
@@ -123,11 +123,16 @@ export default function Cart() {
     await removeSelectedItems();
   };
 
+  if (Loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
-      {isLoading ? (
-        <div>Đang tải...</div>
-      ) : (
+    
         <div className="cart-table__wrapper">
           {cartProducts.length ? (
             <>
@@ -174,10 +179,10 @@ export default function Cart() {
                               width="120"
                               height="120"
                               alt={item.ProductName}
-                              className="object-fit-cover w-full h-full "
+                              className={`object-fit-cover w-full h-full transition-transform duration-300 ease-in-out ${item.QuantityLimit === 0 || item.Status === "INACTIVE" ? 'opacity-50' : ''}`}
                             />
                           )}
-                          {item.QuantityLimit === 0 && (
+                          {item.QuantityLimit === 0 || item.Status === "INACTIVE" && (
                             <span className="absolute ml-5 flex items-center justify-center text-dark text-lg font-bold">
                               Hết hàng
                             </span>
@@ -290,7 +295,7 @@ export default function Cart() {
             </>
           )}
         </div>
-      )}
+      
       {/* Phần Cart Totals */}
       <div className="shopping-cart__totals-wrapper">
         <div className="sticky-content">
