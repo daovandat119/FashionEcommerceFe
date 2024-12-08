@@ -5,7 +5,7 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Star from "../../components/common/Star"; // Import component Star
 import { useContextElement } from "../../context/Context";
-
+import { handleViewProduct } from "../../components/views/view";
 const swiperOptions = {
   modules: [Pagination, Navigation, Autoplay],
   autoplay: {
@@ -110,7 +110,7 @@ export default function Products_Limited() {
                           NEW
                         </div>
                       )}
-                    <Link to={`/shop-detail/${product.ProductID}`}>
+                    <Link to={`/shop-detail/${product.ProductID}`}  onClick={() => handleViewProduct(product.ProductID)}>
                       <img
                         loading="lazy"
                         src={product.MainImageURL}
@@ -120,7 +120,7 @@ export default function Products_Limited() {
                         className="w-[400px] h-[450px] "
                       />
                     </Link>
-                    <Link to={`/shop-detail/${product.ProductID}`}>
+                    <Link to={`/shop-detail/${product.ProductID}`}  onClick={() => handleViewProduct(product.ProductID)}>
                       <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside">
                         Xem chi tiết
                       </button>
