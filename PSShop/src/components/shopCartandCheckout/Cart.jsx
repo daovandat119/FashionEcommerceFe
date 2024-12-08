@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function Cart() {
   const {
@@ -25,7 +26,7 @@ export default function Cart() {
   useEffect(() => {
     const fetchData = async () => {
       await fetchCartItems();
-      await checkQuantityLimits(); // Đợi checkQuantityLimits hoàn thành 
+      await checkQuantityLimits(); // Đợi checkQuantityLimits hoàn thành
       setIsLoading(false); // Cập nhật trạng thái loading
     };
     fetchData();
@@ -156,7 +157,7 @@ export default function Cart() {
                   </tr>
                 </thead>
                 <tbody>
-                  { cartProducts.map((item) => (
+                  {cartProducts.map((item) => (
                     <tr key={item.CartItemID}>
                       <td style={{ width: "5%" }}>
                         <input
@@ -320,12 +321,22 @@ export default function Cart() {
               onClick={(e) => {
                 if (cartProducts.length === 0) {
                   e.preventDefault();
-                  toast("Giỏ hàng trống!");
+                  Swal.fire({
+                    title: "Thông báo",
+                    text: "Giỏ hàng trống",
+                    icon: "warning",
+                    timer: 10000,
+                  });
                 } else if (
                   cartProducts.every((item) => item.Status === "INACTIVE")
                 ) {
                   e.preventDefault();
-                  toast("Sản phẩm đã hết hàng!");
+                  Swal.fire({
+                    title: "Thông báo",
+                    text: "Sản phẩm đã hết hàng",
+                    icon: "warning",
+                    timer: 10000,
+                  });
                 }
               }}
             >

@@ -37,6 +37,8 @@ const ProfileAdmin = () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const addressResponse = await GetAddressByUserId();
         const provincesResponse = await GetProvinces();
+
+        console.log(addressResponse.data[0]);
         setAddress(addressResponse.data[0]);
         setProvinces(provincesResponse.data);
 
