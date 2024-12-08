@@ -70,6 +70,7 @@ import ProductStatistics from "./pages/admin/statistical/products/ProductStatist
 import ErrorPage from "./pages/error/ErrorPage";
 import StatisticalUsers from "./pages/admin/statistical/users/StatisticalUsers";
 import ProductDetailAdmin from "./pages/admin/products/ProductDetailAdmin";
+import CheckoutGuard from "./guards/CheckoutGuard";
 
 function App() {
   return (
@@ -98,21 +99,7 @@ function App() {
 }
 
 const AppRoutes = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Save the current path to localStorage
-    localStorage.setItem("currentPath", location.pathname);
-  }, [location]);
-
-  useEffect(() => {
-    // Restore the path from localStorage on app start
-    const savedPath = localStorage.getItem("currentPath");
-    if (savedPath) {
-      navigate(savedPath);
-    }
-  }, [navigate]);
 
   return (
     <AuthProvider>
@@ -128,7 +115,14 @@ const AppRoutes = () => {
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="shop_cart" element={<ShopCartPage />} />
-            <Route path="shop_checkout" element={<ShopCheckoutPage />} />
+            <Route 
+              path="shop_checkout" 
+              element={
+                <CheckoutGuard>
+                  <ShopCheckoutPage />
+                </CheckoutGuard>
+              } 
+            />
             <Route path="shop_order_complete/:orderId" element={<ShopOrderConplate />} />
             <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />} />
 
