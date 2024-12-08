@@ -39,7 +39,7 @@ export default function Products_Trendy() {
             SizeID: null,
             SortBy: sortBy,
             Page: 1,
-            Limit: 10,
+            Limit: 8,
           }
         );
 
@@ -196,7 +196,16 @@ export default function Products_Trendy() {
               </div>
             </div>
           ))}
+          <div className="text-center mt-2 mb-3">
+            <Link
+              className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
+              to="/shop"
+            >
+              Discover More
+            </Link>
+          </div>
         </div>
+        
       )}
     </section>
   );

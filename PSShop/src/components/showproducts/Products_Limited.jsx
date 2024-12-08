@@ -80,7 +80,7 @@ export default function Products_Limited() {
   return (
     <section className="container mx-auto">
       <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">
-        Phiên Bản <strong>Giới Hạn</strong>
+        Sản Phẩm <strong>Bán Chạy</strong>
       </h2>
 
       <div id="product_carousel" className="relative">
