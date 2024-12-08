@@ -139,9 +139,6 @@ const StatisticalUsers = () => {
               <div className="text-2xl font-bold">{activeUsers}</div>
             </div>
           </div>
-          <div className="text-red-500 font-medium flex pt-3 gap-2">
-            -2% <p className="text-black">so với tuần trước</p>
-          </div>
         </div>
 
         <div className="w-[50%] shadow-lg transition-transform transform hover:scale-105 bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
@@ -155,9 +152,6 @@ const StatisticalUsers = () => {
               <p className="text-gray-600 font-medium">Người dùng bị chặn</p>
               <div className="text-2xl font-bold">{bannedUsers}</div>
             </div>
-          </div>
-          <div className="text-red-500 font-medium flex pt-3 gap-2">
-            -2% <p className="text-black">so với tuần trước</p>
           </div>
         </div>
       </div>

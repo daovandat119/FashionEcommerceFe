@@ -44,10 +44,10 @@ const ActiveUsersChart = ({ monthlyRegistrations, handleYearChange }) => {
         >
           <option value="">Chọn Năm</option>
           {Array.from(
-            { length: new Date().getFullYear() - 2000 + 1 },
+            { length: new Date().getFullYear() - 2020 + 1 },
             (_, i) => (
-              <option key={2000 + i} value={2000 + i}>
-                Năm {2000 + i}
+              <option key={2020 + i} value={2020 + i}>
+                Năm {2020 + i}
               </option>
             )
           )}

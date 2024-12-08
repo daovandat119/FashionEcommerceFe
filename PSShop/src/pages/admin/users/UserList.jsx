@@ -11,6 +11,7 @@ import { ListUsers, BlockedUser } from "../service/api_service"; // Import hàm 
 import { toast, ToastContainer } from "react-toastify"; // Import toast
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 import { useDebounce } from "use-debounce";
+import ReactPaginate from "react-paginate";
 
 const UserList = () => {
   const [Users, setUsers] = useState([]);
@@ -19,22 +20,35 @@ const UserList = () => {
   const location = useLocation();
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 500);
+  const [page, setPage] = useState("");
+  const [totalPages, setTotalPages] = useState("");
 
   useEffect(() => {
-    fetchUsers(debouncedSearchValue);
+    fetchUsers(page, debouncedSearchValue);
   }, [debouncedSearchValue]);
 
-  const fetchUsers = async (debouncedSearchValue) => {
-    setIsLoading(true); 
+  const fetchUsers = async (page, debouncedSearchValue) => {
+    setIsLoading(true);
     try {
-      const response = await ListUsers(debouncedSearchValue); // Lấy trang đầu tiên
-      setUsers(response.data); // Giả sử response.data chứa danh sách người dùng
+      const response = await ListUsers(page, debouncedSearchValue);
+      setUsers(response.data);
+      setPage(response.page);
+      setTotalPages(response.totalPage);
     } catch (err) {
       setError(err.message);
     } finally {
-      setIsLoading(false); // Kết thúc loading
+      setIsLoading(false);
     }
   };
+
+  const handlePageChange = useCallback(
+    (event) => {
+      const newPage = event.selected + 1;
+      setPage(newPage);
+      fetchUsers(newPage);
+    },
+    [fetchUsers]
+  );
 
   useEffect(() => {
     if (location.state?.success) {
@@ -146,6 +160,27 @@ const UserList = () => {
           </table>
         )}
       </div>
+      {totalPages > 1 && (
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=" >"
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={5}
+          pageCount={totalPages}
+          previousLabel="<"
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          previousClassName="page-item"
+          previousLinkClassName="page-link"
+          nextClassName="page-item"
+          nextLinkClassName="page-link"
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          containerClassName="pagination flex justify-center space-x-2 mt-4"
+          activeClassName="active bg-blue-500 text-white"
+          forcePage={page - 1}
+        />
+      )}
     </div>
   );
 };
