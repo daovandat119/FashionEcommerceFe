@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -19,6 +19,7 @@ import "tippy.js/dist/tippy.css";
 import AboutPage from "./pages/about";
 import ShopPages1 from "./pages/shoplist/shoplist-1";
 import ShopCartPage from "./pages/shop-cart-checkout/shop_cart";
+import ShopCheckoutPage from "./pages/shop-cart-checkout/shop_checkout";
 import ShopOrderConplate from "./pages/shop-cart-checkout/shop_order_complete";
 import ShopOrderTrackingPage from "./pages/shop-cart-checkout/shop_order_tracking";
 import BlogPage1 from "./pages/blogs";
@@ -69,7 +70,6 @@ import ProductStatistics from "./pages/admin/statistical/products/ProductStatist
 import ErrorPage from "./pages/error/ErrorPage";
 import StatisticalUsers from "./pages/admin/statistical/users/StatisticalUsers";
 import ProductDetailAdmin from "./pages/admin/products/ProductDetailAdmin";
-import ShopCheckoutPage from './pages/shop-cart-checkout/shop_checkout/index';
 
 function App() {
   return (
@@ -99,6 +99,21 @@ function App() {
 
 const AppRoutes = () => {
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Save the current path to localStorage
+    localStorage.setItem("currentPath", location.pathname);
+  }, [location]);
+
+  useEffect(() => {
+    // Restore the path from localStorage on app start
+    const savedPath = localStorage.getItem("currentPath");
+    if (savedPath) {
+      navigate(savedPath);
+    }
+  }, [navigate]);
 
   return (
     <AuthProvider>
@@ -114,8 +129,9 @@ const AppRoutes = () => {
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="shop_cart" element={<ShopCartPage />} />
-            <Route path="shop_checkout" element = {<ShopCheckoutPage/>} 
-            />
+            <Route path="shop_checkout" element={<ShopCheckoutPage />} />
+
+            
             <Route path="shop_order_complete/:orderId" element={<ShopOrderConplate />} />
             <Route path="shop_order_tracking" element={<ShopOrderTrackingPage />} />
 
