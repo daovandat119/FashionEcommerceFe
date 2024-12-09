@@ -173,6 +173,7 @@ export default function Cart() {
                     <td>
                       <div className="shopping-cart__product-item relative">
                         {item.ImageUrl && (
+                          <Link to={`/shop-detail/${item.ProductID}`}>
                           <img
                             loading="lazy"
                             src={item.ImageUrl}
@@ -186,6 +187,7 @@ export default function Cart() {
                                 : ""
                             }`}
                           />
+                          </Link>
                         )}
                         {item.QuantityLimit === 0 ||
                           (item.Status === "INACTIVE" && (
