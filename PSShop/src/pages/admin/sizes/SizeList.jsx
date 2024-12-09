@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   MagnifyingGlassIcon,
   PencilIcon,
@@ -7,28 +7,28 @@ import {
 } from "@heroicons/react/24/solid";
 import { Checkbox, Input } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
-import { ListSizes, DeleteSizes } from "../service/api_service";
-import ReactPaginate from "react-paginate";
+import {
+  ListSizes,
+  DeleteSizes,
+  toggleSizeStatus,
+} from "../service/api_service";
 import Swal from "sweetalert2"; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
+import ToggleSwitch from "../components/ToggleSwitch";
 
 const SizeList = () => {
   const [sizes, setSizes] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
   const location = useLocation();
   const [hasFetched, setHasFetched] = useState(false); // Trạng thái để theo dõi việc đã gọi API
 
-  const getSizes = async (page) => {
+  const getSizes = async () => {
     setIsLoading(true); // Bắt đầu loading
     try {
-      const res = await ListSizes(page);
+      const res = await ListSizes();
       if (res && res.data) {
-        setSizes(res.data.map((size) => ({ ...size, isActive: true }))); // Mặc định là bật
-        setTotalPages(res.totalPage);
-        setCurrentPage(page);
+        setSizes(res.data); // Mặc định là bật
       }
     } catch (error) {
       console.error("Error fetching sizes:", error);
@@ -41,7 +41,7 @@ const SizeList = () => {
   useEffect(() => {
     if (!hasFetched) {
       // Chỉ gọi API nếu chưa gọi trước đó
-      getSizes(1);
+      getSizes();
       setHasFetched(true); // Đánh dấu là đã gọi API
     }
 
@@ -63,13 +63,6 @@ const SizeList = () => {
     }
   }, [location, hasFetched]);
 
-  const handlePageClick = (event) => {
-    const newPage = event.selected + 1;
-    if (newPage !== currentPage) {
-      getSizes(newPage); // Gọi lại getSizes khi trang thay đổi
-    }
-  };
-
   const handleSelectSize = (SizeID) => {
     setSelectedSizes((prev) =>
       prev.includes(SizeID)
@@ -86,7 +79,7 @@ const SizeList = () => {
       try {
         await Promise.all(deletePromises);
         Swal.fire("Thành công!", "Xóa thành công", "success");
-        getSizes(currentPage); // Tải lại danh sách
+        getSizes(); // Tải lại danh sách
         setSelectedSizes([]); // Reset danh sách đã chọn
       } catch (error) {
         console.error("Lỗi khi xóa kích thước:", error);
@@ -95,13 +88,14 @@ const SizeList = () => {
     }
   };
 
-  const handleToggle = (SizeID) => {
-    setSizes((prevSizes) =>
-      prevSizes.map((size) =>
-        size.SizeID === SizeID ? { ...size, isActive: !size.isActive } : size
-      )
-    );
-  };
+  const handleToggle = useCallback(async (ColorID) => {
+    try {
+      await toggleSizeStatus(ColorID);
+      await getSizes();
+    } catch (error) {
+      console.error("Lỗi khi xóa màu sắc:", error);
+    }
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -159,18 +153,10 @@ const SizeList = () => {
                   </td>
                   <td className="border-b p-4">{size.SizeName}</td>
                   <td className="border-b p-8 flex items-center justify-center">
-                    <span
-                      className={`h-2 w-2 rounded-full ${
-                        size.isActive ? "bg-green-500" : "bg-red-500"
-                      } mr-2`}
+                    <ToggleSwitch
+                      isOn={size.status === "ACTIVE"}
+                      handleToggle={() => handleToggle(size.SizeID)}
                     />
-                    <span
-                      className={`${
-                        size.isActive ? "text-green-500" : "text-red-500"
-                      } font-bold`}
-                    >
-                      {size.isActive ? "Active" : "Inactive"}
-                    </span>
                   </td>
                   <td className="border-b p-4 ">
                     <Link
@@ -190,27 +176,6 @@ const SizeList = () => {
               ))}
             </tbody>
           </table>
-        )}
-        {totalPages > 1 && (
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=" >"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={5}
-            pageCount={totalPages}
-            previousLabel="<"
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousClassName="page-item"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName="pagination flex justify-center space-x-2 mt-4"
-            activeClassName="active bg-blue-500 text-white"
-            forcePage={currentPage - 1}
-          />
         )}
       </div>
     </div>

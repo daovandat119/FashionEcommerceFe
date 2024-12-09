@@ -52,13 +52,7 @@ const UpdateSizeComponent = () => {
             "Cập nhật kích thước thành công",
             "success"
           ).then(() => {
-            navigate("/admin/sizes", {
-              state: {
-                success: true,
-                message: "Cập nhật kích thước thành công",
-                updatedSize: { SizeID, SizeName },
-              },
-            });
+            navigate("/admin/sizes");
           });
         } else {
           throw new Error("Không thể cập nhật kích thước");

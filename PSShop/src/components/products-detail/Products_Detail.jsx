@@ -8,6 +8,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Description from "./Description";
 import Star from "../common/Star";
+import Swal from "sweetalert2";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -79,7 +80,7 @@ const ProductDetail = () => {
 
     initializeData();
   }, [id, fetchWishlistItems, navigate]);
-   // Giữ nguyên dependency array
+  // Giữ nguyên dependency array
   useEffect(() => {
     if (product && typeof isInWishlist === "function") {
       const status = isInWishlist(product.ProductID);
@@ -95,46 +96,46 @@ const ProductDetail = () => {
 
   const handleWishlistClick = async () => {
     if (!product || wishlistLoading) return;
-  
+
     try {
       setWishlistLoading(true);
-  
+
       if (!localStorage.getItem("token")) {
         Swal.fire({
-          icon: 'warning',
-          title: 'Vui lòng đăng nhập để sử dụng tính năng này',
-          showConfirmButton: true
+          icon: "warning",
+          title: "Vui lòng đăng nhập để sử dụng tính năng này",
+          showConfirmButton: true,
         });
         return;
       }
-  
+
       if (inWishlist) {
         await removeFromWishlist(product.ProductID);
         setInWishlist(false);
         localStorage.removeItem(`wishlist_${product.ProductID}`);
         Swal.fire({
-          icon: 'success',
-          title: 'Đã xóa khỏi danh sách yêu thích',
+          icon: "success",
+          title: "Đã xóa khỏi danh sách yêu thích",
           showConfirmButton: false,
-          timer: 2000 // Thông báo tự động đóng sau 2 giây
+          timer: 2000, // Thông báo tự động đóng sau 2 giây
         });
       } else {
         await addToWishlist(product.ProductID);
         setInWishlist(true);
         localStorage.setItem(`wishlist_${product.ProductID}`, true);
         Swal.fire({
-          icon: 'success',
-          title: 'Đã thêm vào danh sách yêu thích',
+          icon: "success",
+          title: "Đã thêm vào danh sách yêu thích",
           showConfirmButton: false,
-          timer: 2000 // Thông báo tự động đóng sau 2 giây
+          timer: 2000, // Thông báo tự động đóng sau 2 giây
         });
       }
     } catch (error) {
       console.error("Error handling wishlist:", error);
       Swal.fire({
-        icon: 'error',
-        title: error.message || 'Có lỗi xảy ra, vui lòng thử lại',
-        showConfirmButton: true
+        icon: "error",
+        title: error.message || "Có lỗi xảy ra, vui lòng thử lại",
+        showConfirmButton: true,
       });
     } finally {
       setWishlistLoading(false);
@@ -168,28 +169,26 @@ const ProductDetail = () => {
     }
   }, [selectedSize, selectedColor, product]);
 
-
   const handleAddToCart = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
     if (!token) {
-      
       Swal.fire({
-        icon: 'warning',
-        title: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
-        text: error.message || 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!',
-        showConfirmButton: true
+        title: "Thông báo",
+        text: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
+        icon: "warning",
+        confirmButtonText: "Đồng ý",
       });
       return;
     }
 
     if (!selectedSize || !selectedColor) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Vui lòng đăng nhập để thêm kích cỡ và màu sắc',
-        text: error.message || 'Vui lòng đăng nhập để thêm kích cỡ và màu sắc!',
-        showConfirmButton: true
+        title: "Thông báo",
+        text: "Vui lòng chọn kích thước và màu sắc",
+        icon: "warning",
+        confirmButtonText: "Đồng ý",
       });
       return;
     }
@@ -202,19 +201,19 @@ const ProductDetail = () => {
         selectedSize.SizeID,
         quantity
       );
-      
+
       if (result.success) {
         Swal.fire({
-          icon: 'success',
-          title: 'Thành công!',
-          showConfirmButton: true
+          icon: "success",
+          title: "Thành công!",
+          showConfirmButton: true,
         });
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Thất bại!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Thất bại!",
+        showConfirmButton: true,
       });
     } finally {
       setIsChecking(false);
@@ -432,7 +431,9 @@ const ProductDetail = () => {
                   min="1"
                   className="w-full h-full text-center text-gray-700 focus:outline-none"
                   value={quantity}
-                  onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
+                  onChange={(e) =>
+                    handleQuantityChange(parseInt(e.target.value) || 1)
+                  }
                 />
 
                 <button
@@ -440,7 +441,9 @@ const ProductDetail = () => {
                   onClick={() => handleQuantityChange(quantity + 1)}
                   disabled={outOfStock}
                   className={`absolute right-0 w-8 h-full flex items-center justify-center text-gray-500 ${
-                    outOfStock ? "opacity-50 cursor-not-allowed" : "hover:text-gray-700"
+                    outOfStock
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:text-gray-700"
                   }`}
                 >
                   <i className="fas fa-plus text-xs"></i>
@@ -516,7 +519,8 @@ const ProductDetail = () => {
                         </>
                       ) : variantInfo.Quantity > 0 ? (
                         <>
-                          <i className="fas fa-check-circle mr-2"></i>Có thể mua: {variantInfo.Quantity}
+                          <i className="fas fa-check-circle mr-2"></i>Có thể
+                          mua: {variantInfo.Quantity}
                         </>
                       ) : (
                         <>

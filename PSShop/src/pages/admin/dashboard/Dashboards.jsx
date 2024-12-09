@@ -305,31 +305,26 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-        <div className="flex justify-between gap-3 mt-4">
-          <div className="w-[50%]">
-            <OrderBarChart width={700} data={ordersStatistics} />
-          </div>
-          <div className="w-[50%]">
-            <ProductPieChart data={categoryStatistics} />
-          </div>
+        <div className="w-100%] my-3">
+          <OrderBarChart width={400} data={ordersStatistics} />
         </div>
-        <div className="flex gap-3 my-3">
-          <div className="w-[50%]">
-            <OrderStatisticsTable
-              data={ordersStatistics}
-              onPageChange={handlePageChange}
-              onSearch={handleSearch}
-              onEditOrder={handleEditOrder}
-            />
-          </div>
-          <div className="w-[50%]">
-            <UserStatisticsTable
-              data={queryUser}
-              onPageChange={handlePageChangeUser}
-              onSearch={handleSearchUser}
-            />
-          </div>
+        <div className="w-[100%]">
+          <ProductPieChart data={categoryStatistics} />
+        </div>
+        <div className="w-[100%] mt-3">
+          <OrderStatisticsTable
+            data={ordersStatistics}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+            onEditOrder={handleEditOrder}
+          />
+        </div>
+        <div className="w-[100%] my-3">
+          <UserStatisticsTable
+            data={queryUser}
+            onPageChange={handlePageChangeUser}
+            onSearch={handleSearchUser}
+          />
         </div>
       </div>
     </>

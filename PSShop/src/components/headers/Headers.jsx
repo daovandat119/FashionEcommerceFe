@@ -33,19 +33,32 @@ export default function Headers() {
     // console.log("Kết quả tìm kiếm:", results); // Đã loại bỏ log không cần thiết
   };
 
-  // const handleCartClick = (e) => {
-  //   e.preventDefault();
-  //   const token = localStorage.getItem('token');
+  const handleCartClick = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
     
-  //   if (!token) {
-  //     setCartProducts([]);
-  //     navigate('/login_register');
-  //     return;
-  //   }
-
-  //   sessionStorage.removeItem('cartReloaded');
-  //   navigate('/shop_cart');
-  // };
+    if (!token) {
+      // Không có token, không cho phép nhấn vào giỏ hàng
+      navigate('/login_register');
+      return;
+    }
+  
+    sessionStorage.removeItem('cartReloaded');
+    navigate('/shop_cart');
+  };
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      // Không có token, điều hướng đến trang đăng nhập
+      navigate('/login_register');
+      return;
+    }
+  
+    sessionStorage.removeItem('cartReloaded');
+    navigate('/account_wishlist');
+  };
 
   return (
     <header id="header" className="header header_sticky">
@@ -102,9 +115,10 @@ export default function Headers() {
               </button>
             </div>
 
-            <Link
+            <Link 
               className="header-tools__item flex items-center justify-center p-2"
               to="/account_wishlist"
+              onClick={handleWishlistClick}
             >
               <i className="fas fa-heart text-black text-lg"></i>
             </Link>
@@ -115,7 +129,7 @@ export default function Headers() {
           >
             
           </a> */}
-            <Link to="/shop_cart" className="relative inline-block">
+            <Link to="/shop_cart" className="relative inline-block" onClick={handleCartClick}>
               <i className="fas fa-shopping-cart text-black text-lg"></i>
               <span className="cart-amount absolute -top-3 -right-3 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
                 <CartLength />

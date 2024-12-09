@@ -64,12 +64,12 @@ export default function AccountOrders() {
     const reason = selectedReason === "Khác" ? otherReason : selectedReason;
 
     if (!reason) {
-      Swal.fire(
-        "Thông báo!",
-        "Vui lòng chọn lý do hủy đơn hàng!",
-        "warning"
-      );
-     
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng chọn lý do hủy đơn hàng",
+        icon: "warning",
+        confirmButtonText: "Đồng ý",
+      });
       return;
     }
 
@@ -94,11 +94,13 @@ export default function AccountOrders() {
       setShowFeedbackModal(false);
       setSelectedReason("");
       setOtherReason("");
-      Swal.fire(
-        "Thông báo!",
-        "Hủy đơn hàng!",
-        "warning"
-      );
+
+      Swal.fire({
+        title: "Thông báo",
+        text: "Hủy đơn hàng thành công",
+        icon: "success",
+        confirmButtonText: "Đồng ý",
+      });
     } catch (error) {
       // Nếu có lỗi, rollback lại trạng thái cũ
       setOrders((prevOrders) =>
@@ -222,32 +224,30 @@ export default function AccountOrders() {
       if (!products) {
         await fetchOrderProducts(orderId);
       }
-      
-      // Thêm từng sản phẩm vào giỏ hàng
+
       const token = localStorage.getItem("token");
       for (const product of orderProducts[orderId]) {
         await axios.post(
-          'http://127.0.0.1:8000/api/cart/add',
+          "http://127.0.0.1:8000/api/cart/add",
           {
             productId: product.ProductID,
             quantity: product.TotalQuantity,
             color: product.VariantColor,
-            size: product.VariantSize
+            size: product.VariantSize,
           },
           {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
       }
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Thành công',
-        
         showConfirmButton: true
       });
-      // Chuyển hưng đến trang giỏ hàng
-      window.location.href = '/cart';
+
+      window.location.href = "/cart";
     } catch (error) {
       console.error("Lỗi khi mua lại:", error);
       Swal.fire({
@@ -348,7 +348,9 @@ export default function AccountOrders() {
                   <div
                     key={reason}
                     className={`flex items-center cursor-pointer p-2 rounded ${
-                      selectedReason === reason ? "bg-red-100" : "hover:bg-gray-100"
+                      selectedReason === reason
+                        ? "bg-red-100"
+                        : "hover:bg-gray-100"
                     }`}
                     onClick={() => setSelectedReason(reason)}
                   >
@@ -503,18 +505,19 @@ export default function AccountOrders() {
   OrderActionButton.propTypes = {
     order: PropTypes.shape({
       OrderID: PropTypes.number.isRequired, // Thuộc tính OrderID phải là một số và là bắt buộc
-      OrderStatus: PropTypes.oneOf([ // Thuộc tính OrderStatus phải là một trong các giá trị đã định nghĩa
+      OrderStatus: PropTypes.oneOf([
+        // Thuộc tính OrderStatus phải là một trong các giá trị đã định nghĩa
         "Đang xử lý",
         "Đang giao hàng",
         "Đã giao hàng",
         "Đã hủy",
-        "Đã hoàn thành"
+        "Đã hoàn thành",
       ]).isRequired,
       PaymentStatus: PropTypes.string,
       IsConfirmed: PropTypes.bool,
       Rating: PropTypes.number,
-      Review: PropTypes.string
-    }).isRequired
+      Review: PropTypes.string,
+    }).isRequired,
   };
 
   const fetchOrderProducts = async (orderId) => {
@@ -720,7 +723,7 @@ export default function AccountOrders() {
                           <p className="text-sm text-gray-500">
                             Tổng tiền:{" "}
                             <span className="text-black-600">
-                            {Math.floor(order.TotalProductAmount)} VND
+                              {Math.floor(order.TotalProductAmount)} VND
                             </span>
                           </p>
                           <p className="text-sm text-gray-500">
@@ -779,21 +782,29 @@ export default function AccountOrders() {
       {/* Form đánh giá */}
       {showReviewModal && (
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-white rounded-xl shadow-lg border border-gray-100 z-50 p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Đánh giá đơn hàng</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">
+            Đánh giá đơn hàng
+          </h3>
           <div className="flex flex-col gap-4">
-            <label className="text-lg font-medium text-gray-700">Mức độ hài lòng của bạn</label>
+            <label className="text-lg font-medium text-gray-700">
+              Mức độ hài lòng của bạn
+            </label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   onClick={() => setRating(star)}
-                  className={`text-3xl transition-colors ${star <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                  className={`text-3xl transition-colors ${
+                    star <= rating ? "text-yellow-400" : "text-gray-300"
+                  }`}
                 >
                   ★
                 </button>
               ))}
             </div>
-            <label className="text-lg font-medium text-gray-700">Nhận xét của bạn</label>
+            <label className="text-lg font-medium text-gray-700">
+              Nhận xét của bạn
+            </label>
             <textarea
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}

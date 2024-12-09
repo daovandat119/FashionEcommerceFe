@@ -63,6 +63,7 @@ export default function Cart() {
     const cartItem = cartProducts.find((item) => item.CartItemID === itemId);
     if (!cartItem) return;
 
+<<<<<<< HEAD
     const { QuantityLimit } = cartItem;
 
     if (newQuantity > QuantityLimit) {
@@ -74,6 +75,8 @@ export default function Cart() {
       });
     }
 
+=======
+>>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
     setCartProducts((prevProducts) =>
       prevProducts.map((item) =>
         item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
@@ -86,23 +89,31 @@ export default function Cart() {
 
     const id = setTimeout(async () => {
       try {
-        const response = await updateCartItem(itemId, {
+        await updateCartItem(itemId, {
           productID,
           colorID,
           sizeID,
           quantity: newQuantity,
         });
       } catch (error) {
+<<<<<<< HEAD
         const errorMessage =
           error.response?.data?.message || "Sản phẩm không đủ";
         Swal.fire({
           title: "Lỗi",
           text: errorMessage,
           icon: "error",
+=======
+        Swal.fire({
+          title: "Thông báo",
+          text: "Sản phẩm không đủ",
+          icon: "warning",
+          timer: 10000,
+>>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
         });
         fetchCartItems();
       }
-    }, 1000);
+    }, 500);
 
     setTimeoutId(id);
   };
@@ -113,6 +124,7 @@ export default function Cart() {
 
     let newQuantity = value === "" ? 1 : parseInt(value);
 
+<<<<<<< HEAD
     if (newQuantity >= item.QuantityLimit) {
       newQuantity = item.QuantityLimit;
       Swal.fire({
@@ -122,6 +134,8 @@ export default function Cart() {
       });
     }
 
+=======
+>>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
     handleQuantityChange(
       item.CartItemID,
       item.ProductID,
@@ -190,6 +204,7 @@ export default function Cart() {
                     <td>
                       <div className="shopping-cart__product-item relative">
                         {item.ImageUrl && (
+                          <Link to={`/shop-detail/${item.ProductID}`}>
                           <img
                             loading="lazy"
                             src={item.ImageUrl}
@@ -203,6 +218,7 @@ export default function Cart() {
                                 : ""
                             }`}
                           />
+                          </Link>
                         )}
                         {item.QuantityLimit === 0 ||
                           (item.Status === "INACTIVE" && (
@@ -332,7 +348,10 @@ export default function Cart() {
                     {Math.floor(
                       cartProducts
                         .reduce(
-                          (total, item) => item.Status === "ACTIVE" ? total + item.Quantity * item.Price : total,
+                          (total, item) =>
+                            item.Status === "ACTIVE"
+                              ? total + item.Quantity * item.Price
+                              : total,
                           0
                         )
                         .toFixed(2)
