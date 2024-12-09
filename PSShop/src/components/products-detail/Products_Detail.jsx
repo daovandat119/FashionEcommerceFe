@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Description from "./Description";
 import Star from "../common/Star";
+import Swal from "sweetalert2";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -156,12 +157,22 @@ const ProductDetail = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
+        icon: "warning",
+        confirmButtonText: "Đồng ý",
+      });
       return;
     }
 
     if (!selectedSize || !selectedColor) {
-      toast.warning("Vui lòng chọn kích thước và màu sắc");
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng chọn kích thước và màu sắc",
+        icon: "warning",
+        confirmButtonText: "Đồng ý",
+      });
       return;
     }
 
