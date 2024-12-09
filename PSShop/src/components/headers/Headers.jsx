@@ -46,19 +46,19 @@ export default function Headers() {
     sessionStorage.removeItem('cartReloaded');
     navigate('/shop_cart');
   };
-  // const handleCartClick = (e) => {
-  //   e.preventDefault();
-  //   const token = localStorage.getItem('token');
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
     
-  //   if (!token) {
-  //     setCartProducts([]);
-  //     navigate('/login_register');
-  //     return;
-  //   }
-
-  //   sessionStorage.removeItem('cartReloaded');
-  //   navigate('/shop_cart');
-  // };
+    if (!token) {
+      // Không có token, điều hướng đến trang đăng nhập
+      navigate('/login_register');
+      return;
+    }
+  
+    sessionStorage.removeItem('cartReloaded');
+    navigate('/account_wishlist');
+  };
 
   return (
     <header id="header" className="header header_sticky">
@@ -115,9 +115,10 @@ export default function Headers() {
               </button>
             </div>
 
-            <Link
+            <Link 
               className="header-tools__item flex items-center justify-center p-2"
-              to="/account_wishlist"onClick={handleCartClick}
+              to="/account_wishlist"
+              onClick={handleWishlistClick}
             >
               <i className="fas fa-heart text-black text-lg"></i>
             </Link>

@@ -10,7 +10,7 @@ import {
   UpdateCategoryStatus,
 } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import Swal from 'sweetalert2'; // Import SweetAlert
+import Swal from "sweetalert2"; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const CategoriesList = () => {
@@ -96,7 +96,11 @@ const CategoriesList = () => {
   const handleDeleteCategories = useCallback(
     async (CategoryIDs) => {
       if (CategoryIDs.length === 0) {
-        Swal.fire("Cảnh báo!", "Vui lòng chọn ít nhất một danh mục để xóa", "warning"); // Use SweetAlert for warning
+        Swal.fire(
+          "Cảnh báo!",
+          "Vui lòng chọn ít nhất một danh mục để xóa",
+          "warning"
+        ); // Use SweetAlert for warning
         return;
       }
 
@@ -104,37 +108,61 @@ const CategoriesList = () => {
         try {
           const response = await DeleteCategories(CategoryIDs);
           if (response) {
-            Swal.fire("Thành công!", `Đã xóa ${response.length} danh mục thành công`, "success"); // Use SweetAlert for success
+            Swal.fire(
+              "Thành công!",
+              `Đã xóa ${response.length} danh mục thành công`,
+              "success"
+            ); // Use SweetAlert for success
             getCategories(currentPage);
           }
         } catch (error) {
           console.error("Lỗi khi xóa danh mục:", error);
-          Swal.fire("Lỗi!", "Xóa danh mục thất bại: " + (error.response?.data?.message || error.message), "error"); // Use SweetAlert for error
+          Swal.fire(
+            "Lỗi!",
+            "Xóa danh mục thất bại: " +
+              (error.response?.data?.message || error.message),
+            "error"
+          ); // Use SweetAlert for error
         }
       }
     },
     [currentPage]
   );
 
-  const handleToggle = useCallback((CategoryID) => {
-    const categoryToUpdate = ListCategory.find(item => item.CategoryID === CategoryID);
-    const newStatus = categoryToUpdate.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+  const handleToggle = useCallback(
+    (CategoryID) => {
+      const categoryToUpdate = ListCategory.find(
+        (item) => item.CategoryID === CategoryID
+      );
+      const newStatus =
+        categoryToUpdate.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
-    UpdateCategoryStatus(CategoryID, newStatus)
-      .then(() => {
-        // Update the local state to reflect the new status
-        setListCategory(prevList =>
-          prevList.map(item =>
-            item.CategoryID === CategoryID ? { ...item, Status: newStatus, isActive: newStatus === "ACTIVE" } : item
-          )
-        );
-        Swal.fire("Thành công!", `Đã cập nhật trạng thái danh mục thành công`, "success");
-      })
-      .catch((error) => {
-        console.error("Lỗi khi cập nhật trạng thái danh mục:", error);
-        Swal.fire("Lỗi!", "Không thể cập nhật trạng thái danh mục", "error");
-      });
-  }, [ListCategory]);
+      UpdateCategoryStatus(CategoryID, newStatus)
+        .then(() => {
+          setListCategory((prevList) =>
+            prevList.map((item) =>
+              item.CategoryID === CategoryID
+                ? {
+                    ...item,
+                    Status: newStatus,
+                    isActive: newStatus === "ACTIVE",
+                  }
+                : item
+            )
+          );
+          Swal.fire(
+            "Thành công!",
+            `Đã cập nhật trạng thái danh mục thành công`,
+            "success"
+          );
+        })
+        .catch((error) => {
+          console.error("Lỗi khi cập nhật trạng thái danh mục:", error);
+          Swal.fire("Lỗi!", "Không thể cập nhật trạng thái danh mục", "error");
+        });
+    },
+    [ListCategory]
+  );
 
   const handleSearchChange = (e) => {
     const value = e.target.value; // Get the current input value

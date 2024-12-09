@@ -87,8 +87,8 @@ const UpdateProduct = async (ProductID, productData) => {
   });
 };
 
-const ListColors = (page) => {
-  return axios.get(`/api/colors?Page=${page}`);
+const ListColors = () => {
+  return axios.get(`/api/colors/index`);
 };
 
 const DeleteColors = (ColorID) => {
@@ -108,8 +108,8 @@ const UpdateColor = (ColorID, ColorName) => {
 };
 
 // Liệt kê tất cả kích thước
-const ListSizes = (page) => {
-  return axios.get(`/api/sizes?Page=${page}`);
+const ListSizes = () => {
+  return axios.get(`/api/sizes/index`);
 };
 const GetSizeById = async (SizeID) => {
   return axios.get(`/api/sizes/${SizeID}`);
@@ -454,7 +454,7 @@ const AddReview = async (id, ratingLength, reviewContent, token) => {
     );
   } catch (error) {
     console.error("Error adding review:", error);
-    throw error; // Ném lỗi để xử lý ở nơi gọi
+    throw error; // Ném lỗi để x��� lý ở nơi gọi
   }
 };
 
@@ -510,6 +510,46 @@ const updateUserProfile = async (formData) => {
       },
     }
   );
+};
+
+const toggleColorStatus = async (ColorID) => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.delete(
+      `http://127.0.0.1:8000/api/colors/${ColorID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật trạng thái màu sắc:", error);
+    throw error;
+  }
+};
+
+const toggleSizeStatus = async (ColorID) => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.delete(
+      `http://127.0.0.1:8000/api/sizes/${ColorID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật trạng thái màu sắc:", error);
+    throw error;
+  }
 };
 
 export {
@@ -569,5 +609,7 @@ export {
   fetchAdminDetails, // Xuất hàm fetchAdminDetails
   fetchAccountDetails, // Export the new function
   ChangePassword,
-  updateUserProfile, // Export the new function
+  updateUserProfile,
+  toggleColorStatus,
+  toggleSizeStatus,
 };
