@@ -27,7 +27,6 @@ export default function Checkout() {
   const [isCouponStoreOpen, setIsCouponStoreOpen] = useState(false);
   const [cachedCoupons, setCachedCoupons] = useState([]);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
-  
 
   const paymentMethods = [
     {
@@ -148,7 +147,18 @@ export default function Checkout() {
         navigate(`/shop_order_complete/${response.data.data.OrderID}`);
       } else if (response.data.vnpay_url) {
         window.location.href = response.data.vnpay_url;
-      } else if (response.data.message) {
+      } else if (
+        response.data.message ===
+        "Bạn đã hủy quá 3 lần. Vui lòng thanh toán chuyển khoản để tiếp tục."
+      ) {
+        Swal.fire({
+          title: "Thông báo",
+          text: response.data.message,
+          icon: "warning",
+          confirmButtonText: "Đồng ý",
+        });
+        navigate("/shop_checkout");
+      } else if (response.data.message === "Sản phẩm đã hết hàng") {
         Swal.fire({
           title: "Thông báo",
           text: response.data.message,

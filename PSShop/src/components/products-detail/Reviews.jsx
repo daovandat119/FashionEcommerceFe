@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function Reviews() {
   const { id } = useParams();
@@ -90,6 +91,14 @@ export default function Reviews() {
       setReviewContent("");
 
       await checkReviewPermission();
+
+      Swal.fire({
+        title: "Thông báo",
+        text: "Đánh giá của bạn đã được gửi thành công!",
+        icon: "success",
+        timer: 10000,
+      });
+
       fetchReviews();
     } catch (error) {
       console.log(error);

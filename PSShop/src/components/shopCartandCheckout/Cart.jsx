@@ -76,7 +76,7 @@ export default function Cart() {
 
     const id = setTimeout(async () => {
       try {
-        const response = await updateCartItem(itemId, {
+        await updateCartItem(itemId, {
           productID,
           colorID,
           sizeID,
@@ -101,11 +101,6 @@ export default function Cart() {
     if (!/^\d*$/.test(value)) return;
 
     let newQuantity = value === "" ? 1 : parseInt(value);
-
-    if (newQuantity >= item.QuantityLimit) {
-      newQuantity = item.QuantityLimit;
-      toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
-    }
 
     handleQuantityChange(
       item.CartItemID,
