@@ -273,6 +273,8 @@ export default function Shop1() {
               />
             )}
           </div>
+           <br />
+           <br />
         </div>
       </section>
     </>
