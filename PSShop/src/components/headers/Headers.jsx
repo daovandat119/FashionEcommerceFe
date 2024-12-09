@@ -117,7 +117,7 @@ export default function Headers() {
 
             <Link
               className="header-tools__item flex items-center justify-center p-2"
-              to="/account_wishlist"
+              to="/account_wishlist"onClick={handleCartClick}
             >
               <i className="fas fa-heart text-black text-lg"></i>
             </Link>
