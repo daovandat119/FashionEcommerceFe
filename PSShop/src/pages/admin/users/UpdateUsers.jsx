@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { GetUserById, UpdateUserStatus, BlockedUser } from '../service/api_service'; // Import hàm BlockedUser
-import { toast } from 'react-toastify';
+import { Link, useParams, useNavigate } from "react-router-dom";
+import {
+  GetUserById,
+  UpdateUserStatus,
+  BlockedUser,
+} from "../service/api_service"; // Import hàm BlockedUser
+import { toast } from "react-toastify";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const UpdateUser = () => {
   const { id } = useParams(); // Lấy UserID từ URL
@@ -18,15 +23,20 @@ const UpdateUser = () => {
   useEffect(() => {
     const fetchUserDetail = async () => {
       try {
-        const response = await GetUserById(id); 
-        const user = response; 
+        const response = await GetUserById(id);
+        const user = response;
         if (user) {
           setUserData({
             username: user.Username || "",
             email: user.Email || "",
             image: user.Image || "",
             isActive: user.IsActive === 1, // Chuyển đổi từ số sang boolean
-            role: user.RoleID === 1 ? "Admin" : user.RoleID === 2 ? "User" : "Moderator",
+            role:
+              user.RoleID === 1
+                ? "Admin"
+                : user.RoleID === 2
+                ? "User"
+                : "Moderator",
           });
         } else {
           console.error("User not found");
@@ -51,10 +61,25 @@ const UpdateUser = () => {
         response = await BlockedUser(id); // Gọi API để chặn người dùng
       }
       // Hiển thị thông báo từ API
-      navigate("/admin/users", { state: { success: true, message: response.message || "Cập nhật trạng thái người dùng thành công!" } }); // Điều hướng về danh sách người dùng
+      Swal.fire(
+        "Thành công!",
+        response.message || "Cập nhật trạng thái người dùng thành công!",
+        "success"
+      ); // Hiển thị thông báo thành công
+      navigate("/admin/users", {
+        state: {
+          success: true,
+          message:
+            response.message || "Cập nhật trạng thái người dùng thành công!",
+        },
+      }); // Điều hướng về danh sách người dùng
     } catch (err) {
       console.error("Error updating user:", err);
-      toast.error(err.message || "Error updating user"); // Hiển thị thông báo lỗi
+      Swal.fire(
+        "Lỗi!",
+        err.message || "Có lỗi xảy ra khi cập nhật người dùng.",
+        "error"
+      ); // Hiển thị thông báo lỗi
     }
   };
 
@@ -87,7 +112,12 @@ const UpdateUser = () => {
               <select
                 name="isActive"
                 value={userData.isActive ? "ACTIVE" : "BLOCKED"}
-                onChange={(e) => setUserData((prev) => ({ ...prev, isActive: e.target.value === "ACTIVE" }))}
+                onChange={(e) =>
+                  setUserData((prev) => ({
+                    ...prev,
+                    isActive: e.target.value === "ACTIVE",
+                  }))
+                }
                 className="border border-gray-300 rounded-md p-2"
               >
                 <option value="ACTIVE">ACTIVE</option>
@@ -101,7 +131,10 @@ const UpdateUser = () => {
               </span>
             </div>
             <div className="flex justify-between mt-4">
-              <Link to="/admin/users" className="flex items-center font-medium bg-blue-500 px-4 py-2 rounded-lg text-white hover:bg-blue-600">
+              <Link
+                to="/admin/users"
+                className="flex items-center font-medium bg-blue-500 px-4 py-2 rounded-lg text-white hover:bg-blue-600"
+              >
                 Quay lại người dùng
               </Link>
               <Button type="submit" color="green">

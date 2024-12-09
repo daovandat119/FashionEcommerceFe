@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AddColor } from "../service/api_service";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from 'sweetalert2'; // Import SweetAlert
 
 const AddColorComponent = () => {
   const [ColorName, setColorName] = useState("");
@@ -37,16 +36,15 @@ const AddColorComponent = () => {
       .catch(err => {
         console.error("Lỗi khi thêm màu:", err);
         if (err.response && err.response.data) {
-          toast.error(err.response.data.ColorName[0] || "Đã xảy ra lỗi khi thêm màu");
+          Swal.fire("Lỗi!", err.response.data.ColorName[0] || "Đã xảy ra lỗi khi thêm màu", "error");
         } else {
-          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+          Swal.fire("Lỗi!", "Đã xảy ra lỗi không xác định. Vui lòng thử lại.", "error");
         }
       });
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">TẠO MÀU SẮC MỚI</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSaveColor} className="space-y-6">

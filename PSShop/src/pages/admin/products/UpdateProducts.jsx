@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Input, Button, Textarea, Checkbox } from "@material-tailwind/react";
 import {
@@ -17,8 +17,8 @@ import {
   GetProductVariants,
   DeleteProductVariant,
 } from "../service/api_service";
-import { toast, ToastContainer } from "react-toastify";
 import { FaSpinner } from "react-icons/fa"; // Import icon spinner từ react-icons
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const UpdateProducts = () => {
   const { ProductID } = useParams();
@@ -47,12 +47,13 @@ const UpdateProducts = () => {
   const [variantPrice, setVariantPrice] = useState("");
   const [variantQuantity, setVariantQuantity] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedVariants, setSelectedVariants] = useState([]);
 
   useEffect(() => {
     if (ProductID) {
       fetchProductData();
     } else {
-      toast.error("Không tìm thấy ID sản phẩm");
+      Swal.fire("Lỗi!", "Không tìm thấy ID sản phẩm", "error");
       navigate("/admin/products");
     }
   }, [ProductID]);
@@ -89,7 +90,7 @@ const UpdateProducts = () => {
               ImagePathPreviews: imagePaths.map((path) => path.trim()),
             });
           } else {
-            toast.error("Không tìm thấy thông tin sản phẩm");
+            Swal.fire("Lỗi!", "Không tìm thấy thông tin sản phẩm", "error");
           }
 
           setCategories(categoriesResponse.data);
@@ -102,7 +103,7 @@ const UpdateProducts = () => {
       )
       .catch((error) => {
         console.error("Error fetching product data:", error);
-        toast.error("Không thể tải thông tin sản phẩm");
+        Swal.fire("Lỗi!", "Không thể tải thông tin sản phẩm", "error");
       });
   };
 
@@ -115,7 +116,7 @@ const UpdateProducts = () => {
       })
       .catch((error) => {
         console.error("Error fetching product variants:", error);
-        toast.error("Không thể tải danh sách biến thể sản phẩm");
+        Swal.fire("Lỗi!", "Không thể tải danh sách biến thể sản phẩm", "error");
       });
   };
 
@@ -218,8 +219,12 @@ const UpdateProducts = () => {
     UpdateProduct(ProductID, productData)
       .then((response) => {
         if (response) {
-          toast.success("Sản phẩm đã được cập nhật thành công", {
-            onClose: () => navigate("/admin/products"),
+          Swal.fire(
+            "Thành công!",
+            "Sản phẩm đã được cập nhật thành công",
+            "success"
+          ).then(() => {
+            navigate("/admin/products");
           });
         } else {
           throw new Error(
@@ -230,11 +235,18 @@ const UpdateProducts = () => {
       .catch((error) => {
         console.error("Lỗi khi cập nhật sản phẩm:", error);
         if (error.response && error.response.data) {
-          toast.error(
-            error.response.data.message || "Đã xảy ra lỗi khi cập nhật sản phẩm"
+          Swal.fire(
+            "Lỗi!",
+            error.response.data.message ||
+              "Đã xảy ra lỗi khi cập nhật sản phẩm",
+            "error"
           );
         } else {
-          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+          Swal.fire(
+            "Lỗi!",
+            "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
+            "error"
+          );
         }
       })
       .finally(() => {
@@ -317,12 +329,16 @@ const UpdateProducts = () => {
 
   const handleAddVariant = () => {
     if (selectedColors.length === 0 || selectedSizes.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một màu và một kích thước");
+      Swal.fire(
+        "Lỗi!",
+        "Vui lòng chọn ít nhất một màu và một kích thước",
+        "error"
+      );
       return;
     }
 
     if (!variantPrice || !variantQuantity) {
-      toast.error("Vui lòng nhập giá và số lượng cho biến thể");
+      Swal.fire("Lỗi!", "Vui lòng nhập giá và số lượng cho biến thể", "error");
       return;
     }
 
@@ -336,14 +352,16 @@ const UpdateProducts = () => {
 
     AddProductVariant(variantData)
       .then((response) => {
-        toast.success("Biến thể đã được thêm thành công");
+        Swal.fire("Thành công!", "Biến thể đã được thêm thành công", "success");
         fetchProductVariants();
       })
       .catch((error) => {
         console.error("Lỗi khi thêm biến thể:", error);
-        toast.error(
+        Swal.fire(
+          "Lỗi!",
           "Không thể thêm biến thể: " +
-            (error.response?.data?.message || error.message)
+            (error.response?.data?.message || error.message),
+          "error"
         );
       });
 
@@ -361,14 +379,16 @@ const UpdateProducts = () => {
   const handleDeleteVariant = (VariantID) => {
     DeleteProductVariant(VariantID)
       .then(() => {
-        toast.success("Biến thể đã được xóa thành công!");
+        Swal.fire("Thành công!", "Biến thể đã được xóa thành công!", "success");
         fetchProductVariants();
       })
       .catch((error) => {
         console.error("Lỗi khi xóa biến thể:", error);
-        toast.error(
+        Swal.fire(
+          "Lỗi!",
           "Không thể xóa biến thể: " +
-            (error.response?.data?.message || error.message)
+            (error.response?.data?.message || error.message),
+          "error"
         );
       });
   };
@@ -377,9 +397,44 @@ const UpdateProducts = () => {
     navigate(`/admin/products/edit-variant/${variantID}`); // Điều hướng tới UpdateVariant
   };
 
+  const handleSelectVariant = (variantID) => {
+    setSelectedVariants((prev) =>
+      prev.includes(variantID)
+        ? prev.filter((id) => id !== variantID)
+        : [...prev, variantID]
+    );
+  };
+
+  const handleDeleteSelectedVariants = useCallback(() => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa các biến thể đã chọn?")) {
+      Promise.all(
+        selectedVariants.map((variantID) => DeleteProductVariant(variantID))
+      )
+        .then((responses) => {
+          const successfulDeletes = responses.filter(
+            (response) => response.success
+          );
+          if (successfulDeletes.length > 0) {
+            setProductVariants((prevList) =>
+              prevList.filter(
+                (variant) => !selectedVariants.includes(variant.VariantID)
+              )
+            );
+            setSelectedVariants([]); // Clear selected variants after deletion
+            Swal.fire('Thành công!', 'Các biến thể đã được xóa thành công', 'success');
+          } else {
+            Swal.fire('Thất bại!', 'Xóa biến thể thất bại', 'error');
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi khi xóa biến thể:", error);
+          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa biến thể', 'error');
+        });
+    }
+  }, [selectedVariants]);
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Cập nhật sản phẩm</h1>
       <div className="flex gap-2">
         {/* Phần bên trái - Thông tin sản phẩm */}
@@ -580,54 +635,64 @@ const UpdateProducts = () => {
 
           {/* Product Variants Table */}
           <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Biến thể sản phẩm</h2>
+            <div className="flex justify-between items-center py-4">
+              <h2 className="text-xl font-bold">Biến thể sản phẩm</h2>
+              <button 
+                onClick={handleDeleteSelectedVariants} 
+                className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
+                disabled={selectedVariants.length === 0}
+              >
+                <TrashIcon className="h-5 w-5" /> Xóa các lựa chọn
+              </button>
+            </div>
             {productVariants.length > 0 ? (
               <div className="overflow-y-auto" style={{ maxHeight: "730px" }}>
                 <table className="min-w-full border-collapse border border-gray-300">
                   <thead>
                     <tr className="bg-gray-100 text-center">
-                      <th className="border border-gray-300  py-2">Lựa chọn</th>
-                      <th className="border border-gray-300 px-4 py-2">
-                        Màu sắc
+                      <th className="border border-gray-300 py-2">
+                        <Checkbox
+                          checked={selectedVariants.length === productVariants.length}
+                          onChange={() => {
+                            if (selectedVariants.length === productVariants.length) {
+                              setSelectedVariants([]);
+                            } else {
+                              setSelectedVariants(productVariants.map(v => v.VariantID));
+                            }
+                          }}
+                        />
                       </th>
+                      <th className="border border-gray-300 px-4 py-2">Màu sắc</th>
                       <th className="border border-gray-300 px-4 py-2">Kích Thước</th>
-                      <th className="border border-gray-300 px-4 py-2">
-                        Giá 
-                      </th>
-                      <th className="border border-gray-300 px-4 py-2">
-                        Số lượng
-                      </th>
-                      <th className="border border-gray-300 px-4 py-2">
-                        Chức năng
-                      </th>
+                      <th className="border border-gray-300 px-4 py-2">Giá</th>
+                      <th className="border border-gray-300 px-4 py-2">Số lượng</th>
+                      <th className="border border-gray-300 px-4 py-2">Chức năng</th>
                     </tr>
                   </thead>
                   <tbody>
                     {productVariants.map((variant) => (
                       <tr key={variant.VariantID} className="text-center">
                         <td className="border py-2">
-                          <Checkbox className="border-2 border-gray-400" />
+                          <Checkbox
+                            checked={selectedVariants.includes(variant.VariantID)}
+                            onChange={() => handleSelectVariant(variant.VariantID)}
+                            className="border-2 border-gray-400"
+                          />
                         </td>
-                        <td className="border px-4 py-2">
-                          {variant.ColorName || "N/A"}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {variant.SizeName || "N/A"}
-                        </td>
-                        <td className="border px-4 py-2">{Math.floor(variant.Price) } VND</td>
+                        <td className="border px-4 py-2">{variant.ColorName || "N/A"}</td>
+                        <td className="border px-4 py-2">{variant.SizeName || "N/A"}</td>
+                        <td className="border px-4 py-2">{Math.floor(variant.Price)} VND</td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
                         <td className="border-b px-4 py-4 flex">
                           <button
-                            className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors inline-flex items-center justify-center"
+                            className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:bg-blue-600 transition-colors"
                             onClick={() => handleEditVariant(variant.VariantID)}
                           >
                             <PencilIcon className="h-4 w-4" />
                           </button>
                           <button
-                            className="bg-red-500 text-white p-2 rounded-full mr-2 hover:bg-red-600 transition-colors inline-flex items-center justify-center"
-                            onClick={() =>
-                              handleDeleteVariant(variant.VariantID)
-                            }
+                            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                            onClick={() => handleDeleteVariant(variant.VariantID)}
                           >
                             <TrashIcon className="h-4 w-4" />
                           </button>

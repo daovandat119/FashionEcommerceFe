@@ -5,8 +5,7 @@ import { GetCoupons, DeleteVouchers } from "../service/api_service";
 import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 import { useDebounce } from "use-debounce";
 import ReactPaginate from "react-paginate";
 
@@ -72,18 +71,24 @@ const VoucherList = () => {
 
   const handleDeleteSelected = async () => {
     if (selectedVouchers.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một voucher để xóa.");
+      Swal.fire("Lỗi!", "Vui lòng chọn ít nhất một voucher để xóa.", "error");
       return;
     }
 
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa các voucher đã chọn không?"
-    );
-    if (!confirmDelete) return;
+    const confirmDelete = await Swal.fire({
+      title: "Xác nhận",
+      text: "Bạn có chắc chắn muốn xóa các voucher đã chọn không?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    });
+
+    if (!confirmDelete.isConfirmed) return;
 
     try {
       await DeleteVouchers(selectedVouchers);
-      toast.success("Đã xóa các voucher đã chọn.");
+      Swal.fire("Thành công!", "Đã xóa các voucher đã chọn.", "success");
       setSelectedVouchers([]);
       const updatedVouchers = vouchers.filter(
         (voucher) => !selectedVouchers.includes(voucher.CouponID)
@@ -91,26 +96,32 @@ const VoucherList = () => {
       setVouchers(updatedVouchers);
     } catch (error) {
       console.error("Lỗi khi xóa voucher:", error);
-      toast.error("Có lỗi xảy ra khi xóa voucher.");
+      Swal.fire("Lỗi!", "Có lỗi xảy ra khi xóa voucher.", "error");
     }
   };
 
   const handleDeleteSingle = async (couponID) => {
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa voucher này không?"
-    );
-    if (!confirmDelete) return;
+    const confirmDelete = await Swal.fire({
+      title: "Xác nhận",
+      text: "Bạn có chắc chắn muốn xóa voucher này không?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    });
+
+    if (!confirmDelete.isConfirmed) return;
 
     try {
       await DeleteVouchers([couponID]);
-      toast.success("Voucher đã được xóa.");
+      Swal.fire("Thành công!", "Voucher đã được xóa.", "success");
       const updatedVouchers = vouchers.filter(
         (voucher) => voucher.CouponID !== couponID
       );
       setVouchers(updatedVouchers);
     } catch (error) {
       console.error("Lỗi khi xóa voucher:", error);
-      toast.error("Có lỗi xảy ra khi xóa voucher.");
+      Swal.fire("Lỗi!", "Có lỗi xảy ra khi xóa voucher.", "error");
     }
   };
 
@@ -128,7 +139,6 @@ const VoucherList = () => {
 
   return (
     <>
-      <ToastContainer /> {/* Thêm ToastContainer */}
       <Typography variant="h5" className="text-2xl font-bold mb-6 ml-5">
         Quản lý mã giảm giá
       </Typography>

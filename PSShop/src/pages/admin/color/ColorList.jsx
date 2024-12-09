@@ -9,8 +9,7 @@ import { Checkbox, Input } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
 import { ListColors, DeleteColors } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from 'sweetalert2'; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const ColorList = () => {
@@ -38,7 +37,7 @@ const ColorList = () => {
       }
     } catch (error) {
       console.error("Error fetching colors:", error);
-      toast.error("Không thể tải danh sách màu sắc");
+      Swal.fire("Lỗi!", "Không thể tải danh sách màu sắc", "error");
     } finally {
       setIsLoading(false); // Kết thúc loading
     }
@@ -52,10 +51,7 @@ const ColorList = () => {
     }
 
     if (location.state?.success) {
-      toast.dismiss(); // Đóng tất cả các thông báo hiện tại
-      toast.success(location.state.message || "Thao tác thành công!", {
-        autoClose: 3000,
-      });
+      Swal.fire("Thành công!", location.state.message || "Thao tác thành công!", "success");
 
       // Logic mới cho việc thêm màu mới
       if (location.state?.newColor) {
@@ -89,19 +85,18 @@ const ColorList = () => {
       const deletePromises = ColorIDs.map((ColorID) => DeleteColors(ColorID));
       try {
         await Promise.all(deletePromises);
-        toast.success("Xóa thành công");
+        Swal.fire("Thành công!", "Xóa thành công", "success");
         getColors(currentPage); // Gọi lại danh sách màu sắc
         setSelectedColors([]); // Đặt lại danh sách màu đã chọn
       } catch (error) {
         console.error("Lỗi khi xóa màu sắc:", error);
-        toast.error("Xóa không thành công: " + error.message);
+        Swal.fire("Lỗi!", "Xóa không thành công: " + error.message, "error");
       }
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6 ">Quản lý màu sắc</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">

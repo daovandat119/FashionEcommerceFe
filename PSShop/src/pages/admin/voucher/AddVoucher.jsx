@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
-import { Card, Button, Input, Typography } from '@material-tailwind/react';
-import { useNavigate } from 'react-router-dom';
-import { AddVouchers } from '../service/api_service';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from "react";
+import { Card, Button, Input, Typography } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
+import { AddVouchers } from "../service/api_service";
+import Swal from "sweetalert2";
 
 const AddVoucher = () => {
   const [voucherDetails, setVoucherDetails] = useState({
-    Name: '',
-    Code: '',
-    DiscountPercentage: '',
-    MinimumOrderValue: '',
-    UsageLimit: '',
-    MaxAmount: '',
-    ExpiresAt: '',
+    Name: "",
+    Code: "",
+    DiscountPercentage: "",
+    MinimumOrderValue: "",
+    UsageLimit: "",
+    MaxAmount: "",
+    ExpiresAt: "",
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,36 +25,37 @@ const AddVoucher = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Kiểm tra dữ liệu đầu vào
-    if (!voucherDetails.Name || !voucherDetails.Code || !voucherDetails.DiscountPercentage || !voucherDetails.MinimumOrderValue  || !voucherDetails.MaxAmount || !voucherDetails.ExpiresAt) {
-      setError('Vui lòng điền tất cả các trường.');
+    if (
+      !voucherDetails.Name ||
+      !voucherDetails.Code ||
+      !voucherDetails.DiscountPercentage ||
+      !voucherDetails.MinimumOrderValue ||
+      !voucherDetails.MaxAmount ||
+      !voucherDetails.ExpiresAt
+    ) {
+      setError("Vui lòng điền tất cả các trường.");
       return;
     }
 
     try {
       await AddVouchers(voucherDetails);
-      localStorage.setItem('successMessage', 'Voucher đã được thêm thành công!');
-      navigate('/admin/vouchers');
+      Swal.fire("Thành công!", "Voucher đã được thêm thành công!", "success");
+      navigate("/admin/vouchers");
     } catch (error) {
-      console.error('Lỗi khi thêm voucher:', error);
-      
-      // Kiểm tra xem có thông báo lỗi từ API không
-      if (error.response && error.response.data) {
-        const errorMessage = error.response.data.errors?.Code ? error.response.data.errors.Code[0] : 'Lỗi khi thêm voucher. Vui lòng thử lại.';
-        setError(errorMessage); // Cập nhật thông báo lỗi
-        toast.error(errorMessage); // Hiển thị thông báo lỗi
-      } else {
-        setError('Lỗi khi thêm voucher. Vui lòng thử lại.'); // Thông báo lỗi mặc định
-        toast.error('Lỗi khi thêm voucher. Vui lòng thử lại.'); // Hiển thị thông báo lỗi mặc định
-      }
+      console.error("Lỗi khi thêm voucher:", error);
+      const errorMessage = error.response?.data?.errors?.Code
+        ? error.response.data.errors.Code[0]
+        : "Lỗi khi thêm voucher. Vui lòng thử lại.";
+      setError(errorMessage);
+      Swal.fire("Lỗi!", errorMessage, "error");
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <Typography variant="h5" className="text-2xl font-bold mb-6 text-center">
         Tạo mã giảm giá
       </Typography>
@@ -116,11 +116,11 @@ const AddVoucher = () => {
           <Button type="submit" color="green" className="w-full">
             Tạo mã giảm giá
           </Button>
-          <Button 
-            type="button" 
-            color="blue" 
-            className="w-full mt-4" 
-            onClick={() => navigate('/admin/vouchers')}
+          <Button
+            type="button"
+            color="blue"
+            className="w-full mt-4"
+            onClick={() => navigate("/admin/vouchers")}
           >
             Quay lại mã giảm giá
           </Button>

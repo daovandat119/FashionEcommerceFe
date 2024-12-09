@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { GetColorById, UpdateColor } from "../service/api_service";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from 'sweetalert2'; // Import SweetAlert
 
 const UpdateColorComponent = () => {
   const [ColorName, setColorName] = useState("");
@@ -23,7 +22,7 @@ const UpdateColorComponent = () => {
         .catch(err => {
           console.error("Lỗi khi tải màu sắc:", err);
           setError("Không thể tải dữ liệu màu sắc. Vui lòng thử lại sau.");
-          toast.error("Không thể tải dữ liệu màu sắc");
+          Swal.fire("Lỗi!", "Không thể tải dữ liệu màu sắc", "error");
         });
     };
 
@@ -46,8 +45,8 @@ const UpdateColorComponent = () => {
     UpdateColor(ColorID, ColorName)
       .then(response => {
         if (response && response.data) {
-          toast.success("Cập nhật màu sắc thành công", {
-            onClose: () => navigate("/admin/colors"),
+          Swal.fire("Thành công!", "Cập nhật màu sắc thành công", "success").then(() => {
+            navigate("/admin/colors");
           });
         } else {
           throw new Error(response.data.message || "Không thể cập nhật màu sắc");
@@ -57,16 +56,15 @@ const UpdateColorComponent = () => {
         console.error("Lỗi khi cập nhật màu sắc:", err);
         // Hiển thị thông báo lỗi từ API
         if (err.response && err.response.data) {
-          toast.error(err.response.data.ColorName[0] || "Đã xảy ra lỗi khi cập nhật màu sắc");
+          Swal.fire("Lỗi!", err.response.data.ColorName[0] || "Đã xảy ra lỗi khi cập nhật màu sắc", "error");
         } else {
-          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+          Swal.fire("Lỗi!", "Đã xảy ra lỗi không xác định. Vui lòng thử lại.", "error");
         }
       });
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">CẬP NHẬT MÀU SẮC</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleUpdateColor} className="space-y-6">
@@ -84,7 +82,6 @@ const UpdateColorComponent = () => {
               type="text"
               value={ColorName}
               onChange={(e) => setColorName(e.target.value)}
-              
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

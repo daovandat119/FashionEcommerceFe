@@ -22,9 +22,7 @@ export default function OrderCompleted() {
           }
         );
         setOrderDetails(orderResponse.data.data);
-      
-       
-        
+    
       } catch (error) {
         console.error("Lỗi khi tải thông tin:", error);
       } finally {

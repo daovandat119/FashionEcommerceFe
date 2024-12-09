@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { MagnifyingGlassIcon, PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { Checkbox, Input } from '@material-tailwind/react';
-import { Link, useLocation } from 'react-router-dom';
-import { ListSizes, DeleteSizes } from '../service/api_service';
+import React, { useEffect, useState } from "react";
+import {
+  MagnifyingGlassIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
+import { Checkbox, Input } from "@material-tailwind/react";
+import { Link, useLocation } from "react-router-dom";
+import { ListSizes, DeleteSizes } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2"; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const SizeList = () => {
@@ -22,34 +26,37 @@ const SizeList = () => {
     try {
       const res = await ListSizes(page);
       if (res && res.data) {
-        setSizes(res.data.map(size => ({ ...size, isActive: true }))); // Mặc định là bật
+        setSizes(res.data.map((size) => ({ ...size, isActive: true }))); // Mặc định là bật
         setTotalPages(res.totalPage);
         setCurrentPage(page);
       }
     } catch (error) {
       console.error("Error fetching sizes:", error);
-      toast.error("Không thể tải danh sách kích thước");
+      Swal.fire("Lỗi!", "Không thể tải danh sách kích thước", "error");
     } finally {
       setIsLoading(false); // Kết thúc loading
     }
   };
 
   useEffect(() => {
-    if (!hasFetched) { // Chỉ gọi API nếu chưa gọi trước đó
+    if (!hasFetched) {
+      // Chỉ gọi API nếu chưa gọi trước đó
       getSizes(1);
       setHasFetched(true); // Đánh dấu là đã gọi API
     }
 
     // Hiển thị thông báo thành công khi thêm kích thước
     if (location.state?.success) {
-      toast.success(location.state.message || "Thao tác thành công!", {
-        autoClose: 3000,
-      });
+      Swal.fire(
+        "Thành công!",
+        location.state.message || "Thao tác thành công!",
+        "success"
+      );
 
       // Logic mới cho việc thêm kích thước mới
       if (location.state?.newSize) {
-        setSizes(prevSizes => [location.state.newSize, ...prevSizes]);
-        setTotalPages(prevTotal => prevTotal + 1);
+        setSizes((prevSizes) => [location.state.newSize, ...prevSizes]);
+        setTotalPages((prevTotal) => prevTotal + 1);
       }
 
       window.history.replaceState({}, document.title);
@@ -64,9 +71,9 @@ const SizeList = () => {
   };
 
   const handleSelectSize = (SizeID) => {
-    setSelectedSizes(prev => 
-      prev.includes(SizeID) 
-        ? prev.filter(id => id !== SizeID)
+    setSelectedSizes((prev) =>
+      prev.includes(SizeID)
+        ? prev.filter((id) => id !== SizeID)
         : [...prev, SizeID]
     );
   };
@@ -75,22 +82,22 @@ const SizeList = () => {
     if (SizeIDs.length === 0) return;
 
     if (window.confirm("Bạn có chắc chắn muốn xóa các kích thước đã chọn?")) {
-      const deletePromises = SizeIDs.map(SizeID => DeleteSizes(SizeID));
+      const deletePromises = SizeIDs.map((SizeID) => DeleteSizes(SizeID));
       try {
         await Promise.all(deletePromises);
-        toast.success("Xóa thành công");
+        Swal.fire("Thành công!", "Xóa thành công", "success");
         getSizes(currentPage); // Tải lại danh sách
         setSelectedSizes([]); // Reset danh sách đã chọn
       } catch (error) {
         console.error("Lỗi khi xóa kích thước:", error);
-        toast.error("Xóa không thành công: " + error.message);
+        Swal.fire("Lỗi!", "Xóa không thành công: " + error.message, "error");
       }
     }
   };
 
   const handleToggle = (SizeID) => {
-    setSizes(prevSizes =>
-      prevSizes.map(size =>
+    setSizes((prevSizes) =>
+      prevSizes.map((size) =>
         size.SizeID === SizeID ? { ...size, isActive: !size.isActive } : size
       )
     );
@@ -98,18 +105,20 @@ const SizeList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Quản lý kích thước</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">
-          <Input 
+          <Input
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             label="Tìm kiếm kích thước"
             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg"
           />
         </div>
-        <div className='flex gap-2'>
-          <Link to="/admin/sizes/add" className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
+        <div className="flex gap-2">
+          <Link
+            to="/admin/sizes/add"
+            className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
+          >
             <PlusIcon className="h-5 w-5" /> Tạo kích thước
           </Link>
           <button
@@ -124,19 +133,21 @@ const SizeList = () => {
         {isLoading ? ( // Hiển thị loading trong bảng
           <div className="flex justify-center items-center h-64">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
-                <span className="ml-4 text-lg">Đang tải kích thước, vui lòng chờ...</span>
+            <span className="ml-4 text-lg">
+              Đang tải kích thước, vui lòng chờ...
+            </span>
           </div>
         ) : (
           <table className="w-full min-w-max border-collapse">
             <thead className="bg-gray-100">
-              <tr className='text-center'>
+              <tr className="text-center">
                 <th className="border-b p-4 ">Lựa chọn</th>
                 <th className="border-b p-4 ">Kích thước</th>
                 <th className="border-b p-4 ">Trạng thái</th>
                 <th className="border-b p-4 ">Chức năng</th>
               </tr>
             </thead>
-            <tbody className='text-center'>
+            <tbody className="text-center">
               {sizes.map((size) => (
                 <tr key={size.SizeID} className="hover:bg-gray-50">
                   <td className="border-b p-1">
@@ -148,9 +159,17 @@ const SizeList = () => {
                   </td>
                   <td className="border-b p-4">{size.SizeName}</td>
                   <td className="border-b p-8 flex items-center justify-center">
-                    <span className={`h-2 w-2 rounded-full ${size.isActive ? 'bg-green-500' : 'bg-red-500'} mr-2`} />
-                    <span className={`${size.isActive ? 'text-green-500' : 'text-red-500'} font-bold`}>
-                      {size.isActive ? 'Active' : 'Inactive'}
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        size.isActive ? "bg-green-500" : "bg-red-500"
+                      } mr-2`}
+                    />
+                    <span
+                      className={`${
+                        size.isActive ? "text-green-500" : "text-red-500"
+                      } font-bold`}
+                    >
+                      {size.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td className="border-b p-4 ">

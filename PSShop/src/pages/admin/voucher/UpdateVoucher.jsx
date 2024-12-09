@@ -6,8 +6,7 @@ import {
   UpdateVouchers,
   GetCouponDetails,
 } from "../service/api_service";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const UpdateVoucher = () => {
   const { VoucherID } = useParams();
@@ -58,9 +57,10 @@ const UpdateVoucher = () => {
 
     try {
       await UpdateVouchers(VoucherID, voucherData);
-      localStorage.setItem(
-        "successMessage",
-        "Voucher đã được cập nhật thành công!"
+      Swal.fire(
+        "Thành công!",
+        "Voucher đã được cập nhật thành công!",
+        "success"
       );
       navigate("/admin/vouchers");
     } catch (error) {
@@ -69,7 +69,7 @@ const UpdateVoucher = () => {
         error.response?.data?.message ||
         "Lỗi khi cập nhật voucher. Vui lòng thử lại.";
       setError(errorMessage);
-      toast.error(errorMessage);
+      Swal.fire("Lỗi!", errorMessage, "error");
     }
   };
 
@@ -79,7 +79,6 @@ const UpdateVoucher = () => {
 
   return (
     <div className="container  px-4 py-8 w-full">
-      <ToastContainer />
       <Typography variant="h5" className="text-2xl font-bold mb-6 text-left">
         Cập nhật mã giảm giá
       </Typography>

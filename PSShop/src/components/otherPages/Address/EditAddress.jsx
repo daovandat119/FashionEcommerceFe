@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import Add_Address from './Add_Address';
 import Edit_Address from './Edit_Address';
-import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 export default function EditAddress() {
@@ -51,26 +50,22 @@ export default function EditAddress() {
 
       if (response.data) {
         await fetchAddresses();
-        
-        toast.success("Đã đặt làm địa chỉ mặc định", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Đã đặt làm địa chỉ mặc định',
+          showConfirmButton: false,
+          timer: 1500
         });
       }
     } catch (error) {
       console.error('Lỗi khi đặt địa chỉ mặc định:', error);
       
-      toast.error("Không thể đặt địa chỉ mặc định. Vui lòng thử lại sau.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+      Swal.fire({
+        icon: 'error',
+        title: 'Không thể đặt địa chỉ mặc định',
+        text: 'Vui lòng thử lại sau.',
+        showConfirmButton: true
       });
     } finally {
       setIsSettingDefault(false);
@@ -107,14 +102,12 @@ export default function EditAddress() {
         if (response.status === 200) {
           await fetchAddresses();
           setExpandedAddressId(null);
-          
-          toast.success('Xóa địa chỉ thành công', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Xóa địa chỉ thành công',
+            showConfirmButton: false,
+            timer: 1500
           });
         }
       }
@@ -122,31 +115,22 @@ export default function EditAddress() {
       console.error('Lỗi khi xóa địa chỉ:', error);
       
       if (error.response?.status === 400) {
-        toast.error('Không thể xóa địa chỉ đang được sử dụng trong đơn hàng', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        Swal.fire({
+          icon: 'error',
+          title: 'Không thể xóa địa chỉ',
+          text: 'Địa chỉ đang được sử dụng trong đơn hàng.',
         });
       } else if (error.response?.status === 404) {
-        toast.error('Không tìm thấy địa chỉ', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        Swal.fire({
+          icon: 'error',
+          title: 'Không tìm thấy địa chỉ',
+          text: 'Vui lòng kiểm tra lại.',
         });
       } else {
-        toast.error('Có lỗi xảy ra. Vui lòng thử lại sau.', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        Swal.fire({
+          icon: 'error',
+          title: 'Có lỗi xảy ra',
+          text: 'Vui lòng thử lại sau.',
         });
       }
     }
@@ -165,16 +149,15 @@ export default function EditAddress() {
       </div>
     );
   }
-    
+
   if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="col-lg-9">
       <div className="page-content my-account__address">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <p className="text-xl font-bold mb-0">
-         Địa chỉ của tôi  </p>
-          <button 
+          <p className="text-xl font-bold mb-0">Địa chỉ của tôi</p>
+          <button
             className="btn btn-primary"
             onClick={() => setShowAddForm(true)}
           >
@@ -192,18 +175,17 @@ export default function EditAddress() {
             />
           </div>
         )}
-  <div className="my-account__address-list flex flex-col gap-4">
+        <div className="my-account__address-list flex flex-col gap-4">
           {addresses.length > 0 ? (
             addresses.map((address) => (
               <div
                 key={address.AddressID}
                 className={`relative p-4 rounded-lg shadow-md bg-gray transition-transform duration-200 ${
-                  address.IsDefault ? "border-2  " : "border"
+                  address.IsDefault ? "border-2" : "border"
                 }`}
               >
                 {/* Nội dung địa chỉ và nút hành động */}
                 <div className="flex items-center justify-between">
-                  {/* Phần chi tiết ở giữa dòng */}
                   <div className="text-left flex-1">
                     <p className="text-sm text-gray-700 font-medium">
                       {address.Username} | {address.PhoneNumber}
@@ -219,20 +201,16 @@ export default function EditAddress() {
                     )}
                   </div>
 
-                  {/* Nút chỉnh sửa và đặt làm mặc định */}
                   <div className="flex gap-2">
-                    {/* Nút sửa và nút xóa */}
                     <div className="flex items-center gap-2">
-                      {/* Nút sửa */}
                       <button
-                        className="px-4 py-2 text-sm text-gray-100 bg-dark "
+                        className="px-4 py-2 text-sm text-gray-100 bg-dark"
                         onClick={() => toggleExpandAddress(address.AddressID)}
                       >
                         Sửa
                       </button>
-                      {/* Nút xóa */}
                       <button
-                        className="px-4 py-2 text-sm text-gray-100 bg-dark "
+                        className="px-4 py-2 text-sm text-gray-100 bg-dark"
                         onClick={() => handleDeleteAddress(address.AddressID)}
                       >
                         Xóa
@@ -258,7 +236,6 @@ export default function EditAddress() {
                   </div>
                 </div>
 
-                {/* Nội dung mở rộng (chỉnh sửa địa chỉ) */}
                 {expandedAddressId === address.AddressID && (
                   <div className="expanded-content mt-4 p-4 border-t border-gray-300">
                     <Edit_Address

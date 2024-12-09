@@ -78,11 +78,13 @@ const OrderStatisticsTable = ({
       {loading ? (
         <div className="text-center">Loading...</div>
       ) : (
-        <div className="max-h-60 overflow-y-auto">
+        <div className="h-[360px] overflow-y-auto relative">
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-gray-100 text-center">
-                <th className="border border-gray-300 p-2 w-[10%]">ID</th>
+                <th className="border border-gray-300 p-2 w-[1%]">
+                  Mã đơn hàng
+                </th>
                 <th className="border border-gray-300 p-2">Trạng thái</th>
                 <th className="border border-gray-300 p-2">
                   Phương thức thanh toán
@@ -96,7 +98,7 @@ const OrderStatisticsTable = ({
               {orders.map((order, index) => (
                 <React.Fragment key={index}>
                   <tr className="hover:bg-gray-50 text-center">
-                    <td className="border border-gray-300 p-2">
+                    <td className="border border-gray-300 p-2 w-[1%] overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]">
                       {order.OrderCode}
                     </td>
                     <td className="border border-gray-300 p-2">
@@ -120,25 +122,27 @@ const OrderStatisticsTable = ({
             </tbody>
           </table>
           {totalPage > 1 && (
-            <ReactPaginate
-              breakLabel="..."
-              nextLabel=" >"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={totalPage}
-              previousLabel="<"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination flex justify-center space-x-2 mt-4"
-              activeClassName="active bg-blue-500 text-white"
-              forcePage={currentPage - 1}
-            />
+            <div className="absolute bottom-0 left-0 right-0 bg-white">
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel=" >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={totalPage}
+                previousLabel="<"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination flex justify-center space-x-2 mt-4"
+                activeClassName="active bg-blue-500 text-white"
+                forcePage={currentPage - 1}
+              />
+            </div>
           )}
         </div>
       )}

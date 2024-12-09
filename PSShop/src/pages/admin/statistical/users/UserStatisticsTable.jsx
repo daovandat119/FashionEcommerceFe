@@ -36,7 +36,7 @@ const UserStatisticsTable = ({ data, onPageChange, onSearch }) => {
   }, [debouncedSearchValue]);
 
   return (
-    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[400px]">
+    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[500px]">
       <h2 className="text-xl font-bold mb-4">Danh sách người dùng</h2>
       <div className="flex items-center mb-4">
         <input
@@ -51,7 +51,7 @@ const UserStatisticsTable = ({ data, onPageChange, onSearch }) => {
       {loading ? (
         <div className="text-center">Loading...</div>
       ) : (
-        <div className="overflow-auto h-[200px]">
+        <div className="overflow-auto h-[250px]">
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-gray-100 text-center">
@@ -76,28 +76,28 @@ const UserStatisticsTable = ({ data, onPageChange, onSearch }) => {
               ))}
             </tbody>
           </table>
-          {totalPages > 1 && (
-            <ReactPaginate
-              breakLabel="..."
-              nextLabel=" >"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={totalPages}
-              previousLabel="<"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination flex justify-center space-x-2 mt-4"
-              activeClassName="active bg-blue-500 text-white"
-              forcePage={currentPage - 1}
-            />
-          )}
         </div>
+      )}
+      {totalPages > 1 && (
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=" >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={totalPages}
+          previousLabel="<"
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          previousClassName="page-item"
+          previousLinkClassName="page-link"
+          nextClassName="page-item"
+          nextLinkClassName="page-link"
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          containerClassName="pagination flex justify-center space-x-2 mt-4"
+          activeClassName="active bg-blue-500 text-white"
+          forcePage={currentPage - 1}
+        />
       )}
     </div>
   );

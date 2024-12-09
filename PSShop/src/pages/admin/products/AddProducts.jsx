@@ -6,6 +6,7 @@ import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSpinner } from "react-icons/fa"; // Import icon spinner
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const AddProducts = () => {
   const [productData, setProductData] = useState({
@@ -50,7 +51,7 @@ const AddProducts = () => {
       })
       .catch((err) => {
         console.error("Error fetching categories:", err);
-        toast.error("Failed to load categories");
+        Swal.fire("Lỗi", "Không thể tải danh mục", "error"); // Thay đổi từ toast thành swal
       });
   };
 
@@ -159,9 +160,17 @@ const AddProducts = () => {
       const errorMessages = Object.keys(err.response.data).flatMap((key) => {
         return err.response.data[key];
       });
-      toast.error(errorMessages.join(", ") || "Đã xảy ra lỗi khi thêm sản phẩm");
+      Swal.fire(
+        "Lỗi",
+        errorMessages.join(", ") || "Đã xảy ra lỗi khi thêm sản phẩm",
+        "error"
+      ); // Thay đổi từ toast thành swal
     } else {
-      toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+      Swal.fire(
+        "Lỗi",
+        "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
+        "error"
+      ); // Thay đổi từ toast thành swal
     }
   };
 
