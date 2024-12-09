@@ -64,13 +64,6 @@ export default function Cart() {
     const cartItem = cartProducts.find((item) => item.CartItemID === itemId);
     if (!cartItem) return;
 
-    const { QuantityLimit } = cartItem;
-
-    if (newQuantity > QuantityLimit) {
-      newQuantity = QuantityLimit;
-      toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
-    }
-
     setCartProducts((prevProducts) =>
       prevProducts.map((item) =>
         item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
@@ -90,12 +83,15 @@ export default function Cart() {
           quantity: newQuantity,
         });
       } catch (error) {
-        const errorMessage =
-          error.response?.data?.message || "Sản phẩm không đủ";
-        toast.error(errorMessage);
+        Swal.fire({
+          title: "Thông báo",
+          text: "Sản phẩm không đủ",
+          icon: "warning",
+          timer: 10000,
+        });
         fetchCartItems();
       }
-    }, 1000);
+    }, 500);
 
     setTimeoutId(id);
   };
@@ -315,7 +311,10 @@ export default function Cart() {
                     {Math.floor(
                       cartProducts
                         .reduce(
-                          (total, item) => item.Status === "ACTIVE" ? total + item.Quantity * item.Price : total,
+                          (total, item) =>
+                            item.Status === "ACTIVE"
+                              ? total + item.Quantity * item.Price
+                              : total,
                           0
                         )
                         .toFixed(2)

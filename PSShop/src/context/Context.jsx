@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import PropTypes from "prop-types";
 
 const Context = createContext();
-  
+
 export const useContextElement = () => useContext(Context);
 
 export default function ContextProvider({ children }) {
@@ -105,15 +105,15 @@ export default function ContextProvider({ children }) {
           },
         }
       );
-
-      // Cập nhật giỏ hàng ngay sau khi thêm thành công
-      await fetchCartItems();
+      if (response)
+        // Cập nhật giỏ hàng ngay sau khi thêm thành công
+        await fetchCartItems();
       Swal.fire({
         title: "Thành công",
         text: "Thêm vào giỏ hàng thành công",
         icon: "success",
       });
-      return { success: true, message: "Thêm vào giỏ hàng thành công" };
+      return { success: true };
     } catch (error) {
       // Ném lỗi để component có thể xử lý
       if (error.response?.status === 400) {
