@@ -2,8 +2,9 @@ import { useContext, useState } from "react";
 import { OrderContext } from "./OrderContext";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { toast } from "react-hot-toast";
+
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function AccountOrders() {
   const { orders, loading, error, handleOrderAction, setOrders, fetchOrders } =
@@ -45,7 +46,12 @@ export default function AccountOrders() {
       }
     } catch (error) {
       console.error("Lỗi khi lọc đơn hàng:", error);
-      toast.error("Có lỗi xảy ra khi lọc đơn hàng");
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi xảy ra khi lọc đơn hàng',
+        text: error.message || 'Vui lòng thử lại sau!',
+        showConfirmButton: true
+      });
     }
   };
 
@@ -58,7 +64,12 @@ export default function AccountOrders() {
     const reason = selectedReason === "Khác" ? otherReason : selectedReason;
 
     if (!reason) {
-      toast.warning("Vui lòng chọn lý do hủy đơn hàng");
+      Swal.fire(
+        "Thông báo!",
+        "Vui lòng chọn lý do hủy đơn hàng!",
+        "warning"
+      );
+     
       return;
     }
 
@@ -83,7 +94,11 @@ export default function AccountOrders() {
       setShowFeedbackModal(false);
       setSelectedReason("");
       setOtherReason("");
-      toast.success("Hủy đơn hàng thành công");
+      Swal.fire(
+        "Thông báo!",
+        "Hủy đơn hàng!",
+        "warning"
+      );
     } catch (error) {
       // Nếu có lỗi, rollback lại trạng thái cũ
       setOrders((prevOrders) =>
@@ -94,7 +109,13 @@ export default function AccountOrders() {
         )
       );
       console.error("Lỗi khi hủy đơn hàng:", error);
-      toast.error("Có lỗi xảy ra khi hủy đơn hàng");
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi xảy ra khi hủy đơn',
+        text: error.message || 'Vui lòng thử lại sau!',
+        showConfirmButton: true
+      });
     }
   };
 
@@ -130,13 +151,24 @@ export default function AccountOrders() {
         )
       );
       console.error("Lỗi khi xác nhận nhận hàng:", error);
-      toast.error("Có lỗi xảy ra khi xác nhận nhận hàng");
+      ;
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi xảy ra khi xác nhận nhận hàng',
+        text: error.message || 'Vui lòng thử lại sau!',
+        showConfirmButton: true
+      });
     }
   };
 
   const handleSubmitReview = async () => {
     if (!reviewComment.trim()) {
-      toast.warning("Vui lòng nhập nội dung đánh giá");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng nhập nội dung đánh giá',
+        text: error.message || 'Vui lòng nhập nội dung đánh giá!',
+        showConfirmButton: true
+      });
       return;
     }
 
@@ -163,14 +195,24 @@ export default function AccountOrders() {
         )
       );
 
-      toast.success("Đánh giá thành công!");
+      Swal.fire({
+        icon: 'success',
+        title: 'Đánh giá thành công!',
+        
+        showConfirmButton: true
+      });
       setShowReviewModal(false);
       setRating(5);
       setReviewComment("");
       setSelectedOrderForReview(null);
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
-      toast.error("Có lỗi xảy ra khi gửi đánh giá");
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi xảy ra khi đánh giá',
+        text: error.message || 'Có lỗi xảy ra khi đánh giá!',
+        showConfirmButton: true
+      });
     }
   };
 
@@ -198,12 +240,22 @@ export default function AccountOrders() {
         );
       }
       
-      toast.success("Đã thêm sản phẩm vào giỏ hàng");
+      Swal.fire({
+        icon: 'success',
+        title: 'Thành công',
+        
+        showConfirmButton: true
+      });
       // Chuyển hưng đến trang giỏ hàng
       window.location.href = '/cart';
     } catch (error) {
       console.error("Lỗi khi mua lại:", error);
-      toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
+        text: error.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!',
+        showConfirmButton: true
+      });
     }
   };
 

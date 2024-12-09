@@ -78,12 +78,12 @@ const OrderStatisticsTable = ({
       {loading ? (
         <div className="text-center">Loading...</div>
       ) : (
-        <div className="h-[360px] overflow-y-auto relative">
+        <div className="h-[300px] overflow-y-auto relative">
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-gray-100 text-center">
                 <th className="border border-gray-300 p-2 w-[1%]">
-                  Mã đơn hàng
+                  ID
                 </th>
                 <th className="border border-gray-300 p-2">Trạng thái</th>
                 <th className="border border-gray-300 p-2">

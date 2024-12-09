@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Link, useLocation } from "react-router-dom";
 import { ListUsers, BlockedUser } from "../service/api_service"; // Import hàm ListUsers, BlockedUser
-import { toast, ToastContainer } from "react-toastify"; // Import toast
+import { ToastContainer } from "react-toastify"; // Import toast
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 import { useDebounce } from "use-debounce";
 import ReactPaginate from "react-paginate";
@@ -51,13 +51,7 @@ const UserList = () => {
     [fetchUsers]
   );
 
-  useEffect(() => {
-    if (location.state?.success) {
-      toast.success(location.state.message || "Thao tác thành công!", {
-        autoClose: 3000,
-      });
-    }
-  }, [location.state]);
+ 
 
   const getStatusLabel = (user) => {
     return user.IsActive

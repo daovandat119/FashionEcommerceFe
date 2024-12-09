@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { createContext, useState, useEffect } from "react";
-import { toast } from "react-toastify";
+
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
+import { ToastContainer } from "react-toastify";
 import { GetProductVariantById, UpdateProductVariant } from "../service/api_service";
 
 const UpdateVariant = () => {
@@ -29,7 +30,12 @@ const UpdateVariant = () => {
           SizeName: response.data.SizeName,
         });
       } catch (error) {
-        toast.error("Không thể tải thông tin biến thể");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể tải thông tin biến thể",
+          confirmButtonText: "Đóng",
+        });
       }
     };
 
@@ -47,12 +53,22 @@ const UpdateVariant = () => {
 
     // Kiểm tra các trường bắt buộc
     if (!variantData.Quantity || variantData.Quantity <= 0) {
-      setError("Vui lòng nhập số lượng");
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi nhập liệu",
+        text: "Vui lòng nhập số lượng hợp lệ",
+        confirmButtonText: "Đóng",
+      });
       return;
     }
 
     if (!variantData.Price || variantData.Price <= 0) {
-      setError("Giá không hợp lệ");
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi nhập liệu",
+        text: "Giá không hợp lệ",
+        confirmButtonText: "Đóng",
+      });
       return;
     }
 
@@ -67,16 +83,32 @@ const UpdateVariant = () => {
       });
 
       if (response && response.data) {
-        toast.success(response.data.message || "Cập nhật biến thể thành công!");
+        Swal.fire({
+          icon: "success",
+          title: "Thành công",
+          text: response.data.message || "Cập nhật biến thể thành công!",
+          confirmButtonText: "Đóng",
+        }).then(() => {
+          navigate(`/admin/products/edit/${ProductID}`); // Chuyển hướng sau khi cập nhật thành công
+        });
       } else {
         throw new Error("Không thể cập nhật biến thể");
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        // Hiển thị thông báo lỗi từ API
-        toast.error(error.response.data.message || "Đã xảy ra lỗi khi cập nhật biến thể");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: error.response.data.message || "Đã xảy ra lỗi khi cập nhật biến thể",
+          confirmButtonText: "Đóng",
+        });
       } else {
-        toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi không xác định",
+          text: "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
+          confirmButtonText: "Đóng",
+        });
       }
     }
   };

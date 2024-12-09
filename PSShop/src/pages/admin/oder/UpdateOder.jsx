@@ -284,7 +284,7 @@ const UpdateOrder = () => {
                   {order.VariantSize}
                 </td>
                 <td className="p-4 border-r border-gray-300">
-                {Math.floor(order.TotalQuantity)} VND
+                {Math.floor(order.TotalQuantity)} 
                 </td>
                 <td className="p-4 border-r border-gray-300">
                   {Math.floor(parseFloat(order.VariantPrice).toFixed(2)) } VND

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useContextElement } from "../../context/Context";
 import AdditionalInfo from "./AdditionalInfo";
 import Reviews from "./Reviews";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Description from "./Description";
 import Star from "../common/Star";
@@ -95,29 +95,47 @@ const ProductDetail = () => {
 
   const handleWishlistClick = async () => {
     if (!product || wishlistLoading) return;
-
+  
     try {
       setWishlistLoading(true);
-
+  
       if (!localStorage.getItem("token")) {
-        toast.warning("Vui lòng đăng nhập để sử dụng tính năng này");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Vui lòng đăng nhập để sử dụng tính năng này',
+          showConfirmButton: true
+        });
         return;
       }
-
+  
       if (inWishlist) {
         await removeFromWishlist(product.ProductID);
         setInWishlist(false);
         localStorage.removeItem(`wishlist_${product.ProductID}`);
-        toast.success("Đã xóa khỏi danh sách yêu thích");
+        Swal.fire({
+          icon: 'success',
+          title: 'Đã xóa khỏi danh sách yêu thích',
+          showConfirmButton: false,
+          timer: 2000 // Thông báo tự động đóng sau 2 giây
+        });
       } else {
         await addToWishlist(product.ProductID);
         setInWishlist(true);
         localStorage.setItem(`wishlist_${product.ProductID}`, true);
-        toast.success("Đã thêm vào danh sách yêu thích");
+        Swal.fire({
+          icon: 'success',
+          title: 'Đã thêm vào danh sách yêu thích',
+          showConfirmButton: false,
+          timer: 2000 // Thông báo tự động đóng sau 2 giây
+        });
       }
     } catch (error) {
       console.error("Error handling wishlist:", error);
-      toast.error(error.message || "Có lỗi xảy ra, vui lòng thử lại");
+      Swal.fire({
+        icon: 'error',
+        title: error.message || 'Có lỗi xảy ra, vui lòng thử lại',
+        showConfirmButton: true
+      });
     } finally {
       setWishlistLoading(false);
     }
@@ -156,12 +174,23 @@ const ProductDetail = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+      
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+        text: error.message || 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!',
+        showConfirmButton: true
+      });
       return;
     }
 
     if (!selectedSize || !selectedColor) {
-      toast.warning("Vui lòng chọn kích thước và màu sắc");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng đăng nhập để thêm kích cỡ và màu sắc',
+        text: error.message || 'Vui lòng đăng nhập để thêm kích cỡ và màu sắc!',
+        showConfirmButton: true
+      });
       return;
     }
 
@@ -175,10 +204,18 @@ const ProductDetail = () => {
       );
       
       if (result.success) {
-        toast.success(result.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Thành công!',
+          showConfirmButton: true
+        });
       }
     } catch (error) {
-      toast.error(error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Thất bại!',
+        showConfirmButton: true
+      });
     } finally {
       setIsChecking(false);
     }

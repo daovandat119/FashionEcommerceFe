@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography } from "@material-tailwind/react";
+import Swal from "sweetalert2"; // Thay thế cho toast
+
 import {
   FaUsers,
   FaUserPlus,
@@ -8,7 +10,7 @@ import {
   FaSignOutAlt,
   FaBox,
 } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import OrderBarChart from "../statistical/orders/OrderBarChart";
@@ -41,10 +43,16 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (showToast) {
-      toast.success("Đăng nhập thành công!");
+      Swal.fire({
+        icon: "success",
+        title: "Đăng nhập thành công!",
+        showConfirmButton: false,
+        timer: 2000, // Tự động đóng sau 2 giây
+      });
       setShowToast(false);
     }
   }, [showToast, setShowToast]);
+  
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -63,10 +71,20 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    logout();
-    navigate("/admin/login");
+    Swal.fire({
+      title: "Bạn có chắc chắn muốn đăng xuất?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đăng xuất",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate("/admin/login");
+      }
+    });
   };
-
+  
   const handleProfileClick = () => {
     navigate("/admin/users/profile");
   };

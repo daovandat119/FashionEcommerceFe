@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../../components/login/LoginContext"; // Import LoginContext
-import { toast } from "react-toastify"; // Chỉ import toast
+import Swal from "sweetalert2";
 import Headers from "../../components/headers/Headers";
 import Banners from "../../components/banners/Banners";
 import Footers from "../../components/footers/Footers";
@@ -20,15 +20,25 @@ const HomePages = () => {
     setTimeout(() => {
       setLoading(false);
     }, 1000);
-
+  
     if (successMessage) {
-      toast.success(successMessage); // Sử dụng toast để hiển thị thông báo thành công
+      Swal.fire({
+        icon: "success",
+        title: successMessage, // Hiển thị thông báo thành công
+        showConfirmButton: false,
+        timer: 2000, // Tự động đóng sau 2 giây
+      });
     }
-
+  
     if (errorMessage) {
-      toast.error(errorMessage); // Sử dụng toast để hiển thị thông báo lỗi
+      Swal.fire({
+        icon: "error",
+        title: errorMessage, // Hiển thị thông báo lỗi
+        showConfirmButton: false,
+        timer: 2000, // Tự động đóng sau 2 giây
+      });
     }
-  }, [successMessage, errorMessage]); // Theo dõi sự thay đổi của successMessage và errorMessage
+  }, [successMessage, errorMessage]);// Theo dõi sự thay đổi của successMessage và errorMessage
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

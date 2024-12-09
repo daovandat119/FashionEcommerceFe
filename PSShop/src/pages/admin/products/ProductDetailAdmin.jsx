@@ -7,7 +7,7 @@ import {
   ListSizes,
   GetProductVariants,
 } from "../service/api_service";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeIcon } from "@heroicons/react/24/outline";
 import { FaSpinner } from "react-icons/fa";
@@ -52,8 +52,14 @@ const ProductDetailAdmin = () => {
               : []
           );
         } else {
-          toast.error("Không tìm thấy thông tin sản phẩm");
-          navigate("/admin/products");
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không tìm thấy thông tin sản phẩm",
+            confirmButtonText: "OK",
+          }).then(() => {
+            navigate("/admin/products"); // Điều hướng sau khi người dùng nhấn OK
+          });
         }
 
         const [colorsRes, sizesRes, variantsRes] = await Promise.all([
@@ -70,8 +76,12 @@ const ProductDetailAdmin = () => {
           setSelectedVariantQuantity(variants[0].Quantity);
         }
       } catch (error) {
-        console.error("Error fetching product details:", error);
-        toast.error("Không thể tải thông tin sản phẩm");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể tải thông tin sản phẩm",
+          confirmButtonText: "OK",
+        });
       } finally {
         setLoading(false);
       }

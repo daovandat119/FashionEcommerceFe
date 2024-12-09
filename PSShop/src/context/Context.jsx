@@ -113,7 +113,7 @@ export default function ContextProvider({ children }) {
         text: "Thêm vào giỏ hàng thành công",
         icon: "success",
       });
-      return { success: true, message: "Thêm vào giỏ hàng thành công" };
+      return { success: true};
     } catch (error) {
       // Ném lỗi để component có thể xử lý
       if (error.response?.status === 400) {

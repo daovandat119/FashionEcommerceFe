@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { useContextElement } from "../../context/Context";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -68,7 +67,11 @@ export default function Cart() {
 
     if (newQuantity > QuantityLimit) {
       newQuantity = QuantityLimit;
-      toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
+      Swal.fire({
+        title: "Cảnh báo",
+        text: "Số lượng đã được điều chỉnh về số lượng tối đa cho phép.",
+        icon: "warning",
+      });
     }
 
     setCartProducts((prevProducts) =>
@@ -92,7 +95,11 @@ export default function Cart() {
       } catch (error) {
         const errorMessage =
           error.response?.data?.message || "Sản phẩm không đủ";
-        toast.error(errorMessage);
+        Swal.fire({
+          title: "Lỗi",
+          text: errorMessage,
+          icon: "error",
+        });
         fetchCartItems();
       }
     }, 1000);
@@ -108,7 +115,11 @@ export default function Cart() {
 
     if (newQuantity >= item.QuantityLimit) {
       newQuantity = item.QuantityLimit;
-      toast.warning("Số lượng đã được điều chỉnh về số lượng tối đa cho phép.");
+      Swal.fire({
+        title: "Cảnh báo",
+        text: "Số lượng đã được điều chỉnh về số lượng tối đa cho phép.",
+        icon: "warning",
+      });
     }
 
     handleQuantityChange(
@@ -122,6 +133,11 @@ export default function Cart() {
 
   const removeSelectedItem = async () => {
     await removeSelectedItems();
+    Swal.fire({
+      title: "Thành công",
+      text: "Đã xóa sản phẩm đã chọn khỏi giỏ hàng.",
+      icon: "success",
+    });
   };
 
   if (Loading) {
@@ -131,6 +147,7 @@ export default function Cart() {
       </div>
     );
   }
+
   return (
     <div className="shopping-cart" style={{ minHeight: "calc(100vh - 300px)" }}>
       <div className="cart-table__wrapper">

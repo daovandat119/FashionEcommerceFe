@@ -1,4 +1,5 @@
-import { toast } from "react-hot-toast";
+
+import Swal from "sweetalert2";
 
 export default function CouponStore({
   onApplyCoupon,
@@ -129,12 +130,20 @@ export default function CouponStore({
                                   onApplyCoupon(coupon);
                                   onClose();
                                 } else {
-                                  toast.error("Cần thêm " + 
-                                    (coupon.MinimumOrderValue - totalAmount).toLocaleString() + 
-                                    " VND để sử dụng mã này");
+                                  Swal.fire({
+                                    icon: "error",
+                                    title: "Lỗi",
+                                    text: `Cần thêm ${(coupon.MinimumOrderValue - totalAmount).toLocaleString()} VND để sử dụng mã này`,
+                                    confirmButtonText: "OK",
+                                  });
                                 }
                               } else {
-                                toast.error("Mã giảm giá không khả dụng.");
+                                Swal.fire({
+                                  icon: "error",
+                                  title: "Lỗi",
+                                  text: "Mã giảm giá không khả dụng.",
+                                  confirmButtonText: "OK",
+                                });
                               }
                             }}
                             disabled={!coupon.usable || isExpired(coupon.ExpiresAt)}

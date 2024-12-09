@@ -8,7 +8,8 @@ import Swal from "sweetalert2";
 import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
 import CouponStore from "./CouponStore";
-import { toast } from "react-hot-toast";
+
+
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
@@ -171,20 +172,32 @@ export default function Checkout() {
     if (coupon.usable && totalAmount >= coupon.MinimumOrderValue) {
       setAppliedCoupon(coupon.CouponID);
       let finalDiscount;
-
+  
       if (totalAmount < coupon.MaxAmount) {
         finalDiscount =
           (coupon.DiscountPercentage / 100) * (totalAmount + shippingFee); // Tính phần trăm giảm giá
       } else {
         finalDiscount = coupon.MaxAmount; // Lấy MaxAmount
       }
-
+  
       setDiscount(finalDiscount);
       setTotal(Number(totalAmount + shippingFee - finalDiscount).toFixed(2));
       setIsCouponStoreOpen(false);
-      toast.success("Áp dụng mã giảm giá thành công!");
+  
+      // Hiển thị thông báo thành công với Swal
+      Swal.fire({
+        icon: 'success',
+        title: 'Áp dụng mã giảm giá thành công!',
+        showConfirmButton: false,
+        timer: 3000 // Thông báo tự động đóng sau 3 giây
+      });
     } else {
-      toast.error("Mã giảm giá không hợp lệ hoặc không đủ điều kiện.");
+      // Hiển thị thông báo lỗi với Swal
+      Swal.fire({
+        icon: 'error',
+        title: 'Mã giảm giá không hợp lệ hoặc không đủ điều kiện.',
+        showConfirmButton: true
+      });
     }
   };
 

@@ -9,7 +9,7 @@ import {
   updateUserProfile,
 } from "../service/api_service"; // Đường dẫn đến hàm fetchAccountDetails
 import axios from "axios";
-import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 const MyAdminProfile = () => {
   const [user, setUser] = useState(null); // Khởi tạo state cho user
@@ -67,12 +67,22 @@ const MyAdminProfile = () => {
       console.log(formData);
       const response = await updateUserProfile(formData);
       if (response) {
-        toast.success(response.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Cập nhật thành công',
+          text: response.message,
+          showConfirmButton: true
+        });
       }
       setIsEditingUsername(false);
       // Optionally, refresh user data here
     } catch (error) {
-      toast.error("Có lỗi khi cập nhật thông tin.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Có lỗi khi cập nhật thông tin',
+        text: error.message || 'Vui lòng thử lại sau!',
+        showConfirmButton: true
+      });
     }
   };
 

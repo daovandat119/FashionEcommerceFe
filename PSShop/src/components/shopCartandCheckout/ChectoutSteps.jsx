@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useEffect, useState } from "react";
-// import { toast } from "react-toastify";
+
 
 const steps = [
   {

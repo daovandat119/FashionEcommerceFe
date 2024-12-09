@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AddProduct, ListCategories } from "../service/api_service";
 import { Input, Button, Textarea } from "@material-tailwind/react";
 import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSpinner } from "react-icons/fa"; // Import icon spinner
 import Swal from "sweetalert2"; // Import SweetAlert
@@ -164,13 +164,13 @@ const AddProducts = () => {
         "Lỗi",
         errorMessages.join(", ") || "Đã xảy ra lỗi khi thêm sản phẩm",
         "error"
-      ); // Thay đổi từ toast thành swal
+      ); 
     } else {
       Swal.fire(
         "Lỗi",
         "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
         "error"
-      ); // Thay đổi từ toast thành swal
+      ); 
     }
   };
 

@@ -5,7 +5,8 @@ import { faUser, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-i
 import logo from "../../../../public/assets/images/logo.png";
 import { LoginAdmin, fetchAdminDetails } from "../service/api_service";
 import { useAuth } from '../../../context/AuthContext';
-import { toast, ToastContainer } from 'react-toastify';
+import {ToastContainer } from 'react-toastify';
+import Swal from "sweetalert2";
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
@@ -42,22 +43,47 @@ const Login = () => {
   const handleClickBtn = async (e) => {
     e.preventDefault();
     setLoi("");
+  
     if (validateForm()) {
       try {
         const res = await LoginAdmin(Email, Password);
+  
         if (res && res.token) {
           login(res.token);
-          
-
-          toast.success("Đăng nhập thành công!");
-          navigate("/admin/dashboard");
+  
+          // Hiển thị thông báo thành công
+          Swal.fire({
+            icon: "success",
+            title: "Đăng nhập thành công!",
+            confirmButtonText: "OK",
+          }).then(() => {
+            // Chuyển hướng đến dashboard
+            navigate("/admin/dashboard");
+          });
         } else {
-          setLoi(res.message || "Tài khoản hoặc mật khẩu không chính xác");
-          toast.error(res.message || "Tài khoản hoặc mật khẩu không chính xác");
+          const errorMessage = res.message || "Tài khoản hoặc mật khẩu không chính xác";
+          setLoi(errorMessage);
+  
+          // Hiển thị thông báo lỗi
+          Swal.fire({
+            icon: "error",
+            title: "Đăng nhập thất bại",
+            text: errorMessage,
+            confirmButtonText: "OK",
+          });
         }
       } catch (err) {
-        setLoi(err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
-        toast.error(err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.");
+        const errorMessage = err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.";
+        setLoi(errorMessage);
+  
+        // Hiển thị thông báo lỗi từ API hoặc lỗi mặc định
+        Swal.fire({
+          icon: "error",
+          title: "Đã xảy ra lỗi",
+          text: errorMessage,
+          confirmButtonText: "OK",
+        });
+  
         console.error("Lỗi đăng nhập:", err);
       }
     }

@@ -6,7 +6,7 @@ import {
   UpdateUserStatus,
   BlockedUser,
 } from "../service/api_service"; // Import hàm BlockedUser
-import { toast } from "react-toastify";
+
 import Swal from "sweetalert2"; // Import SweetAlert
 
 const UpdateUser = () => {
