@@ -63,20 +63,6 @@ export default function Cart() {
     const cartItem = cartProducts.find((item) => item.CartItemID === itemId);
     if (!cartItem) return;
 
-<<<<<<< HEAD
-    const { QuantityLimit } = cartItem;
-
-    if (newQuantity > QuantityLimit) {
-      newQuantity = QuantityLimit;
-      Swal.fire({
-        title: "Cảnh báo",
-        text: "Số lượng đã được điều chỉnh về số lượng tối đa cho phép.",
-        icon: "warning",
-      });
-    }
-
-=======
->>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
     setCartProducts((prevProducts) =>
       prevProducts.map((item) =>
         item.CartItemID === itemId ? { ...item, Quantity: newQuantity } : item
@@ -96,20 +82,11 @@ export default function Cart() {
           quantity: newQuantity,
         });
       } catch (error) {
-<<<<<<< HEAD
-        const errorMessage =
-          error.response?.data?.message || "Sản phẩm không đủ";
-        Swal.fire({
-          title: "Lỗi",
-          text: errorMessage,
-          icon: "error",
-=======
         Swal.fire({
           title: "Thông báo",
           text: "Sản phẩm không đủ",
           icon: "warning",
           timer: 10000,
->>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
         });
         fetchCartItems();
       }
@@ -124,18 +101,6 @@ export default function Cart() {
 
     let newQuantity = value === "" ? 1 : parseInt(value);
 
-<<<<<<< HEAD
-    if (newQuantity >= item.QuantityLimit) {
-      newQuantity = item.QuantityLimit;
-      Swal.fire({
-        title: "Cảnh báo",
-        text: "Số lượng đã được điều chỉnh về số lượng tối đa cho phép.",
-        icon: "warning",
-      });
-    }
-
-=======
->>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
     handleQuantityChange(
       item.CartItemID,
       item.ProductID,
@@ -205,19 +170,19 @@ export default function Cart() {
                       <div className="shopping-cart__product-item relative">
                         {item.ImageUrl && (
                           <Link to={`/shop-detail/${item.ProductID}`}>
-                          <img
-                            loading="lazy"
-                            src={item.ImageUrl}
-                            width="120"
-                            height="120"
-                            alt={item.ProductName}
-                            className={`object-fit-cover w-full h-full transition-transform duration-300 ease-in-out ${
-                              item.QuantityLimit === 0 ||
-                              item.Status === "INACTIVE"
-                                ? "opacity-50"
-                                : ""
-                            }`}
-                          />
+                            <img
+                              loading="lazy"
+                              src={item.ImageUrl}
+                              width="120"
+                              height="120"
+                              alt={item.ProductName}
+                              className={`object-fit-cover w-full h-full transition-transform duration-300 ease-in-out ${
+                                item.QuantityLimit === 0 ||
+                                item.Status === "INACTIVE"
+                                  ? "opacity-50"
+                                  : ""
+                              }`}
+                            />
                           </Link>
                         )}
                         {item.QuantityLimit === 0 ||

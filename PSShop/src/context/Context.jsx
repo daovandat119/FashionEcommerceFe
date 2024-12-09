@@ -105,19 +105,14 @@ export default function ContextProvider({ children }) {
           },
         }
       );
-      if (response)
-        // Cập nhật giỏ hàng ngay sau khi thêm thành công
-        await fetchCartItems();
+      if (response) await fetchCartItems();
       Swal.fire({
         title: "Thành công",
         text: "Thêm vào giỏ hàng thành công",
         icon: "success",
       });
-<<<<<<< HEAD
-      return { success: true};
-=======
+
       return { success: true };
->>>>>>> 7f10cb4b840fbf364d1eb237f73c761f0c8f0ffd
     } catch (error) {
       // Ném lỗi để component có thể xử lý
       if (error.response?.status === 400) {
