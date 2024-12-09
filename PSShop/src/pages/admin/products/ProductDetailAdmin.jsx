@@ -147,15 +147,15 @@ const ProductDetailAdmin = () => {
               <span className="material-icons">
                 <EyeIcon className="h-4 w-4" />
               </span>
-              {product.ViewCount || "Chưa có lượt xem "}
+              {product.Views || "Chưa có lượt xem "}
             </p>
           </h1>
           <p className="text-lg flex items-center justify-between py-2 gap-2 text-gray-500">
             <p className="flex items-center gap-2">
-              Đánh giá trung bình: <Star rating={product.Rating || 0} />
+              Đánh giá trung bình: <Star rating={product.average_rating || 0} />
             </p>
             <p className="text-lg text-gray-500">
-              Đã bán: {product.SoldCount || 0}
+              Đã bán: {product.total_sold || 0}
             </p>
           </p>
           <div className="flex items-center">
