@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AddColor } from "../service/api_service";
-import Swal from 'sweetalert2'; // Import SweetAlert
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const AddColorComponent = () => {
   const [ColorName, setColorName] = useState("");
@@ -18,27 +18,33 @@ const AddColorComponent = () => {
     }
 
     AddColor(ColorName)
-      .then(response => {
-        console.log("Màu đã được thêm:", response);
+      .then((response) => {
         if (response && response.data) {
-          // Điều hướng về trang danh sách với thông báo thành công
-          navigate("/admin/colors", { 
-            state: { 
-              success: true, 
-              message: "Thêm màu mới thành công!", 
-              newColor: response.data // Thêm thông tin màu mới vào state
-            } 
+          Swal.fire({
+            title: "Thông báo",
+            text: "Thêm thành công",
+            icon: "success",
+            timer: 10000,
           });
+          navigate("/admin/colors");
         } else {
           setError("Không thể thêm màu. Vui lòng thử lại.");
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Lỗi khi thêm màu:", err);
         if (err.response && err.response.data) {
-          Swal.fire("Lỗi!", err.response.data.ColorName[0] || "Đã xảy ra lỗi khi thêm màu", "error");
+          Swal.fire(
+            "Lỗi!",
+            err.response.data.ColorName[0] || "Đã xảy ra lỗi khi thêm màu",
+            "error"
+          );
         } else {
-          Swal.fire("Lỗi!", "Đã xảy ra lỗi không xác định. Vui lòng thử lại.", "error");
+          Swal.fire(
+            "Lỗi!",
+            "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
+            "error"
+          );
         }
       });
   };

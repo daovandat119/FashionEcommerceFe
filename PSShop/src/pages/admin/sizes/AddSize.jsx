@@ -21,14 +21,13 @@ const AddSizeComponent = () => {
       .then((response) => {
         console.log("Kích thước đã được thêm:", response);
         if (response && response.data) {
-          // Điều hướng về trang danh sách với thông báo thành công
-          navigate("/admin/sizes", {
-            state: {
-              success: true,
-              message: "Thêm kích thước mới thành công!",
-              newSize: response.data, // Thêm thông tin kích thước mới vào state
-            },
+          Swal.fire({
+            title: "Thông báo",
+            text: "Thêm thành công",
+            icon: "success",
+            timer: 10000,
           });
+          navigate("/admin/sizes");
         } else {
           setError("Không thể thêm kích thước. Vui lòng thử lại.");
         }
