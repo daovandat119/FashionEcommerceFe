@@ -12,7 +12,6 @@ import { toast } from "react-hot-toast";
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
-  // const { settotalAmount, totalAmount } = useContextElement();
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const [error, setError] = useState("");
