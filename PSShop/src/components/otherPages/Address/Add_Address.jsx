@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 function Add_Address({ onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -26,7 +26,11 @@ function Add_Address({ onSuccess, onCancel }) {
         }
       } catch (error) {
         console.error("Error fetching provinces:", error);
-        toast.error("Không thể tải danh sách tỉnh thành.");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể tải danh sách tỉnh thành.",
+        });
       }
     };
 
@@ -59,7 +63,11 @@ function Add_Address({ onSuccess, onCancel }) {
         }
       } catch (error) {
         console.error("Error fetching districts:", error);
-        toast.error("Không thể tải danh sách quận huyện.");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể tải danh sách quận huyện.",
+        });
       }
     }
 
@@ -73,7 +81,11 @@ function Add_Address({ onSuccess, onCancel }) {
         }
       } catch (error) {
         console.error("Error fetching wards:", error);
-        toast.error("Không thể tải danh sách xã phường.");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể tải danh sách xã phường.",
+        });
       }
     }
 
@@ -109,15 +121,22 @@ function Add_Address({ onSuccess, onCancel }) {
       );
 
       if (response.status === 201) {
-        toast.success("Địa chỉ đã được thêm thành công!");
+        Swal.fire({
+          icon: "success",
+          title: "Thành công",
+          text: "Địa chỉ đã được thêm thành công!",
+        });
         onSuccess();
       }
     } catch (error) {
       console.error("Lỗi chi tiết:", error.response?.data);
-      toast.error(
-        error.response?.data?.message ||
-          "Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!"
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text:
+          error.response?.data?.message ||
+          "Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!",
+      });
     }
   };
 

@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../../components/login/LoginContext"; // Import LoginContext
 import { toast } from "react-toastify"; // Chỉ import toast
 import Headers from "../../components/headers/Headers";
@@ -13,8 +13,14 @@ import CountDown from "../../components/cowndown/CountDown";
 
 const HomePages = () => {
   const { successMessage, errorMessage } = useContext(LoginContext); // Sử dụng LoginContext
+  const [loading, setLoading] = useState(true); // Thêm state loading
 
   useEffect(() => {
+    // Giả lập loading trong 1 giây
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
     if (successMessage) {
       toast.success(successMessage); // Sử dụng toast để hiển thị thông báo thành công
     }
@@ -31,6 +37,15 @@ const HomePages = () => {
         localStorage.setItem('token', token); // Lưu token vào localStorage
     }
 }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Headers />

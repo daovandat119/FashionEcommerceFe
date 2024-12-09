@@ -62,7 +62,7 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
   }, [debouncedSearchValue]);
 
   return (
-    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[500px] overflow-hidden">
+    <div className="container mx-auto p-4 border-2 border-gray-300 rounded-lg bg-white h-[500px] overflow-hidden relative">
       <h2 className="text-xl font-bold mb-4">Thống kê sản phẩm bán ra</h2>
       <div>
         <div className="flex items-center justify-between">
@@ -217,7 +217,8 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
             </tbody>
           </table>
           {totalPage > 1 && (
-            <ReactPaginate
+           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 py-4">
+             <ReactPaginate
               breakLabel="..."
               nextLabel=" >"
               onPageChange={handlePageClick}
@@ -236,6 +237,7 @@ const ProductSalesTable = ({ data, onSearch, onPageChange }) => {
               activeClassName="active bg-blue-500 text-white"
               forcePage={currentPage - 1}
             />
+           </div>
           )}
         </div>
       )}

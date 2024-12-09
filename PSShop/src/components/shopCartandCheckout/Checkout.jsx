@@ -27,7 +27,7 @@ export default function Checkout() {
   const [isCouponStoreOpen, setIsCouponStoreOpen] = useState(false);
   const [cachedCoupons, setCachedCoupons] = useState([]);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
-  const [lastFetchedPrice, setLastFetchedPrice] = useState(0);
+  
 
   const paymentMethods = [
     {

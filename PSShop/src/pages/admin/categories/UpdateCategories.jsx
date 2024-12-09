@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { UpdateCategory, GetCategoryById } from "../service/api_service";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 const UpdateCategoryComponent = () => {
   const [CategoryName, setCategoryName] = useState("");
@@ -12,22 +11,23 @@ const UpdateCategoryComponent = () => {
   useEffect(() => {
     const fetchCategory = () => {
       GetCategoryById(CategoryID)
-        .then(response => {
-          // Kiểm tra cấu trúc phản hồi
+        .then((response) => {
           if (response.data) {
             setCategoryName(response.data.CategoryName);
           } else {
             throw new Error("Dữ liệu danh mục không hợp lệ");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Lỗi khi tải danh mục:", err);
-          const errorMessage = err.response?.data?.message || "Không thể tải dữ liệu danh mục. Vui lòng thử lại sau.";
+          const errorMessage =
+            err.response?.data?.message ||
+            "Không thể tải dữ liệu danh mục. Vui lòng thử lại sau.";
           setError(errorMessage);
-          toast.error(errorMessage);
+          Swal.fire("Lỗi!", errorMessage, "error");
         });
     };
-  
+
     if (CategoryID) {
       fetchCategory();
     } else {
@@ -45,26 +45,26 @@ const UpdateCategoryComponent = () => {
     }
 
     UpdateCategory(CategoryID, CategoryName)
-      .then(response => {
+      .then((response) => {
         if (response) {
           console.log("Cập nhật thành công");
-          toast.success("Cập nhật danh mục thành công");
-          // Điều hướng về danh sách danh mục sau khi cập nhật thành công
+          Swal.fire("Thành công!", "Cập nhật danh mục thành công", "success");
         } else {
           throw new Error(response.message || "Không thể cập nhật danh mục");
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Lỗi khi cập nhật danh mục:", err);
-        const errorMessage = err.response?.data?.CategoryName?.[0] || "Đã xảy ra lỗi khi cập nhật danh mục";
+        const errorMessage =
+          err.response?.data?.CategoryName?.[0] ||
+          "Đã xảy ra lỗi khi cập nhật danh mục";
         setError(errorMessage);
-        toast.error("Lỗi cập nhật: " + errorMessage);
+        Swal.fire("Lỗi cập nhật!", errorMessage, "error");
       });
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">CẬP NHẬT DANH MỤC</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleUpdateCategory} className="space-y-6">

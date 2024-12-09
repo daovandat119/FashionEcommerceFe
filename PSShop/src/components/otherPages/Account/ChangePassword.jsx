@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function ChangePassword({ onCancel }) {
   const navigate = useNavigate();
@@ -10,14 +10,24 @@ export default function ChangePassword({ onCancel }) {
     confirmPassword
   ) => {
     const token = localStorage.getItem("token");
-    
+
     if (newPassword.length < 6) {
-      toast.error("Mật khẩu mới phải có ít nhất 6 ký tự!");
+      Swal.fire({
+        icon: "error",
+        title: "Mật khẩu mới quá ngắn",
+        text: "Mật khẩu mới phải có ít nhất 6 ký tự!",
+        showConfirmButton: true,
+      });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("Mật khẩu xác nhận không khớp!");
+      Swal.fire({
+        icon: "error",
+        title: "Mật khẩu không khớp",
+        text: "Mật khẩu xác nhận không khớp!",
+        showConfirmButton: true,
+      });
       return;
     }
 
@@ -40,16 +50,33 @@ export default function ChangePassword({ onCancel }) {
     if (!response.ok) {
       const textResponse = await response.text();
       if (response.status === 400) {
-        toast.error("Mật khẩu hiện tại sai.");
+        Swal.fire({
+          icon: "error",
+          title: "Mật khẩu hiện tại sai",
+          text: "Mật khẩu hiện tại bạn nhập không đúng.",
+          showConfirmButton: true,
+        });
       } else {
-        toast.error("Có lỗi xảy ra khi đổi mật khẩu.");
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi đổi mật khẩu",
+          text: "Có lỗi xảy ra khi đổi mật khẩu.",
+          showConfirmButton: true,
+        });
       }
       console.error("Lỗi từ API:", response.status, textResponse);
       return;
     }
 
     const result = await response.json();
-    toast.success(result.message);
+    Swal.fire({
+      icon: "success",
+      title: "Cập nhật mật khẩu thành công",
+      text: result.message,
+      showConfirmButton: false,
+      timer: 2000,
+    });
+
     localStorage.removeItem("token");
     setTimeout(() => {
       navigate("/login_register");

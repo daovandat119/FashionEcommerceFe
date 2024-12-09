@@ -126,9 +126,10 @@ const AppRoutes = () => {
             <Route path="shop-detail/:id" element={<ProductDetailsPage2 />} />
             <Route path="login_register" element={<LoginPage />} />
             <Route path="about" element={<AboutPage />} />
-            <Route path="contact" element={<ContactPage />} />  
+            <Route path="contact" element={<ContactPage />} />
             <Route path="shop_cart" element={<ShopCartPage />} />
             <Route path="shop_checkout" element={<ShopCheckoutPage />} />
+
             <Route
               path="shop_order_complete/:orderId"
               element={<ShopOrderConplate />}
@@ -222,5 +223,18 @@ const AppRoutes = () => {
     </AuthProvider>
   );
 };
+
+// const CheckoutGuard = ({ children }) => {
+//   const navigate = useNavigate();
+//   const { cartProducts, selectedItems } = useContextElement();
+
+//   useEffect(() => {
+//     if (!cartProducts?.length || !selectedItems?.length) {
+//       navigate('/shop_cart');
+//     }
+//   }, [cartProducts, selectedItems, navigate]);
+
+//   return children;
+// };
 
 export default App;

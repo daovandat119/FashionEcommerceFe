@@ -12,6 +12,7 @@ import { toast, ToastContainer } from "react-toastify"; // Import toast
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 import { useDebounce } from "use-debounce";
 import ReactPaginate from "react-paginate";
+import Swal from 'sweetalert2'; // Import SweetAlert
 
 const UserList = () => {
   const [Users, setUsers] = useState([]);
@@ -79,21 +80,21 @@ const UserList = () => {
     if (window.confirm("Bạn có chắc chắn muốn chặn người dùng này không?")) {
       try {
         const response = await BlockedUser(userID); // Gọi API để chặn người dùng
-        setUsers(
-          Users.map((user) =>
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
             user.UserID === userID ? { ...user, IsActive: false } : user
           )
         );
-        toast.success(response.message || "Người dùng đã bị chặn thành công!"); // Hiển thị thông báo từ API
+        Swal.fire("Thành công!", response.message || "Người dùng đã bị chặn thành công!", "success"); // Hiển thị thông báo từ API
       } catch (err) {
         setError(err.message); // Xử lý lỗi
-        toast.error(err.message || "Có lỗi xảy ra khi chặn người dùng."); // Hiển thị thông báo lỗi
+        Swal.fire("Lỗi!", err.message || "Có lỗi xảy ra khi chặn người dùng.", "error"); // Hiển thị thông báo lỗi
       }
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 relative ">
       <ToastContainer /> {/* Thêm ToastContainer để hiển thị thông báo */}
       <h1 className="text-2xl font-bold mb-6">Quản lý người dùng</h1>
       <div className="flex justify-between items-center mb-6">
@@ -108,14 +109,14 @@ const UserList = () => {
           />
         </div>
       </div>
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto bg-white rounded-lg shadow ">
         {isLoading ? ( // Hiển thị loading
           <div className="flex justify-center items-center h-64">
             <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
             <span className="ml-4 text-lg">Đang tải người dùng...</span>
           </div>
         ) : (
-          <table className="w-full min-w-max border-collapse">
+          <table className="w-full min-w-max border-collapse ">
             <thead className="hover:bg-gray-50 ">
               <tr>
                 <th className="border-b p-4 text-left">STT</th>
@@ -161,7 +162,8 @@ const UserList = () => {
         )}
       </div>
       {totalPages > 1 && (
-        <ReactPaginate
+       <div className="flex justify-center"> 
+         <ReactPaginate
           breakLabel="..."
           nextLabel=" >"
           onPageChange={handlePageChange}
@@ -180,6 +182,7 @@ const UserList = () => {
           activeClassName="active bg-blue-500 text-white"
           forcePage={page - 1}
         />
+       </div>
       )}
     </div>
   );

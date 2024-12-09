@@ -96,11 +96,18 @@ export default function Products_Trendy() {
 
       {/* Hiển thị sản phẩm */}
       {loading ? (
-        <p>Đang tải...</p>
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mr-3"></div>
+          <span className="text-lg font-medium">Đang tải...</span>
+        </div>
       ) : error ? (
-        <p>{error}</p>
+        <div className="text-center py-20">
+          <p className="text-red-500 text-lg font-medium">{error}</p>
+        </div>
       ) : products.length === 0 ? (
-        <p>Không có sản phẩm nào.</p>
+        <div className="text-center py-20">
+          <p className="text-gray-500 text-lg font-medium">Không có sản phẩm nào.</p>
+        </div>
       ) : (
         <div className="row">
           {products.map((product) => (

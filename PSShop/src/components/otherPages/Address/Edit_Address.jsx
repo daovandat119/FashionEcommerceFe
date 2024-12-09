@@ -1,19 +1,17 @@
-import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-
+import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 function Edit_Address({ address, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
-    Username: '',
-    PhoneNumber: '',
-    Address: '',
-    DistrictID: '',
-    WardCode: '',
-    ProvinceID: '',
-    isDefault: false
+    Username: "",
+    PhoneNumber: "",
+    Address: "",
+    DistrictID: "",
+    WardCode: "",
+    ProvinceID: "",
+    isDefault: false,
   });
 
   const [provinces, setProvinces] = useState([]);
@@ -23,23 +21,23 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   useEffect(() => {
     if (address) {
       setFormData({
-        UserName: address.Username || '',
+        UserName: address.Username || "",
         PhoneNumber: address.PhoneNumber,
         Address: address.Address,
         DistrictID: address.DistrictID,
         WardCode: address.WardCode,
         ProvinceID: address.ProvinceID,
-        isDefault: address.IsDefault === 1
+        isDefault: address.IsDefault === 1,
       });
     } else {
       setFormData({
-        UserName: '',
-        PhoneNumber: '',
-        Address: '',
-        DistrictID: '',
-        WardCode: '',
-        ProvinceID: '',
-        isDefault: false
+        UserName: "",
+        PhoneNumber: "",
+        Address: "",
+        DistrictID: "",
+        WardCode: "",
+        ProvinceID: "",
+        isDefault: false,
       });
     }
   }, [address]);
@@ -47,13 +45,17 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/provinces');
-        if (response.data.message === 'Success') {
+        const response = await axios.get("http://127.0.0.1:8000/api/provinces");
+        if (response.data.message === "Success") {
           setProvinces(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching provinces:', error);
-        toast.error('Không thể tải danh sách tỉnh thành.');
+        console.error("Error fetching provinces:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Không thể tải danh sách tỉnh thành.",
+        });
       }
     };
 
@@ -63,15 +65,22 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   useEffect(() => {
     const fetchDistricts = async (provinceID) => {
       try {
-        const response = await axios.post(`http://127.0.0.1:8000/api/districts`, {
-          province_id: provinceID
-        });
-        if (response.data.message === 'Success') {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/districts`,
+          {
+            province_id: provinceID,
+          }
+        );
+        if (response.data.message === "Success") {
           setDistricts(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching districts:', error);
-        toast.error('Không thể tải danh sách quận huyện.');
+        console.error("Error fetching districts:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Không thể tải danh sách quận huyện.",
+        });
       }
     };
 
@@ -84,14 +93,18 @@ function Edit_Address({ address, onSuccess, onCancel }) {
     const fetchWards = async (districtID) => {
       try {
         const response = await axios.post(`http://127.0.0.1:8000/api/wards`, {
-          district_id: districtID
+          district_id: districtID,
         });
-        if (response.data.message === 'Success') {
+        if (response.data.message === "Success") {
           setWards(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching wards:', error);
-        toast.error('Không thể tải danh sách phường xã.');
+        console.error("Error fetching wards:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Không thể tải danh sách phường xã.",
+        });
       }
     };
 
@@ -103,35 +116,38 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const fieldMapping = {
-      'fullName': 'UserName',
-      'phoneNumber': 'PhoneNumber',
-      'address': 'Address',
-      'districtID': 'DistrictID',
-      'wardCode': 'WardCode',
-      'isDefault': 'isDefault',
-      'provinceID': 'ProvinceID'
+      fullName: "UserName",
+      phoneNumber: "PhoneNumber",
+      address: "Address",
+      districtID: "DistrictID",
+      wardCode: "WardCode",
+      isDefault: "isDefault",
+      provinceID: "ProvinceID",
     };
 
     const stateField = fieldMapping[name] || name;
 
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [stateField]: type === 'checkbox' ? checked : value
+      [stateField]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
-    if (!formData.UserName || !formData.PhoneNumber || !formData.Address || !formData.DistrictID || !formData.WardCode) {
-      toast.error('Vui lòng điền đầy đủ thông tin!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+    if (
+      !formData.UserName ||
+      !formData.PhoneNumber ||
+      !formData.Address ||
+      !formData.DistrictID ||
+      !formData.WardCode
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Thông báo",
+        text: "Vui lòng điền đầy đủ thông tin!",
       });
       return;
     }
@@ -144,7 +160,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
       ProvinceID: formData.ProvinceID,
       DistrictID: formData.DistrictID,
       WardCode: formData.WardCode,
-      IsDefault: formData.isDefault ? 1 : 0
+      IsDefault: formData.isDefault ? 1 : 0,
     };
 
     try {
@@ -153,33 +169,29 @@ function Edit_Address({ address, onSuccess, onCancel }) {
         dataToSend,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
-        toast.success('Cập nhật địa chỉ thành công!', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        Swal.fire({
+          icon: "success",
+          title: "Thành công!",
+          text: "Cập nhật địa chỉ thành công!",
         });
         onCancel();
         onSuccess();
       }
     } catch (error) {
-      console.error('Lỗi chi tiết:', error.response?.data);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+      console.error("Lỗi chi tiết:", error.response?.data);
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text:
+          error.response?.data?.message ||
+          "Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại!",
       });
     }
   };
@@ -187,52 +199,46 @@ function Edit_Address({ address, onSuccess, onCancel }) {
   const handleDeleteAddress = async (addressId) => {
     try {
       const result = await Swal.fire({
-        title: 'Xác nhận xóa',
-        text: 'Bạn có chắc chắn muốn xóa địa chỉ này?',
-        icon: 'warning',
+        title: "Xác nhận xóa",
+        text: "Bạn có chắc chắn muốn xóa địa chỉ này?",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy'
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
       });
 
       if (result.isConfirmed) {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const response = await axios.delete(
           `http://127.0.0.1:8000/api/address/${addressId}`,
           {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
         );
 
         if (response.status === 200) {
-          toast.success('Xóa địa chỉ thành công!', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+          Swal.fire({
+            icon: "success",
+            title: "Thành công!",
+            text: "Xóa địa chỉ thành công!",
           });
-          
+
           onSuccess();
           onCancel();
         }
       }
     } catch (error) {
-      console.error('Lỗi khi xóa địa chỉ:', error);
-      
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa địa chỉ!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+      console.error("Lỗi khi xóa địa chỉ:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: error.response?.data?.message || "Có lỗi xảy ra khi xóa địa chỉ!",
       });
     }
   };
@@ -247,7 +253,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
               type="text"
               className="form-control"
               name="fullName"
-              value={formData.UserName || ''}
+              value={formData.UserName || ""}
               onChange={handleChange}
               required
             />
@@ -275,7 +281,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
             required
           >
             <option value="">Chọn tỉnh thành</option>
-            {provinces.map(province => (
+            {provinces.map((province) => (
               <option key={province.ProvinceID} value={province.ProvinceID}>
                 {province.ProvinceName}
               </option>
@@ -293,7 +299,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
             required
           >
             <option value="">Chọn huyện</option>
-            {districts.map(district => (
+            {districts.map((district) => (
               <option key={district.DistrictID} value={district.DistrictID}>
                 {district.DistrictName}
               </option>
@@ -311,7 +317,7 @@ function Edit_Address({ address, onSuccess, onCancel }) {
             required
           >
             <option value="">Chọn xã</option>
-            {wards.map(ward => (
+            {wards.map((ward) => (
               <option key={ward.WardCode} value={ward.WardCode}>
                 {ward.WardName}
               </option>
@@ -319,7 +325,6 @@ function Edit_Address({ address, onSuccess, onCancel }) {
           </select>
         </div>
 
-        
         <div className="mb-3">
           <label className="form-label">Địa chỉ cụ thể</label>
           <input
@@ -336,15 +341,15 @@ function Edit_Address({ address, onSuccess, onCancel }) {
           <button type="submit" className="btn btn-primary">
             Lưu thay đổi
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-secondary"
             onClick={onCancel}
           >
             Hủy
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-danger"
             onClick={() => handleDeleteAddress(address.AddressID)}
           >
@@ -366,10 +371,10 @@ Edit_Address.propTypes = {
     ProvinceID: PropTypes.string.isRequired,
     DistrictID: PropTypes.string.isRequired,
     WardCode: PropTypes.string.isRequired,
-    IsDefault: PropTypes.number.isRequired
+    IsDefault: PropTypes.number.isRequired,
   }).isRequired,
   onSuccess: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default Edit_Address;

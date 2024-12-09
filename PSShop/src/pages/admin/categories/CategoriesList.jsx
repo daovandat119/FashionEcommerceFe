@@ -10,8 +10,7 @@ import {
   UpdateCategoryStatus,
 } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from 'sweetalert2'; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const CategoriesList = () => {
@@ -36,14 +35,7 @@ const CategoriesList = () => {
       setListCategory((prevList) => [location.state.newCategory, ...prevList]);
       setTotalCategory((prevTotal) => prevTotal + 1);
 
-      toast.success("Thêm danh mục thành công!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      Swal.fire("Thành công!", "Thêm danh mục thành công!", "success"); // Use SweetAlert for success
 
       window.history.replaceState({}, document.title);
     }
@@ -70,7 +62,7 @@ const CategoriesList = () => {
         })
         .catch((error) => {
           console.error("Lỗi khi lấy danh mục:", error);
-          toast.error("Không thể tải danh mục");
+          Swal.fire("Lỗi!", "Không thể tải danh mục", "error"); // Use SweetAlert for error
         })
         .finally(() => {
           setIsLoading(false); // Đặt lại cờ sau khi hoàn thành
@@ -104,7 +96,7 @@ const CategoriesList = () => {
   const handleDeleteCategories = useCallback(
     async (CategoryIDs) => {
       if (CategoryIDs.length === 0) {
-        toast.warn("Vui lòng chọn ít nhất một danh mục để xóa");
+        Swal.fire("Cảnh báo!", "Vui lòng chọn ít nhất một danh mục để xóa", "warning"); // Use SweetAlert for warning
         return;
       }
 
@@ -112,49 +104,37 @@ const CategoriesList = () => {
         try {
           const response = await DeleteCategories(CategoryIDs);
           if (response) {
-            toast.success(`Đã xóa ${response.length} danh mục thành công`);
+            Swal.fire("Thành công!", `Đã xóa ${response.length} danh mục thành công`, "success"); // Use SweetAlert for success
             getCategories(currentPage);
           }
         } catch (error) {
           console.error("Lỗi khi xóa danh mục:", error);
-          toast.error(
-            "Xóa danh mục thất bại: " +
-              (error.response?.data?.message || error.message)
-          );
+          Swal.fire("Lỗi!", "Xóa danh mục thất bại: " + (error.response?.data?.message || error.message), "error"); // Use SweetAlert for error
         }
       }
     },
     [currentPage]
   );
 
-  const handleToggle = useCallback(
-    (CategoryID) => {
-      if (updating) return;
+  const handleToggle = useCallback((CategoryID) => {
+    const categoryToUpdate = ListCategory.find(item => item.CategoryID === CategoryID);
+    const newStatus = categoryToUpdate.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
-      setUpdating(true);
-      setListCategory((prevList) =>
-        prevList.map((item) => {
-          if (item.CategoryID === CategoryID) {
-            const newStatus = item.Status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-            UpdateCategoryStatus(CategoryID, { Status: newStatus })
-              .then(() => {
-                toast.success(`Cập nhật trạng thái thành công`);
-                getCategories(currentPage);
-              })
-              .catch((error) => {
-                console.error("Lỗi khi cập nhật trạng thái:", error);
-                toast.error("Cập nhật trạng thái thất bại");
-              });
-            return { ...item, Status: newStatus };
-          }
-          return item;
-        })
-      );
-
-      setUpdating(false);
-    },
-    [updating, currentPage]
-  );
+    UpdateCategoryStatus(CategoryID, newStatus)
+      .then(() => {
+        // Update the local state to reflect the new status
+        setListCategory(prevList =>
+          prevList.map(item =>
+            item.CategoryID === CategoryID ? { ...item, Status: newStatus, isActive: newStatus === "ACTIVE" } : item
+          )
+        );
+        Swal.fire("Thành công!", `Đã cập nhật trạng thái danh mục thành công`, "success");
+      })
+      .catch((error) => {
+        console.error("Lỗi khi cập nhật trạng thái danh mục:", error);
+        Swal.fire("Lỗi!", "Không thể cập nhật trạng thái danh mục", "error");
+      });
+  }, [ListCategory]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value; // Get the current input value
@@ -165,7 +145,6 @@ const CategoriesList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Quản lý danh mục</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2">

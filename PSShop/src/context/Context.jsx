@@ -11,10 +11,11 @@ import {
 import axios from "axios";
 import Swal from "sweetalert2";
 import PropTypes from "prop-types";
-import { toast } from "react-toastify";
-const Context = createContext();
 
+const Context = createContext();
+  
 export const useContextElement = () => useContext(Context);
+
 export default function ContextProvider({ children }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -107,16 +108,36 @@ export default function ContextProvider({ children }) {
 
       // Cập nhật giỏ hàng ngay sau khi thêm thành công
       await fetchCartItems();
+      Swal.fire({
+        title: "Thành công",
+        text: "Thêm vào giỏ hàng thành công",
+        icon: "success",
+      });
       return { success: true, message: "Thêm vào giỏ hàng thành công" };
     } catch (error) {
       // Ném lỗi để component có thể xử lý
       if (error.response?.status === 400) {
+        Swal.fire({
+          title: "Lỗi",
+          text: error.response.data.message || "Không thể thêm sản phẩm",
+          icon: "error",
+        });
         throw new Error(
           error.response.data.message || "Không thể thêm sản phẩm"
         );
       } else if (error.response?.status === 401) {
+        Swal.fire({
+          title: "Lỗi",
+          text: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại",
+          icon: "error",
+        });
         throw new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
       } else {
+        Swal.fire({
+          title: "Lỗi",
+          text: "Có lỗi xảy ra, vui lòng thử lại sau",
+          icon: "error",
+        });
         throw new Error("Có lỗi xảy ra, vui lòng thử lại sau");
       }
     } finally {
@@ -159,7 +180,11 @@ export default function ContextProvider({ children }) {
 
       // Kiểm tra xem số lượng yêu cầu có vượt quá số lượng có sẵn không
       if (newQuantity > availableQuantity) {
-        toast.error("Số lượng vượt quá số lượng có sẵn");
+        Swal.fire({
+          title: "Lỗi",
+          text: "Số lượng vượt quá số lượng có sẵn",
+          icon: "error",
+        });
         return;
       }
 
@@ -229,9 +254,18 @@ export default function ContextProvider({ children }) {
       );
 
       setSelectedItems([]);
+      Swal.fire({
+        title: "Thành công",
+        text: "Đã xóa các sản phẩm đã chọn khỏi giỏ hàng",
+        icon: "success",
+      });
     } catch (error) {
       console.error("Error removing from cart:", error);
-      toast.error("Không thể xóa sản phẩm");
+      Swal.fire({
+        title: "Lỗi",
+        text: "Không thể xóa sản phẩm",
+        icon: "error",
+      });
     }
   };
 
@@ -250,9 +284,18 @@ export default function ContextProvider({ children }) {
       setCartProducts((prevProducts) =>
         prevProducts.filter((item) => item.CartItemID !== itemID)
       );
+      Swal.fire({
+        title: "Thành công",
+        text: "Đã xóa sản phẩm khỏi giỏ hàng",
+        icon: "success",
+      });
     } catch (error) {
       console.error("Lỗi khi xóa sản phẩm:", error);
-      toast.error("Không thể xóa sản phẩm");
+      Swal.fire({
+        title: "Lỗi",
+        text: "Không thể xóa sản phẩm",
+        icon: "error",
+      });
     }
   };
 
@@ -289,9 +332,19 @@ export default function ContextProvider({ children }) {
       // console.log("Response from addToWishlist:", response);
       if (response.status === 201) {
         await fetchWishlistItems();
+        Swal.fire({
+          title: "Thành công",
+          text: "Đã thêm vào danh sách yêu thích",
+          icon: "success",
+        });
       }
     } catch (error) {
       console.error("Error adding to wishlist:", error);
+      Swal.fire({
+        title: "Lỗi",
+        text: "Không thể thêm vào danh sách yêu thích",
+        icon: "error",
+      });
     } finally {
       setIsLoadingWishlist(false);
     }
@@ -341,14 +394,27 @@ export default function ContextProvider({ children }) {
           Authorization: `Bearer ${token}`,
         },
       });
+      Swal.fire({
+        title: "Thành công",
+        text: "Đã xóa sản phẩm khỏi danh sách yêu thích",
+        icon: "success",
+      });
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       await fetchWishlistItems();
 
       if (error.response?.status === 404) {
-        toast.error("Không tìm thấy sản phẩm trong danh sách yêu thích");
+        Swal.fire({
+          title: "Lỗi",
+          text: "Không tìm thấy sản phẩm trong danh sách yêu thích",
+          icon: "error",
+        });
       } else {
-        toast.error("Không thể xóa sản phẩm yêu thích");
+        Swal.fire({
+          title: "Lỗi",
+          text: "Không thể xóa sản phẩm yêu thích",
+          icon: "error",
+        });
       }
     } finally {
       setIsLoadingWishlist(false);

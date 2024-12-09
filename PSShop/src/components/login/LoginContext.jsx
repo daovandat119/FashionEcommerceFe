@@ -2,6 +2,7 @@
 import { createContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+import Swal from "sweetalert2";
 
 export const LoginContext = createContext();
 
@@ -48,21 +49,22 @@ export const LoginProvider = ({ children }) => {
         setIsAuthenticated(true);
         localStorage.setItem("token", data.token);
 
-        toast.success("Đăng nhập thành công!", {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
+        Swal.fire({
+          title: "Đăng nhập thành công!",
+          icon: "success",
+          timer: 2000,
+          position: "center", // Center the success message on the screen
+          showConfirmButton: false,
         });
 
         setTimeout(() => {
           navigate("/");
         }, 1000);
       } else {
-        setErrorMessage(data.message || "Email hoặc mật khẩu không đúng");
+        Swal.fire({
+          title: data.message || "Email hoặc mật khẩu không đúng",
+          icon: "error",
+        });
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -163,6 +165,7 @@ export const LoginProvider = ({ children }) => {
       setErrorMessage("Đã xảy ra lỗi khi xác thực.");
     }
   };
+
   const resendVerificationCode = async () => {
     try {
       const response = await fetch(
@@ -192,7 +195,10 @@ export const LoginProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    toast.success("Đã đăng xuất");
+    Swal.fire({
+      title: "Đã đăng xuất",
+      icon: "success",
+    });
   };
 
   useEffect(() => {

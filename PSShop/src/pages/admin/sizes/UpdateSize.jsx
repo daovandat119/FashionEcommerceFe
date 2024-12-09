@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { GetSizeById, UpdateSize } from "../service/api_service";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const UpdateSizeComponent = () => {
   const [SizeName, setSizeName] = useState("");
@@ -13,7 +12,7 @@ const UpdateSizeComponent = () => {
   useEffect(() => {
     const fetchSize = () => {
       GetSizeById(SizeID)
-        .then(response => {
+        .then((response) => {
           console.log("Received data:", response);
           if (response) {
             setSizeName(response.SizeName);
@@ -21,10 +20,10 @@ const UpdateSizeComponent = () => {
             throw new Error("Dữ liệu kích thước không hợp lệ");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Lỗi khi tải kích thước:", err);
           setError("Không thể tải dữ liệu kích thước. Vui lòng thử lại sau.");
-          toast.error("Không thể tải dữ liệu kích thước");
+          Swal.fire("Lỗi!", "Không thể tải dữ liệu kích thước", "error");
         });
     };
 
@@ -45,36 +44,48 @@ const UpdateSizeComponent = () => {
     }
 
     UpdateSize(SizeID, SizeName)
-      .then(response => {
+      .then((response) => {
         if (response.data) {
           console.log("Cập nhật thành công:", response.data);
-          navigate("/admin/sizes", {
-            state: {
-              success: true,
-              message: "Cập nhật kích thước thành công",
-              updatedSize: { SizeID, SizeName },
-            },
+          Swal.fire(
+            "Thành công!",
+            "Cập nhật kích thước thành công",
+            "success"
+          ).then(() => {
+            navigate("/admin/sizes", {
+              state: {
+                success: true,
+                message: "Cập nhật kích thước thành công",
+                updatedSize: { SizeID, SizeName },
+              },
+            });
           });
         } else {
           throw new Error("Không thể cập nhật kích thước");
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Lỗi khi cập nhật Size:", err);
         // Hiển thị thông báo lỗi từ API
         if (err.response && err.response.data) {
-          toast.error(
-            err.response.data.SizeName[0] || "Đã xảy ra lỗi khi cập nhật kích thước"
+          Swal.fire(
+            "Lỗi!",
+            err.response.data.SizeName[0] ||
+              "Đã xảy ra lỗi khi cập nhật kích thước",
+            "error"
           );
         } else {
-          toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+          Swal.fire(
+            "Lỗi!",
+            "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
+            "error"
+          );
         }
       });
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Tên kích thước</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleUpdateSize} className="space-y-6">
@@ -92,7 +103,6 @@ const UpdateSizeComponent = () => {
               type="text"
               value={SizeName}
               onChange={(e) => setSizeName(e.target.value)}
-              
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

@@ -6,10 +6,12 @@ import CartLength from "./components/CartLength";
 // import { openCart } from "../../utlis/openCart";
 import SearchBar from "./components/SearchBar";
 import { LoginContext } from "../login/LoginContext";
+import { useContextElement } from "../../context/Context";
 
 export default function Headers() {
   const [isSearchVisible, setSearchVisible] = useState(false);
   const { isAuthenticated } = useContext(LoginContext);
+  const { setCartProducts } = useContextElement();
   const navigate = useNavigate();
 
   useEffect(() => {}, [isAuthenticated]);
@@ -30,6 +32,20 @@ export default function Headers() {
   const handleSearchResults = () => {
     // console.log("Kết quả tìm kiếm:", results); // Đã loại bỏ log không cần thiết
   };
+
+  // const handleCartClick = (e) => {
+  //   e.preventDefault();
+  //   const token = localStorage.getItem('token');
+    
+  //   if (!token) {
+  //     setCartProducts([]);
+  //     navigate('/login_register');
+  //     return;
+  //   }
+
+  //   sessionStorage.removeItem('cartReloaded');
+  //   navigate('/shop_cart');
+  // };
 
   return (
     <header id="header" className="header header_sticky">
@@ -105,6 +121,7 @@ export default function Headers() {
                 <CartLength />
               </span>
             </Link>
+
           </div>
         </div>
       </div>

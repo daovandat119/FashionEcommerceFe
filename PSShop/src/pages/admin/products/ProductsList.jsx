@@ -10,8 +10,7 @@ import {
   UpdateProductStatus,
 } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from 'sweetalert2'; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const ProductsList = () => {
@@ -89,14 +88,14 @@ const ProductsList = () => {
             setListProducts((prevList) =>
               prevList.filter((product) => product.ProductID !== ProductID)
             );
-            toast.success("Sản phẩm đã được xóa thành công");
+            Swal.fire('Thành công!', 'Sản phẩm đã được xóa thành công', 'success');
           } else {
-            toast.error("Xóa sản phẩm thất bại");
+            Swal.fire('Thất bại!', 'Xóa sản phẩm thất bại', 'error');
           }
         })
         .catch((error) => {
           console.error("Lỗi khi xóa sản phẩm:", error);
-          toast.error("Đã xảy ra lỗi khi xóa sản phẩm");
+          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm', 'error');
         });
     }
   }, []);
@@ -113,14 +112,14 @@ const ProductsList = () => {
                 : product
             );
             setListProducts(updatedProducts);
-            toast.success("Cập nhật trạng thái sản phẩm thành công");
+            Swal.fire('Thành công!', 'Cập nhật trạng thái sản phẩm thành công', 'success');
           } else {
-            toast.error("Cập nhật trạng thái sản phẩm thất bại");
+            Swal.fire('Thất bại!', 'Cập nhật trạng thái sản phẩm thất bại', 'error');
           }
         })
         .catch((error) => {
           console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
-          toast.error("Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm");
+          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm', 'error');
         });
     },
     [listProducts]
@@ -142,27 +141,26 @@ const ProductsList = () => {
               )
             );
             setSelectedProducts([]); // Clear selected products after deletion
-            toast.success("Các sản phẩm đã được xóa thành công");
+            Swal.fire('Thành công!', 'Các sản phẩm đã được xóa thành công', 'success');
           } else {
-            toast.error("Xóa sản phẩm thất bại");
+            Swal.fire('Thất bại!', 'Xóa sản phẩm thất bại', 'error');
           }
         })
         .catch((error) => {
           console.error("Lỗi khi xóa sản phẩm:", error);
-          toast.error("Đã xảy ra lỗi khi xóa sản phẩm");
+          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm', 'error');
         });
     }
   }, [selectedProducts]);
 
   useEffect(() => {
     if (location.state && location.state.success) {
-      toast.success(location.state.message);
+      Swal.fire('Thành công!', location.state.message, 'success');
     }
   }, [location.state]);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ToastContainer />
       <h1 className="text-2xl font-bold mb-6">Quản lý sản phẩm</h1>
       <div className="flex justify-between items-center mb-6">
         <div className="w-1/2 bg-white rounded-lg shadow">
@@ -239,7 +237,11 @@ const ProductsList = () => {
                         <span className="text-gray-500">No Image</span>
                       </div>
                     )}
-                    <span>{item.ProductName}</span>
+                    <span>
+                      {item.ProductName.length > 20 
+                        ? `${item.ProductName.substring(0, 20)}...` 
+                        : item.ProductName}
+                    </span>
                   </td>
                   <td className=" p-4">{item.category_name}</td>
                   <td className=" p-4">{Math.floor(item.Price)} VND</td>
