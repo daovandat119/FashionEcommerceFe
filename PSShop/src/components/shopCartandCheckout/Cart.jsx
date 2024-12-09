@@ -309,7 +309,7 @@ export default function Cart() {
                     {Math.floor(
                       cartProducts
                         .reduce(
-                          (total, item) => total + item.Quantity * item.Price,
+                          (total, item) => item.Status === "ACTIVE" ? total + item.Quantity * item.Price : total,
                           0
                         )
                         .toFixed(2)
