@@ -67,10 +67,10 @@ export default function Shop1() {
     setColorID(newFilters.colorId);
     setCategoryID(newFilters.categoryId);
     setSizeID(newFilters.sizeId);
-    console.log(newFilters);
-    console.log(newFilters.categoryId);
-    console.log(newFilters.colorId);
-    console.log(newFilters.sizeId);
+    // console.log(newFilters);
+    // console.log(newFilters.categoryId);
+    // console.log(newFilters.colorId);
+    // console.log(newFilters.sizeId);
     // setFilters(newFilters);
   };
 

@@ -24,7 +24,15 @@ export const LoginProvider = ({ children }) => {
   const loginUser = async (Email, Password, navigate) => {
     setErrorMessage("");
     setSuccessMessage("");
-
+    if (!isValidEmail(Email)) {
+      setErrorMessage("Email không hợp lệ.");
+      return;
+    }
+    // Kiểm tra tính hợp lệ của mật khẩu
+    if (!isValidPassword(Password)) {
+      setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login", {
         method: "POST",

@@ -110,7 +110,7 @@ export default function Products_Trendy() {
         </div>
       ) : (
         <div className="row">
-          {products.map((product) => (
+          {products.slice(0, 4).map((product) => (
             <div
               key={product.ProductID}
               className="col-6 col-md-4 col-lg-3 mb-5"
@@ -208,7 +208,7 @@ export default function Products_Trendy() {
               className="btn-link btn-link_lg default-underline text-uppercase fw-medium"
               to="/shop"
             >
-              Discover More
+              Xem tất cả
             </Link>
           </div>
         </div>

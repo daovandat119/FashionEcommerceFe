@@ -84,7 +84,7 @@ export default function Hero() {
                 ""
               )}
               <Link
-                to="/shop-1"
+                to="/shop"
                 className="btn-link btn-link_lg default-underline text-uppercase fw-medium animate animate_fade animate_btt animate_delay-7"
               >
                 Xem thêm
