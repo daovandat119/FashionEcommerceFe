@@ -238,6 +238,7 @@ const UpdateProducts = () => {
           Swal.fire(
             "Lỗi!",
             error.response.data.message ||
+              error.response.message ||
               "Đã xảy ra lỗi khi cập nhật sản phẩm",
             "error"
           );
@@ -421,14 +422,18 @@ const UpdateProducts = () => {
               )
             );
             setSelectedVariants([]); // Clear selected variants after deletion
-            Swal.fire('Thành công!', 'Các biến thể đã được xóa thành công', 'success');
+            Swal.fire(
+              "Thành công!",
+              "Các biến thể đã được xóa thành công",
+              "success"
+            );
           } else {
-            Swal.fire('Thất bại!', 'Xóa biến thể thất bại', 'error');
+            Swal.fire("Thất bại!", "Xóa biến thể thất bại", "error");
           }
         })
         .catch((error) => {
           console.error("Lỗi khi xóa biến thể:", error);
-          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa biến thể', 'error');
+          Swal.fire("Lỗi!", "Đã xảy ra lỗi khi xóa biến thể", "error");
         });
     }
   }, [selectedVariants]);
@@ -637,8 +642,8 @@ const UpdateProducts = () => {
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex justify-between items-center py-4">
               <h2 className="text-xl font-bold">Biến thể sản phẩm</h2>
-              <button 
-                onClick={handleDeleteSelectedVariants} 
+              <button
+                onClick={handleDeleteSelectedVariants}
                 className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors"
                 disabled={selectedVariants.length === 0}
               >
@@ -652,21 +657,35 @@ const UpdateProducts = () => {
                     <tr className="bg-gray-100 text-center">
                       <th className="border border-gray-300 py-2">
                         <Checkbox
-                          checked={selectedVariants.length === productVariants.length}
+                          checked={
+                            selectedVariants.length === productVariants.length
+                          }
                           onChange={() => {
-                            if (selectedVariants.length === productVariants.length) {
+                            if (
+                              selectedVariants.length === productVariants.length
+                            ) {
                               setSelectedVariants([]);
                             } else {
-                              setSelectedVariants(productVariants.map(v => v.VariantID));
+                              setSelectedVariants(
+                                productVariants.map((v) => v.VariantID)
+                              );
                             }
                           }}
                         />
                       </th>
-                      <th className="border border-gray-300 px-4 py-2">Màu sắc</th>
-                      <th className="border border-gray-300 px-4 py-2">Kích Thước</th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Màu sắc
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Kích Thước
+                      </th>
                       <th className="border border-gray-300 px-4 py-2">Giá</th>
-                      <th className="border border-gray-300 px-4 py-2">Số lượng</th>
-                      <th className="border border-gray-300 px-4 py-2">Chức năng</th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Số lượng
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Chức năng
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -674,14 +693,24 @@ const UpdateProducts = () => {
                       <tr key={variant.VariantID} className="text-center">
                         <td className="border py-2">
                           <Checkbox
-                            checked={selectedVariants.includes(variant.VariantID)}
-                            onChange={() => handleSelectVariant(variant.VariantID)}
+                            checked={selectedVariants.includes(
+                              variant.VariantID
+                            )}
+                            onChange={() =>
+                              handleSelectVariant(variant.VariantID)
+                            }
                             className="border-2 border-gray-400"
                           />
                         </td>
-                        <td className="border px-4 py-2">{variant.ColorName || "N/A"}</td>
-                        <td className="border px-4 py-2">{variant.SizeName || "N/A"}</td>
-                        <td className="border px-4 py-2">{Math.floor(variant.Price)} VND</td>
+                        <td className="border px-4 py-2">
+                          {variant.ColorName || "N/A"}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {variant.SizeName || "N/A"}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {Math.floor(variant.Price)} VND
+                        </td>
                         <td className="border px-4 py-2">{variant.Quantity}</td>
                         <td className="border-b px-4 py-4 flex">
                           <button
@@ -692,7 +721,9 @@ const UpdateProducts = () => {
                           </button>
                           <button
                             className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                            onClick={() => handleDeleteVariant(variant.VariantID)}
+                            onClick={() =>
+                              handleDeleteVariant(variant.VariantID)
+                            }
                           >
                             <TrashIcon className="h-4 w-4" />
                           </button>

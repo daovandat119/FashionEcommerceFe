@@ -10,7 +10,7 @@ import {
   UpdateProductStatus,
 } from "../service/api_service";
 import ReactPaginate from "react-paginate";
-import Swal from 'sweetalert2'; // Import SweetAlert
+import Swal from "sweetalert2"; // Import SweetAlert
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const ProductsList = () => {
@@ -88,14 +88,18 @@ const ProductsList = () => {
             setListProducts((prevList) =>
               prevList.filter((product) => product.ProductID !== ProductID)
             );
-            Swal.fire('Thành công!', 'Sản phẩm đã được xóa thành công', 'success');
+            Swal.fire(
+              "Thành công!",
+              "Sản phẩm đã được xóa thành công",
+              "success"
+            );
           } else {
-            Swal.fire('Thất bại!', 'Xóa sản phẩm thất bại', 'error');
+            Swal.fire("Thất bại!", "Xóa sản phẩm thất bại", "error");
           }
         })
         .catch((error) => {
           console.error("Lỗi khi xóa sản phẩm:", error);
-          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm', 'error');
+          Swal.fire("Lỗi!", "Đã xảy ra lỗi khi xóa sản phẩm", "error");
         });
     }
   }, []);
@@ -112,14 +116,26 @@ const ProductsList = () => {
                 : product
             );
             setListProducts(updatedProducts);
-            Swal.fire('Thành công!', 'Cập nhật trạng thái sản phẩm thành công', 'success');
+            Swal.fire(
+              "Thành công!",
+              "Cập nhật trạng thái sản phẩm thành công",
+              "success"
+            );
           } else {
-            Swal.fire('Thất bại!', 'Cập nhật trạng thái sản phẩm thất bại', 'error');
+            Swal.fire(
+              "Thất bại!",
+              "Cập nhật trạng thái sản phẩm thất bại",
+              "error"
+            );
           }
         })
         .catch((error) => {
           console.error("Lỗi khi cập nhật trạng thái sản phẩm:", error);
-          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm', 'error');
+          Swal.fire(
+            "Lỗi!",
+            "Đã xảy ra lỗi khi cập nhật trạng thái sản phẩm",
+            "error"
+          );
         });
     },
     [listProducts]
@@ -141,21 +157,25 @@ const ProductsList = () => {
               )
             );
             setSelectedProducts([]); // Clear selected products after deletion
-            Swal.fire('Thành công!', 'Các sản phẩm đã được xóa thành công', 'success');
+            Swal.fire(
+              "Thành công!",
+              "Các sản phẩm đã được xóa thành công",
+              "success"
+            );
           } else {
-            Swal.fire('Thất bại!', 'Xóa sản phẩm thất bại', 'error');
+            Swal.fire("Thất bại!", "Xóa sản phẩm thất bại", "error");
           }
         })
         .catch((error) => {
           console.error("Lỗi khi xóa sản phẩm:", error);
-          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm', 'error');
+          Swal.fire("Lỗi!", "Đã xảy ra lỗi khi xóa sản phẩm", "error");
         });
     }
   }, [selectedProducts]);
 
   useEffect(() => {
     if (location.state && location.state.success) {
-      Swal.fire('Thành công!', location.state.message, 'success');
+      Swal.fire("Thành công!", location.state.message, "success");
     }
   }, [location.state]);
 
@@ -238,8 +258,8 @@ const ProductsList = () => {
                       </div>
                     )}
                     <span>
-                      {item.ProductName.length > 20 
-                        ? `${item.ProductName.substring(0, 20)}...` 
+                      {item.ProductName.length > 20
+                        ? `${item.ProductName.substring(0, 20)}...`
                         : item.ProductName}
                     </span>
                   </td>
@@ -293,7 +313,7 @@ const ProductsList = () => {
             nextLinkClassName="page-link"
             breakClassName="page-item"
             breakLinkClassName="page-link"
-            containerClassName="pagination flex justify-center space-x-2 mt-4"
+            containerClassName="pagination flex justify-center space-x-2 my-4"
             activeClassName="active bg-blue-500 text-white"
             forcePage={currentPage - 1}
           />
