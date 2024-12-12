@@ -24,15 +24,17 @@ export const LoginProvider = ({ children }) => {
   const loginUser = async (Email, Password, navigate) => {
     setErrorMessage("");
     setSuccessMessage("");
+
     if (!isValidEmail(Email)) {
       setErrorMessage("Email không hợp lệ.");
       return;
     }
-    // Kiểm tra tính hợp lệ của mật khẩu
+
     if (!isValidPassword(Password)) {
       setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
       return;
     }
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login", {
         method: "POST",
@@ -46,6 +48,9 @@ export const LoginProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
+    
+
+        // Kiểm tra vai trò người dùng
         const roleId = data.user.RoleID;
         if (roleId == 1) {
           setErrorMessage(
@@ -53,6 +58,8 @@ export const LoginProvider = ({ children }) => {
           );
           return;
         }
+
+        // Đăng nhập thành công
         setUser(data.user);
         setIsAuthenticated(true);
         localStorage.setItem("token", data.token);
@@ -61,7 +68,7 @@ export const LoginProvider = ({ children }) => {
           title: "Đăng nhập thành công!",
           icon: "success",
           timer: 2000,
-          position: "center", // Center the success message on the screen
+          position: "center",
           showConfirmButton: false,
         });
 
@@ -69,6 +76,15 @@ export const LoginProvider = ({ children }) => {
           navigate("/");
         }, 1000);
       } else {
+        if (data.message && data.message.includes("chưa được xác minh")) {
+          setVerificationStep(true);
+          setTempEmail(Email);
+          setUserId(data.UserID); 
+          setTempLoginInfo({ Email, Password });
+          return;
+        }
+
+        // Xử lý lỗi khác
         Swal.fire({
           title: data.message || "Email hoặc mật khẩu không đúng",
           icon: "error",
