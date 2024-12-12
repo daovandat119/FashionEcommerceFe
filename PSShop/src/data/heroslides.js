@@ -2,21 +2,21 @@ export const slides1 = [
     {
       id: 1,
   
-      characterImg: "/assets/images/bn3.png",
+      characterImg: "/assets/images/anh2.jpg",
       characterAlt: "Woman Fashion 1",
-      characterText: "Winter",
-      text1: "New Trend",
-      text2: "Bộ sưu tập mùa đông",
-      text3: "Nữ",
+      characterText: "PS PROSHIRTS",
+      text1: "THỂ THAO",
+      text2: "CHINH PHỤC ĐỈNH CAO",
+      text3: "sức khỏe",
     },
     {
       id: 2,
   
-      characterImg: "/assets/images/bn2.png",
+      characterImg: "/assets/images/anh1.jpg",
       characterAlt: "Woman Fashion 2",
-      characterText: "",
-      text1: "Winter 2024",
-      text3: "Chào mừng mùa mới",
+      characterText: "PS PROSHIRTS",
+      text1: "Đam mê 2025",
+      text3: "SỨC MẠNH TỪ ĐAM MÊ",
       text4: "Khuyến mãi có thời hạn - 60 ngày",
     },
   ];

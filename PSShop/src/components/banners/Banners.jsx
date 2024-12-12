@@ -39,7 +39,7 @@ export default function Hero() {
             >
               <img
                 loading="lazy"
-                src="/assets/images/slideshow-pattern.png"
+                src="/assets/images/PSPROSH.png"
                 width="1761"
                 height="778"
                 alt="Pattern"
@@ -57,7 +57,7 @@ export default function Hero() {
                 className="slideshow-character__img animate animate_fade animate_btt animate_delay-9 h-auto w-auto"
               />
               <div className="character_markup">
-                <p className="text-uppercase font-sofia fw-bold animate animate_fade animate_rtl animate_delay-10">
+                <p className="text-uppercase text-dark font-sofia fw-bold animate animate_fade text-8xl animate_rtl whitespace-nowrap truncate animate_delay-10">
                   {elm.characterText}
                 </p>
               </div>

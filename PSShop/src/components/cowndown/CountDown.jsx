@@ -33,7 +33,7 @@ const CountDown = () => {
     }, []);
 
     return (
-        <div className="bg-lightGray">
+        <div className="bg-[#e1edfd]">
         <div className="container mx-auto p-4">
             <div className="flex items-center justify-between">
                 <div className="text-left">
@@ -91,7 +91,7 @@ const CountDown = () => {
                     </div>
                 </div>
                 <div>
-                    <img alt="Áo khoác xám từ bộ sưu tập mùa xuân" className="w-96 " src="/assets/images/cd.png" />
+                    <img alt="Áo khoác xám từ bộ sưu tập mùa xuân" className="w-96 " src="/assets/images/10.jpg" />
                 </div>
             </div>
         </div>

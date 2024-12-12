@@ -42,15 +42,15 @@ export default function BlogCards() {
                 }}
               ></div>
               <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
-                <p className="text-uppercase mb-1 text-white">
+                <p className="text-uppercase mb-1 text-black">
                   Danh Sách Nổi Bật
                 </p>
-                <h3 className="text-uppercase text-white">
+                <h3 className="text-uppercase text-black">
                   <strong>Bộ Sưu Tập Nam</strong>
                 </h3>
                 <Link
                   to="/shop"
-                  className="btn-link default-underline text-uppercase text-white fw-medium"
+                  className="btn-link default-underline text-uppercase text-black fw-medium"
                 >
                   Mua Ngay
                 </Link>
@@ -87,7 +87,7 @@ export default function BlogCards() {
                   <div className="collection-grid__item h-md-100 position-relative">
                     <div
                       className="background-img"
-                      style={{ backgroundColor: "#f5e6e0" }}
+                      style={{  backgroundImage: "url(/assets/images/5.jpg)", }}
                     ></div>
                     <div className="content_abs content_bottom content_left content_bottom-md content_left-md">
                       <h3 className="text-uppercase">
@@ -99,7 +99,7 @@ export default function BlogCards() {
                         Hãy làm họ bất ngờ ngay!
                       </p>
                       <Link
-                        to="/shop-1"
+                        to="/shop"
                         className="btn-link default-underline text-uppercase fw-medium"
                       >
                         Mua Ngay
