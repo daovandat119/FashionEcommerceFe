@@ -91,7 +91,7 @@ const AddVoucher = () => {
             min="0"
           />
           <Input
-            label="Giá trị tối đa"
+            label="Số lần sử dụng"
             name="UsageLimit"
             type="number"
             value={voucherDetails.UsageLimit}
@@ -99,7 +99,7 @@ const AddVoucher = () => {
             min="0"
           />
           <Input
-            label="Giá trị tối đa"
+            label="Giảm giá tối đa"
             name="MaxAmount"
             type="number"
             value={voucherDetails.MaxAmount}

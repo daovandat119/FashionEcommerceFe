@@ -1,133 +1,75 @@
+import React from "react";
+import Slider from "react-slick";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectFade, Pagination } from "swiper/modules";
-import { slides1 } from "../../data/heroslides";
-
 import { socialLinks } from "../../data/socials";
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 export default function Hero() {
-  const swiperOptions = {
-    autoplay: {
-      delay: 5000,
-    },
-    slidesPerView: 1,
-    modules: [Pagination, EffectFade],
-    effect: "fade",
-    loop: true,
-    pagination: {
-      el: ".slideshow-pagination",
-      type: "bullets",
-      clickable: true,
-    },
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    arrows: false,
   };
+
+  const slides = [
+    {
+      image:
+        "https://graphicsfamily.com/wp-content/uploads/edd/2021/01/Web-banner-template-with-sports-concept-scaled.jpg",
+    },
+    {
+      image:
+        "https://file.hstatic.net/1000341630/collection/banner_vtt_93db1558afe149ad9e5f28b416957ef2.png",
+    },
+    {
+      image:
+        "https://dongduongsport.com/wp-content/uploads/2023/02/3-banner-thethao-dongduonsport-2023.jpg",
+    },
+    {
+      image:
+        "https://makan.vn/wp-content/uploads/2023/02/shop-quan-ao-the-thao-thanh-pho-ha-noi-4.jpg.jpg",
+    },
+  ];
+
   return (
-    <Swiper
-      style={{ maxWidth: "100%", overflow: "hidden" }}
-      className="swiper-container js-swiper-slider slideshow full-width_padding swiper-container-fade swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events"
-      {...swiperOptions}
-    >
-      {" "}
-      {slides1.map((elm, i) => (
-        <SwiperSlide
-          key={i}
-          className="swiper-slide full-width_border border-1"
-          style={{ borderColor: "#f5e6e0" }}
-        >
-          <div className="overflow-hidden position-relative h-100">
+    <div className="hero-slider pb-10">
+      <Slider {...settings}>
+        {slides.map((slide, index) => (
+          <div key={index} className="slide">
             <div
-              className="slideshow-bg"
-              style={{ backgroundColor: "#f5e6e0" }}
+              className=""
+              style={{
+                backgroundImage: `url(${slide.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                width: "100%", // Set chiều rộng cho ảnh
+                height: "500px", // Điều chỉnh chiều cao tùy ý
+              }}
             >
-              <img
-                loading="lazy"
-                src="/assets/images/slideshow-pattern.png"
-                width="1761"
-                height="778"
-                alt="Pattern"
-                className="slideshow-bg__img object-fit-cover"
-              />
-            </div>
-            {/* <!-- <p className="slideshow_markup font-special text-uppercase position-absolute end-0 bottom-0">Summer</p> --> */}
-            <div className="slideshow-character position-absolute bottom-0 pos_right-center">
-              <img
-                loading="lazy"
-                src={elm.characterImg}
-                width="400"
-                height="733"
-                alt="Woman Fashion 1"
-                className="slideshow-character__img animate animate_fade animate_btt animate_delay-9 h-auto w-auto"
-              />
-              <div className="character_markup">
-                <p className="text-uppercase font-sofia fw-bold animate animate_fade animate_rtl animate_delay-10">
-                  {elm.characterText}
-                </p>
+              <div className="slide-content text-center text-white">
+                <h6 className="text-uppercase text-red fs-base fw-medium">
+                  {slide.text1}
+                </h6>
+                <h2 className="text-uppercase h1 fw-normal mb-0">
+                  {slide.text2}
+                </h2>
+                {slide.text3 && (
+                  <h2 className="text-uppercase h1 fw-bold">{slide.text3}</h2>
+                )}
+                {slide.text4 && (
+                  <h6 className="text-uppercase mb-5">{slide.text4}</h6>
+                )}
               </div>
             </div>
-            <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
-              <h6 className="text_dash text-uppercase text-red fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
-                {elm.text1}
-              </h6>
-              <h2 className="text-uppercase h1 fw-normal mb-0 animate animate_fade animate_btt animate_delay-5">
-                {elm.text2}
-              </h2>
-              {elm.text3 ? (
-                <h2 className="text-uppercase h1 fw-bold animate animate_fade animate_btt animate_delay-5">
-                  {elm.text3}
-                </h2>
-              ) : (
-                ""
-              )}
-              {elm.text4 ? (
-                <h6 className="text-uppercase mb-5 animate animate_fade animate_btt animate_delay-3">
-                  {elm.text4}
-                </h6>
-              ) : (
-                ""
-              )}
-              <Link
-                to="/shop"
-                className="btn-link btn-link_lg default-underline text-uppercase fw-medium animate animate_fade animate_btt animate_delay-7"
-              >
-                Xem thêm
-              </Link>
-            </div>
           </div>
-        </SwiperSlide>
-      ))}
-      <div className="container">
-        <div className="slideshow-pagination d-flex align-items-center position-absolute bottom-0 mb-6"></div>
-        {/* <!-- /.products-pagination --> */}
-      </div>
-      {/* <!-- /.container --> */}
-      <div className="slideshow-social-follow d-none d-xxl-block position-absolute top-50 start-0 translate-middle-y text-center">
-        <ul className="social-links list-unstyled mb-0 text-secondary">
-          {socialLinks.map((link, index) => (
-            <li key={index}>
-              <a href={link.href} className="footer__social-link d-block">
-                <svg
-                  className={link.className}
-                  width={link.width}
-                  height={link.height}
-                  viewBox={link.viewBox}
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <use href={link.icon} />
-                </svg>
-              </a>
-            </li>
-          ))}
-        </ul>
-        {/* <!-- /.social-links list-unstyled mb-0 text-secondary --> */}
-        <span className="slideshow-social-follow__title d-block mt-5 text-uppercase fw-medium text-secondary">
-          Theo dõi chúng tôi
-        </span>
-      </div>
-      {/* <!-- /.slideshow-social-follow --> */}
-      <a
-        href="#section-collections-grid_masonry"
-        className="slideshow-scroll d-none d-xxl-block position-absolute end-0 bottom-0 text_dash text-uppercase fw-medium"
-      >
-        Scroll
-      </a>
-    </Swiper>
+        ))}
+      </Slider>
+    </div>
   );
 }

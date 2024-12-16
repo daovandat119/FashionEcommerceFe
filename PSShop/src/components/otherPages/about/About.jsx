@@ -10,7 +10,7 @@ export default function About() {
             style={{ height: "fit-content" }}
             loading="lazy"
             className="w-100 h-auto d-block"
-            src="/assets/images/about/aboutbg.png"
+            src="https://t3.ftcdn.net/jpg/08/93/46/40/360_F_893464019_ROpq7gXpHuMSUxa0fkHQmOVaGrabDfKR.jpg"
             width="1410"
             height="550"
             alt="hình ảnh"
@@ -45,7 +45,7 @@ export default function About() {
               style={{ height: "fit-content" }}
               className="h-auto"
               loading="lazy"
-              src="/assets/images/about/aboubg2.png"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSB3RSYl-wODdTm5snENrgYLh3jMMaGpgKEZw&s"
               width="450"
               height="500"
               alt="hình ảnh"

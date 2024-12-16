@@ -46,7 +46,7 @@ const Dashboard = () => {
       Swal.fire({
         icon: "success",
         title: "Đăng nhập thành công!",
-        showConfirmButton: false,
+        confirmButtonText: "Đồng ý",
         timer: 2000, // Tự động đóng sau 2 giây
       });
       setShowToast(false);

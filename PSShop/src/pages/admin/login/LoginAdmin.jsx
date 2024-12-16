@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser,
+  faLock,
+  faEye,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 import logo from "../../../../public/assets/images/logo.png";
 import { LoginAdmin, fetchAdminDetails } from "../service/api_service";
-import { useAuth } from '../../../context/AuthContext';
-import {ToastContainer } from 'react-toastify';
+import { useAuth } from "../../../context/AuthContext";
+import { ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [Email, setEmail] = useState("");
@@ -43,47 +48,50 @@ const Login = () => {
   const handleClickBtn = async (e) => {
     e.preventDefault();
     setLoi("");
-  
+
     if (validateForm()) {
       try {
         const res = await LoginAdmin(Email, Password);
-  
+
         if (res && res.token) {
           login(res.token);
-  
+
           // Hiển thị thông báo thành công
           Swal.fire({
             icon: "success",
             title: "Đăng nhập thành công!",
-            confirmButtonText: "OK",
+            confirmButtonText: "Đồng ý",
           }).then(() => {
             // Chuyển hướng đến dashboard
             navigate("/admin/dashboard");
           });
         } else {
-          const errorMessage = res.message || "Tài khoản hoặc mật khẩu không chính xác";
+          const errorMessage =
+            res.message || "Tài khoản hoặc mật khẩu không chính xác";
           setLoi(errorMessage);
-  
+
           // Hiển thị thông báo lỗi
           Swal.fire({
             icon: "error",
             title: "Đăng nhập thất bại",
             text: errorMessage,
-            confirmButtonText: "OK",
+            confirmButtonText: "Đồng ý",
           });
         }
       } catch (err) {
-        const errorMessage = err.response?.data?.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.";
+        const errorMessage =
+          err.response?.data?.message ||
+          "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.";
         setLoi(errorMessage);
-  
+
         // Hiển thị thông báo lỗi từ API hoặc lỗi mặc định
         Swal.fire({
           icon: "error",
           title: "Đã xảy ra lỗi",
           text: errorMessage,
-          confirmButtonText: "OK",
+          confirmButtonText: "Đồng ý",
         });
-  
+
         console.error("Lỗi đăng nhập:", err);
       }
     }
@@ -99,7 +107,7 @@ const Login = () => {
       <div className="w-[30%] mx-auto bg-white py-3 rounded-lg shadow-2xl">
         <img className="w-[1/4] mx-auto pt-5" src={logo} alt="Logo" />
         <div className="text-2xl font-semibold text-center py-3">
-          LOGIN ADMIN
+          ĐĂNG NHẬP QUẢN TRỊ
         </div>
         <form
           onSubmit={handleClickBtn}
@@ -118,7 +126,7 @@ const Login = () => {
                   if (errors.Email) setErrors({ ...errors, Email: "" });
                 }}
                 className="outline-none w-full py-2 pl-10 text-lg"
-                placeholder="Email"
+                placeholder="Địa chỉ Email *"
                 type="email"
                 id="email"
                 autoComplete="username"
@@ -141,7 +149,7 @@ const Login = () => {
                   if (errors.Password) setErrors({ ...errors, Password: "" });
                 }}
                 className="outline-none w-full py-2 pl-10 text-lg"
-                placeholder="Password"
+                placeholder="Mật khẩu *"
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="current-password"
@@ -159,11 +167,6 @@ const Login = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-2 pl-3">
-            <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me">Remember me</label>
-          </div>
-
           {loi && (
             <div className="text-red-500 text-sm w-full text-center">{loi}</div>
           )}
@@ -173,13 +176,10 @@ const Login = () => {
             className="bg-slate-600 mt-3 hover:from-slate-300 w-2/5 py-3 mx-auto text-center rounded-full
             active:opacity-40 transition-all duration-300 text-white font-semibold"
           >
-            LOGIN
+            Đăng nhập
           </button>
-          <Link
-            to="/forgot-password"
-            className="text-black opacity-50 hover:opacity-90 text-center w-full font-medium mt-14"
-          >
-            Forgot password ?
+          <Link className="text-black opacity-50 hover:opacity-90 text-center w-full font-medium mt-14">
+            Quên mật khẩu ?
           </Link>
         </form>
       </div>

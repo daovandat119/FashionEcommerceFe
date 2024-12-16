@@ -177,20 +177,16 @@ export default function Cart() {
                               height="120"
                               alt={item.ProductName}
                               className={`object-fit-cover w-full h-full transition-transform duration-300 ease-in-out ${
-                                item.QuantityLimit === 0 ||
-                                item.Status === "INACTIVE"
-                                  ? "opacity-50"
-                                  : ""
+                                item.Status === "INACTIVE" ? "opacity-50" : ""
                               }`}
                             />
                           </Link>
                         )}
-                        {item.QuantityLimit === 0 ||
-                          (item.Status === "INACTIVE" && (
-                            <span className="absolute ml-5 flex items-center justify-center text-dark text-lg font-bold">
-                              Hết hàng
-                            </span>
-                          ))}
+                        {item.Status == "INACTIVE" && (
+                          <span className="absolute ml-5 flex items-center justify-center text-dark text-lg font-bold">
+                            Hết hàng
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td>

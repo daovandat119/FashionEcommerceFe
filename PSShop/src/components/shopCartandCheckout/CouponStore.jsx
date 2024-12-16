@@ -134,7 +134,7 @@ export default function CouponStore({
                                     icon: "error",
                                     title: "Lỗi",
                                     text: `Cần thêm ${(coupon.MinimumOrderValue - totalAmount).toLocaleString()} VND để sử dụng mã này`,
-                                    confirmButtonText: "OK",
+                                    confirmButtonText: "Đồng ý",
                                   });
                                 }
                               } else {
@@ -142,7 +142,7 @@ export default function CouponStore({
                                   icon: "error",
                                   title: "Lỗi",
                                   text: "Mã giảm giá không khả dụng.",
-                                  confirmButtonText: "OK",
+                                  confirmButtonText: "Đồng ý",
                                 });
                               }
                             }}

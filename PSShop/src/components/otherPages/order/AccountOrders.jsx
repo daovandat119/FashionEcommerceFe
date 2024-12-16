@@ -47,10 +47,10 @@ export default function AccountOrders() {
     } catch (error) {
       console.error("Lỗi khi lọc đơn hàng:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Có lỗi xảy ra khi lọc đơn hàng',
-        text: error.message || 'Vui lòng thử lại sau!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Có lỗi xảy ra khi lọc đơn hàng",
+        text: error.message || "Vui lòng thử lại sau!",
+        showConfirmButton: true,
       });
     }
   };
@@ -89,20 +89,34 @@ export default function AccountOrders() {
       );
 
       // Gọi API cập nhật kèm lý do hủy
-      await handleOrderAction(currentOrderId, 4, "Chưa thanh toán", reason);
+      const response = await handleOrderAction(
+        currentOrderId,
+        4,
+        "Chưa thanh toán",
+        reason
+      );
+      if (response) {
+        setShowFeedbackModal(false);
+        setSelectedReason("");
+        setOtherReason("");
 
-      setShowFeedbackModal(false);
-      setSelectedReason("");
-      setOtherReason("");
+        Swal.fire({
+          title: "Thông báo",
+          text: "Hủy đơn hàng thành công",
+          icon: "success",
+          confirmButtonText: "Đồng ý",
+        });
+      } else {
+        Swal.fire({
+          title: "Thông báo",
+          text: "Đơn hàng đang vận chuyển",
+          icon: "error",
+          confirmButtonText: "Đồng ý",
+        });
 
-      Swal.fire({
-        title: "Thông báo",
-        text: "Hủy đơn hàng thành công",
-        icon: "success",
-        confirmButtonText: "Đồng ý",
-      });
+        await fetchOrders();
+      }
     } catch (error) {
-      // Nếu có lỗi, rollback lại trạng thái cũ
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order.OrderID === currentOrderId
@@ -110,13 +124,12 @@ export default function AccountOrders() {
             : order
         )
       );
-      console.error("Lỗi khi hủy đơn hàng:", error);
-      
+
       Swal.fire({
-        icon: 'error',
-        title: 'Có lỗi xảy ra khi hủy đơn',
-        text: error.message || 'Vui lòng thử lại sau!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Có lỗi xảy ra khi hủy đơn",
+        text: error.message || "Vui lòng thử lại sau!",
+        showConfirmButton: true,
       });
     }
   };
@@ -152,13 +165,12 @@ export default function AccountOrders() {
             : order
         )
       );
-      console.error("Lỗi khi xác nhận nhận hàng:", error);
-      ;
+
       Swal.fire({
-        icon: 'error',
-        title: 'Có lỗi xảy ra khi xác nhận nhận hàng',
-        text: error.message || 'Vui lòng thử lại sau!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Có lỗi xảy ra khi xác nhận nhận hàng",
+        text: error.message || "Vui lòng thử lại sau!",
+        showConfirmButton: true,
       });
     }
   };
@@ -166,10 +178,10 @@ export default function AccountOrders() {
   const handleSubmitReview = async () => {
     if (!reviewComment.trim()) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Vui lòng nhập nội dung đánh giá',
-        text: error.message || 'Vui lòng nhập nội dung đánh giá!',
-        showConfirmButton: true
+        icon: "warning",
+        title: "Vui lòng nhập nội dung đánh giá",
+        text: error.message || "Vui lòng nhập nội dung đánh giá!",
+        showConfirmButton: true,
       });
       return;
     }
@@ -198,10 +210,10 @@ export default function AccountOrders() {
       );
 
       Swal.fire({
-        icon: 'success',
-        title: 'Đánh giá thành công!',
-        
-        showConfirmButton: true
+        icon: "success",
+        title: "Đánh giá thành công!",
+
+        showConfirmButton: true,
       });
       setShowReviewModal(false);
       setRating(5);
@@ -210,10 +222,10 @@ export default function AccountOrders() {
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Có lỗi xảy ra khi đánh giá',
-        text: error.message || 'Có lỗi xảy ra khi đánh giá!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Có lỗi xảy ra khi đánh giá",
+        text: error.message || "Có lỗi xảy ra khi đánh giá!",
+        showConfirmButton: true,
       });
     }
   };
@@ -242,19 +254,19 @@ export default function AccountOrders() {
       }
 
       Swal.fire({
-        icon: 'success',
-        title: 'Thành công',
-        showConfirmButton: true
+        icon: "success",
+        title: "Thành công",
+        showConfirmButton: true,
       });
 
       window.location.href = "/cart";
     } catch (error) {
       console.error("Lỗi khi mua lại:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
-        text: error.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng",
+        text: error.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!",
+        showConfirmButton: true,
       });
     }
   };
@@ -268,7 +280,7 @@ export default function AccountOrders() {
         <div className="flex gap-2">
           <button
             className="bg-yellow-500 text-white py-2 px-6 rounded-lg text-sm font-medium focus:outline-none"
-            onClick={() => handleRepurchase(order.OrderID)}
+            // onClick={() => handleRepurchase(order.OrderID)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -688,11 +700,15 @@ export default function AccountOrders() {
                                   key={`${product.ProductID}-${product.VariantColor}-${product.VariantSize}`}
                                   className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:shadow-md"
                                 >
-                                  <img
-                                    src={product.MainImageURL}
-                                    alt={product.ProductName}
-                                    className="w-20 h-20 object-cover rounded-md border"
-                                  />
+                                  <Link
+                                    to={`/shop-detail/${product.ProductID}`}
+                                  >
+                                    <img
+                                      src={product.MainImageURL}
+                                      alt={product.ProductName}
+                                      className="w-20 h-20 object-cover rounded-md border"
+                                    />
+                                  </Link>
                                   <div className="flex-grow text-center">
                                     <h5 className="text-base font-bold text-gray-700 mb-2">
                                       {product.ProductName}

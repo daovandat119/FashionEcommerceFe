@@ -6,8 +6,8 @@ export const slides1 = [
       characterAlt: "Woman Fashion 1",
       characterText: "Winter",
       text1: "New Trend",
-      text2: "Bộ sưu tập mùa đông",
-      text3: "Nữ",
+      text2: "Bộ sưu tập bóng rổ",
+      
     },
     {
       id: 2,

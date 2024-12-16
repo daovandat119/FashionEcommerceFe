@@ -130,10 +130,7 @@ const AppRoutes = () => {
             <Route path="shop_cart" element={<ShopCartPage />} />
             <Route path="shop_checkout" element={<ShopCheckoutPage />} />
 
-            <Route
-              path="shop_order_complete/:orderId"
-              element={<ShopOrderConplate />}
-            />
+            <Route path="shop_order_complete" element={<ShopOrderConplate />} />
             <Route
               path="shop_order_tracking"
               element={<ShopOrderTrackingPage />}

@@ -62,7 +62,7 @@ export const LoginProvider = ({ children }) => {
           icon: "success",
           timer: 2000,
           position: "center", // Center the success message on the screen
-          showConfirmButton: false,
+          confirmButtonText: "Đồng ý",
         });
 
         setTimeout(() => {

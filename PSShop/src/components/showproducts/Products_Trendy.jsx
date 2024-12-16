@@ -56,7 +56,6 @@ export default function Products_Trendy() {
     fetchProducts();
   }, [currentCategory]);
 
-  // Xử lý thêm/xóa khỏi wishlist
   const toggleWishlist = async (productId) => {
     if (isInWishlist(productId)) {
       await removeFromWishlist(productId);
@@ -106,11 +105,13 @@ export default function Products_Trendy() {
         </div>
       ) : products.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-gray-500 text-lg font-medium">Không có sản phẩm nào.</p>
+          <p className="text-gray-500 text-lg font-medium">
+            Không có sản phẩm nào.
+          </p>
         </div>
       ) : (
         <div className="row">
-          {products.slice(0, 4).map((product) => (
+          {products.map((product) => (
             <div
               key={product.ProductID}
               className="col-6 col-md-4 col-lg-3 mb-5"
@@ -128,17 +129,23 @@ export default function Products_Trendy() {
                       NEW
                     </div>
                   )}
-                <Link to={`/shop-detail/${product.ProductID}`}  onClick={() => handleViewProduct(product.ProductID)}>
+                <Link
+                  to={`/shop-detail/${product.ProductID}`}
+                  onClick={() => handleViewProduct(product.ProductID)}
+                >
                   <img
                     loading="lazy"
                     src={product.MainImageURL}
                     width="330"
                     height="400"
                     alt={product.ProductName}
-                    className="w-[400px] h-[450px]"
+                    className="w-[400px] h-[450px] object-cover "
                   />
                 </Link>
-                <Link to={`/shop-detail/${product.ProductID}`}  onClick={() => handleViewProduct(product.ProductID)}>
+                <Link
+                  to={`/shop-detail/${product.ProductID}`}
+                  onClick={() => handleViewProduct(product.ProductID)}
+                >
                   <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium">
                     Xem chi tiết
                   </button>
@@ -212,7 +219,6 @@ export default function Products_Trendy() {
             </Link>
           </div>
         </div>
-        
       )}
     </section>
   );

@@ -41,7 +41,7 @@ const CountDown = () => {
                         Ưu đãi trong tuần
                     </p>
                     <h1 className="text-6xl font-bold mt-2">
-                        Bộ Sưu Tập Mùa Xuân
+                        Bộ Sưu Tập Áo Bóng Đá
                     </h1>
                     <a className="text-lg mt-4 inline-block border-b-2 border-black" href="/shop">
                         Mua Ngay
@@ -91,7 +91,7 @@ const CountDown = () => {
                     </div>
                 </div>
                 <div>
-                    <img alt="Áo khoác xám từ bộ sưu tập mùa xuân" className="w-96 " src="/assets/images/cd.png" />
+                    <img alt="Áo khoác xám từ bộ sưu tập mùa xuân" className="w-96 " src="https://yousport.vn/Media/Articles/230420093825647/Banner-Blog.jpg" />
                 </div>
             </div>
         </div>

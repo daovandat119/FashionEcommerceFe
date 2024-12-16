@@ -284,10 +284,10 @@ const UpdateOrder = () => {
                   {order.VariantSize}
                 </td>
                 <td className="p-4 border-r border-gray-300">
-                {Math.floor(order.TotalQuantity)} 
+                  {Math.floor(order.TotalQuantity)}
                 </td>
                 <td className="p-4 border-r border-gray-300">
-                  {Math.floor(parseFloat(order.VariantPrice).toFixed(2)) } VND
+                  {Math.floor(parseFloat(order.VariantPrice).toFixed(2))} VND
                 </td>
               </tr>
             ))}
@@ -305,7 +305,9 @@ const UpdateOrder = () => {
           </p>
           <p className="flex justify-between">
             <span className="font-medium">Giảm giá:</span>
-            <span>{Math.floor(orderDetails.Discount)} VND</span>
+            <span className="text-red-600">
+              -{Math.floor(orderDetails.Discount)} VND
+            </span>
           </p>
           <Typography
             variant="h6"

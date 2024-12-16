@@ -188,7 +188,7 @@ const VoucherList = () => {
                   Phần trăm giảm giá
                 </th>
                 <th className="border border-gray-300 p-2">Đơn tối thiểu</th>
-                <th className="border border-gray-300 p-2">Giá trị tối đa</th>
+                <th className="border border-gray-300 p-2">Số lần sử dụng</th>
                 <th className="border border-gray-300 p-2">Giảm giá tối đa</th>
                 <th className="border border-gray-300 p-2">Ngày hết hạn</th>
                 <th className="border border-gray-300 p-2">Tùy chỉnh</th>

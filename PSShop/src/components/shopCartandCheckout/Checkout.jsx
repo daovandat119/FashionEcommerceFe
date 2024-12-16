@@ -3,13 +3,11 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useCheckout } from "../../context/CheckoutContext";
 import { useNavigate } from "react-router-dom";
-// import { useContextElement } from "../../context/Context";
 import Swal from "sweetalert2";
 import shipCodLogo from "../../assets/shipcodlogo.png";
 import vnPayLogo from "../../assets/logovnpay.png";
+import zaloPayLogo from "../../assets/logozalopay.png";
 import CouponStore from "./CouponStore";
-
-
 
 export default function Checkout() {
   const { orderData, updateOrderData } = useCheckout();
@@ -40,6 +38,12 @@ export default function Checkout() {
       name: "Thanh toán qua VNPAY",
       description: "Thanh toán trực tuyến qua VNPAY",
       logo: vnPayLogo,
+    },
+    {
+      id: 3,
+      name: "Thanh toán qua ZaloPay",
+      description: "Thanh toán trực tuyến qua ZaloPay",
+      logo: zaloPayLogo,
     },
   ];
 
@@ -144,12 +148,23 @@ export default function Checkout() {
 
       if (response.data.status === "success") {
         setCartItems([]);
-        navigate(`/shop_order_complete/${response.data.data.OrderID}`);
+        navigate(`/shop_order_complete`);
       } else if (response.data.vnpay_url) {
         window.location.href = response.data.vnpay_url;
       } else if (
         response.data.message ===
         "Bạn đã hủy quá 3 lần. Vui lòng thanh toán chuyển khoản để tiếp tục."
+      ) {
+        Swal.fire({
+          title: "Thông báo",
+          text: response.data.message,
+          icon: "warning",
+          confirmButtonText: "Đồng ý",
+        });
+        navigate("/shop_checkout");
+      } else if (
+        response.data.message ===
+        "Số lượng mua quá lớn. Vui lòng thanh toán chuyển khoản để tiếp tục."
       ) {
         Swal.fire({
           title: "Thông báo",
@@ -180,32 +195,34 @@ export default function Checkout() {
   const handleApplyCoupon = (coupon) => {
     if (coupon.usable && totalAmount >= coupon.MinimumOrderValue) {
       setAppliedCoupon(coupon.CouponID);
-      let finalDiscount;
-  
-      if (totalAmount < coupon.MaxAmount) {
-        finalDiscount =
-          (coupon.DiscountPercentage / 100) * (totalAmount + shippingFee); // Tính phần trăm giảm giá
-      } else {
-        finalDiscount = coupon.MaxAmount; // Lấy MaxAmount
-      }
-  
-      setDiscount(finalDiscount);
-      setTotal(Number(totalAmount + shippingFee - finalDiscount).toFixed(2));
+      let finalDiscount =
+        (coupon.DiscountPercentage / 100) * (totalAmount + shippingFee);
+      setDiscount(
+        finalDiscount < coupon.MaxAmount ? finalDiscount : coupon.MaxAmount
+      );
+      setTotal(
+        Number(
+          totalAmount +
+            shippingFee -
+            (finalDiscount < coupon.MaxAmount
+              ? finalDiscount
+              : coupon.MaxAmount)
+        ).toFixed(2)
+      );
       setIsCouponStoreOpen(false);
-  
-      // Hiển thị thông báo thành công với Swal
+
       Swal.fire({
-        icon: 'success',
-        title: 'Áp dụng mã giảm giá thành công!',
-        showConfirmButton: false,
-        timer: 3000 // Thông báo tự động đóng sau 3 giây
+        icon: "success",
+        title: "Áp dụng mã giảm giá thành công!",
+        timer: 3000, // Thông báo tự động đóng sau 3 giây
+        showConfirmButton: "Đồng ý",
       });
     } else {
       // Hiển thị thông báo lỗi với Swal
       Swal.fire({
-        icon: 'error',
-        title: 'Mã giảm giá không hợp lệ hoặc không đủ điều kiện.',
-        showConfirmButton: true
+        icon: "error",
+        title: "Mã giảm giá không hợp lệ hoặc không đủ điều kiện.",
+        showConfirmButton: "Đồng ý",
       });
     }
   };
