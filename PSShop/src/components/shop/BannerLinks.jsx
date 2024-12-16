@@ -1,6 +1,4 @@
 import { products51 } from "../../data/products/fashion";
-
-
 import { useEffect, useState } from "react";
 
 export default function BannerLinks() {

@@ -13,27 +13,22 @@ export default function Blog1() {
   const posts = [
     {
       id: 1,
-      title: "Áo đấu bóng rổ thương hiệu adidas mới ra mắt ",
-      date: "20 Tháng 11, 2024",
+
+      title: "Bí quyết phối đồ thời thượng với áo khoác",
+      date: "20 Tháng 12, 2024",
       author: "Admin",
       excerpt:
-        "Áo đấu bóng rổ thương hiệu adidas mới ra mắt năm nay khiên rất nhiều người mong đợi...",
-      fullText:
-        "Áo đấu bóng rổ thương hiệu adidas mới ra mắt năm nay khiến rất nhiều người mong đợi. Được biết, adidas đã kết hợp với cầu thủ bóng rổ MPAPE để ra mắt sản phẩm với chất liệu cao cấp, thiết kế đột phá và phù hợp với mọi đối tượng người dùng.",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlYEkdxEKtAg8y1sYsDeFW95Z1Xn0Lsxl5dA&s",
+        "Áo khoác là món đồ không thể thiếu trong tủ đồ của bạn. Hãy khám phá cách phối áo khoác để tạo nên phong cách thời thượng và đầy cuốn hút.",
+      image: "/assets/images/13.jpg",
     },
     {
       id: 2,
-      title: "Messi kết hợp với thương hiệu Kapolo ra mắt áo đá bóng mới",
-      date: "20 Tháng 11, 2024",
+      title: "Lựa chọn đồ thể thao phù hợp với dáng người",
+      date: "20 Tháng 12, 2024",
       author: "Admin",
       excerpt:
-        "Messi kết hợp với thương hiệu Kapolo ra mắt áo đá bóng mới gây sốt...",
-      fullText:
-        "Messi kết hợp với thương hiệu Kapolo ra mắt áo đá bóng mới gây sốt cho người hâm mộ. Áo được sản xuất với số lượng giới hạn 10.000 chiếc trên toàn thế giới. Thiết kế kết hợp các yếu tố cổ điển và hiện đại, tạo nên sức hút khó cưỡng.",
-      image:
-        "https://anh.24h.com.vn/upload/1-2015/images/2015-03-17/1426560433-m-2.jpg",
+        "Đồ thể thao luôn là lựa chọn hoàn hảo cho mọi dịp. Hãy cùng tìm hiểu cách chọn kiểu quần thể thao phù hợp để tôn lên vóc dáng của bạn.",
+      image: "/assets/images/jeans.jpg",
     },
     // Thêm các bài viết khác
     

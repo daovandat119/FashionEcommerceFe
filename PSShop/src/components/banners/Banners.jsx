@@ -33,7 +33,7 @@ export default function Hero() {
     },
     {
       image:
-        "https://makan.vn/wp-content/uploads/2023/02/shop-quan-ao-the-thao-thanh-pho-ha-noi-4.jpg.jpg",
+        "https://dongduongsport.com/wp-content/uploads/2023/02/3-banner-thethao-dongduonsport-2023.jpg",
     },
   ];
 

@@ -24,15 +24,17 @@ export const LoginProvider = ({ children }) => {
   const loginUser = async (Email, Password, navigate) => {
     setErrorMessage("");
     setSuccessMessage("");
+
     if (!isValidEmail(Email)) {
       setErrorMessage("Email không hợp lệ.");
       return;
     }
-    // Kiểm tra tính hợp lệ của mật khẩu
+
     if (!isValidPassword(Password)) {
       setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
       return;
     }
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login", {
         method: "POST",
@@ -53,6 +55,7 @@ export const LoginProvider = ({ children }) => {
           );
           return;
         }
+
         setUser(data.user);
         setIsAuthenticated(true);
         localStorage.setItem("token", data.token);
@@ -69,6 +72,15 @@ export const LoginProvider = ({ children }) => {
           navigate("/");
         }, 1000);
       } else {
+        if (data.message && data.message.includes("chưa được xác minh")) {
+          setVerificationStep(true);
+          setTempEmail(Email);
+          setUserId(data.UserID);
+          setTempLoginInfo({ Email, Password });
+          return;
+        }
+
+        // Xử lý lỗi khác
         Swal.fire({
           title: data.message || "Email hoặc mật khẩu không đúng",
           icon: "error",
