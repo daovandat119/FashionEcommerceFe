@@ -165,7 +165,9 @@ const UpdateProductStatus = (ProductID, data) => {
 };
 
 const UpdateCategoryStatus = (CategoryID, data) => {
-  return axios.post(`/api/categories/status/${CategoryID}`, data); // Gửi yêu cầu POST
+  return axios.post(`/api/categories/status/${CategoryID}`, {
+    Status: data,
+  });
 };
 
 const GetUserById = (UserID) => {

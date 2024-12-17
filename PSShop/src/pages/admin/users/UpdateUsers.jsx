@@ -103,9 +103,17 @@ const UpdateUser = () => {
             </div>
             <div>
               <label className="block mb-1">Ảnh đại diện:</label>
-              <span className="border border-gray-300 bg-slate-200 rounded-md p-2 w-full block">
-                {userData.image || "N/A"}
-              </span>
+              {userData.image ? (
+                <img
+                  src={userData.image}
+                  alt="Ảnh đại diện"
+                  className="border border-gray-300 bg-slate-200 rounded-md p-2 w-full block"
+                />
+              ) : (
+                <span className="border border-gray-300 bg-slate-200 rounded-md p-2 w-full block">
+                  N/A
+                </span>
+              )}
             </div>
             <div className="flex items-center">
               <label className="mr-2">Trạng thái:</label>
