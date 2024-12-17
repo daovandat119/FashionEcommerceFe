@@ -9,7 +9,7 @@ import {
   updateUserProfile,
 } from "../service/api_service"; // Đường dẫn đến hàm fetchAccountDetails
 import axios from "axios";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const MyAdminProfile = () => {
   const [user, setUser] = useState(null); // Khởi tạo state cho user
@@ -21,16 +21,16 @@ const MyAdminProfile = () => {
   const [newImage, setNewImage] = useState(null); // State for the new image
   const [isEditingUsername, setIsEditingUsername] = useState(false); // State to track editing mode
 
-  useEffect(() => {
-    const getUserDetails = async () => {
-      try {
-        const accountData = await fetchAccountDetails(); // Fetch account details
-        setUser(accountData); // Set user data
-      } catch (error) {
-        console.error("Error fetching account details:", error);
-      }
-    };
+  const getUserDetails = async () => {
+    try {
+      const accountData = await fetchAccountDetails(); // Fetch account details
+      setUser(accountData); // Set user data
+    } catch (error) {
+      console.error("Error fetching account details:", error);
+    }
+  };
 
+  useEffect(() => {
     getUserDetails();
   }, []);
 
@@ -47,7 +47,7 @@ const MyAdminProfile = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setNewImage(file); // Set the new image file
+      setNewImage(file);
       console.log("Image uploaded:", file);
     }
   };
@@ -64,24 +64,23 @@ const MyAdminProfile = () => {
     }
 
     try {
-      console.log(formData);
       const response = await updateUserProfile(formData);
+      await getUserDetails();
       if (response) {
         Swal.fire({
-          icon: 'success',
-          title: 'Cập nhật thành công',
+          icon: "success",
+          title: "Cập nhật thành công",
           text: response.message,
-          showConfirmButton: true
+          showConfirmButton: true,
         });
       }
       setIsEditingUsername(false);
-      // Optionally, refresh user data here
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Có lỗi khi cập nhật thông tin',
-        text: error.message || 'Vui lòng thử lại sau!',
-        showConfirmButton: true
+        icon: "error",
+        title: "Có lỗi khi cập nhật thông tin",
+        text: error.message || "Vui lòng thử lại sau!",
+        showConfirmButton: true,
       });
     }
   };
